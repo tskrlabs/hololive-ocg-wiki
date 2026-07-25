@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Architecture review — hololive-ocg-wiki</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose", flowchart: { htmlLabels: true, curve: "basis" } });
+    </script>
+    <style>
+      .seam { stroke-dasharray: 5 5; }
+      .leak { stroke: #dc2626; }
+      .deep { background: linear-gradient(135deg, #0f172a, #1e293b); }
+      .schematic { font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
+      .dupe { background-image: repeating-linear-gradient(45deg,#fee2e2,#fee2e2 6px,#fecaca 6px,#fecaca 12px); }
+      body { font-feature-settings: "kern" 1; }
+    </style>
+  </head>
+  <body class="bg-stone-50 text-slate-900 font-sans antialiased">
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
+      <!-- ============ HEADER ============ -->
+      <header class="space-y-5">
+        <div class="flex items-baseline justify-between flex-wrap gap-3">
+          <h1 class="font-serif text-4xl font-semibold tracking-tight">Architecture review</h1>
+          <span class="font-mono text-sm text-slate-500">hololive-ocg-wiki · 2026-07-24</span>
+        </div>
+        <p class="text-slate-600 max-w-3xl">
+          Four deepening opportunities. Each collapses a set of <em>shallow</em> modules —
+          interface nearly as wide as the implementation — into one <em>deep</em> module: a small
+          interface, one place to test, logic that stops leaking into the view layer.
+        </p>
+        <!-- legend -->
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-600 border-y border-slate-200 py-3">
+          <span class="flex items-center gap-2"><span class="inline-block w-5 h-4 border border-slate-400 bg-white"></span> module</span>
+          <span class="flex items-center gap-2"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#475569" stroke-width="2" class="seam"/></svg> seam</span>
+          <span class="flex items-center gap-2"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" class="leak" stroke-width="2"/></svg> leakage</span>
+          <span class="flex items-center gap-2"><span class="inline-block w-5 h-4 deep border border-slate-900"></span> deep module</span>
+          <span class="flex items-center gap-2"><span class="inline-block w-5 h-4 dupe border border-red-300"></span> duplicated shape</span>
+        </div>
+        <!-- badge key -->
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-medium">Strong</span>
+          <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-medium">Worth exploring</span>
+          <span class="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-medium">Speculative</span>
+        </div>
+      </header>
+
+      <section id="candidates" class="space-y-12">
+
+        <!-- ==================================================================== -->
+        <!-- CANDIDATE 1 -->
+        <!-- ==================================================================== -->
+        <article id="c1" class="scroll-mt-6 border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+          <div class="p-6 md:p-8 space-y-6">
+            <div class="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <div class="text-xs font-mono text-slate-400 mb-1">candidate 01</div>
+                <h2 class="font-serif text-2xl font-semibold">Unify the two card-query stores behind one interface</h2>
+              </div>
+              <div class="flex gap-2 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-xs font-semibold">Strong</span>
+                <span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">ports &amp; adapters</span>
+              </div>
+            </div>
+
+            <!-- files -->
+            <div class="font-mono text-xs text-slate-600 leading-relaxed">
+              composables/useCardStore.ts · composables/useCardStoreAPI.ts · plugins/cards.ts<br/>
+              components/filter/{Filter,FilterAPI}.vue · components/filter/{SearchInput,SearchInputAPI}.vue<br/>
+              components/card-list/CardListView{,Basic,VirtualScroller}.vue · …CardListViewAPI{,Basic,VirtualScroller}.vue
+            </div>
+
+            <!-- BEFORE / AFTER -->
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="rounded-lg border border-slate-200 bg-slate-50/60 p-4">
+                <div class="schematic text-slate-400 mb-2">before — two interfaces, forked views</div>
+                <pre class="mermaid">
+flowchart TB
+  subgraph V["view layer (forked in two)"]
+    direction LR
+    F1[Filter.vue]:::legacy
+    S1[SearchInput.vue]:::legacy
+    L1[CardListView ×3]:::legacy
+    F2[FilterAPI.vue]
+    S2[SearchInputAPI.vue]
+    L2[CardListViewAPI ×3]
+  end
+  F1 --> ST1
+  S1 --> ST1
+  L1 --> ST1
+  F2 --> ST2
+  S2 --> ST2
+  L2 --> ST2
+  ST1[useCardStore\nclient JSON + Fuse]:::legacy
+  ST2[useCardStoreAPI\nHTTP]
+  ST1 -.imports 8MB.-> J[(cards_i18n.json)]:::leak
+  P[plugins/cards.ts\nboots at startup] --> ST1
+  classDef legacy fill:#fee2e2,stroke:#f87171,color:#7f1d1d;
+  classDef leak stroke:#dc2626,stroke-width:2px,fill:#fff;
+                </pre>
+              </div>
+              <div class="rounded-lg border border-slate-900/10 bg-white p-4">
+                <div class="schematic text-slate-400 mb-2">after — one interface, two adapters</div>
+                <pre class="mermaid">
+flowchart TB
+  subgraph V["view layer (one copy each)"]
+    direction LR
+    F[Filter.vue]
+    S[SearchInput.vue]
+    L[CardListView ×3]
+  end
+  F --> Q
+  S --> Q
+  L --> Q
+  Q["useCardQuery<br/>deep: filter · search · byId · options"]:::deep
+  Q -->|port| A1[HTTP adapter\nprod]:::adapter
+  Q -->|port| A2[in-memory adapter\ntests]:::adapter
+  classDef deep fill:#0f172a,stroke:#0f172a,color:#f8fafc;
+  classDef adapter fill:#eef2ff,stroke:#6366f1,color:#3730a3;
+                </pre>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              <p><span class="font-semibold text-slate-900">Problem.</span> Card query has two interfaces, so every consuming view is forked into a legacy copy and an <span class="font-mono text-xs">API</span> copy that drift apart.</p>
+              <p><span class="font-semibold text-slate-900">Solution.</span> One <span class="font-mono text-xs">useCardQuery</span> interface; the data source becomes an internal adapter — HTTP in prod, local JSON in dev — and the forked views collapse to one each.</p>
+            </div>
+
+            <div>
+              <div class="schematic text-slate-400 mb-2">wins</div>
+              <ul class="grid sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm text-slate-700 list-disc list-inside marker:text-emerald-500">
+                <li>leverage: one interface, ~14 call sites</li>
+                <li>locality: query logic in one module</li>
+                <li>two adapters justify the seam</li>
+                <li>delete ~6 forked view files</li>
+                <li>stop importing 8&nbsp;MB at boot</li>
+                <li>interface is the test surface</li>
+              </ul>
+            </div>
+
+            <div class="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-900">
+              <span class="font-semibold">The legacy half is already dead — not live-forked.</span>
+              <span class="font-mono text-xs">pages/index.vue</span> renders only the API variants; the four legacy views and
+              <span class="font-mono text-xs">Filter.vue</span> are unreferenced, and <span class="font-mono text-xs">plugins/cards.ts</span>
+              provides a <span class="font-mono text-xs">$cardStore</span> nothing reads — while still importing 8&nbsp;MB
+              (<span class="font-mono text-xs">cards_i18n.json</span>) at every boot. This is deletion first, deepening second.
+            </div>
+          </div>
+        </article>
+
+        <!-- ==================================================================== -->
+        <!-- CANDIDATE 2 -->
+        <!-- ==================================================================== -->
+        <article id="c2" class="scroll-mt-6 border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+          <div class="p-6 md:p-8 space-y-6">
+            <div class="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <div class="text-xs font-mono text-slate-400 mb-1">candidate 02</div>
+                <h2 class="font-serif text-2xl font-semibold">Deepen the Filter module — one home for the filter shape</h2>
+              </div>
+              <div class="flex gap-2 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-xs font-semibold">Strong</span>
+                <span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">in-process</span>
+              </div>
+            </div>
+
+            <div class="font-mono text-xs text-slate-600 leading-relaxed">
+              composables/filter-states.ts · types/filter.ts · constants/card-data.ts · composables/useCardStoreAPI.ts
+            </div>
+
+            <!-- mass diagram: interface vs implementation + source-of-truth fan -->
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="rounded-lg border border-slate-200 bg-slate-50/60 p-4">
+                <div class="schematic text-slate-400 mb-3">before — shape written ≥3 ways, empty filter ×5</div>
+                <!-- fan-out of duplicated literals -->
+                <div class="relative h-[240px]">
+                  <div class="absolute left-1/2 -translate-x-1/2 top-0 px-3 py-2 border border-slate-400 bg-white text-center schematic w-40">
+                    filter shape<br/><span class="text-[10px] normal-case tracking-normal text-slate-400">colors · types · rarity · bloom</span>
+                  </div>
+                  <svg class="absolute inset-0 w-full h-full" style="z-index:0">
+                    <line x1="50%" y1="52" x2="14%" y2="150" class="leak" stroke-width="1.5"/>
+                    <line x1="50%" y1="52" x2="38%" y2="150" class="leak" stroke-width="1.5"/>
+                    <line x1="50%" y1="52" x2="62%" y2="150" class="leak" stroke-width="1.5"/>
+                    <line x1="50%" y1="52" x2="86%" y2="150" class="leak" stroke-width="1.5"/>
+                  </svg>
+                  <div class="absolute top-[150px] left-0 right-0 flex justify-between gap-1 text-[10px] text-center">
+                    <div class="dupe border border-red-300 rounded px-1 py-2 w-[23%]">types/filter.ts<br/>booleans</div>
+                    <div class="dupe border border-red-300 rounded px-1 py-2 w-[23%]">card-data.ts<br/>arrays</div>
+                    <div class="dupe border border-red-300 rounded px-1 py-2 w-[23%]">filter-states<br/>×4 literals</div>
+                    <div class="dupe border border-red-300 rounded px-1 py-2 w-[23%]">storeAPI<br/>default + ×2 map</div>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2">Add one rarity → edit 6 places. <span class="font-mono">CARD_BLOOM_LEVELS</span> already disagrees (<span class="font-mono">1st/2nd</span> vs <span class="font-mono">first/second</span>).</p>
+              </div>
+
+              <div class="rounded-lg border border-slate-900/10 bg-white p-4">
+                <div class="schematic text-slate-400 mb-3">after — one source, small interface</div>
+                <div class="space-y-3">
+                  <div class="mx-auto w-48 px-3 py-2 border-2 border-slate-900 rounded text-center schematic bg-white">domain enums<br/><span class="text-[10px] normal-case tracking-normal text-slate-400">single source of truth</span></div>
+                  <div class="flex justify-center"><svg width="14" height="22"><line x1="7" y1="0" x2="7" y2="22" stroke="#6366f1" stroke-width="2"/><path d="M2 15 L7 22 L12 15" fill="#6366f1"/></svg></div>
+                  <!-- deep module: short interface, tall impl -->
+                  <div class="mx-auto w-56 rounded overflow-hidden border border-slate-900">
+                    <div class="deep text-slate-100 text-center py-1.5 schematic">useFilter · small interface</div>
+                    <div class="bg-slate-100 text-slate-500 text-[11px] leading-relaxed text-center py-4 px-2">
+                      createEmpty() · toApiParams()<br/>isActive() · clear(section?)<br/>draft ↔ applied
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              <p><span class="font-semibold">Problem.</span> The filter's shape is written out in three incompatible forms and the empty-filter literal appears five times; <span class="font-mono text-xs">filter-states.ts</span> exposes ~25 methods over a thin body.</p>
+              <p><span class="font-semibold">Solution.</span> Derive the shape from the domain enums; one <span class="font-mono text-xs">toApiParams</span>, one <span class="font-mono text-xs">createEmpty</span>, and per-field resets collapse into <span class="font-mono text-xs">clear(section?)</span>.</p>
+            </div>
+
+            <div>
+              <div class="schematic text-slate-400 mb-2">wins</div>
+              <ul class="grid sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm text-slate-700 list-disc list-inside marker:text-emerald-500">
+                <li>locality: shape lives in one place</li>
+                <li>interface shrinks; ~14 resets → one</li>
+                <li>kills the bloom-level mismatch bug</li>
+                <li>toApiParams: one mapping, not three</li>
+                <li>pure module, tested directly</li>
+                <li>drop the legacy reset aliases</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- ==================================================================== -->
+        <!-- CANDIDATE 3 -->
+        <!-- ==================================================================== -->
+        <article id="c3" class="scroll-mt-6 border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+          <div class="p-6 md:p-8 space-y-6">
+            <div class="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <div class="text-xs font-mono text-slate-400 mb-1">candidate 03</div>
+                <h2 class="font-serif text-2xl font-semibold">Model the Deck as sections, not three parallel arrays</h2>
+              </div>
+              <div class="flex gap-2 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-xs font-semibold">Strong</span>
+                <span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">in-process</span>
+              </div>
+            </div>
+
+            <div class="font-mono text-xs text-slate-600 leading-relaxed">
+              composables/decks-states.ts · types/deck.ts · pages/deck/[code]/index.vue · components/parials/FloatingDeck.vue
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <!-- before: three lanes, triplicated ops -->
+              <div class="rounded-lg border border-slate-200 bg-slate-50/60 p-4">
+                <div class="schematic text-slate-400 mb-3">before — every op branches three ways</div>
+                <div class="space-y-2">
+                  <div class="grid grid-cols-3 gap-2 text-center schematic text-[10px]">
+                    <div class="border border-slate-400 bg-white rounded py-1">oshiCardIds</div>
+                    <div class="border border-slate-400 bg-white rounded py-1">mainCardIds</div>
+                    <div class="border border-slate-400 bg-white rounded py-1">yellCardIds</div>
+                  </div>
+                  <div class="text-[10px] text-slate-400 text-center">each of add · remove · removeAll · count ↓</div>
+                  <div class="space-y-1.5">
+                    <div class="grid grid-cols-3 gap-2">
+                      <div class="dupe border border-red-300 rounded h-6"></div>
+                      <div class="dupe border border-red-300 rounded h-6"></div>
+                      <div class="dupe border border-red-300 rounded h-6"></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                      <div class="dupe border border-red-300 rounded h-6"></div>
+                      <div class="dupe border border-red-300 rounded h-6"></div>
+                      <div class="dupe border border-red-300 rounded h-6"></div>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1">Limits <span class="font-mono">1 / 50 / 20</span> + status colour hardcoded <b>6×</b> in the view layer.</p>
+                </div>
+              </div>
+
+              <!-- after: one deep deck module -->
+              <div class="rounded-lg border border-slate-900/10 bg-white p-4">
+                <div class="schematic text-slate-400 mb-3">after — one deep Deck module</div>
+                <div class="mx-auto max-w-[16rem] rounded-lg overflow-hidden border border-slate-900">
+                  <div class="deep text-slate-100 text-center py-2 schematic">Deck</div>
+                  <div class="bg-slate-100 text-slate-500 text-[11px] leading-relaxed text-center py-3 px-2">
+                    add(card) · remove(card)<br/>count(card) · status(section)<br/>
+                    <span class="text-slate-400">routes by cardTypeCode · owns limits</span>
+                  </div>
+                </div>
+                <div class="mt-3 grid grid-cols-3 gap-2 text-center schematic text-[10px] text-slate-400">
+                  <div>oshi</div><div>main</div><div>yell</div>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2 text-center">sections keyed internally — the branch disappears</p>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              <p><span class="font-semibold">Problem.</span> A deck is three arrays, so add / remove / count each fork three ways, and the size rules (1 oshi · 50 main · 20 yell) are re-written inline in the deck page and the floating deck.</p>
+              <p><span class="font-semibold">Solution.</span> A deep <span class="font-mono text-xs">Deck</span> module keyed by section; callers pass a card and the module routes it and enforces the limits behind the interface.</p>
+            </div>
+
+            <div>
+              <div class="schematic text-slate-400 mb-2">wins</div>
+              <ul class="grid sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm text-slate-700 list-disc list-inside marker:text-emerald-500">
+                <li>locality: bucket rules in one module</li>
+                <li>each op written once, not thrice</li>
+                <li>limits stop leaking into templates</li>
+                <li>leverage: status() reused by both views</li>
+                <li>validation testable through interface</li>
+                <li>new section = one edit</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- ==================================================================== -->
+        <!-- CANDIDATE 4 -->
+        <!-- ==================================================================== -->
+        <article id="c4" class="scroll-mt-6 border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+          <div class="p-6 md:p-8 space-y-6">
+            <div class="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <div class="text-xs font-mono text-slate-400 mb-1">candidate 04</div>
+                <h2 class="font-serif text-2xl font-semibold">One view-model for the deck lists — <span class="font-mono text-lg">useDeckCards</span></h2>
+              </div>
+              <div class="flex gap-2 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-amber-100 text-amber-800 text-xs font-semibold">Worth exploring</span>
+                <span class="px-2.5 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">in-process</span>
+              </div>
+            </div>
+
+            <div class="font-mono text-xs text-slate-600 leading-relaxed">
+              components/parials/FloatingDeckCardList.vue · components/detail-page/DeckDetailCardList.vue · components/detail-page/DeckDetailCompactModeCardList.vue
+            </div>
+
+            <!-- call-graph collapse: 3 copies of the same pipeline -->
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="rounded-lg border border-slate-200 bg-slate-50/60 p-4">
+                <div class="schematic text-slate-400 mb-3">before — same pipeline pasted in three components</div>
+                <div class="space-y-2">
+                  <div class="grid grid-cols-3 gap-2 schematic text-[9px] text-center text-slate-400 mb-1">
+                    <div>FloatingDeck<br/>CardList</div><div>DeckDetail<br/>CardList</div><div>DeckDetail<br/>Compact</div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-2">
+                    <div class="dupe border border-red-300 rounded p-1.5 text-[9px] leading-tight text-center text-red-900">count ids<br/>→ unique<br/>→ fetch<br/>→ join<br/>→ imagePath</div>
+                    <div class="dupe border border-red-300 rounded p-1.5 text-[9px] leading-tight text-center text-red-900">count ids<br/>→ unique<br/>→ fetch<br/>→ join<br/>→ imagePath</div>
+                    <div class="dupe border border-red-300 rounded p-1.5 text-[9px] leading-tight text-center text-red-900">Map variant<br/>→ ×3 buckets<br/>→ fetch<br/>→ join<br/>→ imagePath</div>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1"><span class="font-mono">getImagePath</span> + the fetch/watch boilerplate are verbatim copies; the compact one re-derives it three times over.</p>
+                </div>
+              </div>
+              <div class="rounded-lg border border-slate-900/10 bg-white p-4">
+                <div class="schematic text-slate-400 mb-3">after — three thin views over one module</div>
+                <div class="grid grid-cols-3 gap-2 schematic text-[9px] text-center text-slate-400 mb-2">
+                  <div>Floating</div><div>Detail</div><div>Compact</div>
+                </div>
+                <div class="flex justify-center gap-6 mb-1">
+                  <svg width="10" height="18"><line x1="5" y1="0" x2="5" y2="18" stroke="#6366f1" stroke-width="2"/></svg>
+                  <svg width="10" height="18"><line x1="5" y1="0" x2="5" y2="18" stroke="#6366f1" stroke-width="2"/></svg>
+                  <svg width="10" height="18"><line x1="5" y1="0" x2="5" y2="18" stroke="#6366f1" stroke-width="2"/></svg>
+                </div>
+                <div class="mx-auto max-w-[17rem] rounded-lg overflow-hidden border border-slate-900">
+                  <div class="deep text-slate-100 text-center py-2 schematic">useDeckCards(cardIds)</div>
+                  <div class="bg-slate-100 text-slate-500 text-[11px] leading-relaxed text-center py-3 px-2">
+                    → { card, count }[] · loading<br/>
+                    <span class="text-slate-400">count · dedupe · fetch · join · imagePath</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              <p><span class="font-semibold">Problem.</span> Three deck-list components each re-derive the same pipeline — count duplicate ids, dedupe, fetch cards, join, resolve <span class="font-mono text-xs">image_path</span> — two verbatim and one as a hand-rolled <span class="font-mono text-xs">Map</span> variant.</p>
+              <p><span class="font-semibold">Solution.</span> A deep <span class="font-mono text-xs">useDeckCards(cardIds)</span> returning <span class="font-mono text-xs">{ card, count }[]</span> plus loading; the three components render it and stop deriving.</p>
+            </div>
+
+            <div>
+              <div class="schematic text-slate-400 mb-2">wins</div>
+              <ul class="grid sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm text-slate-700 list-disc list-inside marker:text-amber-500">
+                <li>leverage: one module, three views</li>
+                <li>count + join written once</li>
+                <li>getImagePath stops being copied</li>
+                <li>fetch/watch boilerplate absorbed</li>
+                <li>locality: derivation bugs land here</li>
+                <li>join tested through the interface</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- ============ TOP RECOMMENDATION ============ -->
+      <section id="top-recommendation">
+        <div class="rounded-2xl deep text-slate-100 p-8 md:p-10 space-y-4">
+          <div class="schematic text-slate-400">tackle first</div>
+          <h2 class="font-serif text-3xl font-semibold">
+            <a href="#c1" class="hover:underline decoration-emerald-400 underline-offset-4">Unify the two card-query stores</a>
+          </h2>
+          <p class="text-slate-300 max-w-3xl">
+            It's the root the other duplication grows from — the two interfaces are <em>why</em>
+            Filter, SearchInput, and the three list views each exist twice. Placing the seam inside
+            one <span class="font-mono text-sm text-slate-100">useCardQuery</span> module (HTTP adapter in prod,
+            local-JSON adapter in dev) collapses the fork, deletes ~6 view files, and stops the
+            legacy store from importing 8&nbsp;MB at every boot. The live page already runs the API
+            adapter, so this consolidates toward where the code is going — not away from it.
+          </p>
+          <div class="flex flex-wrap gap-2 pt-2 text-xs">
+            <span class="px-2 py-1 rounded bg-white/10">then → <a href="#c2" class="underline underline-offset-2">02 Filter</a></span>
+            <span class="px-2 py-1 rounded bg-white/10"><a href="#c3" class="underline underline-offset-2">03 Deck sections</a></span>
+            <span class="px-2 py-1 rounded bg-white/10"><a href="#c4" class="underline underline-offset-2">04 Deck view-model</a></span>
+          </div>
+        </div>
+        <p class="text-center text-xs text-slate-400 mt-6">
+          No <span class="font-mono">CONTEXT.md</span> or ADRs present — no decisions to re-litigate. Vocabulary: module · interface · depth · seam · adapter · leverage · locality.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
