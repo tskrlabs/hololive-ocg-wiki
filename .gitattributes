@@ -1,0 +1,9 @@
+# Generated from the pydantic models in packages/schema/src/holo_schema/.
+# Collapsed in GitHub diffs and excluded from language stats. Never hand-edit —
+# `make check` fails if these drift from the models. See docs/adr/0001.
+packages/schema/dist/**        linguist-generated=true
+packages/schema/json-schema/** linguist-generated=true
+packages/schema/golden/**      linguist-generated=true
+
+# Fixture data: committed source (D1 exception, see ADR 0001) but not our prose.
+fixtures/cards.json            linguist-generated=true

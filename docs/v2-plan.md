@@ -145,7 +145,7 @@ paid step needs an explicit gate (see D10).
 ```
 apps/web/          Nuxt SPA
 apps/api/          Worker: Hono API + static assets + wrangler.jsonc
-packages/schema/   the card contract — pydantic → JSON Schema → TS types + SQL
+packages/schema/   the card contract — pydantic → JSON Schema → TS types (SQL in Phase 3)
 pipeline/          Python (uv), holo-data CLI, corrections/ overlay
 fixtures/          ~40 cards for credential-free local dev
 docs/              CONTEXT.md, adr/, this file
@@ -247,8 +247,8 @@ first means building against a moving contract.
 
 | # | Phase | Done when |
 |---|---|---|
-| 0 | Repo skeleton + `packages/schema` | Card contract defined once; TS types + JSON Schema generate from pydantic models |
-| 1 | Pipeline migration (`pipeline/`, uv, `holo-data`, corrections overlay) | `holo-data build` reproduces today's `cards.json` shape from scratch |
+| 0 | Repo skeleton + `packages/schema` | ✅ **Done** — card contract defined once; TS types + JSON Schema generate from pydantic models. See [ADR 0001](adr/0001-card-contract-generation.md) |
+| 1 | Pipeline migration (`pipeline/`, uv, `holo-data`, corrections overlay) | `holo-data build` reproduces today's card **data** — same 2,448 cards, same values, validated against `packages/schema` (see ADR 0001: the canonical artifact is snake_case now, so this is data-equivalence, not a byte-diff of v1's `cards.json`) |
 | 2 | CF resources + R2 publish | Images live at `img.hololive-ocg-wiki.tskrlabs.com`; `publish` is idempotent |
 | 3 | D1 redesign + seeder | `seed --dry` reports ~2,500 rows; production D1 populated; FTS5 working |
 | 4 | Worker rewrite (Hono + Zod, assets binding) | All 8 endpoints serve correctly; SPA + API from one Worker |
@@ -273,6 +273,14 @@ naive "drop and reload" loop during development can still burn the quota. Always
 ### ⚠️ Cost is a hard requirement
 Free tier only. If a design needs a paid service, it needs a decision first, not an
 assumption.
+
+### ⚠️ Never use GitHub Actions
+No `.github/workflows/`, in this repo or any other. The maintainer has had a GitHub
+account banned over Actions usage — the risk is account-level, not project-level.
+Verification is local: `make check`, plus an opt-in pre-commit hook (`make hooks`).
+
+**Workers Builds (Phase 6) is unaffected** — it runs on Cloudflare's infrastructure and
+GitHub only sends a webhook. Push-to-deploy is still on the table.
 
 ### Other
 - v1's `.venv`, `node_modules`, and `dist` symlink should not be carried over.

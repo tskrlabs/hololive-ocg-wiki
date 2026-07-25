@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+.npm/
+*.tsbuildinfo
+
+# Nuxt / build output (Phase 5)
+.nuxt/
+.output/
+# Only app build output is ignored. `packages/schema/dist/` holds the GENERATED CONTRACT
+# TYPES and is deliberately committed (ADR 0001) — a frontend contributor must get types
+# from `npm install` without running Python. Scoped to apps/ rather than a bare `dist/`
+# with a negation, because git does not descend into an excluded directory to un-exclude
+# a subpath.
+apps/*/dist/
+
+# Cloudflare (Phase 2+)
+.wrangler/
+.dev.vars
+
+# Pipeline working data (Phase 1+) — per D1, generated data lives in R2, not git
+pipeline/data/
+pipeline/logs/
+pipeline/card_images/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,18 @@
+[project]
+name = "hololive-ocg-wiki"
+version = "0.1.0"
+description = "Workspace root — see packages/schema for the card contract."
+requires-python = ">=3.12"
+dependencies = ["holo-schema"]
+
+[tool.uv.workspace]
+members = ["packages/schema"]
+
+[tool.uv.sources]
+holo-schema = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest>=8.3"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages/schema/tests"]

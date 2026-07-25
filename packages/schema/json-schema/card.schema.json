@@ -1,0 +1,494 @@
+{
+  "$defs": {
+    "Art": {
+      "additionalProperties": false,
+      "description": "The language-independent half of an art: its costs and damage.\n\nThe translated half (name, effect) lives in `Translation.arts` at the same index —\nsee `TranslatedArt` for why they are stored apart and how they are paired.",
+      "properties": {
+        "cost_count": {
+          "title": "Cost Count",
+          "type": "integer"
+        },
+        "cost_types": {
+          "items": {
+            "enum": [
+              "blue",
+              "blue_red",
+              "green",
+              "null",
+              "purple",
+              "red",
+              "white",
+              "white_green",
+              "yellow"
+            ],
+            "type": "string"
+          },
+          "title": "Cost Types",
+          "type": "array"
+        },
+        "damage": {
+          "title": "Damage",
+          "type": "integer"
+        },
+        "is_plus": {
+          "title": "Is Plus",
+          "type": "boolean"
+        },
+        "special_targets": {
+          "title": "Special Targets",
+          "items": {
+            "enum": [
+              "blue",
+              "blue_red",
+              "green",
+              "null",
+              "purple",
+              "red",
+              "white",
+              "white_green",
+              "yellow"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "special_values": {
+          "title": "Special Values",
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "cost_count"
+      ],
+      "title": "Art",
+      "type": "object"
+    },
+    "Card": {
+      "additionalProperties": false,
+      "description": "A single card, in every language.\n\nThis is the canonical contract. Defined once here; the JSON Schema, the TypeScript\n`Card` type, and (in Phase 3) the D1 DDL are all generated from it.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "card_number": {
+          "title": "Card Number",
+          "type": "string"
+        },
+        "card_type_code": {
+          "enum": [
+            "buzzCharacter",
+            "character",
+            "oshiCharacter",
+            "supportCheer",
+            "supportEvent",
+            "supportEventLimited",
+            "supportFan",
+            "supportItem",
+            "supportItemLimited",
+            "supportMascot",
+            "supportStaffLimited",
+            "supportTool",
+            "unknown"
+          ],
+          "title": "Card Type Code",
+          "type": "string"
+        },
+        "rarity_code": {
+          "enum": [
+            "C",
+            "HR",
+            "OC",
+            "OSR",
+            "OUR",
+            "P",
+            "R",
+            "RR",
+            "S",
+            "SEC",
+            "SR",
+            "SY",
+            "U",
+            "UR"
+          ],
+          "title": "Rarity Code",
+          "type": "string"
+        },
+        "color_codes": {
+          "title": "Color Codes",
+          "items": {
+            "enum": [
+              "blue",
+              "blue_red",
+              "green",
+              "null",
+              "purple",
+              "red",
+              "white",
+              "white_green",
+              "yellow"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "bloom_level_code": {
+          "title": "Bloom Level Code",
+          "enum": [
+            "debut",
+            "first",
+            "second",
+            "spot"
+          ],
+          "type": "string"
+        },
+        "image_key": {
+          "title": "Image Key",
+          "type": "string"
+        },
+        "source_image_url": {
+          "title": "Source Image Url",
+          "type": "string"
+        },
+        "hp": {
+          "title": "Hp",
+          "type": "integer"
+        },
+        "life": {
+          "title": "Life",
+          "type": "integer"
+        },
+        "baton_touch_count": {
+          "title": "Baton Touch Count",
+          "type": "integer"
+        },
+        "baton_touch_types": {
+          "title": "Baton Touch Types",
+          "items": {
+            "enum": [
+              "blue",
+              "blue_red",
+              "green",
+              "null",
+              "purple",
+              "red",
+              "white",
+              "white_green",
+              "yellow"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "illustrator": {
+          "title": "Illustrator",
+          "type": "string"
+        },
+        "card_sets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Card Sets",
+          "type": "array"
+        },
+        "tags": {
+          "title": "Tags",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "arts": {
+          "title": "Arts",
+          "items": {
+            "$ref": "#/$defs/Art"
+          },
+          "type": "array"
+        },
+        "keyword": {
+          "$ref": "#/$defs/Keyword"
+        },
+        "oshi_skill": {
+          "$ref": "#/$defs/OshiSkill"
+        },
+        "sp_oshi_skill": {
+          "$ref": "#/$defs/OshiSkill"
+        },
+        "translations": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Translation"
+          },
+          "propertyNames": {
+            "enum": [
+              "ja",
+              "en",
+              "tc",
+              "id",
+              "ko",
+              "th",
+              "es"
+            ]
+          },
+          "title": "Translations",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "card_number",
+        "card_type_code",
+        "rarity_code",
+        "image_key",
+        "source_image_url",
+        "card_sets",
+        "translations"
+      ],
+      "title": "Card",
+      "type": "object"
+    },
+    "Keyword": {
+      "additionalProperties": false,
+      "description": "The language-independent half of a card's keyword ability.",
+      "properties": {
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "type_code": {
+          "enum": [
+            "bloom_effect",
+            "collab_effect",
+            "gift"
+          ],
+          "title": "Type Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "type_code"
+      ],
+      "title": "Keyword",
+      "type": "object"
+    },
+    "OshiSkill": {
+      "additionalProperties": false,
+      "description": "The language-independent half of an oshi skill.\n\nOnly `timing_code` is language-independent. Note there is no `cost` field: v1's\n`types/card.ts`, `cloudflare/worker.ts` and `schema.sql` all declared one, but no\ncard in the dataset has ever carried it. It was dead weight in three places.",
+      "properties": {
+        "timing_code": {
+          "enum": [
+            "once_per_game",
+            "once_per_turn"
+          ],
+          "title": "Timing Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "timing_code"
+      ],
+      "title": "OshiSkill",
+      "type": "object"
+    },
+    "QaItem": {
+      "additionalProperties": false,
+      "description": "One official Q&A entry attached to a card.\n\nPresent on 5,992 of 17,136 card-locale pairs; 13,300 items in total.",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "answer": {
+          "title": "Answer",
+          "type": "string"
+        },
+        "related_cards": {
+          "$ref": "#/$defs/RelatedCards"
+        }
+      },
+      "required": [
+        "title",
+        "question",
+        "answer"
+      ],
+      "title": "QaItem",
+      "type": "object"
+    },
+    "RelatedCards": {
+      "additionalProperties": false,
+      "description": "Cards referenced by a QA entry.\n\n`raw_html` is the official site's own markup, e.g. \"[hBP08-003 ： FUWAMOCO]\". It is\nkept because the rendered QA text links card numbers inline and reproducing that\nformatting from the parsed numbers alone would lose the display names.",
+      "properties": {
+        "raw_html": {
+          "title": "Raw Html",
+          "type": "string"
+        },
+        "card_number": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Card Number",
+          "type": "array"
+        }
+      },
+      "required": [
+        "raw_html"
+      ],
+      "title": "RelatedCards",
+      "type": "object"
+    },
+    "TranslatedArt": {
+      "additionalProperties": false,
+      "description": "The localised half of an art: what it is called and what it says.\n\nPaired with `Art` by list index. That pairing is fragile and the data proves it —\nhSD03-009 and hSD04-009 each have 2 entries in `Card.arts` but 0 in their `en`\ntranslation. `localize()` defines the merge rule and tolerates the short list; both\ncards are golden-file fixtures so the behaviour stays pinned.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "effect": {
+          "title": "Effect",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "TranslatedArt",
+      "type": "object"
+    },
+    "TranslatedKeyword": {
+      "additionalProperties": false,
+      "description": "The localised half of a card's keyword ability.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "effect": {
+          "title": "Effect",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "effect"
+      ],
+      "title": "TranslatedKeyword",
+      "type": "object"
+    },
+    "TranslatedOshiSkill": {
+      "additionalProperties": false,
+      "description": "The localised half of an oshi skill.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "effect": {
+          "title": "Effect",
+          "type": "string"
+        },
+        "timing": {
+          "title": "Timing",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "effect"
+      ],
+      "title": "TranslatedOshiSkill",
+      "type": "object"
+    },
+    "Translation": {
+      "additionalProperties": false,
+      "description": "Everything about a card that depends on the language it is read in.\n\nOne of these per locale, for all 7 locales, on every card.\n\nNote `ability_text` and `extra` are mutually exclusive in the data (483 cards have\n`ability_text`, 2,639 card-locale pairs have `extra`, and zero have both). They are\nmodelled as separate optional fields rather than one union because they mean\ndifferent things: `ability_text` is a support card's rules text, `extra` is a\nsupplementary note on a Holomem.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "tags": {
+          "title": "Tags",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "ability_text": {
+          "title": "Ability Text",
+          "type": "string"
+        },
+        "extra": {
+          "title": "Extra",
+          "type": "string"
+        },
+        "arts": {
+          "title": "Arts",
+          "items": {
+            "$ref": "#/$defs/TranslatedArt"
+          },
+          "type": "array"
+        },
+        "keyword": {
+          "$ref": "#/$defs/TranslatedKeyword"
+        },
+        "oshi_skill": {
+          "$ref": "#/$defs/TranslatedOshiSkill"
+        },
+        "sp_oshi_skill": {
+          "$ref": "#/$defs/TranslatedOshiSkill"
+        },
+        "qa_items": {
+          "title": "Qa Items",
+          "items": {
+            "$ref": "#/$defs/QaItem"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Translation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The full published card set — the root shape of `cards.json`.\n\nA wrapper rather than a bare list so the artifact can carry provenance. v1's\n`cards.json` was a top-level array, which left no room to record which pipeline run\nproduced it; `status.json` had to be consulted separately.",
+  "properties": {
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "cards": {
+      "items": {
+        "$ref": "#/$defs/Card"
+      },
+      "title": "Cards",
+      "type": "array"
+    }
+  },
+  "required": [
+    "generated_at",
+    "cards"
+  ],
+  "title": "CardCollection",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
