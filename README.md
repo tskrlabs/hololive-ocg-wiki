@@ -12,18 +12,18 @@ A fan-made wiki for the Hololive Official Card Game — card database, search, a
 
 ## Status
 
-**Phase 0 complete** — the card contract is defined once, as pydantic models, with the
-JSON Schema and TypeScript types generated from it. Next up: **Phase 1**, the pipeline
-migration.
+**Phase 1 complete** — the card contract is defined once as pydantic models (Phase 0),
+and the data pipeline now runs from it. Next up: **Phase 2**, Cloudflare resources and
+R2 publishing.
 
 ## Structure
 
 ```
 packages/schema/   ✅ the card contract — pydantic → JSON Schema → TS types
+pipeline/          ✅ Python pipeline (uv), `holo-data` CLI
 fixtures/          ✅ 34 cards covering every edge case, for credential-free local dev
-apps/web/          ⬜ Nuxt SPA                        (Phase 5)
 apps/api/          ⬜ Cloudflare Worker: Hono + assets (Phase 4)
-pipeline/          ⬜ Python pipeline (uv), `holo-data` CLI (Phase 1)
+apps/web/          ⬜ Nuxt SPA                        (Phase 5)
 ```
 
 ## Getting started

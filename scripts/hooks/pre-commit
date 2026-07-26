@@ -15,11 +15,11 @@
 
 set -e
 
-if ! git diff --cached --name-only | grep -qE '^(packages/schema/|fixtures/)'; then
+if ! git diff --cached --name-only | grep -qE '^(packages/schema/|pipeline/|fixtures/)'; then
     exit 0
 fi
 
-echo "→ contract touched, running make check..."
+echo "→ contract or pipeline touched, running make check..."
 
 if ! make check; then
     echo ""

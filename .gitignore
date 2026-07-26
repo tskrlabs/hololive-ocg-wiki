@@ -25,10 +25,14 @@ apps/*/dist/
 .wrangler/
 .dev.vars
 
-# Pipeline working data (Phase 1+) — per D1, generated data lives in R2, not git
+# Pipeline working state (D1: generated data lives in R2, not git).
+# `pipeline/corrections/` is deliberately NOT ignored — manual translation fixes are
+# source, and reviewing them as a PR diff is the point (ADR 0002).
 pipeline/data/
+pipeline/locales/
+pipeline/images/
+pipeline/build/
 pipeline/logs/
-pipeline/card_images/
 
 # Environment
 .env

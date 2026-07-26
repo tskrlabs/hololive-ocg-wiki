@@ -40,8 +40,8 @@ check: check-schema check-py check-ts typecheck ## Run every verification
 check-schema: ## Fail if the committed generated files are stale
 	@uv run python packages/schema/scripts/generate.py --check
 
-check-py: ## Run the Python tests
-	@uv run pytest packages/schema/tests -q
+check-py: ## Run the Python tests (schema + pipeline)
+	@uv run pytest packages/schema/tests pipeline/tests -q
 
 check-ts: ## Run the TypeScript parity tests
 	@npm test --workspace @holo/schema --silent
