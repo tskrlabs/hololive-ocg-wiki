@@ -24,6 +24,7 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-009](#f-009) | 🔍 open | data | ~127 oshi skills have no `timing` text in any locale |
 | [F-010](#f-010) | 🔍 open | data | `batonTouchTypes` is always `["null"]` |
 | [F-011](#f-011) | ✅ closed | data | v1's `card_images/en/` — 1,112 dead files from an abandoned EN scrape |
+| [F-012](#f-012) | ✅ fixed | data | The official site re-uploads card images; 12 local copies were stale |
 
 ---
 
@@ -262,3 +263,38 @@ site's English support is translation of the JP cards, not EN-printed card image
 
 Recorded so the directory's absence in v2 reads as a decision rather than an oversight —
 and so a future "where did the EN images go?" has an answer.
+
+---
+
+## F-012 — the official site silently re-uploads card images ✅ fixed
+
+**Found:** Phase 2 · **Fixed:** Phase 2 (12 images re-fetched) · **Affects:** 12 cards
+
+The first `verify-images --remote` run over the migrated set reported **2,436 of 2,448
+matching** and 12 differing from source. None was a wrong-card error. The official site
+had replaced its own files since the images were last scraped, in two flavours:
+
+| | cards | change |
+|---|---|---|
+| upscaled | 7 | 400×559 → 744×1040 or 992×1386 |
+| re-compressed | 5 | same dimensions, ~60–80% smaller, visually identical |
+
+`hBP07-002_SEC` went 139,980 → 2,100,814 bytes at 400×559 → 992×1386; `hSD02-014_C`
+went 292,817 → 62,514 bytes at unchanged dimensions, and the two render identically.
+
+**Why nothing noticed.** `download_image()` skips any file already on disk — correctly,
+since re-downloading 2,448 images per run would be rude. But that also means a *replaced*
+upstream file is never picked up. The scraper has no notion of an image being stale, only
+of it being absent, so the site's re-uploads were invisible.
+
+**Fixed:** the 12 were re-fetched and reconverted. The set is now byte-identical to source
+across all 2,448 cards.
+
+**The general point.** This is not a one-off — the site evidently does this from time to
+time, and there is currently no mechanism that detects it. `verify-images --remote` is the
+detector, but it is opt-in and expensive (~2,450 requests), so it will not run on a normal
+update. Worth doing after each new set ships, or occasionally as a spot check.
+
+Not worth automating into `scrape`: a conditional GET per image would make every run
+2,450 requests against a small operator's site to catch a handful of changes a year.
+The manual check is the better trade.
