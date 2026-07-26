@@ -175,15 +175,20 @@ alone does not, since two keys can still point at one flat file.
 The code is built and `make check` is green, but **the Cloudflare resources do not exist
 yet** and the maintainer creates them. Until then `publish` fails with instructions.
 
-1. Create both buckets, add the custom domain, disable `r2.dev`, mint a bucket-scoped
-   token — all in [`infra.md`](./infra.md)
-2. Put the credentials in `pipeline/.env` (see `pipeline/.env.example`)
-3. `uv sync --extra publish && holo-data publish --dry-run`
-4. `holo-data migrate-images` → `holo-data images` → `holo-data build`
-5. **`holo-data verify-images --remote` once** — proves all ~2,450 migrated files are the
-   right bytes for the right keys. This is the check that would have caught F-006 the day
-   it shipped
-6. `holo-data publish`
+Commands are `uv run holo-data …` — the CLI lives in the project venv, not on your PATH.
+
+1. ✅ **Done** — both buckets exist and are reachable, empty
+2. ✅ **Done** — credentials are in `pipeline/.env`
+3. ⬜ Custom domain on the images bucket + disable `r2.dev` — [`infra.md`](./infra.md)
+   steps 2 and 3
+4. ⬜ `uv run holo-data migrate-images` → `images` → `build`
+5. ⬜ **`uv run holo-data verify-images --remote`, once** — proves all ~2,450 migrated
+   files are the right bytes for the right keys. This is the check that would have caught
+   F-006 the day it shipped
+6. ⬜ `uv run holo-data publish`
+
+Steps 4–6 need the scrape data. This worktree has none — `pipeline/data/` is empty, so
+`migrate-images` also needs `--mapping` pointed at a v1 artifact (its default already is).
 
 Done when images resolve at `img.hololive-ocg-wiki.tskrlabs.com/{set}/{stem}.webp` and a
 second `publish` uploads nothing.

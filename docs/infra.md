@@ -89,6 +89,10 @@ Dashboard → R2 → **Manage API Tokens** → Create API token
 
 Put the Access Key ID and Secret into `pipeline/.env` (see `pipeline/.env.example`).
 
+`R2_ACCOUNT_ID` is 32 hex characters. The dashboard shows it as part of the S3 endpoint
+(`https://<account_id>.r2.cloudflarestorage.com`) — pasting that whole URL works too, it
+is reduced to the ID.
+
 Bucket-scoped rather than account-wide because the CLI may be driven by an agent (D4). A
 token that structurally cannot reach any other bucket — including buckets created later —
 bounds a misfire to the two we already reason about. That is the same instinct as D10's
@@ -98,12 +102,28 @@ gates, applied to credentials.
 
 ```bash
 uv sync --extra publish
-holo-data publish --dry-run
+uv run holo-data publish --dry-run
 ```
 
+**`uv run`, not bare `holo-data`.** The CLI installs into the project venv, not onto your
+PATH — a bare `holo-data` gives `command not found`. Either prefix with `uv run` or
+`source .venv/bin/activate` once per shell.
+
 A correct setup prints the two bucket names, lists both buckets, and reports what it would
-upload. Failures are specific by design: missing credentials name the variables, a missing
-`wrangler.jsonc` binding names the binding, and a missing `boto3` names the extra.
+upload. Failures are specific by design: missing credentials name the variables, a
+malformed account ID shows the expected shape, a missing `wrangler.jsonc` binding names
+the binding, and a missing `boto3` names the extra.
+
+To check the credentials alone, before there is anything to publish:
+
+```bash
+uv run python -c "
+from holo_data import cli, r2
+cfg = r2.load_config(); s3 = r2.client(cfg)
+for b in (cfg.images_bucket, cfg.artifacts_bucket):
+    print(b, len(r2.list_objects(s3, b)), 'objects')
+"
+```
 
 ## Cost posture
 

@@ -89,6 +89,58 @@ class TestRealConfig:
         assert artifacts == "hololive-ocg-wiki-artifacts"
 
 
+class TestAccountId:
+    """The dashboard shows the S3 endpoint URL, not the bare ID, and that whole string
+    is the obvious thing to copy — so both forms are accepted."""
+
+    def test_bare_id_passes_through(self):
+        value = "7d0fb552073ff07340658bcefeed8a89"
+        assert r2.normalise_account_id(value) == value
+
+    def test_endpoint_url_is_reduced_to_the_id(self):
+        assert (
+            r2.normalise_account_id(
+                "https://7d0fb552073ff07340658bcefeed8a89.r2.cloudflarestorage.com"
+            )
+            == "7d0fb552073ff07340658bcefeed8a89"
+        )
+
+    def test_endpoint_url_with_trailing_slash(self):
+        assert (
+            r2.normalise_account_id(
+                "https://7d0fb552073ff07340658bcefeed8a89.r2.cloudflarestorage.com/"
+            )
+            == "7d0fb552073ff07340658bcefeed8a89"
+        )
+
+    def test_whitespace_is_stripped(self):
+        assert r2.normalise_account_id("  7d0fb552073ff07340658bcefeed8a89 \n") == (
+            "7d0fb552073ff07340658bcefeed8a89"
+        )
+
+    def test_bad_value_is_rejected_with_the_expected_shape(self, monkeypatch):
+        monkeypatch.setenv("R2_ACCOUNT_ID", "not-an-account")
+        monkeypatch.setenv("R2_ACCESS_KEY_ID", "k")
+        monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "s")
+        with pytest.raises(r2.R2Error, match="32 hex characters"):
+            r2.load_config()
+
+    def test_endpoint_is_built_once_not_twice(self):
+        config = r2.R2Config(
+            r2.normalise_account_id(
+                "https://7d0fb552073ff07340658bcefeed8a89.r2.cloudflarestorage.com"
+            ),
+            "k",
+            "s",
+            "i",
+            "a",
+        )
+        assert config.endpoint_url == (
+            "https://7d0fb552073ff07340658bcefeed8a89.r2.cloudflarestorage.com"
+        )
+        assert config.endpoint_url.count("r2.cloudflarestorage.com") == 1
+
+
 def write(path: Path, content: bytes) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(content)

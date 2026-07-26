@@ -51,6 +51,31 @@ class R2Error(RuntimeError):
     """Raised for a misconfiguration the user can fix, with a message saying how."""
 
 
+ACCOUNT_ID_PATTERN = re.compile(r"^[0-9a-f]{32}$")
+
+
+def normalise_account_id(raw: str) -> str:
+    """Accept either a bare account ID or the S3 endpoint URL the dashboard shows.
+
+    R2's dashboard presents the endpoint as
+    `https://<account_id>.r2.cloudflarestorage.com`, and that whole string is the
+    obvious thing to copy — it is what sits next to the label. Pasting it produced a
+    doubled hostname and a connection error that named neither the variable nor the
+    problem, so the URL form is simply accepted.
+    """
+    value = raw.strip().strip("/")
+    if not value:
+        return value
+
+    if "//" in value:
+        value = value.split("//", 1)[1]
+    value = value.split("/", 1)[0]
+    if value.endswith(".r2.cloudflarestorage.com"):
+        value = value[: -len(".r2.cloudflarestorage.com")]
+
+    return value
+
+
 @dataclass(frozen=True)
 class R2Config:
     account_id: str
@@ -151,9 +176,18 @@ def load_config(config_path: Path = WRANGLER_CONFIG) -> R2Config:
             "Object Read & Write on both buckets — see docs/infra.md."
         )
 
+    account_id = normalise_account_id(values["R2_ACCOUNT_ID"])
+    if not ACCOUNT_ID_PATTERN.match(account_id):
+        raise R2Error(
+            f"R2_ACCOUNT_ID does not look like an account ID: {values['R2_ACCOUNT_ID']!r}\n\n"
+            "Expected 32 hex characters, e.g. 7d0fb552073ff07340658bcefeed8a89.\n"
+            "The S3 endpoint URL from the dashboard is also accepted — the ID is the\n"
+            "first label of https://<account_id>.r2.cloudflarestorage.com."
+        )
+
     # Buckets can be overridden for a one-off, but the committed config is the default.
     return R2Config(
-        account_id=values["R2_ACCOUNT_ID"],
+        account_id=account_id,
         access_key_id=values["R2_ACCESS_KEY_ID"],
         secret_access_key=values["R2_SECRET_ACCESS_KEY"],
         images_bucket=os.environ.get("R2_IMAGES_BUCKET", "").strip() or images,
