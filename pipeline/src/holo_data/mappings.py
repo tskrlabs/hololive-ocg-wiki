@@ -25,11 +25,18 @@ CARD_TYPE: dict[str, str] = {
     "サポート・ロケーション": "supportLocation",
     "エール": "supportCheer",
     "サポート・マスコット": "supportMascot",
+    "サポート・スタッフ": "supportStaff",
     "サポート・スタッフ・LIMITED": "supportStaffLimited",
     "サポート": "support",
 }
-"""Card type. Unmapped values become `unknown` — a documented, legitimate code (2 cards
-carry it today). See ADR 0001."""
+"""Card type. Unmapped values become `unknown` — a documented, legitimate code.
+
+`サポート・スタッフ` was missing here until Phase 1, which is why hBP07-091 (ライブスタッフ,
+2 cards) shows as `unknown` in v1's live data. See docs/findings.md F-001.
+
+Note `サポート` and `サポート・ロケーション` map to codes the contract's enum does not
+accept. That is deliberate: no card has ever used them, so a card that did would be a
+genuinely new type and should fail `build` loudly rather than validate silently."""
 
 COLOR: dict[str, str] = {
     "白": "white",

@@ -33,11 +33,21 @@ DEFAULT_LOCALE: Locale = "tc"
 
 # --- Card type ---------------------------------------------------------------
 #
-# 13 distinct values across 2,448 cards. v1's `types/card.ts` listed only 12 — it was
-# missing "unknown", which the scraper writes when it cannot classify a card. Two
-# cards carry it today (both hBP07-091, a "Live Staff" card). It is a legitimate,
-# documented member: the scraper degrading gracefully is better than it crashing, and
-# modelling it means `holo-data build` does not fail on cards we already ship.
+# 13 distinct values across 2,448 cards, plus `supportStaff` (see below). v1's
+# `types/card.ts` listed only 12 — it was missing "unknown", which the scraper writes
+# when it cannot classify a card. It stays a legitimate, documented member: the scraper
+# degrading gracefully beats it crashing, and modelling it means `holo-data build` does
+# not fail on cards we already ship.
+#
+# `supportStaff` was added in Phase 1. The two cards that carry "unknown" in v1's live
+# data (both hBP07-091, ライブスタッフ / "Live Staff") are `サポート・スタッフ` — a real
+# card type that was simply missing from the pipeline's mapping table, so it fell through
+# to the placeholder. See docs/findings.md F-001.
+#
+# `support` and `supportLocation` are deliberately NOT members: the pipeline can emit
+# them but no card has ever used them, so admitting them would mean shipping enum values
+# with no evidence behind them. If a Location card ever appears, `build` fails loudly —
+# which is the intended behaviour for a genuinely new card type.
 
 CardTypeCode = Literal[
     "buzzCharacter",
@@ -50,6 +60,7 @@ CardTypeCode = Literal[
     "supportItem",
     "supportItemLimited",
     "supportMascot",
+    "supportStaff",
     "supportStaffLimited",
     "supportTool",
     "unknown",
@@ -81,6 +92,7 @@ MAIN_CARD_TYPES: tuple[CardTypeCode, ...] = (
     "supportItem",
     "supportItemLimited",
     "supportMascot",
+    "supportStaff",
     "supportStaffLimited",
     "supportTool",
 )

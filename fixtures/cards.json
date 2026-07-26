@@ -9465,7 +9465,7 @@
     {
       "id": "1877",
       "card_number": "hBP07-091",
-      "card_type_code": "unknown",
+      "card_type_code": "supportStaff",
       "rarity_code": "C",
       "image_key": "hBP07/hBP07-091_C",
       "source_image_url": "https://hololive-official-cardgame.com/wp-content/images/cardlist/hBP07/hBP07-091_C.png",
@@ -9514,7 +9514,7 @@
     {
       "id": "2003",
       "card_number": "hBP07-091",
-      "card_type_code": "unknown",
+      "card_type_code": "supportStaff",
       "rarity_code": "S",
       "image_key": "hBP07/hBP07-091_S",
       "source_image_url": "https://hololive-official-cardgame.com/wp-content/images/cardlist/hBP07/hBP07-091_S.png",

@@ -26,6 +26,7 @@ export type CardTypeCode =
   | "supportItem"
   | "supportItemLimited"
   | "supportMascot"
+  | "supportStaff"
   | "supportStaffLimited"
   | "supportTool"
   | "unknown";

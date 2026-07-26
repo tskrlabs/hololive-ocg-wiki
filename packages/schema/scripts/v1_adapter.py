@@ -76,6 +76,16 @@ def image_key_from_path(image_path: str, source_url: str | None = None) -> str:
     return stem
 
 
+# v1 published these cards as `unknown` because its pipeline had no mapping for
+# `サポート・スタッフ`. The type is real; the mapping entry was simply missing. Correcting
+# it here keeps the fixtures — which are selected from v1's data — consistent with what
+# the pipeline now produces. See docs/findings.md F-001.
+_CARD_TYPE_CORRECTIONS: dict[str, str] = {
+    "1877": "supportStaff",  # hBP07-091 ライブスタッフ
+    "2003": "supportStaff",  # hBP07-091 ライブスタッフ, different rarity
+}
+
+
 def adapt_card(raw: dict[str, Any]) -> dict[str, Any]:
     """Convert one v1 card dict into v2 `Card` keyword arguments."""
     out: dict[str, Any] = {}
@@ -101,6 +111,10 @@ def adapt_card(raw: dict[str, Any]) -> dict[str, Any]:
         }
         translations[locale] = converted
     out["translations"] = translations
+
+    corrected = _CARD_TYPE_CORRECTIONS.get(out.get("id", ""))
+    if corrected:
+        out["card_type_code"] = corrected
 
     return out
 

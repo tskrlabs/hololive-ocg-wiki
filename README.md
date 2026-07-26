@@ -7,8 +7,9 @@ A fan-made wiki for the Hololive Official Card Game — card database, search, a
 > on new infrastructure. The v1 site remains live at
 > `hololive-ocg-wiki.lichingchester.dev` throughout — nothing here affects it until cutover.
 >
-> **Start here → [`docs/v2-plan.md`](docs/v2-plan.md)** — the full design, every decision
-> and its reasoning, verified facts, and the phase plan.
+> **Start here → [`docs/progress.md`](docs/progress.md)** — where the rebuild is now and
+> what to pick up next. Then [`docs/v2-plan.md`](docs/v2-plan.md) for the full design,
+> every decision and its reasoning.
 
 ## Status
 

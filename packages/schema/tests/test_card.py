@@ -177,8 +177,15 @@ class TestFixtures:
         assert len(collection.cards) > 25
 
     def test_fixtures_cover_every_card_type(self, collection: CardCollection):
+        """Every card type that any real card uses must appear in the fixtures.
+
+        `unknown` is excluded: it is the scraper's placeholder for a type it cannot
+        classify, and since F-001 fixed the missing `サポート・スタッフ` mapping, no card
+        carries it. It stays in the enum as a safety valve for the next unrecognised
+        type, but there is no card to make a fixture from.
+        """
         present = {card.card_type_code for card in collection.cards}
-        assert present == set(CARD_TYPE_VALUES)
+        assert present == set(CARD_TYPE_VALUES) - {"unknown"}
 
     def test_fixtures_cover_every_rarity(self, collection: CardCollection):
         present = {card.rarity_code for card in collection.cards}
