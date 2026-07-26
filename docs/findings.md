@@ -18,11 +18,12 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-003](#f-003) | 🔍 open | data | 2 cards have arts translated into a `value` field instead of `effect` |
 | [F-004](#f-004) | 🔍 open | data | 2 cards have base arts but no `en` translated arts |
 | [F-005](#f-005) | 🔍 open | data | `hBP02-065`'s image filename does not match its card number |
-| [F-006](#f-006) | 🔍 open | data | `hCO01` reprints reuse the original set's image filename |
+| [F-006](#f-006) | ✅ fixed | data | `hCO01` reprints reuse the original set's image filename |
 | [F-007](#f-007) | 🔍 open | data | Two encodings for dual-colour cards |
 | [F-008](#f-008) | 🔍 open | pipeline | `サポート` and `サポート・ロケーション` map to codes the contract rejects |
 | [F-009](#f-009) | 🔍 open | data | ~127 oshi skills have no `timing` text in any locale |
 | [F-010](#f-010) | 🔍 open | data | `batonTouchTypes` is always `["null"]` |
+| [F-011](#f-011) | ✅ closed | data | v1's `card_images/en/` — 1,112 dead files from an abandoned EN scrape |
 
 ---
 
@@ -127,25 +128,45 @@ nothing to do; if the card number is misparsed, the extractor needs a look.
 
 ---
 
-## F-006 — reprints reuse the original set's image filename 🔍
+## F-006 — reprints reuse the original set's image filename ✅ fixed
 
-**Found:** Phase 0 · **Affects:** 2 pairs (4 cards)
+**Found:** Phase 0 · **Resolved:** Phase 2 grilling — the two prints are **different
+artwork** · **Affects:** 2 pairs (4 cards)
 
 `hBP03-044_SR.png` and `hBP03-055_SR.png` are each served under **two** set folders,
 `/cardlist/hBP03/` and `/cardlist/hCO01/`, as genuinely different cards (ids 726/2138 and
 735/2139).
 
-v1 stored a flat `card_images/default/{filename}` path, so within each pair the two cards
-had the same `image_path` and one silently overwrote the other on disk. Under D9 they
-would have collided as R2 objects.
+**Verified against the official site.** All four URLs were fetched and hashed:
 
-**Handled, not fixed:** the image key is now `{set}/{filename}`, so the pairs get distinct
-keys, and `CardCollection` rejects duplicate keys outright — the collision cannot reach
-R2 undetected.
+| card number | ids | `/hBP03/` | `/hCO01/` | |
+|---|---|---:|---:|---|
+| hBP03-044 (星街すいせい) | 726 / 2138 | 551,400 B | 623,513 B | different |
+| hBP03-055 (常闇トワ)   | 735 / 2139 | 411,502 B | 501,764 B | different |
 
-**Needs a decision:** whether the two images are actually *identical artwork* (a pure
-reprint, where storing one copy twice is just wasted space) or genuinely different prints.
-Cheap to check once the images are in R2 — compare the two files.
+Not merely different encodings of one illustration — **different illustrations**. The
+hBP03 print of hBP03-044 is credited `Illust: A.I.__D`, the hCO01 print `Illust: Miho
+Ikuzo`; the art is unmistakably distinct (stage backdrop vs. abstract colour burst). Card
+text, HP, skills, and bloom level are identical between the two — only the set and the
+illustration differ.
+
+So this is not a scraping artefact and not duplicated storage. These are two genuinely
+distinct cards that share a card number *and* a filename, separable only by the set folder
+in the source URL.
+
+**What v1 shipped:** `download_image()` skips any filename already on disk, so within each
+pair only the **first-scraped** image was ever downloaded, and both cards' `image_path`
+pointed at it. v1 has been serving one card's artwork for both members of each pair for as
+long as the hCO01 set has existed.
+
+**Fixed:** the image key is `{set}/{filename}` (`transform.image_key_from_url`), so the
+pairs get distinct keys; `CardCollection` rejects duplicate keys outright. Phase 2 also
+makes the *local* image tree set-scoped (`images/png/{set}/…`), which is what stops the
+on-disk overwrite — the key alone does not, since two keys pointing at one file would
+still upload the same bytes twice.
+
+**No decision outstanding.** Recorded as a worked example: a "duplicate" in this dataset
+is not safe to deduplicate on filename.
 
 ---
 
@@ -220,3 +241,24 @@ first coloured one.
 **Probably nothing.** Recorded so that if a coloured baton touch ever appears and
 something downstream assumed colourless, the assumption is on record. Worth a glance at
 whether the game rules even allow it.
+
+---
+
+## F-011 — v1's `card_images/en/` is dead ✅ closed
+
+**Found:** Phase 2 grilling · **Resolved:** same session — confirmed dead by the maintainer
+
+v1's repo carries `public/card_images/en/` — **1,112 files** named `EN_hBP02-004_OSR.png`
+and similar, produced by an English-language scrape (`data/en/` exists in the v1 pipeline
+alongside `data/default/`).
+
+Nothing references them. No card in `cards.json` has an `imagePath` outside
+`card_images/default/` (all 2,448 point at `default`), and no component, composable, or
+script in the v1 repo mentions the `en/` directory.
+
+**Confirmed dead — will not be carried to v2.** They are not migrated by
+`holo-data migrate-images` and never reach R2. English card art is out of scope; the
+site's English support is translation of the JP cards, not EN-printed card images.
+
+Recorded so the directory's absence in v2 reads as a decision rather than an oversight —
+and so a future "where did the EN images go?" has an answer.
