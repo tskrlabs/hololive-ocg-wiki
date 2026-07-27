@@ -19,7 +19,12 @@ node_modules/
 # from `npm install` without running Python. Scoped to apps/ rather than a bare `dist/`
 # with a negation, because git does not descend into an excluded directory to un-exclude
 # a subpath.
-apps/*/dist/
+#
+# No trailing slash: `nuxt generate` creates `apps/web/dist` as a *symlink* to
+# `.output/public`, and `apps/*/dist/` matches only directories — so the symlink itself
+# was staged, absolute path and all. v1 committed exactly this symlink (v2-plan §6 lists
+# it as a thing not to carry over).
+apps/*/dist
 
 # Cloudflare (Phase 2+)
 .wrangler/

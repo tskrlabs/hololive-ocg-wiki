@@ -27,7 +27,10 @@ cleanup() {
 trap cleanup EXIT
 
 echo "→ applying schema and fixtures to the local D1"
-rm -rf .wrangler/state/v3/d1
+# Both stores are wiped, not just D1. The artifact checks below assert that a
+# never-published bucket 404s, and local R2 persists across runs — so without this the
+# first run would pass and every later one would find last run's objects still there.
+rm -rf .wrangler/state/v3/d1 .wrangler/state/v3/r2
 npx wrangler d1 execute "$DB" --local --file=../../packages/schema/sql/schema.sql >/dev/null
 npx wrangler d1 execute "$DB" --local --file=../../fixtures/fixtures.sql >/dev/null
 
@@ -150,16 +153,61 @@ check "unpublished locale"         404 "/api/filter-options?locale=th"
 check "unknown locale falls back"  404 "/api/filter-options?locale=zz"
 
 echo ""
+echo "artifacts"
+# Checked before publishing, so the missing-artifact branch is exercised rather than
+# assumed. A fresh bucket is the realistic state: `publish` and `seed` are maintainer
+# steps that a contributor's clone has never run.
+check "info before publish"        404 "/api/info"
+check "status before publish"      404 "/api/status"
+
+# `content/info.json` is the real committed artifact, not a stand-in — the same bytes
+# `holo-data publish` uploads. `status.json` has no committed copy (it is written by
+# `seed` against a live database), so it is faked here, shaped exactly as `build_status`
+# emits it.
+npx wrangler r2 object put "hololive-ocg-wiki-artifacts/info.json" \
+  --local --file=../../content/info.json >/dev/null
+STATUS_FILE="$(mktemp -t holo-status).json"
+printf '{"generated_at":"2026-07-27T06:17:56Z","built_at":"2026-07-26T23:33:21Z","mode":"diff","counts":{"total":34,"new":0,"changed":34,"qa_updated":0,"unchanged":0,"removed":0,"missing_from_build":0},"new":[],"changed":[{"id":"1","card_number":"hSD01-001","image_key":"hSD01/hSD01-001_OSR","name":"ときのそら"}],"qa_updated":[],"removed":[]}' >"$STATUS_FILE"
+npx wrangler r2 object put "hololive-ocg-wiki-artifacts/status.json" \
+  --local --file="$STATUS_FILE" >/dev/null
+rm -f "$STATUS_FILE"
+
+check "info served from R2"        200 "/api/info" "'disclaimer' in d and 'contents' in d"
+# The one fact the info dialog needs and info.json deliberately does not carry: v1 hard-
+# coded "2448 cards (June 19, 2026)" into its prose, so it was permanently out of date.
+check "info carries no card count" 200 "/api/info" \
+  "not any('cards' in str(c) and any(ch.isdigit() for ch in str(c)) for c in d['contents'])"
+check "status served from R2"      200 "/api/status" \
+  "d['counts']['total'] == 34 and 'generated_at' in d"
+check "status carries the diff"    200 "/api/status" \
+  "d['changed'][0]['image_key'] == 'hSD01/hSD01-001_OSR'"
+
+echo ""
 echo "caching"
-for path in /api/cards/1 "/api/cards/filter?limit=1" "/api/cards/search?q=IRyS"; do
+# These headers are the only thing standing between the site and its two metered
+# resources — D1 reads breached the free tier once already (F-014) and Workers requests
+# stop serving at 100k/day. v1's `checkRateLimit()` unconditionally returned true.
+#
+# Each path is paired with its expected max-age rather than sharing one constant: the
+# artifacts deliberately differ from card data. `info.json` is one hour because its whole
+# purpose is editing without a redeploy, and `filter-options` is a day because a reseed
+# is the only thing that changes it.
+while read -r path expected; do
   header="$(curl -sSD- -o /dev/null "${BASE}${path}" | tr -d '\r' | awk 'tolower($1) == "cache-control:" {print $2, $3}')"
-  if [[ "$header" == "public, max-age=3600" ]]; then
+  if [[ "$header" == "public, max-age=${expected}" ]]; then
     printf '  ✓ %-52s %s\n' "$path" "$header"
   else
-    printf '  ✗ %-52s got %s\n' "$path" "${header:-none}"
+    printf '  ✗ %-52s expected max-age=%s, got %s\n' "$path" "$expected" "${header:-none}"
     FAILURES=$((FAILURES + 1))
   fi
-done
+done <<'PATHS'
+/api/cards/1 3600
+/api/cards/filter?limit=1 3600
+/api/cards/search?q=IRyS 3600
+/api/status 3600
+/api/info 3600
+/api/filter-options?locale=en 86400
+PATHS
 
 echo ""
 if [[ "$FAILURES" -gt 0 ]]; then

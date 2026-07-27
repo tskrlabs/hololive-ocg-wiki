@@ -18,10 +18,25 @@ This file is that record. **Update it when you change a resource.**
 | R2 bucket | `hololive-ocg-wiki-images` | yes — `img.hololive-ocg-wiki.tskrlabs.com` | 2 |
 | R2 bucket | `hololive-ocg-wiki-artifacts` | **no** | 2 |
 | D1 database | `hololive-ocg-wiki-db` — `75238170-4525-4a06-bfd3-5a32c4daef57` | **no** | 3 |
-| Worker | *not yet* | — | 4 |
+| Worker | `hololive-ocg-wiki-tskrlabs-com` — deployed 2026-07-27, version `c44d51a1` | yes — `hololive-ocg-wiki.tskrlabs.com` | 4–5 |
 
 Zone `tskrlabs.com` is on Cloudflare nameservers (verified during the v2 design session),
 which is the prerequisite for an R2 custom domain.
+
+### Why the Worker is not called `hololive-ocg-wiki`
+
+A **Pages** project of that name already exists in this account: it is v1, and v2-plan.md
+§1 requires it stay live and untouched until cutover. Workers and Pages do not share a
+namespace, so a Worker of the same name would not have collided — `wrangler deploy` only
+touches Workers. The rename is about not having two same-named things in one dashboard
+during exactly the window where confusing them is most expensive.
+
+It also settles the name before Phase 6. Workers Builds requires the dashboard Worker name
+to match `name` in `wrangler.jsonc`, so renaming after the git integration exists would
+mean disconnecting and reconnecting it.
+
+The D1 database and both R2 buckets keep their `hololive-ocg-wiki-*` names — they are
+different resource types and v1 has nothing of those names.
 
 ## One-time setup
 
@@ -240,6 +255,20 @@ npx wrangler d1 insights hololive-ocg-wiki-db   # per-query stats (experimental)
 For the daily totals against the quota, the dashboard's D1 → Metrics → Row Metrics view
 is authoritative. `holo-data seed` reads the same numbers over the GraphQL analytics API
 (`d1AnalyticsAdaptiveGroups`) to decide whether a run fits in the remaining budget.
+
+### ⚠️ Zone settings can rewrite what the Worker serves
+
+Cloudflare's **managed `robots.txt`** (Security → Bots → Configure Bot Fight Mode →
+*"Instruct bot traffic with robots.txt"*) prepends its own block to whatever the origin
+returns for `/robots.txt`. On this zone that put `User-agent: * / Allow: /` **above** our
+`Disallow: /`, inverting the pre-launch indexing guard — see
+[F-017](./findings.md#f-017). **Left on, by decision** — `noindex` carries the guard
+alone until Phase 7, when our own rule flips to `Allow` and the two agree.
+
+The general lesson is worth more than the specific fix: a zone-level feature can change a
+Worker's apparent response, and nothing in `wrangler.jsonc` or `make preview` would show
+it. `curl` the custom domain as well as the `workers.dev` URL after any domain change; the
+two returning different bytes for the same path is the signal.
 
 ### ⚠️ Never enable Workers "Smart Caching"
 

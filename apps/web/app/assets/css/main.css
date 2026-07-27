@@ -1,0 +1,46 @@
+/* transition */
+
+/* copied */
+.copied-enter-active,
+.copied-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease-out;
+}
+
+.copied-enter-from,
+.copied-leave-to {
+  transition: opacity 0.2s ease, transform 0.2s ease-in;
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+/* fade-up */
+.fade-up-enter-active,
+.fade-up-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease-out;
+}
+
+.fade-up-enter-from,
+.fade-up-leave-to {
+  transition: opacity 0.2s ease, transform 0.2s ease-in;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* list */
+.list-move, /* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+  position: absolute;
+}

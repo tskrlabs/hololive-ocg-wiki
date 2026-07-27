@@ -5,12 +5,14 @@
  * chain, hand-rolled CORS across three helpers, and a `checkRateLimit()` that
  * unconditionally returned `true`.
  *
- * **Seven endpoints, not eight.** `/api/static-filters` is gone — see `routes/filters.ts`.
+ * **Nine endpoints.** v1 had eight. `/api/static-filters` is gone — see
+ * `routes/filters.ts` — and Phase 5 added `/api/info` and `/api/status`, which serve two
+ * R2 artifacts that had been uploaded since Phases 2 and 3 with no reader at all
+ * (`routes/artifacts.ts`).
  *
- * **No static assets yet.** D2's "one Worker serves site and API" needs `apps/web`,
- * which arrives in Phase 5; the `assets` binding and SPA fallback land with it. Until
- * then this is an API-only Worker on `workers.dev`, and anything outside `/api/` is a
- * 404 rather than a half-configured SPA fallback.
+ * **Static assets arrive with Phase 5's `assets` binding.** D2's "one Worker serves site
+ * and API" needs `apps/web`; once it is bound, anything outside `/api/` falls through to
+ * the SPA rather than 404-ing here.
  */
 
 import { Hono } from "hono";
@@ -21,6 +23,7 @@ import { ZodError } from "zod";
 import type { Env } from "./types.ts";
 import { cards, cardsList } from "./routes/cards.ts";
 import { filters } from "./routes/filters.ts";
+import { artifacts } from "./routes/artifacts.ts";
 import { failure } from "./lib/respond.ts";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -49,6 +52,7 @@ app.use("/api/*", (c, next) =>
 app.route("/api/cards", cards);
 app.route("/api/cards-list", cardsList);
 app.route("/api", filters);
+app.route("/api", artifacts);
 
 /** Liveness, and a cheap way to confirm the bindings resolved after a deploy. */
 app.get("/api/health", (c) => c.json({ ok: true }));

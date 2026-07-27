@@ -7,6 +7,10 @@
  * these files beside `cards.json`, so they cannot describe a different card set than
  * the one that shipped.
  *
+ * The two artifacts that are *not* here are `info.json` and `status.json` — they have
+ * their own routes in `artifacts.ts`, added in Phase 5. This file stays specific to the
+ * per-locale dropdown values.
+ *
  * v1's second options endpoint, `/api/static-filters`, is **gone**. It returned card
  * types, rarities, colours and bloom levels — enum values the contract already owns and
  * `@holo/schema/enums` already generates. v1's own frontend never called it; it read a

@@ -1,15 +1,20 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0–4 done, with one step outstanding. Images are live at
-`img.hololive-ocg-wiki.tskrlabs.com`, `publish` is idempotent, D1 is populated and
-reseeded into the Phase 4 shape (2,448 cards), and the **Worker is built and green** —
-seven endpoints, `make check` covers them end-to-end against local D1.
+**Where we are:** Phases 0–5 done. The site is **live** at
+`hololive-ocg-wiki.tskrlabs.com` — one Worker serving nine API endpoints and the static
+site from one origin (D2), against 2,448 cards in D1 and images on R2.
 
-⚠️ **The Worker is not deployed.** `wrangler deploy` needs a token with *Workers Scripts
-Edit*; the seeder's token is scoped to D1 + Analytics only, which is correct. See
-[Phase 4 execution](#phase-4-execution) for the one command to run.
+Deployed 2026-07-27; every number Phases 3 and 4 measured came back exactly against the
+real card set. **Phase 6 (Workers Builds + docs) is next.**
 
-**Phase 5 (Website) is next.**
+ℹ️ **`noindex` is the sole indexing guard until Phase 7**, by decision. Cloudflare's
+zone-level managed `robots.txt` prepends `Allow: /` above ours; the maintainer accepted
+that rather than change a zone setting mid-phase. It resolves itself at Phase 7 when our
+rule flips to `Allow` too. See [F-017](./findings.md#f-017).
+
+**Phase 5's design is recorded.** Sixteen decisions, in
+[ADR 0006](adr/0006-website.md) with the full interview in
+[`phase-5-grilling.md`](./phase-5-grilling.md).
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -25,9 +30,9 @@ copy and is authoritative if they disagree.
 | 1 | Pipeline migration | ✅ done | [ADR 0002](adr/0002-field-level-translation-cache.md) · `6be38ff` |
 | 2 | CF resources + R2 publish | ✅ done | [ADR 0003](adr/0003-r2-publish.md) · live |
 | 3 | D1 redesign + seeder | ✅ done | [ADR 0004](adr/0004-d1-schema-and-seeder.md) · live |
-| 4 | Worker rewrite (Hono + Zod) | ✅ done — deploy pending | [ADR 0005](adr/0005-worker-api.md) |
-| 5 | Website (new API/R2, 4 refactors) | 🔜 **next** | |
-| 6 | Workers Builds + fixtures + docs | ⬜ | |
+| 4 | Worker rewrite (Hono + Zod) | ✅ done — deploys with Phase 5 | [ADR 0005](adr/0005-worker-api.md) |
+| 5 | Website (new API/R2, 4 refactors) | ✅ done | [ADR 0006](adr/0006-website.md) · live |
+| 6 | Workers Builds + fixtures + docs | 🔜 **next** | |
 | 7 | Launch | ⬜ | |
 
 ## Working agreement
@@ -151,6 +156,12 @@ Recorded in the ADRs; listed here so they are not missed.
 | **D8** | `/api/static-filters` is **deleted**, not moved to R2. It returned enum values the contract already owns, and v1's frontend never called it — it read a hand-maintained constants file that had drifted |
 | **Phase 4 done-when** | "All 8 endpoints; SPA + API from one Worker" → **7 endpoints, API only**. `apps/web` does not exist until Phase 5, so there are no assets to bind; the `assets` block, SPA fallback and apex domain move there |
 | **Phase 3 schema** | `schema.sql` is `CREATE TABLE IF NOT EXISTS`, so it **cannot evolve a populated database** — re-applying it silently skips a new column, then fails on the index using it. `packages/schema/sql/migrations/` added |
+| **Phase 4** | Seven endpoints → **nine**. `/api/info` and `/api/status` were never built, so `info.json` (uploaded since Phase 2) and `status.json` (since Phase 3) sat in a private bucket **with no reader at all** ([ADR 0006](adr/0006-website.md)) |
+| **D11** | `content/README.md` claimed the card count comes from `cards.json` "which the site already loads" — **the site never loads it** (21 MB; D8 moved querying to D1). It comes from `/api/status`, which already carries `counts.total` and `generated_at` |
+| **D11** | The edit-without-redeploy premise is **weaker than when written**: `info.json` has been *committed* since Phase 2, so editing it is already edit → commit → publish, and Workers Builds will auto-deploy that commit anyway. R2 retained for consistency with `status.json`, which has no committed copy |
+| **D13** | "four refactors + dead-code purge" is joined by a **framework upgrade**, Nuxt 3.17 → 4.5. Still no new features, no redesign, no rendering-mode change |
+| **Phase 5 status page** | v2's `status.json` dropped `skipped[]` and `source.valid` and is snake_case throughout, so `/status` **cannot be ported unchanged**. Ported adapted; the Skipped tab has no data source in v2 and is dropped |
+| **v2-plan §7** | The SEO decision stays deferred — which means Phase 5 must **actively block indexing** to keep it deferrable |
 
 ## Phase 2 — R2 publish
 
@@ -390,40 +401,215 @@ filter instead of the storage.
 | `publish` | 8 artifacts — `cards.json` + 7 `filter-options/` files; a second run uploads nothing |
 | `make check` | green — 167 Python, 11 TS parity, 25 Worker unit, 34 endpoint checks |
 
-**⚠️ One step left: deploy.** The Worker is built, tested and committed but **not
-deployed** — `wrangler deploy` needs a token with **Workers Scripts Edit**, and the
-seeder's token is scoped to D1 Edit + Analytics Read only. That scoping is correct and
-worth keeping; it just means the deploy is a maintainer step:
+**The deploy moved to Phase 5**, by decision — one deploy shipping the Worker and the
+site together, rather than an API-only interim. It still needs a token with **Workers
+Scripts Edit**; the seeder's token is scoped to D1 Edit + Analytics Read only, which is
+correct and worth keeping. Commands are in [Phase 5](#phase-5--the-website).
+
+## Phase 5 — the website
+
+Full reasoning in [ADR 0006](adr/0006-website.md); the complete interview, including
+every option rejected, in [`phase-5-grilling.md`](./phase-5-grilling.md).
+
+**The grilling found three holes, all of them gaps *between* phases rather than bugs
+inside one:**
+
+1. **`info.json` and `status.json` had no reader.** Uploaded to the private artifacts
+   bucket since Phases 2 and 3; no Worker route served either. The site would have had no
+   way to render its about dialog or its status page. → `/api/info`, `/api/status`.
+2. **`content/README.md` documents a mechanism that does not exist** — it says the card
+   count comes from `cards.json` "which the site already loads". The site never loads it.
+3. **`status.json` changed shape**, so `/status` cannot be ported unchanged, and its
+   Skipped tab has no data source in v2 at all.
+
+### The commit sequence
+
+| # | commit | state |
+|---|---|---|
+| 1 | `/api/info` + `/api/status` | ✅ done |
+| 2 | scaffold `apps/web` on Nuxt 4 (`app/` srcDir, `nuxt generate`, `make dev`) | ✅ done |
+| 3 | port the **live** code only — green on fixtures | ✅ done |
+| 4 | Candidate 01 — one `useCardQuery` interface | ✅ done |
+| 5 | Candidate 02 — deep Filter module | ✅ done in 3 — see below |
+| 6 | Candidate 03 — Deck as sections, **wire format frozen** | ✅ done |
+| 7 | Candidate 04 — `useDeckCards` | ✅ done |
+| 8 | `assets` binding + SPA fallback + `run_worker_first` | ✅ built, rehearsed |
+| — | **deploy to workers.dev** | ✅ done — verified against 2,448 cards |
+| — | **attach the custom domain** | ✅ done — live at `hololive-ocg-wiki.tskrlabs.com` |
+| — | Cloudflare's managed `robots.txt` conflict | 🔍 accepted, deferred to Phase 7 — [F-017](./findings.md#f-017) |
+
+**Candidate 02 arrived early, by necessity.** The empty-filter literal was written out
+five times in v1, each a hand-maintained list of every colour, card type, rarity and bloom
+level — and the typecheck rejected all five against the contract's enums (missing `HR`,
+`supportStaff`, `unknown`). Correcting five copies by hand to match a generated enum would
+have been the bug the refactor exists to prevent, so `createEmpty()` landed in commit 3
+instead. `useDeckCards` was written there for the same reason and wired up in commit 7.
+
+**All four candidates are done.** What they removed, measured:
+
+| | before | after |
+|---|---|---|
+| `useCardStoreAPI` → `useCardQuery` + `cardSource` | 581 | 240 + 155 (seam, no Vue) |
+| `filter-states.ts` | 413 | 158, and ~25 members → 9 |
+| `decks-states.ts` | 488 | 254 + 158 `deckSections` + 103 `deckCode` |
+| `DeckDetailCompactModeCardList.vue` | 219 | 120 |
+| `DeckDetailCardList.vue` | 122 | 55 |
+| `FloatingDeckCardList.vue` | 137 | 108 |
+
+### Working on the site
 
 ```bash
-cd apps/api
-npx wrangler login          # or export a token with Workers Scripts Edit
-npx wrangler deploy
+make dev       # site on :3000 + Worker on :8787, HMR, fixtures, no credentials
+make preview   # rehearsal: nuxt generate, then the Worker serves site + API on one port
+make check-web # the site's unit tests
 ```
 
-Then verify against production — these are the numbers Phase 3 measured, so they double
-as a check that the reseed landed:
+`make dev` proxies `/api` to the Worker, which is Nuxt's behaviour. `make preview` is the
+only thing that exercises the **real** SPA fallback and same-origin requests — run it
+before deploying, since the first deploy is otherwise unrehearsed.
+
+**Indexing and analytics are off** unless `NUXT_PUBLIC_LAUNCHED=true`. Verified in both
+directions: unset gives `Disallow: /`, `noindex, nofollow` and no sitemap; set gives an
+indexable `robots.txt`, `sitemap_index.xml` and `index, follow`.
+
+### Three API changes the frontend must adapt to
+
+Verified against v1's live code, not assumed:
+
+- **`total` is absent** when `skip_count=true`, rather than `-1`. `useCardStoreAPI.ts:657`
+  comments *"response.total is -1 when skip_count=true"*. Read it as `total ?? cachedTotal`.
+- **Over-cap batch requests 400** instead of silently returning the first 50.
+  `useCardStoreAPI.ts:448` joins ids with no chunking. Chunk to 50 client-side.
+- **Colour filters include fused cards**, so the separate `blue_red` / `white_green`
+  checkboxes go — those cards now appear under both constituent colours (F-016).
+
+Also: `constants/card-data.ts` → `@holo/schema/enums`, and `normalizeCard`
+(`useCardStoreAPI.ts:88`) is a no-op spread over a commented-out body — delete outright.
+
+### Two switches that must flip at Phase 7
+
+The pre-launch site is deliberately invisible: **`noindex`** (v2-plan §7 defers the SEO
+decision, and an indexed v2 would pre-empt it) and **analytics off** (pre-launch traffic
+would pollute the container holding v1's real year of data). If these are missed at
+launch, the new site stays invisible.
+
+### The deploy — maintainer steps
+
+**Everything is built and rehearsed.** `wrangler.jsonc` has the `assets` binding, the SPA
+fallback and `run_worker_first`; `make preview` runs the exact production composition
+locally and is green. What is left needs a token only the maintainer has.
+
+Split in two deliberately (Q16): everything so far is verified against **34 fixture
+cards**, and Phase 3's lesson was that the expensive bug appears only against a real
+database.
+
+#### 1. Build the site and deploy
 
 ```bash
-API=https://hololive-ocg-wiki.<your-subdomain>.workers.dev
+make check                       # green before anything is uploaded
+npm run generate --workspace @holo/web    # ⚠️ required — wrangler uploads this directory
+cd apps/api
+npx wrangler login               # needs Workers Scripts Edit; the seeder token is
+                                 # scoped to D1 Edit + Analytics Read and will not do
+npx wrangler deploy              # Worker + assets → workers.dev
+```
+
+`nuxt generate` is not optional: `assets.directory` points at `apps/web/.output/public`,
+which is gitignored, so a fresh clone has nothing there and would deploy an empty site.
+
+#### 2. Verify against the real 2,448 cards, before the domain
+
+These are the numbers Phases 3 and 4 measured, so they double as a check that the reseed
+landed:
+
+```bash
+API=https://hololive-ocg-wiki-tskrlabs-com.<your-subdomain>.workers.dev
 curl -s "$API/api/health"
 curl -s "$API/api/cards/search?q=フブキ"    | jq '.cards | length'   # expect 73
 curl -s "$API/api/cards/search?q=そら"      | jq '.cards | length'   # 2 chars → LIKE path
 curl -s "$API/api/cards/search?q=a%20AND"   | jq                     # 200, not 500
 curl -s "$API/api/cards/filter?name=白上フブキ&locale=en" | jq '.total'  # expect 44
 curl -s "$API/api/filter-options?locale=en" | jq '.names | length'   # expect 296
+curl -s "$API/api/status" | jq '.counts.total'                       # expect 2448
+curl -s "$API/api/info"   | jq '.contents | length'                  # expect 3
 ```
 
-### What Phase 5 needs to know
+And the site itself:
 
-Three API changes are deliberate and need a frontend adjustment:
+```bash
+curl -sL  "$API/tc/" -o /dev/null -w '%{http_code}\n'          # 200
+curl -sL  "$API/tc/" | grep -c noindex                          # 1 — still invisible
+curl -s   "$API/robots.txt"                                     # Disallow: /
+curl -s   "$API/tc/deck/ANYTHING" -o /dev/null -w '%{http_code}\n'  # 200, SPA fallback
+```
 
-- **`total` is absent** when `skip_count=true`, rather than `-1`. Read it as
-  `total ?? cachedTotal`.
-- **Over-cap batch requests 400** instead of silently returning the first 50. Chunk
-  client-side.
-- **Colour filters include fused cards**, so the separate `blue_red` / `white_green`
-  checkboxes should go — those cards now appear under both constituent colours.
+Then walk it in a browser — filter, search, open a card, build a deck, share a deck code,
+switch locale. This is the first time any of it meets 2,448 cards rather than 34.
 
-Also: `constants/card-data.ts` is replaced by `@holo/schema/enums`, and `normalizeCard`
-in `useCardStoreAPI.ts` is a no-op spread that can be deleted outright.
+#### ✅ Steps 1 and 2 are done — executed 2026-07-27
+
+Deployed to `hololive-ocg-wiki-tskrlabs-com.liching-chester.workers.dev`, version
+`c44d51a1`. 75 asset files uploaded (9 unchanged), 632.50 KiB, 13 ms startup.
+
+| check | expected | actual |
+|---|---|---|
+| `フブキ` search | 73 | **73** |
+| `そら` (2 chars → LIKE path) | works | 56 |
+| `a AND` (FTS5 syntax error) | 200 | **200** |
+| `name=白上フブキ&locale=en` | 44 | **44** |
+| `filter-options.names` | 296 | **296** |
+| `status.counts.total` | 2,448 | **2,448** |
+| `info.contents` | 3 | **3** |
+| 51-id batch | 400 | **400** |
+| 50-id batch | 50 cards | **50** |
+| `colors=blue` | includes fused | 329 |
+| `/api/status` under `Sec-Fetch-Mode: navigate` | JSON | **application/json** |
+| `Cache-Control` on cards / filter-options | 3600 / 86400 | **3600 / 86400** |
+| `robots.txt` + `noindex` | present | **present** |
+| SPA fallback on an unknown deck code | 200 | **200** |
+
+Every page loads in a browser with **zero exceptions, zero console errors and zero failed
+requests**. The card grid renders real production art
+(`img.hololive-ocg-wiki.tskrlabs.com/hPR/hBD24-001_P.webp`), and `/tc/status` shows
+**已收錄 2,448** with the real seed timestamp.
+
+Two notes: `/api/info` and `/api/status` were built this phase and had **never been read
+before** — they work. And `run_worker_first` is confirmed doing its job: without it, every
+one of the `curl` checks above would have returned HTML.
+
+#### ✅ 3. The domain — attached 2026-07-27
+
+`hololive-ocg-wiki.tskrlabs.com` serves the site and the API from one origin, which is
+D2's whole point. Verified: `/tc/` 200, `/api/health` ok, SPA fallback on an unknown deck
+code, `noindex` meta present.
+
+**It turned up one thing local rehearsal could not** — a zone-level Cloudflare setting
+rewrites what the Worker appears to serve. See [F-017](./findings.md#f-017): the managed
+`robots.txt` prepends `User-agent: * / Allow: /` above our `Disallow: /`. Accepted and
+deferred; `noindex` carries the guard alone until Phase 7, when the conflict resolves
+itself.
+
+The site stays `noindex` until Phase 7 (Q10) — **the domain going live is not the
+launch.** `NUXT_PUBLIC_LAUNCHED=true` flips indexing and analytics together.
+
+#### About push-to-deploy
+
+`wrangler deploy` is a **direct upload**; it creates no GitHub connection and Cloudflare
+never learns this repo exists. Workers Builds is a separate, dashboard-only git
+integration, and Cloudflare supports connecting an *existing* Worker — so Phase 6 can add
+push-to-deploy on top of a Worker first deployed by hand, with no rework.
+
+Two things to know when Phase 6 arrives:
+
+- The dashboard Worker name must match `name` in `wrangler.jsonc` —
+  `hololive-ocg-wiki-tskrlabs-com`. Deliberately **not** `hololive-ocg-wiki`: a Pages
+  project of that name already exists (v1, which stays live until cutover). Workers and
+  Pages do not share a namespace so it would not have collided, but two same-named things
+  in one dashboard is avoidable confusion, and settling it now avoids a
+  disconnect/reconnect after the git integration exists.
+- Manual and build-triggered deploys both produce **versions**; whichever is promoted
+  last becomes active. After Phase 6, a manual `wrangler deploy` would override the last
+  pushed build until the next push.
+- **Which branch triggers it is a Phase 6 decision.** Work lands on `develop` per the
+  working agreement, so pointing Workers Builds at `main` makes merging to `main` the
+  release action — which matches how the branches are already used.

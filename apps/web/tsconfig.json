@@ -1,0 +1,12 @@
+{
+  // Nuxt generates the real config into .nuxt/ from nuxt.config.ts; this defers to it.
+  // `nuxt prepare` (the postinstall script) writes those files, so a fresh clone has
+  // them before anything typechecks.
+  //
+  // `nuxt typecheck` prints a loud `ERR_PACKAGE_PATH_NOT_EXPORTED` stack for
+  // `vue-router/volar/sfc-route-blocks` and then **exits 0 with no type errors**. It is
+  // vue-tsc probing for an optional plugin that vue-router 5 no longer exports; the
+  // feature it supports (`<route>` blocks in SFCs) is unused here, because Nuxt derives
+  // routing from the file system. Noise, not a failure — do not chase it.
+  "extends": "./.nuxt/tsconfig.json"
+}

@@ -30,6 +30,11 @@ export const SOURCE_LOCALE: Locale = "ja";
 export const DEFAULT_LOCALE: Locale = "tc";
 export const SCHEMA_VERSION = 1;
 
+/** Most ids or card numbers one batch request may carry. The Worker
+ *  400s above this; the site chunks to fit. A legal deck (1 + 50 + 20)
+ *  already exceeds it, so the two must agree. */
+export const MAX_BATCH = 50;
+
 // --- Deck sections (see architecture review Candidate 03) ---
 
 export const OSHI_CARD_TYPES: readonly CardTypeCode[] = ["oshiCharacter"] as const;

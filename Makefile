@@ -7,7 +7,7 @@
 # once per clone to have `make check` run automatically before each commit.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup hooks generate golden fixtures check check-schema check-py check-ts check-api typecheck clean
+.PHONY: help setup hooks generate golden fixtures check check-schema check-py check-ts check-api check-web typecheck dev dev-api dev-web preview clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -35,9 +35,31 @@ fixtures: ## Re-select the fixture card set (needs v1 data — see script docstr
 golden: ## Regenerate the localize() golden files from the Python reference
 	uv run python packages/schema/scripts/golden.py
 
-check: check-schema check-py check-ts check-api typecheck ## Run every verification
+check: check-schema check-py check-ts check-api check-web typecheck ## Run every verification
 	@echo ""
 	@echo "✓ all checks passed"
+
+dev: ## Run the site and the API together (two processes, Ctrl-C stops both)
+	@echo "→ API on :8787 (local D1 + fixtures), site on :3000"
+	@echo "  the site proxies /api to the Worker — see apps/web/nuxt.config.ts"
+	@trap 'kill 0' INT TERM; \
+	 $(MAKE) --no-print-directory dev-api & \
+	 $(MAKE) --no-print-directory dev-web & \
+	 wait
+
+dev-api: ## Just the Worker, on local D1 + R2 fixtures (no credentials)
+	@cd apps/api && npm run db:local >/dev/null && ./scripts/seed-local-r2.sh
+	@cd apps/api && npx wrangler dev --local --port 8787
+
+dev-web: ## Just the site, with HMR
+	@npm run dev --workspace @holo/web
+
+preview: ## Rehearse production: generate the site and serve it from the Worker on one port
+	@# The only thing that exercises the real SPA fallback and same-origin requests.
+	@# `make dev` proxies /api, which is Nuxt's behaviour, not the Worker's — this is.
+	@npm run generate --workspace @holo/web
+	@cd apps/api && npm run db:local >/dev/null && ./scripts/seed-local-r2.sh
+	@cd apps/api && npx wrangler dev --local --port 8787
 
 check-schema: ## Fail if the committed generated files are stale
 	@uv run python packages/schema/scripts/generate.py --check
@@ -54,9 +76,21 @@ check-api: ## Run the Worker's unit tests and the endpoint smoke test
 	@npm test --workspace @holo/api --silent
 	@apps/api/tests/smoke.sh
 
-typecheck: ## Typecheck the generated TypeScript and the Worker
+check-web: ## Run the site's unit tests (the pure modules — ADR 0006)
+	@npm test --workspace @holo/web --silent
+
+typecheck: ## Typecheck the generated TypeScript, the Worker and the site
 	@npm run typecheck --workspace @holo/schema --silent
 	@npm run typecheck --workspace @holo/api --silent
+	@# vue-tsc probes for `vue-router/volar/sfc-route-blocks`, which vue-router 5 no
+	@# longer exports, and prints a full ERR_PACKAGE_PATH_NOT_EXPORTED stack before
+	@# exiting 0 with no type errors. The plugin supports `<route>` blocks in SFCs, which
+	@# Nuxt does not use — it derives routing from the file system. The trace is dropped
+	@# so it cannot be mistaken for a failure; real errors still print, and a non-zero
+	@# exit still fails the target.
+	@npm run typecheck --workspace @holo/web --silent 2>&1 \
+		| grep -v -e '^\[Vue\] Resolve plugin path failed' -e '^ *at ' -e "^ *code: 'ERR_PACKAGE_PATH_NOT_EXPORTED'" -e '^}$$' \
+		; exit $${PIPESTATUS[0]}
 
 clean: ## Remove caches and build artifacts (not generated output — that is committed)
 	find . -name __pycache__ -type d -prune -exec rm -rf {} + 2>/dev/null || true
