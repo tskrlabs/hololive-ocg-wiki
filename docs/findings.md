@@ -25,6 +25,8 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-010](#f-010) | 🔍 open | data | `batonTouchTypes` is always `["null"]` |
 | [F-011](#f-011) | ✅ closed | data | v1's `card_images/en/` — 1,112 dead files from an abandoned EN scrape |
 | [F-012](#f-012) | ✅ fixed | data | The official site re-uploads card images; 12 local copies were stale |
+| [F-013](#f-013) | ✅ fixed | site | Searching a partial CJK name returns nothing on the live site |
+| [F-014](#f-014) | 🔍 open | infra | v1 exceeded the D1 free read tier on 2026-07-12 |
 
 ---
 
@@ -298,3 +300,78 @@ update. Worth doing after each new set ships, or occasionally as a spot check.
 Not worth automating into `scrape`: a conditional GET per image would make every run
 2,450 requests against a small operator's site to catch a handful of changes a year.
 The manual check is the better trade.
+
+---
+
+## F-013 — partial CJK search returns nothing ✅ fixed
+
+**Found:** Phase 3 · **Fixed:** Phase 3 (`tokenize='trigram'`) · **Affected:** every
+CJK search on the live site
+
+Probing v1's live API while designing the Phase 3 FTS index:
+
+| query | results |
+|---|---|
+| `白上フブキ` | 62 |
+| `フブキ` | **0** |
+| `ときのそら` | 29 |
+| `のそら` | **0** |
+| `宝鐘マリン` | 32 |
+| `宝鐘` | **0** |
+
+Only a card's *complete* name matches. FTS5's default `unicode61` tokenizer splits on
+Unicode whitespace and punctuation, and an unbroken run of kana or kanji contains
+neither — so `白上フブキ` is indexed as one token and no substring of it can be found.
+
+This matters more than it looks: the site's default locale is `tc` and its source locale
+is `ja`, so the majority of card names are affected. Typing a character's name and
+expecting their cards is the single most obvious thing to do with a card database.
+
+**Fix:** `tokenize='trigram'` on the Phase 3 FTS table, which indexes every 3-character
+window. Verified against the real 2,448-card set: `フブキ` returns 73 hits and
+`宝鐘マリン` 45.
+
+**Carried into Phase 4.** Trigram cannot match a query shorter than 3 characters, and
+returns *no rows* rather than an error — the same silent-nothing shape as the original
+bug. Two-character queries are common in Japanese (`宝鐘`, `運用`), so the worker falls
+back to `LIKE` below the threshold. A test pins both halves.
+
+---
+
+## F-014 — v1 exceeded the D1 free read tier 🔍
+
+**Found:** Phase 3 · **Affects:** the live v1 site · **Not fixed in v1**
+
+D1 analytics for the 30 days to 2026-07-27:
+
+| metric | value |
+|---|---|
+| read queries/day (avg) | ~1,200 |
+| **rows scanned per query** | **882** |
+| rows read/day — median | 722,426 (14% of quota) |
+| rows read/day — p90 | 1,641,541 (33%) |
+| rows read/day — **max** | **5,582,892** |
+| days above 20% of quota | 10 of 31 |
+
+The free tier is 5,000,000 rows read per day. **On 2026-07-12 the site went over it**,
+at which point D1 returns errors until 00:00 UTC. Whether anyone noticed is unknown —
+there is no alerting, and the site degrades to a failed fetch rather than an error page.
+
+882 rows scanned per query on a 2,448-row table is a full table scan. Two causes, both
+fixed by the Phase 3 schema:
+
+1. **`enrichCardDataBatch`** issues five follow-up queries per page of results against
+   child tables holding 13k–17k rows, and the `LEFT JOIN card_translations` fans every
+   result row out by 7.
+2. **JSON-array filters cannot use an index.** `color_codes LIKE '%"blue"%"'` reports
+   `SCAN cards` in `EXPLAIN QUERY PLAN` despite `idx_cards_color_codes` existing.
+
+**Why this is `open` and not `fixed`.** v1 stays live until cutover and nothing here
+changes that; the fix ships with v2's schema, which measured at ~50–100 rows per
+filtered page against v1's 882. Left open so the maintainer knows the live site has a
+standing failure mode until Phase 7 — if traffic spikes before cutover, this is what
+breaks, and the only lever available on v1 is reducing traffic.
+
+**Worth knowing for v2:** rows-read scales with traffic while writes do not. It is the
+number to watch after launch, and the reason the schema optimises for it over the row
+count D8 originally targeted. See [ADR 0004](adr/0004-d1-schema-and-seeder.md).

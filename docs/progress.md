@@ -1,8 +1,10 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0, 1 and 2 done. Images are live at
-`img.hololive-ocg-wiki.tskrlabs.com` and `publish` is idempotent.
-**Phase 3 (D1 redesign + seeder) is next.**
+**Where we are:** Phases 0–3 built. Images are live at
+`img.hololive-ocg-wiki.tskrlabs.com`, `publish` is idempotent, and the D1 schema and
+seeder are written and tested — but **the D1 database does not exist yet**; the
+maintainer creates it (see Phase 3 below).
+**Phase 4 (Worker rewrite) is next.**
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -17,8 +19,8 @@ copy and is authoritative if they disagree.
 | 0 | Repo skeleton + `packages/schema` | ✅ done | [ADR 0001](adr/0001-card-contract-generation.md) · `2d23999` |
 | 1 | Pipeline migration | ✅ done | [ADR 0002](adr/0002-field-level-translation-cache.md) · `6be38ff` |
 | 2 | CF resources + R2 publish | ✅ done | [ADR 0003](adr/0003-r2-publish.md) · live |
-| 3 | D1 redesign + seeder | 🔜 **next** | |
-| 4 | Worker rewrite (Hono + Zod) | ⬜ | |
+| 3 | D1 redesign + seeder | ✅ built · ⏳ awaiting the database | [ADR 0004](adr/0004-d1-schema-and-seeder.md) |
+| 4 | Worker rewrite (Hono + Zod) | 🔜 **next** | |
 | 5 | Website (new API/R2, 4 refactors) | ⬜ | |
 | 6 | Workers Builds + fixtures + docs | ⬜ | |
 | 7 | Launch | ⬜ | |
@@ -39,11 +41,12 @@ copy and is authoritative if they disagree.
 ## What exists now
 
 ```
-packages/schema/   the card contract — pydantic → JSON Schema → TS types
-pipeline/          holo-data CLI: scrape, images, translate, build, verify, publish
-apps/api/          wrangler.jsonc — R2 bindings (Worker itself arrives in Phase 4)
+packages/schema/   the card contract — pydantic → JSON Schema → TS types → D1 DDL
+packages/schema/sql/schema.sql   generated D1 schema (Phase 3)
+pipeline/          holo-data CLI: scrape … publish, seed
+apps/api/          wrangler.jsonc — R2 + D1 bindings (Worker itself arrives in Phase 4)
 content/           info.json — editorial site copy, uploaded by publish
-fixtures/          34 cards covering every enum member and edge case
+fixtures/          34 cards + fixtures.sql — credential-free local dev (D12)
 docs/adr/          decisions made during execution
 docs/infra.md      the Cloudflare runbook — what exists and which command made it
 docs/findings.md   data anomalies awaiting maintainer review
@@ -53,7 +56,7 @@ Makefile           `make check` — the single verification entry point
 ```bash
 make setup     # uv sync + npm install
 make hooks     # opt-in pre-commit check (once per clone)
-make check     # 130 tests: schema, pipeline, TS parity, typecheck
+make check     # 155 tests: schema, pipeline, seeder, TS parity, typecheck
 make help
 
 uv sync --extra publish   # adds boto3, only needed for `holo-data publish`
@@ -132,6 +135,10 @@ Recorded in the ADRs; listed here so they are not missed.
 | **Phase 1 done-when** | "reproduces today's `cards.json` **shape**" → reproduces today's **data**. The artifact is snake_case now, so a byte-diff would show every key renamed |
 | **Phase 1 image tree** | Flat `images/{png,webp}/` → **set-scoped** `images/{png,webp}/{set}/`. Amended in Phase 2: the flat layout could not hold F-006's two same-named-different-artwork reprints, which is a data-loss bug, not a layout preference ([ADR 0003](adr/0003-r2-publish.md)) |
 | **D11** | `info.json` is **committed** at `content/info.json` and uploaded by `publish`, not pushed by hand. The card count comes out of its prose and is rendered from `cards.json` instead — a Phase 5 dependency |
+| **D8** | "filterable fields stay real indexed columns" → the three **multi-valued** ones become **junction tables**. A JSON array filtered with `LIKE` cannot use an index, so v1's three such indexes never fired. Measured on the real query shape: ~2,448 rows read vs ~50–100 ([ADR 0004](adr/0004-d1-schema-and-seeder.md)) |
+| **D8** | `/api/filter-options` and `/api/static-filters` move **off D1** to R2 artifacts — same answer for every user until the next reseed, currently four full scans per call |
+| **Plan §3** | D1 free storage is **500 MB**, not 5 GB — the plan quoted the paid tier. Not a problem: 17 MB data + 36 MB index |
+| **Phase 3 done-when** | "`seed --dry` reports ~2,500 rows" → **~29,650 writes for a full reseed, ~1,450 for a new set**. The original counted only `cards` rows, ignoring index writes, junction rows and FTS shadow tables |
 
 ## Phase 2 — R2 publish
 
@@ -216,3 +223,93 @@ do until new cards ship.
 
 Done when images resolve at `img.hololive-ocg-wiki.tskrlabs.com/{set}/{stem}.webp` and a
 second `publish` uploads nothing.
+
+## Phase 3 — D1 redesign + seeder
+
+Full reasoning and the measurements behind every choice in
+[ADR 0004](adr/0004-d1-schema-and-seeder.md).
+
+```
+holo-data seed --dry        row counts + write estimate   (reads only)
+holo-data seed --confirm    diff-based upsert into D1     (writes)
+holo-data seed --full       rewrite everything            (gated separately)
+holo-data seed --prune      delete cards missing from the build
+```
+
+**The measurements changed the design.** Reading v1's live D1 analytics turned up that
+**reads, not writes, are the binding constraint** — the site scans 882 rows per query on
+a 2,448-row table and **breached the 5M/day free tier on 2026-07-12** (F-014). D8
+optimised the row count, which is the resource with slack.
+
+More sharply: the JSON-payload design *on its own* would have made the live problem
+worse. With `color_codes` as a JSON column, a filtered and sorted page is a full 2,448-row
+scan — worse than v1's 882 — because `ORDER BY` evaluates every match before `LIMIT`
+applies. The junction tables are what make the payload design pay off.
+
+| design | rows read per 50-card filtered page |
+|---|---|
+| v1 today | ~882 (measured in production) |
+| payload + JSON colour | ~2,448 — **worse** |
+| payload + junction colour | **~50–100** |
+
+- **Junction tables** for `color_codes`, `tags`, `card_sets` — `WITHOUT ROWID`, value
+  leading the PK, so the key is the storage and a filter is a covering-index range scan
+- **`payload` / `qa_payload` split.** Q&A is 53% of the translation bytes and the only
+  part that churns after a card is printed (ADR 0002). List endpoints never read it
+- **FTS5 `tokenize='trigram'`**, one row per card, all 7 locales concatenated. This
+  **fixes a live search bug** — F-013: `白上フブキ` returns 62 cards on v1 but `フブキ`
+  returns **zero**, because `unicode61` treats an unbroken CJK run as one token. Verified
+  on the real set: `フブキ` now returns 73
+- **The diff baseline is D1 itself** — `content_hash`/`qa_hash` columns rather than v1's
+  committed 648 KB hash file, which can disagree with the database. An interrupted run
+  resumes with no reconciliation
+- **Writes go through the D1 REST API** from Python, fully parameterised. D1 batches are
+  **transactional** (verified), so one batch per card means a card is never half-written
+- **`seed` reads today's actual write usage** from analytics and refuses if the estimate
+  will not fit — not the flat 100k, which is blind to a seed that already ran
+- **Deleting needs `--prune`**, plus a hard refusal if the card count drops >10%
+- **`schema.sql` is generated** from the same pydantic models, via a new `Junction`
+  annotation. Applied with `wrangler`, never by `seed`
+
+**Write accounting** (replaces the plan's "~2,500 rows"):
+
+| scenario | writes | % of 100k/day |
+|---|---|---|
+| Full reseed | ~29,650 | 29.7% |
+| New card set (~120 cards) | ~1,450 | 1.5% |
+| Q&A-only update (100 cards) | ~400 | 0.4% |
+
+### Phase 3 execution — the database does not exist yet
+
+The code is built and `make check` is green (155 tests), but **the maintainer creates the
+D1 database**, exactly as with Phase 2's buckets. Until then `seed` fails with
+instructions.
+
+```bash
+npx wrangler d1 create hololive-ocg-wiki
+# paste the printed database_id into apps/api/wrangler.jsonc (replaces "REPLACE_ME")
+
+npx wrangler d1 execute hololive-ocg-wiki --remote \
+    --file=packages/schema/sql/schema.sql
+
+uv run holo-data seed --dry        # expect ~29,650 writes, 2,448 new cards
+uv run holo-data seed --confirm
+```
+
+`seed` needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` in `pipeline/.env` — a
+**different token from the R2 one**, scoped to D1 Edit on this database plus Account
+Analytics Read (the write-budget gate). See [`infra.md`](./infra.md).
+
+### Local development needs no credentials (D12)
+
+```bash
+npx wrangler d1 execute hololive-ocg-wiki --local --file=packages/schema/sql/schema.sql
+npx wrangler d1 execute hololive-ocg-wiki --local --file=fixtures/fixtures.sql
+```
+
+`fixtures.sql` is committed and generated from the 34 fixture cards — every card type,
+every rarity, all 9 colours, all 7 locales, 546 Q&A items. No token, no network, no
+Python. `seed` is deliberately not involved: it only ever writes to production.
+
+Done when `seed --dry` reports the estimate above, production D1 is populated, and a
+second `seed` writes nothing.

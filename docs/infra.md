@@ -17,7 +17,7 @@ This file is that record. **Update it when you change a resource.**
 |---|---|---|---|
 | R2 bucket | `hololive-ocg-wiki-images` | yes — `img.hololive-ocg-wiki.tskrlabs.com` | 2 |
 | R2 bucket | `hololive-ocg-wiki-artifacts` | **no** | 2 |
-| D1 database | *not yet* | — | 3 |
+| D1 database | `hololive-ocg-wiki` — **not created yet**, see §5 | **no** | 3 |
 | Worker | *not yet* | — | 4 |
 
 Zone `tskrlabs.com` is on Cloudflare nameservers (verified during the v2 design session),
@@ -98,6 +98,86 @@ token that structurally cannot reach any other bucket — including buckets crea
 bounds a misfire to the two we already reason about. That is the same instinct as D10's
 gates, applied to credentials.
 
+### 5. Create the D1 database (Phase 3)
+
+```bash
+npx wrangler d1 create hololive-ocg-wiki
+```
+
+It prints a `database_id`. Paste it into `apps/api/wrangler.jsonc`, replacing the
+`"REPLACE_ME"` placeholder — `holo-data seed` reads the name and id from there, because
+the infra config is the one place a resource is named. The placeholder is checked for
+explicitly, so forgetting this step gives you the `wrangler d1 create` command rather
+than a 404 with an opaque id in it.
+
+Then apply the schema. This is the only DDL step, and it is deliberately manual:
+
+```bash
+npx wrangler d1 execute hololive-ocg-wiki --remote \
+    --file=packages/schema/sql/schema.sql
+```
+
+`schema.sql` is **generated** from the pydantic models (`make generate`), so it is never
+hand-edited and `make check` fails if the committed copy is stale. Every statement is
+`IF NOT EXISTS`, so re-running is safe.
+
+**`holo-data seed` never runs DDL.** The CLI may be driven by an agent (D4); a command
+that can `DROP TABLE` is a blast radius D10 exists to bound. Schema changes are rare and
+human-driven.
+
+### 6. Mint the D1 API token
+
+Dashboard → My Profile → API Tokens → Create Token → Custom token
+
+- **Permissions:**
+  - *Account* → **D1** → **Edit**
+  - *Account* → **Account Analytics** → **Read**
+- **Account resources:** this account only
+
+Put them in `pipeline/.env`:
+
+```
+CLOUDFLARE_ACCOUNT_ID=…
+CLOUDFLARE_API_TOKEN=…
+```
+
+**A separate token from the R2 one**, for the same reason the R2 token is scoped to two
+buckets: an agent-driven misfire should be structurally unable to reach anything it was
+not pointed at. The R2 credentials cannot touch D1 and these cannot touch R2.
+
+Account Analytics Read is what lets `seed` check **today's actual write usage** before
+running, rather than assuming the full 100k/day budget is available. Without it `seed`
+still works — it warns that it could not read usage and only refuses if the estimate
+exceeds the whole daily limit. The failure that permission prevents is specific: a
+second seed in one day running out of budget *mid-run* and leaving the database
+partially updated.
+
+### Seeding
+
+```bash
+uv run holo-data seed --dry        # reads only; prints the diff and the write estimate
+uv run holo-data seed --confirm    # writes
+```
+
+A first full seed is **~29,650 writes (30% of the daily budget)**; a new card set is
+~1,450 (1.5%). `seed` refuses on a stale `cards.json`, on a card set that collapsed
+since the last run, on a schema-version mismatch, and when the estimate would not fit in
+what remains of today's budget — none of which a flag can override. Deleting cards needs
+`--prune`.
+
+## Local development — no credentials at all
+
+D12's requirement is that a fresh clone runs with zero Cloudflare credentials:
+
+```bash
+npx wrangler d1 execute hololive-ocg-wiki --local --file=packages/schema/sql/schema.sql
+npx wrangler d1 execute hololive-ocg-wiki --local --file=fixtures/fixtures.sql
+```
+
+`fixtures/fixtures.sql` is committed and generated from the 34 fixture cards — every card
+type, every rarity, all 9 colours including both fused codes, all 7 locales, 546 Q&A
+items. No token, no network, no Python toolchain.
+
 ## Verifying the setup
 
 ```bash
@@ -131,10 +211,33 @@ Everything here is free tier, and cost is a hard constraint (`v2-plan.md` §6).
 
 | | Free allowance | Our usage |
 |---|---|---|
-| R2 storage | 10 GB | ~425 MB WebP (4.3%) |
+| R2 storage | 10 GB | 191 MB WebP (1.9%) |
 | R2 Class A (writes/lists) | 1M/month | ~3,000 per full publish |
 | R2 Class B (reads) | 10M/month | near zero — the CDN absorbs repeats |
 | R2 egress | free, unlimited | — |
+| **D1 storage** | **500 MB** (not 5 GB — that is the paid tier) | ~17 MB data + ~36 MB FTS index |
+| D1 rows written | 100,000/day | ~29,650 per full reseed, ~1,450 per new set |
+| D1 rows read | 5,000,000/day | see below |
+
+### ⚠️ D1 rows read is the number to watch
+
+Writes are what `seed` spends and they have enormous headroom. **Reads are what the
+*site* spends, and v1 breached them** — 5,582,892 rows read on 2026-07-12 against a 5M
+limit, at which point D1 returns errors until 00:00 UTC ([F-014](./findings.md#f-014)).
+
+v1 scanned 882 rows per query on a 2,448-row table because JSON-array filters cannot use
+an index and `enrichCardDataBatch` issued five follow-up queries per page. The v2 schema
+measures at ~50–100 rows for the same page. Rows-read scales with traffic while writes do
+not, so this is the metric to check after launch:
+
+```bash
+npx wrangler d1 info hololive-ocg-wiki       # size and state
+npx wrangler d1 insights hololive-ocg-wiki   # per-query stats (experimental)
+```
+
+For the daily totals against the quota, the dashboard's D1 → Metrics → Row Metrics view
+is authoritative. `holo-data seed` reads the same numbers over the GraphQL analytics API
+(`d1AnalyticsAdaptiveGroups`) to decide whether a run fits in the remaining budget.
 
 ### ⚠️ Never enable Workers "Smart Caching"
 
