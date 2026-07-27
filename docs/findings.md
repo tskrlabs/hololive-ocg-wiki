@@ -27,6 +27,8 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-012](#f-012) | ✅ fixed | data | The official site re-uploads card images; 12 local copies were stale |
 | [F-013](#f-013) | ✅ fixed | site | Searching a partial CJK name returns nothing on the live site |
 | [F-014](#f-014) | 🔍 open | infra | v1 exceeded the D1 free read tier on 2026-07-12 |
+| [F-015](#f-015) | 🔍 open | data | 41% of characters are named inconsistently across their own cards |
+| [F-016](#f-016) | ✅ fixed | site | v1's colour filter misses fused dual-colour cards |
 
 ---
 
@@ -375,3 +377,89 @@ breaks, and the only lever available on v1 is reducing traffic.
 **Worth knowing for v2:** rows-read scales with traffic while writes do not. It is the
 number to watch after launch, and the reason the schema optimises for it over the row
 count D8 originally targeted. See [ADR 0004](adr/0004-d1-schema-and-seeder.md).
+
+---
+
+## F-015 — 41% of characters are named inconsistently across their own cards 🔍
+
+**Found:** Phase 4 · **Affected:** the `name` filter, in every locale
+
+The `name` filter answers "show me every Fubuki card". v1 implemented it as
+`WHERE ct.name = ?` against the *requested locale's* translation. Measured over the real
+2,448-card set, that question does not have one answer:
+
+| | |
+|---|---|
+| Characters (distinct `ja` names) | **296** |
+| Characters spelled inconsistently in ≥1 locale | **122 (41%)** |
+| Distinct `en` names | **381** — 85 more than there are characters |
+
+Shirakami Fubuki is the clearest case. Across their 44 cards the `en` translation is:
+
+| spelling | cards |
+|---|---|
+| `白上フブキ` | 38 |
+| `Shirakami Fubuki` | 6 |
+
+So v1's dropdown had *two* Fubuki entries in English, one returning 38 cards and one
+returning 6, and neither returning the character. The same split affects `ときのそら` /
+`Tokino Sora`, `宝鐘マリン` / `Houshou Marine`, and 119 others.
+
+**What Phase 4 did.** The filter keys on the **source-locale name** — a new indexed
+`name_ja` column — so one query returns every card for a character regardless of how
+each card spells it. `/api/filter-options` pairs that key with a display label, so the
+dropdown still reads in the user's language:
+
+```json
+{ "value": "白上フブキ", "label": "Shirakami Fubuki" }
+```
+
+Picking that label needed its own rule. Because most cards leave the name untranslated,
+the *majority* spelling is usually the Japanese one — taking it would show `白上フブキ`
+to an English reader while `Shirakami Fubuki` sat unused in the data. A spelling that
+differs from the `ja` name wins instead, which recovers a readable label for 103 of 296
+characters in `en` and 65 in `ko`.
+
+**Why this is `open` and not `fixed`.** The API no longer splits a character, and that
+part is fixed. What is *not* resolved is the underlying data: 271 of 296 characters have
+no romanised `en` name on any card, and the 6-of-44 pattern suggests the official site
+translates a name only sometimes rather than never. That is a question about the source
+data — is the JP text deliberate on those 38 cards, or did the translation pass skip
+them? — and it is the kind of judgement about the *game* that belongs with the
+maintainer. Worth checking against `pipeline/corrections/` (ADR 0002 makes a correction
+a cache entry), because a handful of manual entries would give every character a proper
+label in every locale.
+
+---
+
+## F-016 — v1's colour filter misses fused dual-colour cards ✅ fixed
+
+**Found:** Phase 4 · **Fixed:** Phase 4 (query-time expansion) · **Affected:** 7 cards
+on the live site
+
+Dual-colour cards print **one fused icon**, not two colours, and the data stores them as
+printed: `blue_red` and `white_green` are their own colour codes (F-007 covers the
+encoding). Across the real set:
+
+| code | cards |
+|---|---|
+| `blue_red` | 5 |
+| `white_green` | 2 |
+
+v1 filtered colours with `color_codes LIKE '%"blue"%'`, which does not match
+`"blue_red"`, and exposed `blue_red` / `white_green` as their own filter checkboxes.
+So on the live site **filtering by blue silently omits the 5 blue/red cards** — they are
+blue cards, and a player filtering for blue wants them.
+
+**The fix is in the query layer, not storage.** Expanding on write would render two
+icons and a comma where the card shows one, so the seeder keeps the printed encoding
+(pinned by `test_fused_colours_are_stored_as_printed`) and the Worker expands the
+*filter* instead: a request for `blue` queries `('blue', 'blue_red')`.
+
+Verified on the fixture set — `blue` alone matches 4 cards, `blue` plus `blue_red`
+matches 6, and the API returns 6.
+
+**Note this changes behaviour rather than restoring it**, so Phase 5's filter UI should
+drop the separate `blue_red` / `white_green` checkboxes: those cards now appear under
+both of their constituent colours, which is what a player expects. Left for Phase 5
+because it is a UI decision, not an API one.

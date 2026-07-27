@@ -1,9 +1,15 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0–3 done. Images are live at
-`img.hololive-ocg-wiki.tskrlabs.com`, `publish` is idempotent, and **D1 is populated** —
-2,448 cards in `hololive-ocg-wiki-db`, with CJK search working.
-**Phase 4 (Worker rewrite) is next.**
+**Where we are:** Phases 0–4 done, with one step outstanding. Images are live at
+`img.hololive-ocg-wiki.tskrlabs.com`, `publish` is idempotent, D1 is populated and
+reseeded into the Phase 4 shape (2,448 cards), and the **Worker is built and green** —
+seven endpoints, `make check` covers them end-to-end against local D1.
+
+⚠️ **The Worker is not deployed.** `wrangler deploy` needs a token with *Workers Scripts
+Edit*; the seeder's token is scoped to D1 + Analytics only, which is correct. See
+[Phase 4 execution](#phase-4-execution) for the one command to run.
+
+**Phase 5 (Website) is next.**
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -19,8 +25,8 @@ copy and is authoritative if they disagree.
 | 1 | Pipeline migration | ✅ done | [ADR 0002](adr/0002-field-level-translation-cache.md) · `6be38ff` |
 | 2 | CF resources + R2 publish | ✅ done | [ADR 0003](adr/0003-r2-publish.md) · live |
 | 3 | D1 redesign + seeder | ✅ done | [ADR 0004](adr/0004-d1-schema-and-seeder.md) · live |
-| 4 | Worker rewrite (Hono + Zod) | 🔜 **next** | |
-| 5 | Website (new API/R2, 4 refactors) | ⬜ | |
+| 4 | Worker rewrite (Hono + Zod) | ✅ done — deploy pending | [ADR 0005](adr/0005-worker-api.md) |
+| 5 | Website (new API/R2, 4 refactors) | 🔜 **next** | |
 | 6 | Workers Builds + fixtures + docs | ⬜ | |
 | 7 | Launch | ⬜ | |
 
@@ -41,9 +47,10 @@ copy and is authoritative if they disagree.
 
 ```
 packages/schema/   the card contract — pydantic → JSON Schema → TS types → D1 DDL
-packages/schema/sql/schema.sql   generated D1 schema (Phase 3)
+packages/schema/sql/schema.sql       generated D1 schema (Phase 3)
+packages/schema/sql/migrations/      evolving an already-populated database (Phase 4)
 pipeline/          holo-data CLI: scrape … publish, seed
-apps/api/          wrangler.jsonc — R2 + D1 bindings (Worker itself arrives in Phase 4)
+apps/api/          the Worker — Hono + Zod over D1 and R2 (Phase 4)
 content/           info.json — editorial site copy, uploaded by publish
 fixtures/          34 cards + fixtures.sql — credential-free local dev (D12)
 docs/adr/          decisions made during execution
@@ -55,7 +62,8 @@ Makefile           `make check` — the single verification entry point
 ```bash
 make setup     # uv sync + npm install
 make hooks     # opt-in pre-commit check (once per clone)
-make check     # 155 tests: schema, pipeline, seeder, TS parity, typecheck
+make check     # schema, pipeline, seeder, TS parity, Worker units + endpoints, typecheck
+make check-api # just the Worker: 25 unit tests + 34 endpoint checks (no credentials)
 make help
 
 uv sync --extra publish   # adds boto3, only needed for `holo-data publish`
@@ -138,6 +146,11 @@ Recorded in the ADRs; listed here so they are not missed.
 | **D8** | `/api/filter-options` and `/api/static-filters` move **off D1** to R2 artifacts — same answer for every user until the next reseed, currently four full scans per call |
 | **Plan §3** | D1 free storage is **500 MB**, not 5 GB — the plan quoted the paid tier. Not a problem: 17 MB data + 36 MB index |
 | **Phase 3 done-when** | "`seed --dry` reports ~2,500 rows" → **~47,300 writes for a full reseed, ~2,320 for a new set**. The original counted only `cards` rows, ignoring index writes, junction rows and FTS shadow tables |
+| **D8** | `color_codes` and `card_sets` are **also in `payload`**, not only in their junction tables. `localize()` reads both, so without them the Worker could not rebuild a card from the row it just selected. Junction = how a card is found, payload = what it is (+3.2%, [ADR 0005](adr/0005-worker-api.md)) |
+| **D8** | New indexed **`name_ja`** column. The `name` filter needs an index and the name lives inside a JSON payload no index can reach. `CARD_INDEX_COUNT` 4 → 5, so a full reseed is **~49,785 writes** |
+| **D8** | `/api/static-filters` is **deleted**, not moved to R2. It returned enum values the contract already owns, and v1's frontend never called it — it read a hand-maintained constants file that had drifted |
+| **Phase 4 done-when** | "All 8 endpoints; SPA + API from one Worker" → **7 endpoints, API only**. `apps/web` does not exist until Phase 5, so there are no assets to bind; the `assets` block, SPA fallback and apex domain move there |
+| **Phase 3 schema** | `schema.sql` is `CREATE TABLE IF NOT EXISTS`, so it **cannot evolve a populated database** — re-applying it silently skips a new column, then fails on the index using it. `packages/schema/sql/migrations/` added |
 
 ## Phase 2 — R2 publish
 
@@ -307,16 +320,22 @@ run surfaced it. Both are now pinned by query-plan tests.
 **different token from the R2 one**, scoped to D1 Edit on this database plus Account
 Analytics Read (the write-budget gate). See [`infra.md`](./infra.md).
 
-One follow-up: `status.json` was written locally but **not uploaded**, because `boto3` is
-an optional extra and was not installed in the worktree. Run `uv sync --extra publish`
-then `holo-data publish` to push it.
+~~One follow-up: `status.json` was written locally but not uploaded~~ — done in Phase 4.
 
 ### Local development needs no credentials (D12)
 
+Run from `apps/api/`, where `wrangler.jsonc` declares the bindings. Note the database is
+`hololive-ocg-wiki-db`; `hololive-ocg-wiki` is the *Worker's* name and does not resolve —
+the command printed here before Phase 4 was wrong.
+
 ```bash
-npx wrangler d1 execute hololive-ocg-wiki --local --file=packages/schema/sql/schema.sql
-npx wrangler d1 execute hololive-ocg-wiki --local --file=fixtures/fixtures.sql
+cd apps/api
+npx wrangler d1 execute hololive-ocg-wiki-db --local \
+    --file=../../packages/schema/sql/schema.sql
+npx wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtures.sql
 ```
+
+Or just `make check-api`, which does both and then exercises every endpoint.
 
 `fixtures.sql` is committed and generated from the 34 fixture cards — every card type,
 every rarity, all 9 colours, all 7 locales, 546 Q&A items. No token, no network, no
@@ -324,3 +343,87 @@ Python. `seed` is deliberately not involved: it only ever writes to production.
 
 Done when `seed --dry` reports the estimate above, production D1 is populated, and a
 second `seed` writes nothing.
+
+## Phase 4 — the Worker
+
+Full reasoning and every measurement in [ADR 0005](adr/0005-worker-api.md).
+
+```
+apps/api/src/index.ts        app wiring, CORS, error handling
+apps/api/src/routes/         cards (search/filter/detail/batch), filters (R2)
+apps/api/src/db/             query builders and FTS escaping — pure, unit-tested
+apps/api/src/lib/            Zod input schemas, response + cache helpers
+apps/api/tests/smoke.sh      boots wrangler dev and curls every endpoint
+```
+
+**Grilling found five things the plan did not know.** Each changed the work, and two
+were blockers:
+
+1. **The Worker could not rebuild a card from what D1 stored.** `localize()` reads
+   `color_codes` and `card_sets`; neither was a column and neither was in `payload` —
+   they lived only in the junction tables, keyed for filtering rather than lookup. Both
+   now go in the payload too (+3.2%), so a list page is one query with no fan-out.
+2. **`/api/static-filters` was dead code**, returning enum values the contract already
+   owns. Deleted; Phase 5 imports `@holo/schema/enums`. Eight endpoints became seven.
+3. **Raw input crashes FTS5** — `a AND`, `-x` and a bare `"` are syntax errors. Every
+   query is now wrapped as a literal phrase, so they return 200 with zero hits.
+4. **The `name` filter was broken in v1**: 41% of characters are spelled inconsistently
+   across their own cards ([F-015](findings.md#f-015)). It keys on `name_ja` now.
+5. **`apps/web/` does not exist**, so the phase's own done-when was unmeetable. Scope
+   became API-only.
+
+**A sixth turned up while building:** v1's colour filter silently omits fused
+dual-colour cards ([F-016](findings.md#f-016)). Filtering `blue` misses the 5 `blue_red`
+cards, because `LIKE '%"blue"%'` does not match `"blue_red"`. The Worker expands the
+filter instead of the storage.
+
+### Phase 4 execution
+
+**Executed 2026-07-27.** Schema migrated, production reseeded, artifacts published:
+
+| | result |
+|---|---|
+| Migration | `name_ja` column + index added to the live database |
+| `seed --confirm` | 2,448 cards, **49,785 rows written — exactly the estimate**, 18,762 read |
+| Database size | 73.0 MB (15% of the 500 MB free tier) |
+| `name_ja` populated | 2,448/2,448, **296 distinct characters** (was 381 name entries in `en`) |
+| `publish` | 8 artifacts — `cards.json` + 7 `filter-options/` files; a second run uploads nothing |
+| `make check` | green — 167 Python, 11 TS parity, 25 Worker unit, 34 endpoint checks |
+
+**⚠️ One step left: deploy.** The Worker is built, tested and committed but **not
+deployed** — `wrangler deploy` needs a token with **Workers Scripts Edit**, and the
+seeder's token is scoped to D1 Edit + Analytics Read only. That scoping is correct and
+worth keeping; it just means the deploy is a maintainer step:
+
+```bash
+cd apps/api
+npx wrangler login          # or export a token with Workers Scripts Edit
+npx wrangler deploy
+```
+
+Then verify against production — these are the numbers Phase 3 measured, so they double
+as a check that the reseed landed:
+
+```bash
+API=https://hololive-ocg-wiki.<your-subdomain>.workers.dev
+curl -s "$API/api/health"
+curl -s "$API/api/cards/search?q=フブキ"    | jq '.cards | length'   # expect 73
+curl -s "$API/api/cards/search?q=そら"      | jq '.cards | length'   # 2 chars → LIKE path
+curl -s "$API/api/cards/search?q=a%20AND"   | jq                     # 200, not 500
+curl -s "$API/api/cards/filter?name=白上フブキ&locale=en" | jq '.total'  # expect 44
+curl -s "$API/api/filter-options?locale=en" | jq '.names | length'   # expect 296
+```
+
+### What Phase 5 needs to know
+
+Three API changes are deliberate and need a frontend adjustment:
+
+- **`total` is absent** when `skip_count=true`, rather than `-1`. Read it as
+  `total ?? cachedTotal`.
+- **Over-cap batch requests 400** instead of silently returning the first 50. Chunk
+  client-side.
+- **Colour filters include fused cards**, so the separate `blue_red` / `white_green`
+  checkboxes should go — those cards now appear under both constituent colours.
+
+Also: `constants/card-data.ts` is replaced by `@holo/schema/enums`, and `normalizeCard`
+in `useCardStoreAPI.ts` is a no-op spread that can be deleted outright.
