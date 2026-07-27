@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# Pre-commit hook — runs `make check` when the contract is touched.
+#
+# Enable with: make hooks   (sets core.hooksPath, once per clone)
+#
+# Guards the failure this repo is built to prevent: editing a pydantic model and
+# committing without regenerating, so the committed TypeScript silently describes the
+# old shape while the frontend typechecks green against a lie.
+#
+# Only fires when the commit touches the schema, its scripts, or the fixtures — a
+# frontend-only commit pays nothing.
+#
+# Bypass with `git commit --no-verify` if you know what you are doing.
+
+set -e
+
+if ! git diff --cached --name-only | grep -qE '^(packages/schema/|pipeline/|fixtures/)'; then
+    exit 0
+fi
+
+echo "→ contract or pipeline touched, running make check..."
+
+if ! make check; then
+    echo ""
+    echo "✗ pre-commit checks failed."
+    echo ""
+    echo "  If you changed a model, run:  make generate && make golden"
+    echo "  Then re-stage the regenerated files and commit again."
+    echo ""
+    echo "  To commit anyway: git commit --no-verify"
+    exit 1
+fi

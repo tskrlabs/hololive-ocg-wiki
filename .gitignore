@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+.npm/
+*.tsbuildinfo
+
+# Nuxt / build output (Phase 5)
+.nuxt/
+.output/
+# Only app build output is ignored. `packages/schema/dist/` holds the GENERATED CONTRACT
+# TYPES and is deliberately committed (ADR 0001) — a frontend contributor must get types
+# from `npm install` without running Python. Scoped to apps/ rather than a bare `dist/`
+# with a negation, because git does not descend into an excluded directory to un-exclude
+# a subpath.
+#
+# No trailing slash: `nuxt generate` creates `apps/web/dist` as a *symlink* to
+# `.output/public`, and `apps/*/dist/` matches only directories — so the symlink itself
+# was staged, absolute path and all. v1 committed exactly this symlink (v2-plan §6 lists
+# it as a thing not to carry over).
+apps/*/dist
+
+# Cloudflare (Phase 2+)
+.wrangler/
+.dev.vars
+
+# Pipeline working state (D1: generated data lives in R2, not git).
+# `pipeline/corrections/` is deliberately NOT ignored — manual translation fixes are
+# source, and reviewing them as a PR diff is the point (ADR 0002).
+pipeline/data/
+pipeline/locales/
+pipeline/images/
+pipeline/build/
+pipeline/logs/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

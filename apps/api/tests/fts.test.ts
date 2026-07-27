@@ -1,0 +1,75 @@
+/**
+ * Search input handling.
+ *
+ * These are the two failure modes the trigram index has, both verified against a real
+ * D1 before being fixed here: a query under 3 characters silently matches nothing, and
+ * raw user input is FTS5 *syntax* rather than text.
+ */
+
+import { test } from "node:test";
+import assert from "node:assert/strict";
+
+import {
+  escapeFtsPhrase,
+  escapeLikePattern,
+  searchSql,
+  searchStrategy,
+  TRIGRAM_MIN_LENGTH,
+} from "../src/db/fts.ts";
+
+test("every FTS5 metacharacter is neutralised into a phrase", () => {
+  // Each of these throws `fts5: syntax error` when passed to MATCH unquoted. Confirmed
+  // against a local D1 before this function existed.
+  assert.equal(escapeFtsPhrase("a AND"), '"a AND"');
+  assert.equal(escapeFtsPhrase("-x"), '"-x"');
+  assert.equal(escapeFtsPhrase("fub*"), '"fub*"');
+  assert.equal(escapeFtsPhrase("a OR b"), '"a OR b"');
+  assert.equal(escapeFtsPhrase("NEAR(a b)"), '"NEAR(a b)"');
+});
+
+test("a double quote is doubled, not dropped", () => {
+  // The dangerous one: a bare quote would otherwise close the phrase and let the rest
+  // of the input be parsed as syntax.
+  assert.equal(escapeFtsPhrase('"'), '""""');
+  assert.equal(escapeFtsPhrase('say "hi"'), '"say ""hi"""');
+});
+
+test("LIKE wildcards in user input are escaped", () => {
+  // Someone searching for "100%" means the literal text, not "anything after 100".
+  assert.equal(escapeLikePattern("100%"), "100\\%");
+  assert.equal(escapeLikePattern("a_b"), "a\\_b");
+  // The escape character itself has to be escaped first, or `\%` would become `\\%`.
+  assert.equal(escapeLikePattern("a\\b"), "a\\\\b");
+});
+
+test("queries shorter than a trigram take the LIKE path", () => {
+  assert.equal(TRIGRAM_MIN_LENGTH, 3);
+  // `そら` is the motivating case: 2 characters, 27 real matches, and trigram returns
+  // zero rows rather than an error.
+  assert.equal(searchStrategy("そら"), "like");
+  assert.equal(searchStrategy("a"), "like");
+  assert.equal(searchStrategy("フブキ"), "match");
+  assert.equal(searchStrategy("IRyS"), "match");
+});
+
+test("the MATCH branch always binds a quoted phrase", () => {
+  const built = searchSql("a AND", 50);
+  assert.match(built.sql, /cards_fts MATCH \?/);
+  assert.equal(built.params[0], '"a AND"');
+  assert.equal(built.params[1], 50);
+});
+
+test("the LIKE branch declares its ESCAPE clause", () => {
+  const built = searchSql("そら", 50);
+  // Without ESCAPE the backslashes added by escapeLikePattern would be literal text.
+  assert.ok(built.sql.includes("LIKE ? ESCAPE '\\'"), built.sql);
+  assert.equal(built.params[0], "%そら%");
+});
+
+test("both branches select the rowid as the card id", () => {
+  // An FTS5 column cannot be indexed for lookup, so the card id lives in the rowid
+  // (ADR 0004). Both paths must agree on that or one of them returns unusable ids.
+  for (const query of ["フブキ", "そら"]) {
+    assert.match(searchSql(query, 10).sql, /SELECT rowid AS id FROM cards_fts/);
+  }
+});

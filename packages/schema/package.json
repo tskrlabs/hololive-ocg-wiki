@@ -1,0 +1,27 @@
+{
+  "name": "@holo/schema",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The hololive-ocg-wiki card contract. Types are generated from the pydantic models in src/holo_schema/ — do not hand-edit dist/.",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    },
+    "./enums": "./dist/enums.ts",
+    "./localize": "./src/localize.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

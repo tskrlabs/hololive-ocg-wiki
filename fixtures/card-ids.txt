@@ -1,0 +1,41 @@
+# Fixture card selection — regenerate with `make fixtures`.
+#
+# Chosen for coverage: every enum member and every structural edge case found
+# by census over all 2,448 cards. Committed so the selection is reviewable.
+#
+# <card id>  <why this card is here>
+
+     1  covers card_type=oshiCharacter
+     2  covers color=green
+     6  covers card_type=buzzCharacter
+    13  covers color=white_green
+    14  covers bloom=spot
+    16  covers card_type=supportStaffLimited
+    18  covers card_type=supportItem
+    19  covers card_type=supportItemLimited
+    20  covers card_type=supportEvent
+    21  covers card_type=supportEventLimited
+    23  covers rarity=OUR
+    34  covers rarity=SEC
+    46  covers rarity=UR
+   156  covers card_type=supportTool
+   157  covers card_type=supportMascot
+   163  covers card_type=supportFan
+   168  covers card_type=supportCheer
+   172  covers rarity=OC
+   176  covers rarity=P
+   446  hSD03-009 — 2 arts but 0 `en` translated arts (short-list zip)
+   447  hSD04-009 — same arts-length mismatch
+   477  covers rarity=SY
+   529  covers color=yellow
+   614  hBP03-050 FUWAMOCO — second fused-colour card, different set
+   726  hBP03-044 SR (hBP03 original) — image_key collision pair B
+   735  hBP03-055 SR (hBP03 original) — image_key collision pair D
+  1218  hBP05-040 miComet — genuine two-element colour array ['red','blue']
+  1877  hBP07-091 — cardTypeCode 'unknown' (scraper could not classify)
+  2003  hBP07-091 — the other 'unknown', different rarity
+  2138  hBP03-044 SR (hCO01 reprint) — image_key collision pair A
+  2139  hBP03-055 SR (hCO01 reprint) — image_key collision pair C
+  2164  covers has_art_value_field
+  2263  hBP08-060 FUWAMOCO — fused colour code 'blue_red'
+  2444  hBP01-028 HR — rarity missing from v1's TypeScript union

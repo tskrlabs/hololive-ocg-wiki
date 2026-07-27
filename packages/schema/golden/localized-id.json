@@ -1,0 +1,2171 @@
+[
+  {
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hSD01-001",
+    "card_sets": [
+      "スタートデッキ「ときのそら＆AZKi」"
+    ],
+    "card_type_code": "oshiCharacter",
+    "color_codes": [
+      "white"
+    ],
+    "id": "1",
+    "illustrator": "でいりー",
+    "image_key": "hSD01/hSD01-001_OSR",
+    "life": 5,
+    "locale": "id",
+    "name": "ときのそら",
+    "oshi_skill": {
+      "effect": "[ターンに１回]Ubah satu kartu Yell di panggungmu dan pasangkan ke Holomenmu.",
+      "name": "リプレイスメント",
+      "timing_code": "once_per_turn"
+    },
+    "qa_items": [
+      {
+        "answer": "Ya, bisa digunakan. Untuk menyelesaikan efek sejauh mungkin, bagian \"Tukar Center Holomen lawan dengan satu Back Holomen lawan.\" tidak akan diselesaikan, dan hanya bagian \"Setelah itu, hingga akhir giliran ini, Arts Center Putih-mu +50.\" yang akan diselesaikan.",
+        "question": "Tentang SP Oshi Skill hSD01-001〈ときのそら〉 \"じゃあ敵だね？\": jika tidak ada Center Holomen atau tidak ada Back Holomen di panggung lawan, apakah SP Oshi Skill ini masih bisa digunakan?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-001"
+          ],
+          "raw_html": "[hSD01-001 ： ときのそら]"
+        },
+        "title": "Q204（2024.10.04）"
+      },
+      {
+        "answer": "Ya, boleh.",
+        "question": "Tentang SP Oshi Skill hSD01-001〈ときのそら〉 \"じゃあ敵だね？\": saat menukar Center Holomen dan Back Holomen lawan, bolehkah memilih Holomen yang sedang istirahat?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-001"
+          ],
+          "raw_html": "[hSD01-001 ： ときのそら]"
+        },
+        "title": "Q203（2024.10.04）"
+      },
+      {
+        "answer": "Pemain yang menggunakan \"じゃあ敵だね？\" pada giliran tersebut.",
+        "question": "Saat pemain giliran menggunakan SP Oshi Skill \"じゃあ敵だね？\", siapa yang memilih Back Holomen yang akan ditukar?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-001"
+          ],
+          "raw_html": "[hSD01-001 ： ときのそら]"
+        },
+        "title": "Q118（2024.09.21）"
+      },
+      {
+        "answer": "Ya, bisa digunakan.",
+        "question": "Apakah Oshi Skill hSD01-001〈ときのそら〉 \"リプレイスメント\" bisa digunakan meskipun tidak ada Yell di panggung?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-001"
+          ],
+          "raw_html": "[hSD01-001 ： ときのそら]"
+        },
+        "title": "Q1（2024.09.21）"
+      }
+    ],
+    "rarity_code": "OSR",
+    "sp_oshi_skill": {
+      "effect": "[ゲームに１回]Tukar Center Holomen lawan dengan satu Back Holomen lawan. Setelah itu, hingga akhir giliran ini, Arts Center Putih-mu +50.",
+      "name": "じゃあ敵だね？",
+      "timing_code": "once_per_game"
+    },
+    "tags": []
+  },
+  {
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hSD01-002",
+    "card_sets": [
+      "スタートデッキ「ときのそら＆AZKi」"
+    ],
+    "card_type_code": "oshiCharacter",
+    "color_codes": [
+      "green"
+    ],
+    "id": "2",
+    "illustrator": "Hachi",
+    "image_key": "hSD01/hSD01-002_OSR",
+    "life": 6,
+    "locale": "id",
+    "name": "AZKi",
+    "oshi_skill": {
+      "effect": "[Sekali per giliran] Dapat digunakan ketika menggunakan kemampuan salah satu Holomen-mu yang melempar dadu: nyatakan satu angka hasil dadu, dan angka hasil lemparan berikutnya dianggap sebagai angka yang dinyatakan.",
+      "name": "左手に地図",
+      "timing_code": "once_per_turn"
+    },
+    "qa_items": [
+      {
+        "answer": "Ya, bisa.",
+        "question": "Jika oshi Holomen saya adalah hSD01-002〈AZKi〉, dan Holomen saya menerima damage serta hadiah \"V.7\" dari hBP01-027〈ベスティア・ゼータ〉 digunakan. Dalam kasus ini, dapatkah saya menggunakan oshi skill hSD01-002〈AZKi〉 \"左手に地図\" untuk menegaskan angka hasil dadu?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-002",
+            "hBP01-027"
+          ],
+          "raw_html": "[hSD01-002 ： AZKi]\n[hBP01-027 ： ベスティア・ゼータ]"
+        },
+        "title": "Q221（2024.10.23）"
+      },
+      {
+        "answer": "Ya, bisa digunakan.",
+        "question": "Apakah SP oshi skill hSD01-002〈AZKi〉 \"右手にマイク\" bisa digunakan meskipun tidak ada Eru di Arsip?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-002"
+          ],
+          "raw_html": "[hSD01-002 ： AZKi]"
+        },
+        "title": "Q2（2024.09.21）"
+      }
+    ],
+    "rarity_code": "OSR",
+    "sp_oshi_skill": {
+      "effect": "[Sekali per game] Kirim sebanyak kartu Eru dari Arsip-mu ke satu Holomen hijau yang kamu pilih.",
+      "name": "右手にマイク",
+      "timing_code": "once_per_game"
+    },
+    "tags": []
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "white",
+          "null"
+        ],
+        "damage": 50,
+        "name": "ドリームライブ"
+      },
+      {
+        "cost_count": 3,
+        "cost_types": [
+          "white",
+          "green",
+          "null"
+        ],
+        "damage": 60,
+        "effect": "Jika di panggungmu ada holomen dengan label 〈AZKi〉, arts ini +50.",
+        "is_plus": true,
+        "name": "SorAZ シンパシー"
+      }
+    ],
+    "baton_touch_count": 2,
+    "baton_touch_types": [
+      "null",
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hSD01-006",
+    "card_sets": [
+      "スタートデッキ「ときのそら＆AZKi」"
+    ],
+    "card_type_code": "buzzCharacter",
+    "color_codes": [
+      "white"
+    ],
+    "extra": "Ketika holomen ini down, nyawamu -2",
+    "hp": 240,
+    "id": "6",
+    "illustrator": "I☆LA",
+    "image_key": "hSD01/hSD01-006_RR",
+    "locale": "id",
+    "name": "ときのそら",
+    "qa_items": [
+      {
+        "answer": "Ya, +50 diterapkan. Bahkan jika nama kartu yang sesuai tidak ada, jika efek ekstra menyatakan sesuatu seperti “holomen ini juga diperlakukan sebagai 〈ときのそら〉〈AZKi〉” sehingga dianggap sebagai nama kartu tertentu, maka kondisi itu terpenuhi.",
+        "question": "Apakah arts “SorAZ シンパシー” milik hSD01-006〈ときのそら〉 mendapatkan “arts ini +50.” meskipun di holomenmu ada hSD01-013〈SorAZ〉?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-006",
+            "hSD01-013"
+          ],
+          "raw_html": "[hSD01-006 ： ときのそら]\n[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q5（2024.09.21）"
+      },
+      {
+        "answer": "Ya, kondisi itu terpenuhi. Meskipun tidak ada nama kartu yang cocok, karena di extra tertulis “holomen ini juga diperlakukan sebagai 〈ときのそら〉〈AZKi〉”, kondisi tersebut terpenuhi.",
+        "question": "Apakah frasa “Jika di panggungmu ada holomen dengan 〈AZKi〉” pada arts “SorAZ シンパシー” hSD01-006〈ときのそら〉 terpenuhi jika ada hSD01-013〈SorAZ〉?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-006"
+          ],
+          "raw_html": "[hSD01-006 ： ときのそら]"
+        },
+        "title": "Q4（2024.09.21）"
+      }
+    ],
+    "rarity_code": "RR",
+    "tags": [
+      "#JP",
+      "#0期生",
+      "#歌"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "null",
+          "null"
+        ],
+        "damage": 50,
+        "effect": "Kamu boleh melempar dadu sekali: jika hasilnya ganjil, kirim 1 kartu dari atas dek sorakmu ke Holomen ini. Jika hasilnya genap, ambil 1 kartu dari dek-mu.",
+        "name": "Masa Depan yang Ingin Dilewati"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hSD01-013",
+    "card_sets": [
+      "スタートデッキ「ときのそら＆AZKi」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "white_green"
+    ],
+    "extra": "Holomen ini juga dianggap sebagai〈ときのそら〉dan〈AZKi〉",
+    "hp": 130,
+    "id": "13",
+    "illustrator": "© 2023 Victor Entertainment.",
+    "image_key": "hSD01/hSD01-013_R",
+    "locale": "id",
+    "name": "SorAZ",
+    "qa_items": [
+      {
+        "answer": "Artinya kartu ini memiliki nama sebagai〈ときのそら〉,〈AZKi〉dan〈SorAZ〉.",
+        "question": "Apa arti dari kemampuan ekstra hSD01-013〈SorAZ〉「Holomen ini juga dianggap sebagai〈ときのそら〉〈AZKi〉」?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-013"
+          ],
+          "raw_html": "[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q616（2026.03.02）"
+      },
+      {
+        "answer": "Tidak, tidak bisa.",
+        "question": "Jika aku memiliki 1 hSD01-013〈SorAZ〉, lalu hBP07-068〈AZKi〉 melakukan kolaborasi. Dalam kasus ini, apakah efek kolaborasi “Jejak yang Telah Dijalani Bersama” bisa menghitung hSD01-013〈SorAZ〉 sebagai dua orang, yaitu〈ときのそら〉dan〈SorAZ〉?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-013",
+            "hBP07-068"
+          ],
+          "raw_html": "[hSD01-013 ： SorAZ]\n[hBP07-068 ： AZKi]"
+        },
+        "title": "Q602（2026.03.02）"
+      },
+      {
+        "answer": "Ya, bisa ditambahkan.",
+        "question": "Dengan menggunakan hBP04-089〈ツートンカラーパソコン〉, aku memilih〈ときのそら〉dan〈フワワ・アビスガード〉sebagai Holomen dengan satu warna yang berbeda di stagenya. Dalam kasus ini, apakah aku bisa menambahkan hSD01-013〈SorAZ〉dan hBP03-050〈FUWAMOCO〉ke tangan sebagai 1st Holomen dengan warna yang sama seperti yang dipilih?",
+        "related_cards": {
+          "card_number": [
+            "hBP04-089",
+            "hSD01-013",
+            "hBP03-050"
+          ],
+          "raw_html": "[hBP04-089 ： ツートンカラーパソコン]\n[hSD01-013 ： SorAZ]\n[hBP03-050 ： FUWAMOCO]"
+        },
+        "title": "Q404（2025.06.11）"
+      },
+      {
+        "answer": "Artinya Holomen tersebut memiliki hanya satu warna, dan ada lebih dari satu karakter. Sebagai contoh, hBP01-021〈ときのそら〉memiliki satu warna, sedangkan hSD01-013〈SorAZ〉memiliki dua warna.",
+        "question": "Apa arti dari “Holomen dengan satu warna yang berbeda” pada hBP04-089〈ツートンカラーパソコン〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP04-089",
+            "hSD01-013",
+            "hBP01-021"
+          ],
+          "raw_html": "[hBP04-089 ： ツートンカラーパソコン]\n[hSD01-013 ： SorAZ]\n[hBP01-021 ： ときのそら]"
+        },
+        "title": "Q402（2025.06.11）"
+      },
+      {
+        "answer": "Ya, bisa.",
+        "question": "Apakah aku bisa menambahkan hSD01-013〈SorAZ〉ke tangan dengan menggunakan hBP02-078〈かなた建設〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP02-078",
+            "hSD01-013"
+          ],
+          "raw_html": "[hBP02-078 ： かなた建設]\n[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q250（2024.12.12）"
+      },
+      {
+        "answer": "Tidak, hBP01-124〈開拓者〉akan diarsipkan.",
+        "question": "Jika aku melakukan Bloom dari hSD01-013〈SorAZ〉yang dilengkapi dengan hBP01-124〈開拓者〉ke hBP01-023〈ときのそら〉, apakah〈開拓者〉akan tetap terpasang?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-013",
+            "hBP01-124"
+          ],
+          "raw_html": "[hSD01-013 ： SorAZ]\n[hBP01-124 ： 開拓者]"
+        },
+        "title": "Q116（2024.09.21）"
+      },
+      {
+        "answer": "Ya, bisa. Walaupun tidak ada kartu dengan nama yang sama, jika ada kartu dengan efek ekstra seperti “Holomen ini juga dianggap sebagai〈ときのそら〉〈AZKi〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Pada hSD01-021〈First Gravity〉tertulis “perlihatkan sebanyak yang kamu mau kartu〈ときのそら〉dan〈AZKi〉”. Apakah aku bisa memperlihatkan hSD01-013〈SorAZ〉dan menambahkannya ke tangan?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-021",
+            "hSD01-013"
+          ],
+          "raw_html": "[hSD01-021 ： First Gravity]\n[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q17（2024.09.21）"
+      },
+      {
+        "answer": "Ya, keduanya akan aktif. Karena efek ekstra dari hSD01-013〈SorAZ〉menganggapnya sebagai〈ときのそら〉dan〈AZKi〉, maka kedua nama kartu Holomen itu dianggap ada di stage.",
+        "question": "Jika hSD01-013〈SorAZ〉berada di posisi tengah dan aku melakukan kolaborasi dengan hSD01-015〈博衣こより〉, apakah kedua kemampuan efek kolaborasi akan aktif?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-013",
+            "hSD01-015"
+          ],
+          "raw_html": "[hSD01-013 ： SorAZ]\n[hSD01-015 ： 博衣こより]"
+        },
+        "title": "Q13（2024.09.21）"
+      },
+      {
+        "answer": "Ya, berlaku.",
+        "question": "Apakah efek ekstra hSD01-013〈SorAZ〉「Holomen ini juga dianggap sebagai〈ときのそら〉〈AZKi〉」berlaku juga saat tidak berada di stage?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-013"
+          ],
+          "raw_html": "[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q12（2025.12.18）"
+      },
+      {
+        "answer": "Ya, bisa digunakan. Setelah mendeklarasikan penggunaan arts, efek yang tertulis diselesaikan sejauh mungkin, lalu berikan damage arts.",
+        "question": "Apakah aku bisa menggunakan arts “Masa Depan yang Ingin Dilewati” dari hSD01-013〈SorAZ〉meskipun deck atau deck sorakku kosong?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-013"
+          ],
+          "raw_html": "[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q11（2024.09.21）"
+      },
+      {
+        "answer": "Ya, bisa. Walaupun tidak ada kartu dengan nama yang sama, jika ada kartu dengan efek ekstra seperti “Holomen ini juga dianggap sebagai〈ときのそら〉〈AZKi〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Pada hSD01-011〈AZKi〉dengan arts “SorAZ Gravity”, jika aku tidak memiliki〈ときのそら〉, tapi ada hSD01-013〈SorAZ〉, apakah aku bisa mengirim 1 kartu dari atas deck sorakku ke Holomen-ku?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-011",
+            "hSD01-013"
+          ],
+          "raw_html": "[hSD01-011 ： AZKi]\n[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q10（2024.09.21）"
+      },
+      {
+        "answer": "Ya, menjadi +50. Walaupun tidak ada kartu dengan nama yang sama, jika ada kemampuan ekstra seperti “Holomen ini juga dianggap sebagai〈ときのそら〉〈AZKi〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Apakah arts “SorAZ Sympathy” dari hSD01-006〈ときのそら〉menjadi +50 saat aku memiliki hSD01-013〈SorAZ〉di antara Holomen-ku?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-006",
+            "hSD01-013"
+          ],
+          "raw_html": "[hSD01-006 ： ときのそら]\n[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q5（2024.09.21）"
+      }
+    ],
+    "rarity_code": "R",
+    "tags": [
+      "#JP",
+      "#0期生",
+      "#歌"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "white",
+          "green"
+        ],
+        "damage": 30,
+        "name": "へい"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "spot",
+    "card_number": "hSD01-014",
+    "card_sets": [
+      "スタートデッキ「ときのそら＆AZKi」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "null"
+    ],
+    "extra": "Holomen ini tidak bisa Bloom",
+    "hp": 150,
+    "id": "14",
+    "image_key": "hSD01/hSD01-014_U",
+    "locale": "id",
+    "name": "天音かなた",
+    "qa_items": [],
+    "rarity_code": "U",
+    "tags": [
+      "#JP",
+      "#4期生",
+      "#歌"
+    ]
+  },
+  {
+    "ability_text": "Mengambil 3 kartu dari dek sendiri.\n\nLIMITED：Hanya bisa digunakan 1 kali per giliran.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hSD01-016",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」",
+      "スタートデッキ「ときのそら＆AZKi」",
+      "スタートデッキ 赤 百鬼あやめ",
+      "スタートデッキ 青 猫又おかゆ",
+      "スタートデッキ 紫 癒月ちょこ",
+      "スタートデッキ 白 轟はじめ",
+      "スタートデッキ 緑 風真いろは",
+      "スタートデッキ 黄 不知火フレア",
+      "スタートデッキ FLOW GLOW 推し 輪堂千速",
+      "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
+      "スタートデッキ 推し Advent",
+      "スタートデッキ 推し Justice"
+    ],
+    "card_type_code": "supportStaffLimited",
+    "color_codes": [],
+    "id": "16",
+    "illustrator": "Yoshimo",
+    "image_key": "hSD01/hSD01-016_C",
+    "locale": "id",
+    "name": "春先のどか",
+    "qa_items": [],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "ability_text": "Lihat 5 kartu teratas dari dek Anda. Dari kartu-kartu tersebut, ungkap 1 kartu Support bertipe LIMITED, lalu tambahkan ke tangan. Kembalikan sisa kartu ke bawah dek dengan urutan yang Anda inginkan.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hSD01-018",
+    "card_sets": [
+      "スタートデッキ「ときのそら＆AZKi」",
+      "スタートデッキ 赤 百鬼あやめ",
+      "スタートデッキ 黄 不知火フレア"
+    ],
+    "card_type_code": "supportItem",
+    "color_codes": [],
+    "id": "18",
+    "illustrator": "JinArt こばやかわやまと",
+    "image_key": "hSD01/hSD01-018_C",
+    "locale": "id",
+    "name": "サブパソコン",
+    "qa_items": [],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "ability_text": "Kartu ini tidak bisa digunakan kecuali kamu mengarsipkan 1 kartu Yell di Stage kamu.\n\r\nPerlihatkan 1 kartu [1st Holomen atau 2nd Holomen] selain Buzz dari Deck kamu, tambahkan ke tanganmu. Lalu kocok Deck kamu.\n\r\nLIMITED: Hanya dapat digunakan 1 kali per giliran.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hSD01-019",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」",
+      "スタートデッキ「ときのそら＆AZKi」",
+      "スタートデッキ 青 猫又おかゆ",
+      "スタートデッキ 紫 癒月ちょこ",
+      "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
+      "スタートデッキ 推し Justice",
+      "ライブスタートデッキ 白上フブキ",
+      "ライブスタートデッキ 儒烏風亭らでん",
+      "ライブスタートデッキ さくらみこ",
+      "ライブスタートデッキ 星街すいせい",
+      "ライブスタートデッキ 大空スバル"
+    ],
+    "card_type_code": "supportItemLimited",
+    "color_codes": [],
+    "id": "19",
+    "illustrator": "JinArt KABAKURA",
+    "image_key": "hSD01/hSD01-019_C_02",
+    "locale": "id",
+    "name": "スゴイパソコン",
+    "qa_items": [
+      {
+        "answer": "Ya, tidak perlu memperlihatkan apa pun. Dalam hal itu, cukup kocok Deck dan kemampuan selesai.",
+        "question": "Jika kamu menggunakan hSD01-019〈スゴイパソコン〉 dan tidak ada kartu yang diinginkan di dalam Deck, bolehkah tidak memperlihatkan apa pun?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-019"
+          ],
+          "raw_html": "[hSD01-019 ： スゴイパソコン]"
+        },
+        "title": "Q639（2026.04.16）"
+      },
+      {
+        "answer": "Tidak bisa. Jika kemampuan hanya menentukan nama atau tipe kartu, kamu hanya dapat memilih kartu yang berada di Stage.",
+        "question": "Dalam teks kemampuan hSD01-019〈スゴイパソコン〉 yang berbunyi “Kartu ini tidak bisa digunakan kecuali kamu mengarsipkan 1 Yell milikmu.”, apakah Yell yang ada di Deck Yell bisa diarsipkan?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-019"
+          ],
+          "raw_html": "[hSD01-019 ： スゴイパソコン]"
+        },
+        "title": "Q15（2024.09.21）"
+      }
+    ],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "ability_text": "Lempar dadu sekali: jika hasilnya 3 atau lebih, kirim 1 kartu Yell dari Arsipmu ke Holomenmu.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hSD01-020",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」",
+      "スタートデッキ「ときのそら＆AZKi」"
+    ],
+    "card_type_code": "supportEvent",
+    "color_codes": [],
+    "id": "20",
+    "illustrator": "JinArt KABAKURA",
+    "image_key": "hSD01/hSD01-020_C",
+    "locale": "id",
+    "name": "Holoris no Wa",
+    "qa_items": [
+      {
+        "answer": "Tidak bisa. Jika di Arsipmu tidak ada Yell, kamu juga tidak dapat hanya melempar dadu saja.",
+        "question": "Apakah saya bisa menggunakan hSD01-020〈Holoris no Wa〉 ketika di Arsip saya tidak ada Yell?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-020"
+          ],
+          "raw_html": "[hSD01-020 ： Holoris no Wa]"
+        },
+        "title": "Q554（2026.01.16）"
+      },
+      {
+        "answer": "Ya, damage arts akan bertambah. Terlepas dari hasil dadu, kemampuan kartu Support tetap aktif, sehingga dianggap telah digunakan dan damage arts akan bertambah.",
+        "question": "Ketika menggunakan hSD01-020〈Holoris no Wa〉 dan hasil dadu adalah 2 atau kurang, jika saya menggunakan arts dari hBP01-015〈七詩ムメイ〉 “Oh,Hi”, apakah damage arts-nya akan bertambah?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-015",
+            "hSD01-020"
+          ],
+          "raw_html": "[hBP01-015 ： 七詩ムメイ]\n[hSD01-020 ： Holoris no Wa]"
+        },
+        "title": "Q50（2024.09.21）"
+      }
+    ],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "ability_text": "Kartu ini hanya bisa digunakan jika jumlah kartu di tangan Anda, tidak termasuk kartu ini, adalah 6 kartu atau kurang.\n\nLihat 4 kartu teratas dari dek Anda. Dari kartu-kartu tersebut, buka sebanyak yang Anda suka dari 〈ときのそら〉 dan 〈AZKi〉, lalu tambahkan anggota Hololive yang dibuka tersebut ke tangan Anda. Kemudian kembalikan sisa kartu ke bawah dek dalam urutan yang Anda inginkan.\n\nLIMITED：Hanya bisa digunakan 1 kali per giliran.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hSD01-021",
+    "card_sets": [
+      "スタートデッキ「ときのそら＆AZKi」"
+    ],
+    "card_type_code": "supportEventLimited",
+    "color_codes": [],
+    "id": "21",
+    "illustrator": "© 2023 Victor Entertainment. © 2016 COVER Corp.",
+    "image_key": "hSD01/hSD01-021_C",
+    "locale": "id",
+    "name": "First Gravity",
+    "qa_items": [
+      {
+        "answer": "Ya, bisa. Bahkan jika nama kartu yang cocok tidak ada dalam nama kartu aslinya, jika ada kartu di area ekstra yang memperlakukan anggota Hololive tersebut sebagai nama kartu tertentu misalnya “anggota Hololive ini juga diperlakukan sebagai 〈ときのそら〉〈AZKi〉”, maka kondisi itu terpenuhi.",
+        "question": "Di hSD01-021〈First Gravity〉 tertulis “buka sebanyak yang Anda suka dari 〈ときのそら〉 dan 〈AZKi〉,” apakah saya bisa membuka hSD01-013〈SorAZ〉 dan menambahkannya ke tangan?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-021",
+            "hSD01-013"
+          ],
+          "raw_html": "[hSD01-021 ： First Gravity]\n[hSD01-013 ： SorAZ]"
+        },
+        "title": "Q17（2024.09.21）"
+      },
+      {
+        "answer": "Ya, termasuk.",
+        "question": "Di hSD01-021〈First Gravity〉 tertulis “Kartu ini hanya bisa digunakan jika jumlah kartu di tangan Anda, tidak termasuk kartu ini, adalah 6 kartu atau kurang.” apakah itu termasuk saat jumlahnya 6?",
+        "related_cards": {
+          "card_number": [
+            "hSD01-021"
+          ],
+          "raw_html": "[hSD01-021 ： First Gravity]"
+        },
+        "title": "Q16（2024.09.21）"
+      }
+    ],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP01-001",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」"
+    ],
+    "card_type_code": "oshiCharacter",
+    "color_codes": [
+      "white"
+    ],
+    "id": "23",
+    "illustrator": "Hiroko",
+    "image_key": "hBP01/hBP01-001_OUR",
+    "life": 5,
+    "locale": "id",
+    "name": "天音かなた",
+    "oshi_skill": {
+      "effect": "[Sekali per giliran] Kurangi sisa HP Holomen pusat lawan menjadi 50.",
+      "name": "ぎゅっぎゅっ",
+      "timing_code": "once_per_turn"
+    },
+    "qa_items": [
+      {
+        "answer": "Tidak, tidak bisa.",
+        "question": "Apakah bisa membuat sisa HP Buzz Holomen yang mengenakan hBP06-097〈カワイイスタジャン〉 menjadi '50' dengan menggunakan skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP06-097"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP06-097 ： カワイイスタジャン]"
+        },
+        "title": "Q536（2025.12.12）"
+      },
+      {
+        "answer": "Tidak, karena HP tidak berubah, tidak bisa menjadi '50'.",
+        "question": "Apakah gift '冷静沈着' dari hBP04-024〈儒烏風亭らでん〉 bisa membuat sisa HP jadi '50' ketika terkena skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP04-024"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP04-024 ： 儒烏風亭らでん]"
+        },
+        "title": "Q382（2025.06.11）"
+      },
+      {
+        "answer": "Ya, bisa.",
+        "question": "Jika 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 digunakan pada 〈ときのそら〉 yang mengenakan hBP01-118〈あん肝〉, apakah sisa HP 〈ときのそら〉 yang mengenakan hBP01-118〈あん肝〉 bisa menjadi 50?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-118"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-118 ： あん肝]"
+        },
+        "title": "Q362（2025.03.11）"
+      },
+      {
+        "answer": "Tidak, karena HP tidak berubah, tidak bisa menjadi '50'.",
+        "question": "Apakah gift 'ボクシングスタイル' dari hBP03-065〈戌神ころね〉 bisa membuat sisa HP menjadi 50 melalui skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP03-065"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP03-065 ： 戌神ころね]"
+        },
+        "title": "Q327（2025.03.11）"
+      },
+      {
+        "answer": "Tidak, tidak menerima. Karena kemampuan skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 bukan kemampuan yang memberikan damage, kemampuan dari hBP01-116〈うぱお〉 tidak akan aktif.",
+        "question": "Jika menggunakan skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 terhadap Holomen pusat lawan yang mengenakan hBP01-116〈うぱお〉, apakah Holomen pusat saya akan menerima damage spesial dari kemampuan hBP01-116〈うぱお〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-116 ： うぱお]"
+        },
+        "title": "Q26（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak bisa digunakan. Karena skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 bukan kemampuan yang memberikan damage, maka kemampuan dari SP skill oshi 'クイックガード' dari hYS01-001〈七詩ムメイ〉 tidak dapat digunakan terhadapnya.",
+        "question": "Apakah skill SP oshi 'クイックガード' dari hYS01-001〈七詩ムメイ〉 bisa digunakan terhadap skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hYS01-001"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hYS01-001 ： 七詩ムメイ]"
+        },
+        "title": "Q25（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak bisa digunakan. Karena skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 bukan kemampuan yang memberikan damage, kemampuan dari hBP01-121〈Kotori〉 tidak dapat digunakan terhadapnya.",
+        "question": "Apakah kemampuan dari hBP01-121〈Kotori〉 bisa digunakan terhadap skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-121"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-121 ： Kotori]"
+        },
+        "title": "Q24（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak bisa digunakan. Karena skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 bukan kemampuan yang memberikan damage, kemampuan dari hBP01-117〈フレンド〉 tidak dapat digunakan terhadapnya.",
+        "question": "Apakah kemampuan dari hBP01-117〈フレンド〉 bisa digunakan terhadap skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-117"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-117 ： フレンド]"
+        },
+        "title": "Q23（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak bisa digunakan. Karena skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 bukan kemampuan yang memberikan damage, gift 'V.7' dari hBP01-027〈ベスティア・ゼータ〉 tidak bisa digunakan terhadapnya.",
+        "question": "Apakah gift 'V.7' dari hBP01-027〈ベスティア・ゼータ〉 bisa digunakan terhadap skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-027"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-027 ： ベスティア・ゼータ]"
+        },
+        "title": "Q22（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak bisa. Karena skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 bukan kemampuan yang memberikan damage, kemampuan dari skill oshi '文明の守護者' dari hBP01-002〈七詩ムメイ〉 tidak dapat digunakan terhadapnya.",
+        "question": "Saat giliran lawan, jika skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 membuat sisa HP Holomen saya yang memiliki #Promise menjadi 50, apakah skill oshi '文明の守護者' dari hBP01-002〈七詩ムメイ〉 dapat digunakan untuk mengurangi damage Holomen itu sebesar -50?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-002"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-002 ： 七詩ムメイ]"
+        },
+        "title": "Q21（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak akan aktif. Karena skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 hanya menetapkan sisa HP, bukan memulihkan HP.",
+        "question": "Jika skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 digunakan terhadap Holomen lawan dengan sisa HP 40 dan mengenakan 〈石の斧〉, apakah kemampuan 'ketika Holomen ini dipulihkan' dari 〈石の斧〉 akan aktif ketika HP menjadi 50?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]"
+        },
+        "title": "Q20（2024.09.21）"
+      },
+      {
+        "answer": "Sisa HP Holomen lawan menjadi 50.",
+        "question": "Jika skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 digunakan pada Holomen lawan dengan sisa HP 40 atau kurang, bagaimana hasil HP-nya?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]"
+        },
+        "title": "Q19（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak bisa. Karena skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉 bukan kemampuan yang memberikan damage, maka tidak dapat mengurangi atau mencegah damage yang diterima.",
+        "question": "Ketika HP Holomen pusat saya dikurangi menjadi 50 oleh skill oshi 'ぎゅっぎゅっ' dari hBP01-001〈天音かなた〉, apakah saya bisa mencegahnya dengan menggunakan gift 'V.7' dari hBP01-027〈ベスティア・ゼータ〉 agar tidak menerima damage?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]"
+        },
+        "title": "Q18（2024.09.21）"
+      }
+    ],
+    "rarity_code": "OUR",
+    "sp_oshi_skill": {
+      "effect": "[Sekali per game] Selama giliran ini, Arts salah satu Holomen kamu bertambah +50. Jika Holomen tersebut berwarna putih, tambahkan lagi +50 pada Arts-nya.",
+      "name": "握りつぶしちゃうぞ",
+      "timing_code": "once_per_game"
+    },
+    "tags": []
+  },
+  {
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP01-006",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」"
+    ],
+    "card_type_code": "oshiCharacter",
+    "color_codes": [
+      "red"
+    ],
+    "id": "34",
+    "illustrator": "水鈴",
+    "image_key": "hBP01/hBP01-006_SEC",
+    "life": 5,
+    "locale": "id",
+    "name": "小鳥遊キアラ",
+    "oshi_skill": {
+      "effect": "[Sekali per giliran] Kembalikan 1 Holomen dari Area Arsip kamu ke tangan.",
+      "name": "Phoenix Tail",
+      "timing": "Sekali per giliran",
+      "timing_code": "once_per_turn"
+    },
+    "qa_items": [
+      {
+        "answer": "Ya, karena Holomen yang ter-downed diperlakukan sebagai Holomen dengan semua warna, maka dapat digunakan.",
+        "question": "Ketika Holomen oshi milikmu adalah hBP01-006〈小鳥遊キアラ〉, dan Holomen lawan〈一伊那尓栖〉 yang memiliki hBP08-110〈Takodachi〉 melakukan down terhadap Holomen milikmu yang aslinya bukan berwarna merah. Dalam kasus ini, apakah kamu dapat menggunakan skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-110"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-110 ： Takodachi]"
+        },
+        "title": "Q689（2026.06.12）"
+      },
+      {
+        "answer": "Ya, karena Holomen yang ter-downed diperlakukan sebagai Holomen dengan semua warna, maka dapat digunakan.",
+        "question": "Ketika Holomen oshi milikmu adalah hBP01-006〈小鳥遊キアラ〉, dan lawan menggunakan kemampuan Arts〈一伊那尓栖〉 hBP08-074 “Necro Elimination!!” untuk membuat Holomen milikmu yang aslinya bukan berwarna merah menjadi Holomen dengan semua warna. Setelah itu Holomen tersebut di-down, apakah kamu dapat menggunakan skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-074"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-074 ： 一伊那尓栖]"
+        },
+        "title": "Q673（2026.06.12）"
+      },
+      {
+        "answer": "Ya, karena Holomen yang ter-downed diperlakukan sebagai Holomen dengan semua warna, maka dapat digunakan.",
+        "question": "Ketika Holomen oshi milikmu adalah hBP01-006〈小鳥遊キアラ〉, dan lawan menggunakan efek kolaborasi〈一伊那尓栖〉 hBP08-073 “Berperilakulah dengan sopan ya?” untuk membuat Holomen milikmu yang aslinya bukan berwarna merah menjadi Holomen dengan semua warna. Setelah itu Holomen tersebut di-down, apakah kamu dapat menggunakan skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-073"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-073 ： 一伊那尓栖]"
+        },
+        "title": "Q669（2026.06.12）"
+      },
+      {
+        "answer": "Ya, karena Holomen yang ter-downed diperlakukan sebagai Holomen dengan semua warna, maka dapat digunakan.",
+        "question": "Ketika Holomen oshi milikmu adalah hBP01-006〈小鳥遊キアラ〉, dan lawan menggunakan efek kolaborasi〈一伊那尓栖〉 hBP08-068 “KiTakoRe!” untuk membuat Holomen milikmu yang aslinya bukan berwarna merah menjadi Holomen dengan semua warna. Setelah itu Holomen tersebut di-down, apakah kamu dapat menggunakan skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-068"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-068 ： 一伊那尓栖]"
+        },
+        "title": "Q663（2026.06.12）"
+      },
+      {
+        "answer": "Ya, karena Holomen yang ter-downed diperlakukan sebagai Holomen dengan semua warna, maka dapat digunakan.",
+        "question": "Ketika Holomen oshi milikmu adalah hBP01-006〈小鳥遊キアラ〉, dan lawan menggunakan kemampuan skill oshi〈一伊那尓栖〉 hBP08-006 “Ina'nis's Colors” untuk membuat Holomen milikmu yang aslinya bukan berwarna merah menjadi Holomen dengan semua warna. Setelah itu Holomen tersebut di-down, apakah kamu dapat menggunakan skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-006 ： 一伊那尓栖]"
+        },
+        "title": "Q647（2026.06.12）"
+      },
+      {
+        "answer": "Ya, bisa dikembalikan. Namun jika tidak ada Holomen di Area Arsip, dan kamu mengarsipkan 2 HoloPower sebagai biaya tanpa ada Holomen di sana, maka kemampuan tersebut selesai diselesaikan tanpa melakukan apa pun.",
+        "question": "Sebagai biaya untuk menggunakan skill oshi hBP01-006〈小鳥遊キアラ〉 “Phoenix Tail”, kamu mengarsipkan 2 HoloPower. Jika di antara kartu tersebut ada Holomen, apakah kamu dapat mengembalikan Holomen yang baru saja kamu arsipkan itu ke tangan dengan efek “Kembalikan 1 Holomen dari Area Arsip kamu ke tangan”?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]"
+        },
+        "title": "Q232（2024.10.30）"
+      },
+      {
+        "answer": "Kemampuan ekstra dari hBP01-071〈尾丸ポルカ〉 adalah kemampuan kontinu dengan efek pengganti, jadi damage Life saat ter-downed menjadi 2. Dengan kemampuan SP skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”, damage Life itu berkurang 1, sehingga damage Life saat ter-downed menjadi 1.",
+        "question": "Holomen Buzz kamu hBP01-071〈尾丸ポルカ〉 ter-downed. Setelah itu kamu menggunakan SP skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”. Berapa damage Life yang diterima?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]"
+        },
+        "title": "Q231（2024.10.30）"
+      },
+      {
+        "answer": "Ya, bisa digunakan. Kemampuan Holomen dan kemampuan oshi dapat digunakan meskipun kamu tidak dapat memilih kartu yang ditentukan.",
+        "question": "Apakah skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Phoenix Tail” dapat digunakan meskipun tidak ada Holomen di Area Arsip?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]"
+        },
+        "title": "Q40（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, yang dikembalikan ke tangan hanyalah Holomen itu sendiri. Yell dan kartu Support yang terpasang padanya tetap diarsip seperti biasa.",
+        "question": "Jika kamu menggunakan kemampuan SP skill oshi dari hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”, apakah Yell yang terpasang pada Holomen yang dikembalikan juga ikut kembali ke tangan?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]"
+        },
+        "title": "Q39（2024.09.21）"
+      }
+    ],
+    "rarity_code": "SEC",
+    "sp_oshi_skill": {
+      "effect": "[Sekali per permainan] Dapat digunakan saat giliran lawan ketika Holomen merah kamu ter-downed: Kurangi damage Life kamu sebesar 1. Lalu, pilih 1 Holomen yang ter-downed, dan kembalikan Holomen itu beserta semua Holomen yang ditumpuk di bawahnya ke tangan.",
+      "name": "Rise from the ashes",
+      "timing": "Sekali per permainan",
+      "timing_code": "once_per_game"
+    },
+    "tags": []
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 4,
+        "cost_types": [
+          "white",
+          "white",
+          "white"
+        ],
+        "damage": 100,
+        "effect": "Jika dengan arts ini Anda membuat Holomen lawan down dan damage yang diberikan melebihi HP tersisa lawan sebanyak 50 atau lebih, Life lawan -1.",
+        "name": "♰漆黒の翼♰",
+        "special_targets": [
+          "red"
+        ],
+        "special_values": [
+          50
+        ]
+      }
+    ],
+    "baton_touch_count": 2,
+    "baton_touch_types": [
+      "null",
+      "null"
+    ],
+    "bloom_level_code": "second",
+    "card_number": "hBP01-014",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "white"
+    ],
+    "hp": 200,
+    "id": "46",
+    "illustrator": "うなぽっぽ",
+    "image_key": "hBP01/hBP01-014_UR",
+    "keyword": {
+      "effect": "Berikan Special Damage 50 ke Center Holomen lawan.",
+      "name": "堕ちた天使",
+      "type": "コラボエフェクト",
+      "type_code": "collab_effect"
+    },
+    "locale": "id",
+    "name": "天音かなた",
+    "qa_items": [
+      {
+        "answer": "Ya, dapat. Karena hBP01-014〈天音かなた〉 menerima damage, kemampuan hBP01-116〈うぱお〉 yang berbunyi \"ketika Holomen yang dilengkapi mascot ini menerima damage\" aktif dan menjadi menunggu. Setelah itu, oleh proses aturan untuk down, hBP01-014〈天音かなた〉 dan hBP01-116〈うぱお〉 diarsipkan, dan pada timing cek efek \"ketika Holomen yang dilengkapi mascot ini menerima damage\" yang berada dalam keadaan menunggu diselesaikan.",
+        "question": "Dengan Life saya 2 atau lebih, ketika hBP01-014〈天音かなた〉 yang dilengkapi hBP01-116〈うぱお〉 mengalami down akibat arts Center Holomen lawan, apakah kemampuan hBP01-116〈うぱお〉 dapat memberikan damage ke Center Holomen lawan?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-014",
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-014 ： 天音かなた]\n[hBP01-116 ： うぱお]"
+        },
+        "title": "Q230（2024.10.23）"
+      },
+      {
+        "answer": "Karena kondisi kemampuan arts hBP01-014〈天音かなた〉 \"♰漆黒の翼♰\" terpenuhi, Life lawan -1, dan oleh kemampuan extra rule yang dimiliki Buzz Holomen \"ketika Holomen ini down, Life saya -2\", total menjadi -3, sehingga damage Life adalah 3.",
+        "question": "Buzz Holomen saya menerima damage dari arts \"♰漆黒の翼♰\" milik hBP01-014〈天音かなた〉 yang melebihi sisa HP sebanyak lebih dari 50. Dalam kasus ini, berapa besar damage Life yang diterima?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-014"
+          ],
+          "raw_html": "[hBP01-014 ： 天音かなた]"
+        },
+        "title": "Q228（2024.10.23）"
+      },
+      {
+        "answer": "Ya, bisa. Bahkan jika Holomen lawan dibuat down dengan special damage, selama tidak ada keterangan yang menyatakan perubahan Life tidak berlaku (mis. \"down tidak mengurangi Life\"), Anda dapat mengurangi Life lawan sama seperti ketika arts menyebabkan down.",
+        "question": "Jika dengan collaboration effect hBP01-014〈天音かなた〉 \"堕ちた天使\" membuat Center Holomen lawan down, apakah bisa memberikan damage ke Life lawan?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-014"
+          ],
+          "raw_html": "[hBP01-014 ： 天音かなた]"
+        },
+        "title": "Q48（2024.09.21）"
+      }
+    ],
+    "rarity_code": "UR",
+    "tags": [
+      "#JP",
+      "#4期生",
+      "#歌"
+    ]
+  },
+  {
+    "ability_text": "Arts dari Holomen yang terpasang alat ini +10.\n\n◆ Jika terpasang pada 〈星街すいせい〉 yang berperingkat 1st atau lebih tinggi, tambahan kemampuan\nSaat Holomen yang terpasang alat ini menjatuhkan Holomen lawan, kirim 1 kartu teratas dari deck Ail Anda ke Holomen ini.\n\nHanya boleh memasang satu alat per Holomen milik Anda.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP01-115",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」"
+    ],
+    "card_type_code": "supportTool",
+    "color_codes": [],
+    "id": "156",
+    "illustrator": "JinArt こばやかわやまと",
+    "image_key": "hBP01/hBP01-115_U",
+    "locale": "id",
+    "name": "星街すいせいのマイク",
+    "qa_items": [
+      {
+        "answer": "Ya, kondisi tersebut terpenuhi.",
+        "question": "hBP01-115〈すいせいのマイク〉が付いているhBP01-079〈星街すいせい〉が、ブルームエフェクトの特殊ダメージで、相手のホロメンをダウンさせました。hBP01-115〈すいせいのマイク〉の「このツールが付いているホロメンが相手のホロメンをダウンさせた時」という条件は満たしますか？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-115",
+            "hBP01-079"
+          ],
+          "raw_html": "[hBP01-115 ： 星街すいせいのマイク]\n[hBP01-079 ： 星街すいせい]"
+        },
+        "title": "Q207（2024.10.04）"
+      },
+      {
+        "answer": "Tidak, tidak berlaku.",
+        "question": "hBP01-115〈星街すいせいのマイク〉の「このツールが付いているホロメンのアーツ+10。」の能力は、アーツのテキストによる特殊ダメージにも適用されますか？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-115"
+          ],
+          "raw_html": "[hBP01-115 ： 星街すいせいのマイク]"
+        },
+        "title": "Q110（2024.09.21）"
+      }
+    ],
+    "rarity_code": "U",
+    "tags": []
+  },
+  {
+    "ability_text": "Masuk ini menambah Arts +10 untuk holomen yang dipasangi mascot ini.\n\n◆ Jika dipasangkan pada 〈天音かなた〉, kemampuan tambahan berlaku\n[1 kali per giliran] Saat giliran lawan, ketika holomen yang dipasangi mascot ini menerima damage, berikan 20 damage khusus ke center holomen lawan.\n\nHanya boleh memasang satu mascot per holomen milik diri sendiri.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP01-116",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」",
+      "スタートデッキ 白 天音かなた"
+    ],
+    "card_type_code": "supportMascot",
+    "color_codes": [],
+    "id": "157",
+    "illustrator": "JinArt KABAKURA",
+    "image_key": "hBP01/hBP01-116_C",
+    "locale": "id",
+    "name": "うぱお",
+    "qa_items": [
+      {
+        "answer": "Prioritas pemrosesan adalah: pertama semua hal yang diproses oleh aturan (seperti proses down) diproses terlebih dahulu. Selanjutnya semua kemampuan yang harus diproses oleh pemain giliran (kemampuan yang aktif saat digunakan, dll.) diproses. Terakhir, semua kemampuan yang harus diproses oleh non-pemain giliran (mis. kemampuan yang aktif saat menerima damage) diproses. Karena hBP01-116〈うぱお〉 adalah kemampuan yang diproses oleh pihak non-pemain giliran, keduanya diproses terakhir.",
+        "question": "Saya menggunakan Arts “輝く彗星” dari hBP01-081〈星街すいせい〉 milik saya, dan men-downgrade 〈天音かなた〉 center holomen yang dipasangi hBP01-116〈うぱお〉. Setelah itu dilakukan proses down, saya menggunakan SP oshiskill “シューティングスター” dari hBP01-007〈星街すいせい〉 milik saya, dan men-downgrade 〈天音かなた〉 back holomen lawan yang dipasangi hBP01-116〈うぱお〉. Dalam kasus ini, kapan kemampuan masing-masing hBP01-116〈うぱお〉 akan diproses?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-007",
+            "hBP01-116",
+            "hBP01-081"
+          ],
+          "raw_html": "[hBP01-007 ： 星街すいせい]\n[hBP01-116 ： うぱお]\n[hBP01-081 ： 星街すいせい]"
+        },
+        "title": "Q370（2025.04.28）"
+      },
+      {
+        "answer": "Ya. Anda memulai giliran lawan dalam keadaan hanya collab holomen yang ditempatkan di stage tanpa menetapkan center holomen.",
+        "question": "Saya mengakhiri giliran dengan center holomen saya down karena menerima damage dari 〈天音かなた〉 yang dipasangi hBP01-116〈うぱお〉 milik lawan, tidak ada back holomen, dan hanya ada collab holomen. Dalam kasus ini, apakah giliran lawan dimulai tanpa center holomen?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-116 ： うぱお]"
+        },
+        "title": "Q286（2025.01.17）"
+      },
+      {
+        "answer": "Ya, dapat. Karena hBP01-014〈天音かなた〉 menerima damage, kemampuan hBP01-116〈うぱお〉 “Saat holomen yang dipasangi mascot ini menerima damage” dipicu dan menjadi menunggu. Setelah itu, melalui proses aturan yaitu proses down, arsipkan hBP01-014〈天音かなた〉 dan hBP01-116〈うぱお〉, lalu pada timing pengecekan selesaikan efek “Saat holomen yang dipasangi mascot ini menerima damage” yang sedang menunggu.",
+        "question": "Ketika hBP01-014〈天音かなた〉 yang dipasangi hBP01-116〈うぱお〉 di-down oleh Arts center holomen lawan saat Life saya masih 2 atau lebih, apakah kemampuan hBP01-116〈うぱお〉 dapat memberikan damage ke center holomen lawan?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-014",
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-014 ： 天音かなた]\n[hBP01-116 ： うぱお]"
+        },
+        "title": "Q230（2024.10.23）"
+      },
+      {
+        "answer": "Transfer giliran ke lawan dalam keadaan hanya collab holomen yang ditempatkan di stage tanpa menetapkan center holomen.",
+        "question": "Di stage saya tidak ada back holomen, ada center holomen dan collab holomen. Dengan Arts center holomen saya, saat memberikan damage ke holomen lawan, karena kemampuan hBP01-116〈うぱお〉 yang terpasang pada holomen lawan, center holomen saya down dan diarsipkan. Jika pada end step tidak ada center holomen dan juga tidak ada back holomen, apa yang harus dilakukan?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-116 ： うぱお]"
+        },
+        "title": "Q212（2024.10.04）"
+      },
+      {
+        "answer": "Tidak, tidak dapat. Saat HP menjadi 0, lakukan proses aturan “down process”, Life saya menjadi 0 sehingga saya segera kalah tanpa menyelesaikan efek 〈うぱお〉 yang sedang menunggu.",
+        "question": "Saat Life saya 1, hBP01-013〈天音かなた〉 milik saya yang dipasangi hBP01-116〈うぱお〉 menerima damage dari Arts lawan dan down. Dapatkah kemampuan hBP01-116〈うぱお〉 memberikan damage khusus ke holomen lawan?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-116",
+            "hBP01-013"
+          ],
+          "raw_html": "[hBP01-116 ： うぱお]\n[hBP01-013 ： 天音かなた]"
+        },
+        "title": "Q108（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak berlaku.",
+        "question": "Apakah kemampuan hBP01-116〈うぱお〉 “Arts +10 untuk holomen yang dipasangi mascot ini.” juga berlaku untuk special damage?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-116 ： うぱお]"
+        },
+        "title": "Q106（2024.09.21）"
+      },
+      {
+        "answer": "Ya, memicu. [Pembaruan 10/04] Isi yang dipublikasikan pada 9/21(Sab) mengandung kesalahan. Kami memperbaiki dan meminta maaf atas kekeliruan tersebut.",
+        "question": "Apakah kemampuan hBP01-116〈うぱお〉 “Saat holomen yang dipasangi mascot ini menerima damage” juga memicu dari special damage?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-116 ： うぱお]"
+        },
+        "title": "Q27（2024.10.04）"
+      },
+      {
+        "answer": "Tidak, tidak akan menerima. Kemampuan oshiskill hBP01-001〈天音かなた〉 “ぎゅっぎゅっ” bukanlah kemampuan yang memberikan damage, sehingga kemampuan hBP01-116〈うぱお〉 tidak akan terpicu.",
+        "question": "Jika saya menggunakan oshiskill hBP01-001〈天音かなた〉 “ぎゅっぎゅっ” terhadap center holomen lawan yang dipasangi hBP01-116〈うぱお〉, apakah center holomen saya akan menerima special damage dari kemampuan hBP01-116〈うぱお〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-116 ： うぱお]"
+        },
+        "title": "Q26（2024.09.21）"
+      }
+    ],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "ability_text": "Pada giliran lawan, ketika Holomen yang dipasang fan ini mengalami Down, kirim 1 kartu teratas dari deck Yell-mu ke〈アキ・ローゼンタール〉mu.\n\nFan ini hanya bisa dipasang pada〈アキ・ローゼンタール〉mu, dan bisa dipasang sebanyak apa pun pada setiap orang.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP01-122",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」"
+    ],
+    "card_type_code": "supportFan",
+    "color_codes": [],
+    "id": "163",
+    "illustrator": "JinArt KABAKURA",
+    "image_key": "hBP01/hBP01-122_C",
+    "locale": "id",
+    "name": "ロゼ隊",
+    "qa_items": [],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "ability_text": "■Ketika Holomen meninggalkan panggung, arsipkan semua Aile milik Holomen tersebut.\n■Ketika Holomen melakukan baton touch, arsipkan jumlah Aile yang ditentukan milik Holomen tersebut.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hY01-001",
+    "card_sets": [
+      "ブースターパック「ブルーミングレディアンス」",
+      "ブースターパック「クインテットスペクトラム」",
+      "ブースターパック「エリートスパーク」",
+      "スタートデッキ「ときのそら＆AZKi」",
+      "スタートデッキ 白 轟はじめ",
+      "スタートデッキ 白 天音かなた",
+      "ライブスタートデッキ 白上フブキ",
+      "スタートエールセット"
+    ],
+    "card_type_code": "supportCheer",
+    "color_codes": [
+      "white"
+    ],
+    "id": "168",
+    "illustrator": "はずき",
+    "image_key": "COMMON/hY01-001_C",
+    "locale": "id",
+    "name": "白エール",
+    "qa_items": [],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hYS01-001",
+    "card_sets": [
+      "スタートエールセット"
+    ],
+    "card_type_code": "oshiCharacter",
+    "color_codes": [
+      "white"
+    ],
+    "id": "172",
+    "illustrator": "松尾 省吾",
+    "image_key": "hY01/hYS01-001_OC",
+    "life": 5,
+    "locale": "id",
+    "name": "七詩ムメイ",
+    "oshi_skill": {
+      "effect": "[ターンに１回]このターンの間、自分の白コラボホロメンのアーツ+20。",
+      "name": "ホワイトバトン",
+      "timing_code": "once_per_turn"
+    },
+    "qa_items": [
+      {
+        "answer": "いいえ、使用できません。ダメージを与える能力ではないため、hBP01-001〈天音かなた〉の推しスキル「ぎゅっぎゅっ」に対してhYS01-001〈七詩ムメイ〉のSP推しスキル「クイックガード」の能力を使用することはできません。",
+        "question": "hBP01-001〈天音かなた〉の推しスキル〈ぎゅっぎゅっ〉に対してhYS01-001〈七詩ムメイ〉のSP推しスキル「クイックガード」を使用することはできますか？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hYS01-001"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hYS01-001 ： 七詩ムメイ]"
+        },
+        "title": "Q25（2024.09.21）"
+      }
+    ],
+    "rarity_code": "OC",
+    "sp_oshi_skill": {
+      "effect": "[ゲームに１回]相手のターンで、自分の白ホロメンが相手からダメージを受ける時に使える：そのホロメン１人が受けるダメージ-20。",
+      "name": "クイックガード",
+      "timing_code": "once_per_game"
+    },
+    "tags": []
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 1,
+        "cost_types": [
+          "white"
+        ],
+        "damage": 10,
+        "effect": "Jika kamu menggunakan kartu Support pada giliran ini, arts ini +20.",
+        "is_plus": true,
+        "name": "Oh,Hi"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "debut",
+    "card_number": "hBP01-015",
+    "card_sets": [
+      "PRカード"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "white"
+    ],
+    "extra": "Holomen ini bisa dimasukkan ke dalam dek sebanyak yang diinginkan",
+    "hp": 90,
+    "id": "176",
+    "image_key": "hPR/hBP01-015_P",
+    "locale": "id",
+    "name": "七詩ムメイ",
+    "qa_items": [
+      {
+        "answer": "Ya, damage arts akan bertambah. Terlepas dari hasil dadu, kemampuan kartu Support tetap aktif, sehingga dianggap telah digunakan dan menambah damage arts.",
+        "question": "Jika menggunakan hSD01-020〈ホロリスの輪〉 dan hasil dadu 2 atau kurang, lalu menggunakan arts \"Oh,Hi\" dari hBP01-015〈七詩ムメイ〉, apakah damage arts akan bertambah?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-015",
+            "hSD01-020"
+          ],
+          "raw_html": "[hBP01-015 ： 七詩ムメイ]\n[hSD01-020 ： ホロリスの輪]"
+        },
+        "title": "Q50（2024.09.21）"
+      },
+      {
+        "answer": "Tidak, tidak bertambah. Penggunaan kartu Support berarti menggunakan kartu dari tangan.",
+        "question": "Jika sudah ada tool atau mascot yang terpasang pada holomenmu dan kemampuannya sedang aktif sebelumnya, lalu hBP01-015〈七詩ムメイ〉 menggunakan arts〈Oh,Hi〉, apakah damage arts akan bertambah?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-015"
+          ],
+          "raw_html": "[hBP01-015 ： 七詩ムメイ]"
+        },
+        "title": "Q49（2024.09.21）"
+      }
+    ],
+    "rarity_code": "P",
+    "tags": [
+      "#EN",
+      "#Promise",
+      "#トリ",
+      "#絵"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 3,
+        "cost_types": [
+          "blue",
+          "null"
+        ],
+        "damage": 60,
+        "name": "MOGMOG",
+        "special_targets": [
+          "white"
+        ],
+        "special_values": [
+          50
+        ]
+      },
+      {
+        "cost_count": 5,
+        "cost_types": [
+          "blue",
+          "blue",
+          "null",
+          "null"
+        ],
+        "damage": 100,
+        "effect": "Arsipkan 2 kartu 青エール dari anggota Holomen ini: berikan damage khusus 30 ke Holomen lawan di Center dan ke 1 Back Holomen.",
+        "name": "おかゆ～",
+        "special_targets": [
+          "white"
+        ],
+        "special_values": [
+          50
+        ]
+      }
+    ],
+    "baton_touch_count": 2,
+    "baton_touch_types": [
+      "null",
+      "null"
+    ],
+    "bloom_level_code": "second",
+    "card_number": "hSD03-009",
+    "card_sets": [
+      "ブースターパック「クインテットスペクトラム」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "blue"
+    ],
+    "hp": 190,
+    "id": "446",
+    "illustrator": "江田藤",
+    "image_key": "hBP02/hSD03-009_SR",
+    "locale": "id",
+    "name": "猫又おかゆ",
+    "qa_items": [],
+    "rarity_code": "SR",
+    "tags": [
+      "#JP",
+      "#ゲーマーズ",
+      "#ケモミミ"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 3,
+        "cost_types": [
+          "purple",
+          "null"
+        ],
+        "damage": 50,
+        "name": "33… 22… 11…",
+        "special_targets": [
+          "green"
+        ],
+        "special_values": [
+          50
+        ]
+      },
+      {
+        "cost_count": 4,
+        "cost_types": [
+          "purple",
+          "purple",
+          "null"
+        ],
+        "damage": 60,
+        "effect": "Untuk setiap Event yang kamu gunakan selama giliran ini, arts ini mendapatkan +40.",
+        "is_plus": true,
+        "name": "あくとっ",
+        "special_targets": [
+          "green"
+        ],
+        "special_values": [
+          50
+        ]
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "second",
+    "card_number": "hSD04-009",
+    "card_sets": [
+      "ブースターパック「クインテットスペクトラム」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "purple"
+    ],
+    "hp": 190,
+    "id": "447",
+    "illustrator": "saihate",
+    "image_key": "hBP02/hSD04-009_SR",
+    "locale": "id",
+    "name": "癒月ちょこ",
+    "qa_items": [],
+    "rarity_code": "SR",
+    "tags": [
+      "#JP",
+      "#2期生",
+      "#料理"
+    ]
+  },
+  {
+    "ability_text": "■ Saat Holomen meninggalkan panggung, arsipkan semua Eruel milik Holomen tersebut.\n■ Saat Holomen melakukan baton touch, arsipkan jumlah Eruel yang ditentukan milik Holomen tersebut.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hY01-003",
+    "card_sets": [
+      "ブースターパック「クインテットスペクトラム」"
+    ],
+    "card_type_code": "supportCheer",
+    "color_codes": [
+      "white"
+    ],
+    "id": "477",
+    "illustrator": "リズ",
+    "image_key": "hBP02/hY01-003_SY",
+    "locale": "id",
+    "name": "白エール",
+    "qa_items": [],
+    "rarity_code": "SY",
+    "tags": []
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 1,
+        "cost_types": [
+          "null"
+        ],
+        "damage": 20,
+        "name": "ガハw"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "debut",
+    "card_number": "hSD05-013",
+    "card_sets": [
+      "スタートデッキ 白 轟はじめ"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "yellow"
+    ],
+    "hp": 90,
+    "id": "529",
+    "illustrator": "Watersnake",
+    "image_key": "hSD05/hSD05-013_U",
+    "keyword": {
+      "effect": "Pindahkan 1 kartu Cheer di panggung Anda ke salah satu Holomen milik Anda selain Holomen ini.",
+      "name": "クレッシェンドな日々",
+      "type": "コラボエフェクト",
+      "type_code": "collab_effect"
+    },
+    "locale": "id",
+    "name": "音乃瀬奏",
+    "qa_items": [],
+    "rarity_code": "U",
+    "tags": [
+      "#DEV_IS",
+      "#ReGLOSS",
+      "#歌"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "null",
+          "null"
+        ],
+        "damage": 40,
+        "effect": "Dari deck cheer-mu, perlihatkan 1 kartu [cheer merah atau cheer biru], lalu kirim ke Holomen milikmu yang memiliki #Advent. Setelah itu, kocok kembali deck cheer-mu.",
+        "name": "魔界乃番犬シスターズ"
+      },
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "blue",
+          "red"
+        ],
+        "damage": 60,
+        "name": "2人揃ってFUWAMOCOです！"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hBP03-050",
+    "card_sets": [
+      "ブースターパック「エリートスパーク」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "blue_red"
+    ],
+    "extra": "Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉.",
+    "hp": 150,
+    "id": "614",
+    "illustrator": "© 2016 COVER Corp. MariA",
+    "image_key": "hBP03/hBP03-050_R",
+    "locale": "id",
+    "name": "FUWAMOCO",
+    "qa_items": [
+      {
+        "answer": "Itu berarti kartu ini memiliki nama〈フワワ・アビスガード〉,〈モココ・アビスガード〉, dan〈FUWAMOCO〉sebagai nama kartu.",
+        "question": "Apa arti dari kemampuan ekstra “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉” pada hBP03-050〈FUWAMOCO〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-050"
+          ],
+          "raw_html": "[hBP03-050 ： FUWAMOCO]"
+        },
+        "title": "Q617（2026.03.02）"
+      },
+      {
+        "answer": "Ya, tetap dianggap begitu.",
+        "question": "Apakah kemampuan ekstra “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉” pada hBP03-050〈FUWAMOCO〉juga berlaku ketika tidak berada di stage?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-050"
+          ],
+          "raw_html": "[hBP03-050 ： FUWAMOCO]"
+        },
+        "title": "Q544（2025.12.18）"
+      },
+      {
+        "answer": "Ya, bisa.",
+        "question": "Jika aku menggunakan hBP04-089〈ツートンカラーパソコン〉dan memilih〈ときのそら〉serta〈フワワ・アビスガード〉sebagai Holomen di stage-ku yang berbeda warna, apakah aku bisa menambahkan hSD01-013〈SorAZ〉dan hBP03-050〈FUWAMOCO〉ke tangan sebagai 1st Holomen dengan warna yang sama?",
+        "related_cards": {
+          "card_number": [
+            "hBP04-089",
+            "hSD01-013",
+            "hBP03-050"
+          ],
+          "raw_html": "[hBP04-089 ： ツートンカラーパソコン]\n[hSD01-013 ： SorAZ]\n[hBP03-050 ： FUWAMOCO]"
+        },
+        "title": "Q404（2025.06.11）"
+      },
+      {
+        "answer": "Ya, akan mendapatkan bonus itu.",
+        "question": "Apakah efek dari arts “Shining Moon” pada hBP04-049〈ムーナ・ホシノヴァ〉akan mendapatkan “+50” jika Holomen lainnya hanya hBP03-050〈FUWAMOCO〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP04-049",
+            "hBP03-050"
+          ],
+          "raw_html": "[hBP04-049 ： ムーナ・ホシノヴァ]\n[hBP03-050 ： FUWAMOCO]"
+        },
+        "title": "Q390（2025.06.11）"
+      },
+      {
+        "answer": "Ya, bisa. Meskipun nama kartu yang disebut tidak langsung cocok, jika ada kemampuan ekstra seperti “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Teks pada hBP03-109〈Ruffians〉tertulis “Kamu bisa mengirim cheer biru dari arsipmu ke〈フワワ・アビスガード〉-mu.” Apakah bisa juga dikirim ke hBP03-050〈FUWAMOCO〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-109",
+            "hBP03-050",
+            "hBP03-043"
+          ],
+          "raw_html": "[hBP03-109 ： Ruffians]\n[hBP03-050 ： FUWAMOCO]\n[hBP03-043 ： フワワ・アビスガード]"
+        },
+        "title": "Q359（2025.03.11）"
+      },
+      {
+        "answer": "Ya, bisa. Karena hBP03-050〈FUWAMOCO〉dianggap sebagai warna merah dan biru, maka kondisi terpenuhi.",
+        "question": "Jika Holomen favoritku adalah hBP03-004〈FUWAMOCO〉, apakah aku bisa menambahkan hBP03-050〈FUWAMOCO〉ke tangan menggunakan hBP03-084〈ゴージャスパソコン〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-050",
+            "hBP03-084",
+            "hBP03-004"
+          ],
+          "raw_html": "[hBP03-050 ： FUWAMOCO]\n[hBP03-084 ： ゴージャスパソコン]\n[hBP03-004 ： FUWAMOCO]"
+        },
+        "title": "Q340（2025.03.11）"
+      },
+      {
+        "answer": "Ya, bisa. Meskipun nama kartu yang disebut tidak langsung cocok, jika ada kemampuan ekstra seperti “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Apakah dengan arts “一緒に食べる?” pada hBP03-043〈フワワ・アビスガード〉aku bisa memindahkan cheer ke hBP03-050〈FUWAMOCO〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-050",
+            "hBP03-043"
+          ],
+          "raw_html": "[hBP03-050 ： FUWAMOCO]\n[hBP03-043 ： フワワ・アビスガード]"
+        },
+        "title": "Q322（2025.03.11）"
+      },
+      {
+        "answer": "Ya, akan mendapatkan bonus itu. Meskipun nama kartu yang disebut tidak langsung cocok, jika ada kemampuan ekstra seperti “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Apakah arts “もこもこしてる方” dari hBP03-039〈モココ・アビスガード〉akan mendapatkan “+30” walaupun Holomen pusatku adalah hBP03-050〈FUWAMOCO〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-039",
+            "hBP03-050"
+          ],
+          "raw_html": "[hBP03-039 ： モココ・アビスガード]\n[hBP03-050 ： FUWAMOCO]"
+        },
+        "title": "Q321（2025.03.11）"
+      },
+      {
+        "answer": "Ya, bisa memberikan damage. Meskipun nama kartu yang disebut tidak langsung cocok, jika ada kemampuan ekstra seperti “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Apakah efek Bloom “フワ花流水” dari hBP03-042〈フワワ・アビスガード〉bisa memberikan damage spesial “20” jika Holomen lain di stage-mu hanya hBP03-050〈FUWAMOCO〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-042",
+            "hBP03-050"
+          ],
+          "raw_html": "[hBP03-042 ： フワワ・アビスガード]\n[hBP03-050 ： FUWAMOCO]"
+        },
+        "title": "Q320（2025.03.11）"
+      },
+      {
+        "answer": "Ya, akan berpindah tanpa beristirahat. Meskipun nama kartu yang disebut tidak langsung cocok, jika ada kemampuan ekstra seperti “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Apakah gift “魔界乃番犬の暴れん坊” dari hBP03-039〈モココ・アビスガード〉tetap memindahkan Holomen pusatku ke posisi belakang tanpa istirahat jika Holomen pusatnya adalah hBP03-050〈FUWAMOCO〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-039",
+            "hBP03-050"
+          ],
+          "raw_html": "[hBP03-039 ： モココ・アビスガード]\n[hBP03-050 ： FUWAMOCO]"
+        },
+        "title": "Q319（2025.03.11）"
+      },
+      {
+        "answer": "Ya, bisa. Meskipun nama kartu yang disebut tidak langsung cocok, jika ada kemampuan ekstra seperti “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Apakah dengan efek Bloom “遊びの時間だー！” dari hBP03-038〈モココ・アビスガード〉aku bisa menambahkan hBP03-050〈FUWAMOCO〉dari deck ke tangan?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-050",
+            "hBP03-038"
+          ],
+          "raw_html": "[hBP03-050 ： FUWAMOCO]\n[hBP03-038 ： モココ・アビスガード]"
+        },
+        "title": "Q318（2025.03.11）"
+      },
+      {
+        "answer": "Ya, bisa. Meskipun nama kartu yang disebut tidak langsung cocok, jika ada kemampuan ekstra seperti “Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉”, maka kartu tersebut memenuhi syarat.",
+        "question": "Apakah skill oshi “モコちゃん！” dari hBP03-004〈FUWAMOCO〉bisa mengirim cheer ke hBP03-050〈FUWAMOCO〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP03-050",
+            "hBP03-004"
+          ],
+          "raw_html": "[hBP03-050 ： FUWAMOCO]\n[hBP03-004 ： FUWAMOCO]"
+        },
+        "title": "Q302（2025.03.11）"
+      }
+    ],
+    "rarity_code": "R",
+    "tags": [
+      "#EN",
+      "#Advent",
+      "#ケモミミ"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "blue",
+          "null"
+        ],
+        "damage": 40,
+        "effect": "Jika idol favoritmu adalah 〈星街すいせい〉, kamu boleh memindahkan 1 kartu Blue Ale dari holomen-mu ini ke 〈星街すいせい〉 di back holomen milikmu.",
+        "name": "バーチャルゴースト"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hBP03-044",
+    "card_sets": [
+      "ブースターパック「エリートスパーク」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "blue"
+    ],
+    "hp": 150,
+    "id": "726",
+    "illustrator": "えいひ",
+    "image_key": "hBP03/hBP03-044_SR",
+    "keyword": {
+      "effect": "Lihat 4 kartu teratas dari dek-mu. Dari situ, buka 1 kartu 〈星街すいせい〉 dan masukkan ke tanganmu. Kemudian kembalikan sisa kartu ke bawah dek dalam urutan yang kamu pilih.",
+      "name": "プラネットステージ",
+      "type": "ブルームエフェクト",
+      "type_code": "bloom_effect"
+    },
+    "locale": "id",
+    "name": "星街すいせい",
+    "qa_items": [],
+    "rarity_code": "SR",
+    "tags": [
+      "#JP",
+      "#0期生",
+      "#歌"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 1,
+        "cost_types": [
+          "purple"
+        ],
+        "damage": 40,
+        "name": "トワとお家デートしたっていい"
+      },
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "purple",
+          "null"
+        ],
+        "damage": 50,
+        "effect": "Saat kamu memiliki back holomen yang memiliki tag #歌, berikan 20 damage khusus kepada kolaborasi holomen lawan.",
+        "name": "てんQ"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hBP03-055",
+    "card_sets": [
+      "ブースターパック「エリートスパーク」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "purple"
+    ],
+    "hp": 130,
+    "id": "735",
+    "illustrator": "雨傘ゆん",
+    "image_key": "hBP03/hBP03-055_SR",
+    "locale": "id",
+    "name": "常闇トワ",
+    "qa_items": [],
+    "rarity_code": "SR",
+    "tags": [
+      "#JP",
+      "#4期生",
+      "#歌",
+      "#シューター"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 3,
+        "cost_types": [
+          "null",
+          "null",
+          "null"
+        ],
+        "damage": 90,
+        "effect": "Kamu bisa memindahkan 1 kartu Eal dari Holomen ini ke Holomen belakangmu.",
+        "name": "ビジネスパートナー"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hBP05-040",
+    "card_sets": [
+      "ブースターパック「エンチャントレガリア」"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "red",
+      "blue"
+    ],
+    "extra": "Holomen ini juga dianggap sebagai 〈さくらみこ〉 dan 〈星街すいせい〉.",
+    "hp": 150,
+    "id": "1218",
+    "illustrator": "UIIV◇",
+    "image_key": "hBP05/hBP05-040_U",
+    "keyword": {
+      "effect": "Jika Life kamu 3 atau kurang, kamu bisa melakukan Bloom sekali lagi terhadap Center Holomen yang telah Bloom di giliran ini dan memiliki [〈さくらみこ〉 atau 〈星街すいせい〉], dengan menggunakan Holomen dari tanganmu.",
+      "name": "ビジネスフレンド",
+      "type": "コラボエフェクト",
+      "type_code": "collab_effect"
+    },
+    "locale": "id",
+    "name": "miComet",
+    "qa_items": [
+      {
+        "answer": "Artinya kartu ini memiliki nama 〈さくらみこ〉, 〈星街すいせい〉, dan 〈miComet〉.",
+        "question": "Apa arti kemampuan Ekstra dari hBP05-040〈miComet〉, \"Holomen ini juga dianggap sebagai 〈さくらみこ〉 dan 〈星街すいせい〉\"?",
+        "related_cards": {
+          "card_number": [
+            "hBP05-040"
+          ],
+          "raw_html": "[hBP05-040 ： miComet]"
+        },
+        "title": "Q618（2026.03.02）"
+      },
+      {
+        "answer": "Ya, tetap dianggap begitu.",
+        "question": "Untuk hBP05-040〈miComet〉 dengan Ekstra \"Holomen ini juga dianggap sebagai 〈さくらみこ〉 dan 〈星街すいせい〉\", apakah tetap dianggap sebagai 〈さくらみこ〉 dan 〈星街すいせい〉 saat berada di luar stage?",
+        "related_cards": {
+          "card_number": [
+            "hBP05-040"
+          ],
+          "raw_html": "[hBP05-040 ： miComet]"
+        },
+        "title": "Q545（2025.12.18）"
+      }
+    ],
+    "rarity_code": "U",
+    "tags": [
+      "#JP",
+      "#0期生",
+      "#ベイビー",
+      "#歌"
+    ]
+  },
+  {
+    "ability_text": "Kartu ini tidak bisa digunakan kecuali kamu mengarsipkan 1 kartu Yell di stage-mu.\n\nTempelkan 1 kartu Fan dari area arsipmu ke salah satu Holomen milikmu. Jika kamu melakukannya, kembalikan 1 kartu Holomen dari area arsipmu ke tanganmu.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP07-091",
+    "card_sets": [
+      "ブースターパック「ディーヴァフィーバー」"
+    ],
+    "card_type_code": "supportStaff",
+    "color_codes": [],
+    "id": "1877",
+    "illustrator": "海原カイロ",
+    "image_key": "hBP07/hBP07-091_C",
+    "locale": "id",
+    "name": "Staf Live",
+    "qa_items": [],
+    "rarity_code": "C",
+    "tags": []
+  },
+  {
+    "ability_text": "Kartu ini hanya bisa digunakan jika kamu mengarsipkan 1 kartu Sorakan di panggungmu.\n\nPasang 1 kartu Penggemar dari arsipmu ke salah satu Holomen kamu. Jika kamu melakukannya, kembalikan 1 kartu Holomen dari arsipmu ke tanganmu.",
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP07-091",
+    "card_sets": [
+      "ブースターパック「ディーヴァフィーバー」"
+    ],
+    "card_type_code": "supportStaff",
+    "color_codes": [],
+    "id": "2003",
+    "illustrator": "海原カイロ",
+    "image_key": "hBP07/hBP07-091_S",
+    "locale": "id",
+    "name": "Staf Live",
+    "qa_items": [],
+    "rarity_code": "S",
+    "tags": []
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "blue",
+          "null"
+        ],
+        "damage": 40,
+        "effect": "Jika oshi Holomen-mu adalah 〈星街すいせい〉, kamu dapat memindahkan 1 kartu Aerial biru dari Holomen ini ke 〈星街すいせい〉 yang ada di Holomen belakangmu.",
+        "name": "バーチャルゴースト"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hBP03-044",
+    "card_sets": [
+      "オフィシャルホロカコレクション-2025ライブセット-"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "blue"
+    ],
+    "hp": 150,
+    "id": "2138",
+    "illustrator": "Mika Pikazo",
+    "image_key": "hCO01/hBP03-044_SR",
+    "keyword": {
+      "effect": "Lihat 4 kartu teratas dari dekmu. Perlihatkan 1 kartu 〈星街すいせい〉 dari antara kartu tersebut, lalu tambahkan ke tanganmu. Kemudian, kembalikan sisa kartu ke bagian bawah dek dalam urutan yang kamu pilih.",
+      "name": "プラネットステージ",
+      "type": "ブルームエフェクト",
+      "type_code": "bloom_effect"
+    },
+    "locale": "id",
+    "name": "星街すいせい",
+    "qa_items": [],
+    "rarity_code": "SR",
+    "tags": [
+      "#JP",
+      "#0期生",
+      "#歌"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 1,
+        "cost_types": [
+          "purple"
+        ],
+        "damage": 40,
+        "name": "トワとお家デートしたっていい"
+      },
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "purple",
+          "null"
+        ],
+        "damage": 50,
+        "effect": "Kalau ada anggota holo pendukung milikmu yang punya tag #歌, berikan 20 damage khusus ke anggota holo kolaborasi lawan.",
+        "name": "てんQ"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hBP03-055",
+    "card_sets": [
+      "オフィシャルホロカコレクション-2025ライブセット-"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "purple"
+    ],
+    "hp": 130,
+    "id": "2139",
+    "illustrator": "花澤明",
+    "image_key": "hCO01/hBP03-055_SR",
+    "locale": "id",
+    "name": "常闇トワ",
+    "qa_items": [],
+    "rarity_code": "SR",
+    "tags": [
+      "#JP",
+      "#4期生",
+      "#歌",
+      "#シューター"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 1,
+        "cost_types": [
+          "white"
+        ],
+        "damage": 40,
+        "name": "Otsu Luna"
+      },
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "white",
+          "null"
+        ],
+        "damage": 60,
+        "name": "Selamat malam~"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hBP03-011",
+    "card_sets": [
+      "hololive OFFICIAL CARD GAME ツインウエハース"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "white"
+    ],
+    "hp": 150,
+    "id": "2164",
+    "illustrator": "葉桜ちこり",
+    "image_key": "hWF01/hBP03-011_P",
+    "locale": "id",
+    "name": "姫森ルーナ",
+    "qa_items": [],
+    "rarity_code": "P",
+    "tags": [
+      "#JP",
+      "#4期生",
+      "#ベイビー"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 2,
+        "cost_types": [
+          "null",
+          "null"
+        ],
+        "damage": 50,
+        "effect": "Jika oshi Holomen-mu adalah 〈FUWAMOCO〉 berwarna biru, ubah 1 kartu teratas dari deck-mu menjadi Holo Power.",
+        "name": "いっしょういっしょ♡"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "first",
+    "card_number": "hBP08-060",
+    "card_sets": [
+      "ブースターパック バウンサーバウンド"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "blue_red"
+    ],
+    "extra": "Holomen ini juga dianggap sebagai 〈フワワ・アビスガード〉 dan 〈モココ・アビスガード〉.",
+    "hp": 170,
+    "id": "2263",
+    "illustrator": "兎未枝",
+    "image_key": "hBP08/hBP08-060_R",
+    "keyword": {
+      "effect": "[Hanya untuk posisi kolaborasi] Ubah efek skill oshi-mu 「モコちゃん！」 dari [Holo Power:-3] menjadi [Holo Power:-2].",
+      "name": "“BAU” DOL♡",
+      "type": "ギフト",
+      "type_code": "gift"
+    },
+    "locale": "id",
+    "name": "FUWAMOCO",
+    "qa_items": [],
+    "rarity_code": "R",
+    "tags": [
+      "#EN",
+      "#Advent",
+      "#ケモミミ"
+    ]
+  },
+  {
+    "arts": [
+      {
+        "cost_count": 1,
+        "cost_types": [
+          "null"
+        ],
+        "damage": 30,
+        "name": "ハイRyS！"
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "debut",
+    "card_number": "hBP01-028",
+    "card_sets": [
+      "ブースターパック バウンサーバウンド"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "white"
+    ],
+    "extra": "Holomen ini bisa dimasukkan ke dalam dek dengan jumlah berapa pun.",
+    "hp": 100,
+    "id": "2444",
+    "illustrator": "がり",
+    "image_key": "hBP08/hBP01-028_HR",
+    "locale": "id",
+    "name": "IRyS",
+    "qa_items": [],
+    "rarity_code": "HR",
+    "tags": [
+      "#EN",
+      "#Promise",
+      "#歌"
+    ]
+  }
+]

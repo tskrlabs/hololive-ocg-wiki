@@ -1,0 +1,223 @@
+{
+  "generated_at": "2026-07-25T00:00:00Z",
+  "built_at": "2026-07-25T00:00:00Z",
+  "mode": "full",
+  "counts": {
+    "total": 34,
+    "new": 34,
+    "changed": 0,
+    "qa_updated": 0,
+    "unchanged": 0,
+    "removed": 0,
+    "missing_from_build": 0
+  },
+  "new": [
+    {
+      "id": "1",
+      "card_number": "hSD01-001",
+      "image_key": "hSD01/hSD01-001_OSR",
+      "name": "ときのそら"
+    },
+    {
+      "id": "2",
+      "card_number": "hSD01-002",
+      "image_key": "hSD01/hSD01-002_OSR",
+      "name": "AZKi"
+    },
+    {
+      "id": "6",
+      "card_number": "hSD01-006",
+      "image_key": "hSD01/hSD01-006_RR",
+      "name": "ときのそら"
+    },
+    {
+      "id": "13",
+      "card_number": "hSD01-013",
+      "image_key": "hSD01/hSD01-013_R",
+      "name": "SorAZ"
+    },
+    {
+      "id": "14",
+      "card_number": "hSD01-014",
+      "image_key": "hSD01/hSD01-014_U",
+      "name": "天音かなた"
+    },
+    {
+      "id": "16",
+      "card_number": "hSD01-016",
+      "image_key": "hSD01/hSD01-016_C",
+      "name": "春先のどか"
+    },
+    {
+      "id": "18",
+      "card_number": "hSD01-018",
+      "image_key": "hSD01/hSD01-018_C",
+      "name": "サブパソコン"
+    },
+    {
+      "id": "19",
+      "card_number": "hSD01-019",
+      "image_key": "hSD01/hSD01-019_C_02",
+      "name": "スゴイパソコン"
+    },
+    {
+      "id": "20",
+      "card_number": "hSD01-020",
+      "image_key": "hSD01/hSD01-020_C",
+      "name": "ホロリスの輪"
+    },
+    {
+      "id": "21",
+      "card_number": "hSD01-021",
+      "image_key": "hSD01/hSD01-021_C",
+      "name": "First Gravity"
+    },
+    {
+      "id": "23",
+      "card_number": "hBP01-001",
+      "image_key": "hBP01/hBP01-001_OUR",
+      "name": "天音かなた"
+    },
+    {
+      "id": "34",
+      "card_number": "hBP01-006",
+      "image_key": "hBP01/hBP01-006_SEC",
+      "name": "小鳥遊キアラ"
+    },
+    {
+      "id": "46",
+      "card_number": "hBP01-014",
+      "image_key": "hBP01/hBP01-014_UR",
+      "name": "天音かなた"
+    },
+    {
+      "id": "156",
+      "card_number": "hBP01-115",
+      "image_key": "hBP01/hBP01-115_U",
+      "name": "星街すいせいのマイク"
+    },
+    {
+      "id": "157",
+      "card_number": "hBP01-116",
+      "image_key": "hBP01/hBP01-116_C",
+      "name": "うぱお"
+    },
+    {
+      "id": "163",
+      "card_number": "hBP01-122",
+      "image_key": "hBP01/hBP01-122_C",
+      "name": "ロゼ隊"
+    },
+    {
+      "id": "168",
+      "card_number": "hY01-001",
+      "image_key": "COMMON/hY01-001_C",
+      "name": "白エール"
+    },
+    {
+      "id": "172",
+      "card_number": "hYS01-001",
+      "image_key": "hY01/hYS01-001_OC",
+      "name": "七詩ムメイ"
+    },
+    {
+      "id": "176",
+      "card_number": "hBP01-015",
+      "image_key": "hPR/hBP01-015_P",
+      "name": "七詩ムメイ"
+    },
+    {
+      "id": "446",
+      "card_number": "hSD03-009",
+      "image_key": "hBP02/hSD03-009_SR",
+      "name": "猫又おかゆ"
+    },
+    {
+      "id": "447",
+      "card_number": "hSD04-009",
+      "image_key": "hBP02/hSD04-009_SR",
+      "name": "癒月ちょこ"
+    },
+    {
+      "id": "477",
+      "card_number": "hY01-003",
+      "image_key": "hBP02/hY01-003_SY",
+      "name": "白エール"
+    },
+    {
+      "id": "529",
+      "card_number": "hSD05-013",
+      "image_key": "hSD05/hSD05-013_U",
+      "name": "音乃瀬奏"
+    },
+    {
+      "id": "614",
+      "card_number": "hBP03-050",
+      "image_key": "hBP03/hBP03-050_R",
+      "name": "FUWAMOCO"
+    },
+    {
+      "id": "726",
+      "card_number": "hBP03-044",
+      "image_key": "hBP03/hBP03-044_SR",
+      "name": "星街すいせい"
+    },
+    {
+      "id": "735",
+      "card_number": "hBP03-055",
+      "image_key": "hBP03/hBP03-055_SR",
+      "name": "常闇トワ"
+    },
+    {
+      "id": "1218",
+      "card_number": "hBP05-040",
+      "image_key": "hBP05/hBP05-040_U",
+      "name": "miComet"
+    },
+    {
+      "id": "1877",
+      "card_number": "hBP07-091",
+      "image_key": "hBP07/hBP07-091_C",
+      "name": "ライブスタッフ"
+    },
+    {
+      "id": "2003",
+      "card_number": "hBP07-091",
+      "image_key": "hBP07/hBP07-091_S",
+      "name": "ライブスタッフ"
+    },
+    {
+      "id": "2138",
+      "card_number": "hBP03-044",
+      "image_key": "hCO01/hBP03-044_SR",
+      "name": "星街すいせい"
+    },
+    {
+      "id": "2139",
+      "card_number": "hBP03-055",
+      "image_key": "hCO01/hBP03-055_SR",
+      "name": "常闇トワ"
+    },
+    {
+      "id": "2164",
+      "card_number": "hBP03-011",
+      "image_key": "hWF01/hBP03-011_P",
+      "name": "姫森ルーナ"
+    },
+    {
+      "id": "2263",
+      "card_number": "hBP08-060",
+      "image_key": "hBP08/hBP08-060_R",
+      "name": "FUWAMOCO"
+    },
+    {
+      "id": "2444",
+      "card_number": "hBP01-028",
+      "image_key": "hBP08/hBP01-028_HR",
+      "name": "IRyS"
+    }
+  ],
+  "changed": [],
+  "qa_updated": [],
+  "removed": []
+}
