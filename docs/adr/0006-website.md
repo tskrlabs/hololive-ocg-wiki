@@ -1,0 +1,122 @@
+# ADR 0006 — the website
+
+**Status:** accepted, in execution
+**Date:** 2026-07-27
+**Phase:** 5
+**Supersedes nothing. Amends:** D11, D13, and Phase 4's endpoint count.
+
+The decisions behind `apps/web` and the final shape of the Worker. Every one was put to
+the maintainer individually during a grilling session; the full interview, including the
+options rejected and why, is in [`../phase-5-grilling.md`](../phase-5-grilling.md).
+
+## Context
+
+Phases 0–4 built the contract, the pipeline, R2, D1 and the API. The site itself is still
+v1's: a Nuxt 3.17 SPA in another repo, pointed at v1's Worker, carrying two half-finished
+migrations (a dead client-side card store, and an abandoned camelCase card shape).
+
+D13 fixed the scope in advance — the four candidates from
+[`../architecture-review-v1.md`](../architecture-review-v1.md) plus a dead-code purge, no
+new features, no redesign, no rendering-mode change.
+
+## The holes this phase found
+
+Three, none of which were in the plan. They are recorded here because each was a gap
+between phases rather than a bug inside one — the class of defect a phase boundary hides.
+
+### 1. Two artifacts had no reader
+
+`holo-data publish` has uploaded `info.json` since Phase 2 and `holo-data seed` has
+uploaded `status.json` since Phase 3, both into the **private** artifacts bucket. **No
+Worker route served either.** Phase 4 built the seven card endpoints and stopped; the
+site would have had no way to render its about dialog or its status page.
+
+**Decision: add `GET /api/info` and `GET /api/status`.** Same shape as
+`/api/filter-options` — fetch the R2 object, stream the bytes through unparsed, 404 with
+a written message naming the command that produces it. The bucket stays private, which is
+what keeps the 21 MB `cards.json` beside them unreachable.
+
+**Nine endpoints.** v1 had eight; Phase 4 deleted `/api/static-filters` to make seven;
+this restores two that are genuinely new.
+
+TTLs are set per artifact rather than shared. `info.json` is one hour — its entire
+purpose is being edited without a redeploy (D11), and a day-long TTL would leave a typo
+in the disclaimer visible until tomorrow. `status.json` matches `CARD_TTL`, because it
+changes on exactly the event that changes the card data.
+
+### 2. `content/README.md` documents a mechanism that does not exist
+
+It states the info dialog's card count comes from "`cards.json`'s own `generated_at` and
+card count, **which the site already loads**." The site never loads `cards.json` — it is
+21 MB and D8 moved all querying to D1.
+
+**Decision: the count and last-updated date come from `/api/status`**, which already
+carries `counts.total` and `generated_at`. The dialog is click-to-open, so the fetch is
+lazy. `content/README.md` is corrected as part of this phase.
+
+The rule that file states — *"a number in this file is a number nobody will remember to
+change"* — is right and is preserved. `info.json` still carries no facts about the data.
+
+### 3. `status.json` changed shape, so `/status` cannot be ported as written
+
+| v1 page expects | v2 artifact has |
+|---|---|
+| `generatedAt`, `diff.qaUpdated` | `generated_at`, `qa_updated` — snake_case throughout |
+| `source.total` / `source.valid` | `counts.total` only |
+| `skipped[]` with `missingFields`, and a Skipped tab | **nothing** |
+| `imagePath` | `image_key` (D9) |
+
+**Decision: port the page adapted, and drop the Skipped tab.** Restoring `skipped[]` to
+the pipeline would reopen Phase 1/3 code to build a second channel for information the
+build already reports through collect-and-report validation.
+
+## Decisions
+
+| | decision |
+|---|---|
+| **Framework** | **Nuxt 4.5** with the `app/` srcDir. The port is already a file-by-file move into a directory that does not exist; Nuxt 4's headline breaking change *is* that move. Absorbing it now is nearly free, later is a second pass over every file. Amends D13, which was silent on the framework version. |
+| **Build** | `ssr: false` + **`nuxt generate`** → static files, bound as Worker assets with `not_found_handling: "single-page-application"`. **No Nitro ships.** The Worker stays the Hono app Phase 4 built. Using the `nitro-cloudflare` preset would invert D2 — the API would become a route inside Nuxt's server, and every request would run JS, risking the free-and-unlimited status of static assets (v2-plan §6). |
+| **Port order** | Purge → port live code → refactor. The dead store, its six forked views and `plugins/cards.ts` **never enter this repo**, so Candidate 01's deletion half is satisfied by construction. A verbatim-copy-first approach was not available anyway: the dead store imports `data/cards_i18n.json`, which D1 removed from git. |
+| **Deck format** | Candidate 03's section model is **in-memory only**. `localStorage["hololive-ocg-wiki-decks"]` and the base64 deck-code URL keep their exact v1 shape behind one serialize/deserialize seam, pinned by a round-trip test. Shared deck codes live in Discord messages indefinitely. Card `id` is the official site's own detail-page id (`scrape/fetch.py:91`), so ids stay valid across the cutover — only the envelope was ever at risk. |
+| **Verification** | `nuxt typecheck` plus unit tests over the pure modules the refactors create — filter shape, deck sections and limits, the `useDeckCards` join, `deckCode` round-trip. No Playwright in `make check`: it is the pre-commit hook, and browser E2E is the most brittle thing that could live there. **Accepted gap:** nothing automated asserts a template renders. |
+| **Dev loop** | `nuxt dev` proxies `/api` → `wrangler dev`, as v1 did, so relative paths work identically in dev and production and no `runtimeConfig` API base exists. Plus a composed `nuxt generate` + `wrangler dev` rehearsal before deploying — the only thing that exercises the real SPA fallback. |
+| **Indexing** | **Blocked until Phase 7.** `robots.txt` Disallow, `noindex`, no sitemap submission; analytics configured but not firing. v2-plan §7 defers the SEO strategy to Phase 7, and an indexed v2 would pre-empt it — a second copy of the same 2,448 cards competing with a site we have not decided how to retire. |
+| **Assets** | Game icons stay committed (UI chrome, not card data) but **WebP only**, behind one `gameIcon()` helper mirroring `cardImage()`. Not carried: `card_images/` (1.0 GB, R2's job), the unreferenced 2.3 MB screenshot PNGs, and the Search Console token for the old domain. |
+| **Deploy** | One deploy — Worker and assets together — **to workers.dev first**, exercised against the real 2,448 cards, and only then is the domain attached. |
+
+## Why the deploy is split from the domain
+
+Everything above is verified against the **34-card fixtures**. Production has 2,448 cards
+and 296 distinct names, and Phase 3's most expensive bug — 15.5M rows read on a
+27,203-row write — appeared *only* against a real database, because SQLite does not
+report `rows_read` and D1 does.
+
+A frontend correct on 34 cards is not thereby known to be correct on 2,448. Attaching the
+domain as a second step keeps the number of deploys at one while moving first contact
+with real data onto a URL nobody has.
+
+Running `wrangler dev --remote` against production D1 instead was rejected: it needs a
+Cloudflare token in the dev loop, breaking D12's credential-free property, and it reads
+the live database — the resource that already breached its free tier once (F-014).
+
+## D11's premise is weaker than when written
+
+Worth recording, because it will look like an oversight later. D11 justified moving
+`info.json` to R2 by the edit-without-redeploy property. The Phase 2 amendment then made
+it a **committed** file at `content/info.json`, so editing it is already edit → commit →
+`publish`; under Workers Builds (Phase 6) that commit auto-deploys regardless.
+
+R2 is kept anyway, for consistency with `status.json` — which is written by `seed` against
+a live database, is never committed, and therefore has no build-time copy to bake in.
+Splitting the two across different mechanisms would cost more than the redundancy does.
+
+## Consequences
+
+- Nine endpoints. `apps/api` gains `routes/artifacts.ts`; `smoke.sh` grows from 34 checks
+  to 43, including both missing-artifact branches.
+- `smoke.sh` now wipes local R2 as well as local D1. It did not before, which was latent:
+  the new "404 before publish" checks would have passed once and failed on every rerun.
+- Two switches must flip at Phase 7 — `noindex` and analytics. If they are missed, the
+  new site stays invisible.
+- Phase 6 inherits a monorepo build order: `nuxt generate` in `apps/web` must precede
+  `wrangler deploy` in `apps/api`.

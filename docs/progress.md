@@ -1,15 +1,18 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0–4 done, with one step outstanding. Images are live at
-`img.hololive-ocg-wiki.tskrlabs.com`, `publish` is idempotent, D1 is populated and
-reseeded into the Phase 4 shape (2,448 cards), and the **Worker is built and green** —
-seven endpoints, `make check` covers them end-to-end against local D1.
+**Where we are:** Phases 0–4 done; **Phase 5 is in progress** on branch
+`phase-5-website`. Images are live at `img.hololive-ocg-wiki.tskrlabs.com`, `publish` is
+idempotent, D1 is populated and reseeded into the Phase 4 shape (2,448 cards), and the
+Worker is built and green — now **nine endpoints**, `make check` covers them end-to-end
+against local D1.
 
-⚠️ **The Worker is not deployed.** `wrangler deploy` needs a token with *Workers Scripts
-Edit*; the seeder's token is scoped to D1 + Analytics only, which is correct. See
-[Phase 4 execution](#phase-4-execution) for the one command to run.
+⚠️ **Nothing is deployed yet, deliberately.** Phase 5 decided on a *single* deploy at the
+end, shipping the Worker and the static site together — so there is no API-only interim
+deploy. See [Phase 5](#phase-5--the-website).
 
-**Phase 5 (Website) is next.**
+**Phase 5 design is settled.** Sixteen decisions, recorded in
+[ADR 0006](adr/0006-website.md) with the full interview in
+[`phase-5-grilling.md`](./phase-5-grilling.md).
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -25,8 +28,8 @@ copy and is authoritative if they disagree.
 | 1 | Pipeline migration | ✅ done | [ADR 0002](adr/0002-field-level-translation-cache.md) · `6be38ff` |
 | 2 | CF resources + R2 publish | ✅ done | [ADR 0003](adr/0003-r2-publish.md) · live |
 | 3 | D1 redesign + seeder | ✅ done | [ADR 0004](adr/0004-d1-schema-and-seeder.md) · live |
-| 4 | Worker rewrite (Hono + Zod) | ✅ done — deploy pending | [ADR 0005](adr/0005-worker-api.md) |
-| 5 | Website (new API/R2, 4 refactors) | 🔜 **next** | |
+| 4 | Worker rewrite (Hono + Zod) | ✅ done — deploys with Phase 5 | [ADR 0005](adr/0005-worker-api.md) |
+| 5 | Website (new API/R2, 4 refactors) | 🚧 **in progress** | [ADR 0006](adr/0006-website.md) |
 | 6 | Workers Builds + fixtures + docs | ⬜ | |
 | 7 | Launch | ⬜ | |
 
@@ -151,6 +154,12 @@ Recorded in the ADRs; listed here so they are not missed.
 | **D8** | `/api/static-filters` is **deleted**, not moved to R2. It returned enum values the contract already owns, and v1's frontend never called it — it read a hand-maintained constants file that had drifted |
 | **Phase 4 done-when** | "All 8 endpoints; SPA + API from one Worker" → **7 endpoints, API only**. `apps/web` does not exist until Phase 5, so there are no assets to bind; the `assets` block, SPA fallback and apex domain move there |
 | **Phase 3 schema** | `schema.sql` is `CREATE TABLE IF NOT EXISTS`, so it **cannot evolve a populated database** — re-applying it silently skips a new column, then fails on the index using it. `packages/schema/sql/migrations/` added |
+| **Phase 4** | Seven endpoints → **nine**. `/api/info` and `/api/status` were never built, so `info.json` (uploaded since Phase 2) and `status.json` (since Phase 3) sat in a private bucket **with no reader at all** ([ADR 0006](adr/0006-website.md)) |
+| **D11** | `content/README.md` claimed the card count comes from `cards.json` "which the site already loads" — **the site never loads it** (21 MB; D8 moved querying to D1). It comes from `/api/status`, which already carries `counts.total` and `generated_at` |
+| **D11** | The edit-without-redeploy premise is **weaker than when written**: `info.json` has been *committed* since Phase 2, so editing it is already edit → commit → publish, and Workers Builds will auto-deploy that commit anyway. R2 retained for consistency with `status.json`, which has no committed copy |
+| **D13** | "four refactors + dead-code purge" is joined by a **framework upgrade**, Nuxt 3.17 → 4.5. Still no new features, no redesign, no rendering-mode change |
+| **Phase 5 status page** | v2's `status.json` dropped `skipped[]` and `source.valid` and is snake_case throughout, so `/status` **cannot be ported unchanged**. Ported adapted; the Skipped tab has no data source in v2 and is dropped |
+| **v2-plan §7** | The SEO decision stays deferred — which means Phase 5 must **actively block indexing** to keep it deferrable |
 
 ## Phase 2 — R2 publish
 
@@ -390,19 +399,74 @@ filter instead of the storage.
 | `publish` | 8 artifacts — `cards.json` + 7 `filter-options/` files; a second run uploads nothing |
 | `make check` | green — 167 Python, 11 TS parity, 25 Worker unit, 34 endpoint checks |
 
-**⚠️ One step left: deploy.** The Worker is built, tested and committed but **not
-deployed** — `wrangler deploy` needs a token with **Workers Scripts Edit**, and the
-seeder's token is scoped to D1 Edit + Analytics Read only. That scoping is correct and
-worth keeping; it just means the deploy is a maintainer step:
+**The deploy moved to Phase 5**, by decision — one deploy shipping the Worker and the
+site together, rather than an API-only interim. It still needs a token with **Workers
+Scripts Edit**; the seeder's token is scoped to D1 Edit + Analytics Read only, which is
+correct and worth keeping. Commands are in [Phase 5](#phase-5--the-website).
+
+## Phase 5 — the website
+
+Full reasoning in [ADR 0006](adr/0006-website.md); the complete interview, including
+every option rejected, in [`phase-5-grilling.md`](./phase-5-grilling.md).
+
+**The grilling found three holes, all of them gaps *between* phases rather than bugs
+inside one:**
+
+1. **`info.json` and `status.json` had no reader.** Uploaded to the private artifacts
+   bucket since Phases 2 and 3; no Worker route served either. The site would have had no
+   way to render its about dialog or its status page. → `/api/info`, `/api/status`.
+2. **`content/README.md` documents a mechanism that does not exist** — it says the card
+   count comes from `cards.json` "which the site already loads". The site never loads it.
+3. **`status.json` changed shape**, so `/status` cannot be ported unchanged, and its
+   Skipped tab has no data source in v2 at all.
+
+### The commit sequence
+
+| # | commit | state |
+|---|---|---|
+| 1 | `/api/info` + `/api/status` | ✅ done |
+| 2 | scaffold `apps/web` on Nuxt 4 (`app/` srcDir, `nuxt generate`, `make dev`) | ⬜ |
+| 3 | port the **live** code only — green on fixtures | ⬜ |
+| 4 | Candidate 01 — one `useCardQuery` interface | ⬜ |
+| 5 | Candidate 02 — deep Filter module | ⬜ |
+| 6 | Candidate 03 — Deck as sections, **wire format frozen** | ⬜ |
+| 7 | Candidate 04 — `useDeckCards` | ⬜ |
+| 8 | `assets` binding + deploy + domain | ⬜ |
+
+### Three API changes the frontend must adapt to
+
+Verified against v1's live code, not assumed:
+
+- **`total` is absent** when `skip_count=true`, rather than `-1`. `useCardStoreAPI.ts:657`
+  comments *"response.total is -1 when skip_count=true"*. Read it as `total ?? cachedTotal`.
+- **Over-cap batch requests 400** instead of silently returning the first 50.
+  `useCardStoreAPI.ts:448` joins ids with no chunking. Chunk to 50 client-side.
+- **Colour filters include fused cards**, so the separate `blue_red` / `white_green`
+  checkboxes go — those cards now appear under both constituent colours (F-016).
+
+Also: `constants/card-data.ts` → `@holo/schema/enums`, and `normalizeCard`
+(`useCardStoreAPI.ts:88`) is a no-op spread over a commented-out body — delete outright.
+
+### Two switches that must flip at Phase 7
+
+The pre-launch site is deliberately invisible: **`noindex`** (v2-plan §7 defers the SEO
+decision, and an indexed v2 would pre-empt it) and **analytics off** (pre-launch traffic
+would pollute the container holding v1's real year of data). If these are missed at
+launch, the new site stays invisible.
+
+### The deploy, when commit 8 lands
+
+Split in two deliberately — everything before it is verified against **34 fixture cards**,
+and Phase 3's lesson was that the expensive bug only appears against a real database:
 
 ```bash
 cd apps/api
 npx wrangler login          # or export a token with Workers Scripts Edit
-npx wrangler deploy
+npx wrangler deploy         # Worker + assets → workers.dev
 ```
 
-Then verify against production — these are the numbers Phase 3 measured, so they double
-as a check that the reseed landed:
+Verify against the real 2,448 cards **before** attaching the domain. These are the
+numbers Phase 3 and 4 measured, so they double as a check that the reseed landed:
 
 ```bash
 API=https://hololive-ocg-wiki.<your-subdomain>.workers.dev
@@ -412,18 +476,9 @@ curl -s "$API/api/cards/search?q=そら"      | jq '.cards | length'   # 2 chars
 curl -s "$API/api/cards/search?q=a%20AND"   | jq                     # 200, not 500
 curl -s "$API/api/cards/filter?name=白上フブキ&locale=en" | jq '.total'  # expect 44
 curl -s "$API/api/filter-options?locale=en" | jq '.names | length'   # expect 296
+curl -s "$API/api/status" | jq '.counts.total'                       # expect 2448
+curl -s "$API/api/info"   | jq '.contents | length'                  # expect 3
 ```
 
-### What Phase 5 needs to know
-
-Three API changes are deliberate and need a frontend adjustment:
-
-- **`total` is absent** when `skip_count=true`, rather than `-1`. Read it as
-  `total ?? cachedTotal`.
-- **Over-cap batch requests 400** instead of silently returning the first 50. Chunk
-  client-side.
-- **Colour filters include fused cards**, so the separate `blue_red` / `white_green`
-  checkboxes should go — those cards now appear under both constituent colours.
-
-Also: `constants/card-data.ts` is replaced by `@holo/schema/enums`, and `normalizeCard`
-in `useCardStoreAPI.ts` is a no-op spread that can be deleted outright.
+Then walk the site itself on that URL — filter, search, open a card, build a deck, share
+a deck code — and only then point `hololive-ocg-wiki.tskrlabs.com` at it.

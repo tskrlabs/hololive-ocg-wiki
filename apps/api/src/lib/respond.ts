@@ -22,6 +22,26 @@ export const CARD_TTL = 3600;
 /** Dropdown values. Change even less often, and are served from a static R2 object. */
 export const FILTER_OPTIONS_TTL = 86400;
 
+/**
+ * Editorial copy for the about dialog.
+ *
+ * Shorter than the other artifacts at one hour, and deliberately: `info.json` is the one
+ * file whose whole purpose is to be changed without redeploying (D11). A day-long TTL
+ * would mean a typo fix in the disclaimer stayed visible until tomorrow, which defeats
+ * the property the file exists for. It is also fetched only when the dialog is opened,
+ * so the origin cost of the shorter TTL is negligible.
+ */
+export const INFO_TTL = 3600;
+
+/**
+ * The last seed's report.
+ *
+ * Matches `CARD_TTL`, because it changes on exactly the same event: `seed` writes it at
+ * the end of the run that changed the card data. A longer TTL would let the status page
+ * claim a reseed had not happened while the card list already showed the new cards.
+ */
+export const STATUS_TTL = CARD_TTL;
+
 export function cached<T>(c: Context, body: T, ttl: number = CARD_TTL): Response {
   c.header("Cache-Control", `public, max-age=${ttl}`);
   return c.json(body as object);

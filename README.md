@@ -13,21 +13,27 @@ A fan-made wiki for the Hololive Official Card Game — card database, search, a
 
 ## Status
 
-**Phase 2 built** — the card contract is defined once as pydantic models (Phase 0), the
-data pipeline runs from it (Phase 1), and `holo-data publish` uploads images and
-artifacts to R2 (Phase 2). Phase 2 is awaiting the Cloudflare resources themselves, which
-only the maintainer can create — see [`docs/infra.md`](docs/infra.md). Next up:
-**Phase 3**, the D1 redesign and seeder.
+**Phases 0–4 done, Phase 5 in progress.** The card contract is defined once as pydantic
+models (Phase 0), the data pipeline runs from it (Phase 1), images and artifacts are live
+in R2 (Phase 2), D1 holds all 2,448 cards (Phase 3), and the Worker serves them over nine
+endpoints (Phase 4 + 5).
+
+**Phase 5** is the website: porting the frontend to `apps/web` on Nuxt 4, applying the
+four refactors from [`docs/architecture-review-v1.md`](docs/architecture-review-v1.md),
+and deploying the site and API together for the first time. See
+[ADR 0006](docs/adr/0006-website.md).
+
+Nothing is deployed yet — that is deliberate, and it is the last step of Phase 5.
 
 ## Structure
 
 ```
-packages/schema/   ✅ the card contract — pydantic → JSON Schema → TS types
+packages/schema/   ✅ the card contract — pydantic → JSON Schema → TS types → D1 DDL
 pipeline/          ✅ Python pipeline (uv), `holo-data` CLI
 content/           ✅ editorial site copy (info.json), published to R2
 fixtures/          ✅ 34 cards covering every edge case, for credential-free local dev
-apps/api/          🟡 wrangler.jsonc — R2 bindings; the Worker itself is Phase 4
-apps/web/          ⬜ Nuxt SPA                        (Phase 5)
+apps/api/          ✅ the Worker — Hono + Zod over D1 and R2
+apps/web/          🚧 Nuxt SPA                        (Phase 5, in progress)
 ```
 
 ## Getting started
