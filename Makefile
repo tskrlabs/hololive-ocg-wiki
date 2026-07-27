@@ -24,10 +24,11 @@ hooks: ## Enable the pre-commit hook (run once per clone)
 	@echo "✓ pre-commit hook enabled — 'make check' now runs before each commit"
 	@echo "  disable with: git config --unset core.hooksPath"
 
-generate: ## Regenerate JSON Schema, TypeScript, D1 DDL and fixtures.sql
+generate: ## Regenerate JSON Schema, TypeScript, D1 DDL, fixtures.sql and the fixture artifacts
 	uv run python packages/schema/scripts/generate.py
 	uv run python packages/schema/scripts/generate_ddl.py
 	uv run python packages/schema/scripts/generate_fixtures_sql.py
+	uv run python fixtures/build_local_artifacts.py
 
 fixtures: ## Re-select the fixture card set (needs v1 data — see script docstring)
 	uv run python packages/schema/scripts/build_fixtures.py
@@ -65,6 +66,7 @@ check-schema: ## Fail if the committed generated files are stale
 	@uv run python packages/schema/scripts/generate.py --check
 	@uv run python packages/schema/scripts/generate_ddl.py --check
 	@uv run python packages/schema/scripts/generate_fixtures_sql.py --check
+	@uv run python fixtures/build_local_artifacts.py --check
 
 check-py: ## Run the Python tests (schema + pipeline)
 	@uv run pytest packages/schema/tests pipeline/tests -q
