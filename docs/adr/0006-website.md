@@ -1,6 +1,6 @@
 # ADR 0006 — the website
 
-**Status:** accepted, in execution
+**Status:** accepted, executed — domain attachment outstanding
 **Date:** 2026-07-27
 **Phase:** 5
 **Supersedes nothing. Amends:** D11, D13, and Phase 4's endpoint count.

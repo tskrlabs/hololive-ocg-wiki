@@ -18,7 +18,7 @@ This file is that record. **Update it when you change a resource.**
 | R2 bucket | `hololive-ocg-wiki-images` | yes — `img.hololive-ocg-wiki.tskrlabs.com` | 2 |
 | R2 bucket | `hololive-ocg-wiki-artifacts` | **no** | 2 |
 | D1 database | `hololive-ocg-wiki-db` — `75238170-4525-4a06-bfd3-5a32c4daef57` | **no** | 3 |
-| Worker | `hololive-ocg-wiki-tskrlabs-com` — *not deployed yet* | yes, at Phase 5 deploy | 4–5 |
+| Worker | `hololive-ocg-wiki-tskrlabs-com` — deployed 2026-07-27, version `c44d51a1` | `…liching-chester.workers.dev`; **custom domain not attached yet** | 4–5 |
 
 Zone `tskrlabs.com` is on Cloudflare nameservers (verified during the v2 design session),
 which is the prerequisite for an R2 custom domain.

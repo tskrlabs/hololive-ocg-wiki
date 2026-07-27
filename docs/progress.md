@@ -6,10 +6,11 @@ idempotent, D1 is populated and reseeded into the Phase 4 shape (2,448 cards), a
 Worker is built and green — now **nine endpoints**, `make check` covers them end-to-end
 against local D1.
 
-🔑 **All code is done; the deploy is the one remaining step, and it needs the
-maintainer.** `wrangler deploy` requires a token with *Workers Scripts Edit* — the
-seeder's is scoped to D1 Edit + Analytics Read, which is correct and worth keeping. The
-exact commands are in [the deploy runbook](#the-deploy--maintainer-steps).
+✅ **Deployed and verified against the real 2,448 cards** on
+`hololive-ocg-wiki-tskrlabs-com.liching-chester.workers.dev` (2026-07-27). Every number
+Phases 3 and 4 measured came back exactly. **The custom domain is not attached yet** —
+that is the last step, and it is deliberate (Q16). See
+[the deploy runbook](#the-deploy--maintainer-steps).
 
 **Phase 5 design is settled.** Sixteen decisions, recorded in
 [ADR 0006](adr/0006-website.md) with the full interview in
@@ -433,7 +434,8 @@ inside one:**
 | 6 | Candidate 03 — Deck as sections, **wire format frozen** | ✅ done |
 | 7 | Candidate 04 — `useDeckCards` | ✅ done |
 | 8 | `assets` binding + SPA fallback + `run_worker_first` | ✅ built, rehearsed |
-| — | **deploy + domain** | 🔑 **maintainer — see below** |
+| — | **deploy to workers.dev** | ✅ done — verified against 2,448 cards |
+| — | **attach the custom domain** | 🔑 **maintainer — last step** |
 
 **Candidate 02 arrived early, by necessity.** The empty-filter literal was written out
 five times in v1, each a hand-maintained list of every colour, card type, rarity and bloom
@@ -542,6 +544,37 @@ curl -s   "$API/tc/deck/ANYTHING" -o /dev/null -w '%{http_code}\n'  # 200, SPA f
 
 Then walk it in a browser — filter, search, open a card, build a deck, share a deck code,
 switch locale. This is the first time any of it meets 2,448 cards rather than 34.
+
+#### ✅ Steps 1 and 2 are done — executed 2026-07-27
+
+Deployed to `hololive-ocg-wiki-tskrlabs-com.liching-chester.workers.dev`, version
+`c44d51a1`. 75 asset files uploaded (9 unchanged), 632.50 KiB, 13 ms startup.
+
+| check | expected | actual |
+|---|---|---|
+| `フブキ` search | 73 | **73** |
+| `そら` (2 chars → LIKE path) | works | 56 |
+| `a AND` (FTS5 syntax error) | 200 | **200** |
+| `name=白上フブキ&locale=en` | 44 | **44** |
+| `filter-options.names` | 296 | **296** |
+| `status.counts.total` | 2,448 | **2,448** |
+| `info.contents` | 3 | **3** |
+| 51-id batch | 400 | **400** |
+| 50-id batch | 50 cards | **50** |
+| `colors=blue` | includes fused | 329 |
+| `/api/status` under `Sec-Fetch-Mode: navigate` | JSON | **application/json** |
+| `Cache-Control` on cards / filter-options | 3600 / 86400 | **3600 / 86400** |
+| `robots.txt` + `noindex` | present | **present** |
+| SPA fallback on an unknown deck code | 200 | **200** |
+
+Every page loads in a browser with **zero exceptions, zero console errors and zero failed
+requests**. The card grid renders real production art
+(`img.hololive-ocg-wiki.tskrlabs.com/hPR/hBD24-001_P.webp`), and `/tc/status` shows
+**已收錄 2,448** with the real seed timestamp.
+
+Two notes: `/api/info` and `/api/status` were built this phase and had **never been read
+before** — they work. And `run_worker_first` is confirmed doing its job: without it, every
+one of the `curl` checks above would have returned HTML.
 
 #### 3. Only then, attach the domain
 
