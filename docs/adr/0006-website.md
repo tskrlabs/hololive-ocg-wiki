@@ -110,6 +110,53 @@ R2 is kept anyway, for consistency with `status.json` — which is written by `s
 a live database, is never committed, and therefore has no build-time copy to bake in.
 Splitting the two across different mechanisms would cost more than the redundancy does.
 
+## Found while scaffolding (commit 2)
+
+Five dependencies in v1's `package.json` do not survive the purge, found by grepping for
+actual usage rather than trusting the manifest:
+
+| dropped | why |
+|---|---|
+| `fuse.js` | used only by `useCardStore.ts` — the dead store Q4 never ports |
+| `@tanstack/vue-table` | used only by `components/ui/table/utils.ts`, itself unreferenced — `StatusCardTable.vue` is a raw `<table>` |
+| `@tanstack/vue-virtual` | zero references anywhere |
+| `@nuxtjs/tailwindcss` | zero references; v1 styles through the `@tailwindcss/vite` plugin |
+| `gh-pages` | v1 deployed to GitHub Pages; this deploys to a Worker |
+| `@nuxt/scripts` | registered as a module, never used |
+
+**`@nuxtjs/seo` is replaced by the four sub-modules actually used** — `nuxt-site-config`,
+`@nuxtjs/robots`, `@nuxtjs/sitemap`, `nuxt-seo-utils`. The meta-package pulls six, and
+two of them are dead weight here: `nuxt-og-image` (a satori/resvg rasteriser — v1
+configured an `ogImage` block but never called `defineOgImage()`, and its build output
+contains no generated images; the pages set `ogImage:` via `useSeoMeta`, a plain meta tag
+pointing at a static `icon.png`) and `nuxt-schema-org` (v1 hand-writes its JSON-LD in
+`plugins/seo.ts`).
+
+This was forced rather than chosen: in a workspace install npm nested `nuxt-og-image`
+under `@nuxtjs/seo` instead of hoisting it, and Nuxt could not resolve it. `ogImage: false`
+does **not** help — the meta-package installs its sub-modules before config is read, so
+the failure is resolution, not execution. Naming the four is smaller and more honest
+about the dependency surface anyway.
+
+**Version corrections** — v1's pins were carried over and two were stale against Nuxt 4:
+`vue-tsc` `^2.2` → `^3.3.8` (2.x crashes on Nuxt 4's `@vue/language-core`), and
+`vue-router` `^4.5.1` → `^5.2.0` (what Nuxt 4 actually installs).
+
+**A v1 title bug, fixed.** v1 set both `title: "Hololive OCG Wiki"` and
+`titleTemplate: "%s | Hololive OCG Wiki"` in `app.head`, so any page that set no title of
+its own rendered **"Hololive OCG Wiki | Hololive OCG Wiki"**. Dropping the title instead
+is worse (`%s` resolves empty → "| Hololive OCG Wiki"); the fix is to set the title and
+let `nuxt-seo-utils` compose the suffix from `site.name`. Verified in the generated HTML.
+
+**One known-noisy warning, deliberately filtered in the Makefile.** `nuxt typecheck`
+prints a full `ERR_PACKAGE_PATH_NOT_EXPORTED` stack for
+`vue-router/volar/sfc-route-blocks`, then exits 0 with no type errors: `vue-tsc` probes
+for an optional plugin that vue-router 5 no longer exports, supporting `<route>` blocks in
+SFCs — a feature Nuxt does not use, because it derives routing from the file system. The
+`typecheck` target drops those lines so the trace cannot be mistaken for a failure at the
+end of `make check`, which is the pre-commit hook. Real errors still print and a non-zero
+exit still fails the target; both were verified by introducing a type error.
+
 ## Consequences
 
 - Nine endpoints. `apps/api` gains `routes/artifacts.ts`; `smoke.sh` grows from 34 checks

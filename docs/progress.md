@@ -425,13 +425,29 @@ inside one:**
 | # | commit | state |
 |---|---|---|
 | 1 | `/api/info` + `/api/status` | ✅ done |
-| 2 | scaffold `apps/web` on Nuxt 4 (`app/` srcDir, `nuxt generate`, `make dev`) | ⬜ |
+| 2 | scaffold `apps/web` on Nuxt 4 (`app/` srcDir, `nuxt generate`, `make dev`) | ✅ done |
 | 3 | port the **live** code only — green on fixtures | ⬜ |
 | 4 | Candidate 01 — one `useCardQuery` interface | ⬜ |
 | 5 | Candidate 02 — deep Filter module | ⬜ |
 | 6 | Candidate 03 — Deck as sections, **wire format frozen** | ⬜ |
 | 7 | Candidate 04 — `useDeckCards` | ⬜ |
 | 8 | `assets` binding + deploy + domain | ⬜ |
+
+### Working on the site
+
+```bash
+make dev       # site on :3000 + Worker on :8787, HMR, fixtures, no credentials
+make preview   # rehearsal: nuxt generate, then the Worker serves site + API on one port
+make check-web # the site's unit tests
+```
+
+`make dev` proxies `/api` to the Worker, which is Nuxt's behaviour. `make preview` is the
+only thing that exercises the **real** SPA fallback and same-origin requests — run it
+before deploying, since the first deploy is otherwise unrehearsed.
+
+**Indexing and analytics are off** unless `NUXT_PUBLIC_LAUNCHED=true`. Verified in both
+directions: unset gives `Disallow: /`, `noindex, nofollow` and no sitemap; set gives an
+indexable `robots.txt`, `sitemap_index.xml` and `index, follow`.
 
 ### Three API changes the frontend must adapt to
 

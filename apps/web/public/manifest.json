@@ -1,0 +1,40 @@
+{
+  "name": "Hololive OCG Wiki",
+  "short_name": "Hololive OCG",
+  "description": "A fan-made wiki for Hololive OCG, featuring card information, deck builder, and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "230x224",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["games", "entertainment", "reference"],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpg",
+      "form_factor": "wide",
+      "label": "Hololive OCG Wiki on desktop"
+    },
+    {
+      "src": "/screenshots/mobile.jpg",
+      "sizes": "375x667",
+      "type": "image/jpg",
+      "form_factor": "narrow",
+      "label": "Hololive OCG Wiki on mobile"
+    }
+  ]
+}

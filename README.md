@@ -43,9 +43,14 @@ Requires [uv](https://docs.astral.sh/uv/) and Node 22.6+.
 ```bash
 make setup     # install Python + Node dependencies
 make hooks     # enable the pre-commit check (once per clone, recommended)
+make dev       # run the site (:3000) and the API (:8787) against local fixtures
 make check     # run every verification
 make help      # list all targets
 ```
+
+`make dev` needs **no Cloudflare credentials** — the Worker runs against a local D1 seeded
+from 34 committed fixture cards (D12). That property is deliberate: it is what separates a
+public repo from a contributor-ready one.
 
 There is **no CI** — verification is local by design. `make check` is the single entry
 point, and the pre-commit hook runs it when you touch the contract.
