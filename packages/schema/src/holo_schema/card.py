@@ -19,7 +19,7 @@ from typing import Annotated, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from .annotations import Blob, Column, Derived, FullText
+from .annotations import Blob, Column, Derived, FullText, Junction
 from .enums import (
     BloomLevelCode,
     CardTypeCode,
@@ -214,7 +214,14 @@ class Card(BaseModel):
     card_type_code: Annotated[CardTypeCode, Column(indexed=True)]
     rarity_code: Annotated[RarityCode, Column(indexed=True)]
     # Absent on 419 cards, all support types — support cards have no colour.
-    color_codes: Annotated[Optional[list[ColorCode]], Column(indexed=True, json_array=True)] = None
+    #
+    # A junction table, not a JSON column: this is the single most-used filter on the
+    # site, and a `LIKE '%"blue"%'` predicate cannot use an index. Phase 3 measured the
+    # difference on a filtered, sorted, paginated page — the shape /api/cards/filter
+    # actually issues — at ~2,448 rows read against ~50-100. See ADR 0004.
+    color_codes: Annotated[
+        Optional[list[ColorCode]], Junction("card_colors", "color_code")
+    ] = None
     # Absent on 733 cards — only Holomem cards bloom.
     bloom_level_code: Annotated[Optional[BloomLevelCode], Column(indexed=True)] = None
 
@@ -244,14 +251,16 @@ class Card(BaseModel):
     # --- Provenance ---
     illustrator: Annotated[Optional[str], Column(), FullText()] = None
     # Always present, never empty. Usually 1 set, but up to 17 for reprinted cards.
-    card_sets: Annotated[list[str], Column(json_array=True)]
+    # Filterable, so a junction table — 2,592 rows across 34 distinct sets.
+    card_sets: Annotated[list[str], Junction("card_sets", "set_name")]
 
     # The card's tags in the source language, unprefixed: ["EN", "Promise", "歌"].
     # Distinct from `Translation.tags`, which holds the *localised* tag with a display
     # prefix ("#歌" -> "#노래"). Not a duplicate: 268 card-locale pairs translate the tag
     # text, and 236 cards have tags that vary across locales. This field is the stable
     # identity ("all cards tagged 食べ物"); Translation.tags is what gets displayed.
-    tags: Annotated[Optional[list[str]], Column(json_array=True), FullText()] = None
+    # Filterable, so a junction table — 5,443 rows across 41 distinct tags.
+    tags: Annotated[Optional[list[str]], Junction("card_tags", "tag"), FullText()] = None
 
     # --- Language-independent nested data ---
     arts: Annotated[Optional[list[Art]], Blob()] = None

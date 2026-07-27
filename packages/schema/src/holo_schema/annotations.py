@@ -5,14 +5,18 @@ row per card, translations as JSON). These annotations are the bridge: they let 
 generate the DDL from these same models instead of hand-writing a fourth copy of the
 card shape in `schema.sql`.
 
-Nothing reads these yet. They exist so that the Phase 3 emitter is a ~50-line script
-over already-recorded intent, rather than a fresh set of decisions made months later
-against a model file that has forgotten why each field is the way it is.
+`scripts/generate_ddl.py` reads these to emit `packages/schema/sql/schema.sql`. They
+carry the per-field facts — which fields are columns, which are packed into a payload,
+which feed search — so adding a field to `Card` updates the DDL rather than silently
+leaving D1 behind. The *structural* parts of the schema (junction table shape, index
+choices, the FTS declaration) live in the template beside that script; see ADR 0004 for
+why the split falls there.
 
 Usage:
 
     hp: Annotated[Optional[int], Column()] = None
     translations: Annotated[dict[Locale, Translation], Blob()]
+    tags: Annotated[Optional[list[str]], Junction("card_tags", "tag")] = None
 """
 
 from dataclasses import dataclass
@@ -33,9 +37,9 @@ class Column:
         indexed: emit a `CREATE INDEX` for this column.
         primary_key: this column is the table's primary key.
         json_array: the value is a list stored as a JSON string. SQLite has no array
-            type, so `color_codes` is TEXT holding `'["blue","red"]'`. Kept as a
-            column rather than a blob because v1 filters on it with LIKE, and Phase 3
-            may promote it to a junction table if that proves too slow.
+            type, so `baton_touch_types` is TEXT holding `'["null"]'`. Only for lists
+            that are *never filtered on* — a `LIKE '%"x"%'` predicate cannot use an
+            index, so a filterable list must be a `Junction` instead. See ADR 0004.
     """
 
     sql_type: SqlType = "TEXT"
@@ -59,6 +63,29 @@ class Blob:
     """
 
     column: str = "payload"
+
+
+@dataclass(frozen=True)
+class Junction:
+    """Field is a list, stored one row per element in its own table.
+
+    Use for a **filterable** list. The alternative — a JSON array in a column, filtered
+    with `LIKE '%"blue"%'` — cannot use an index, so it degrades to a full table scan
+    however many indexes are declared on it. v1 shipped three such indexes
+    (`idx_cards_color_codes` and friends); measured against its live data they were
+    never used, and the site read 882 rows per query on a 2,448-row table as a result.
+
+    The junction row is `(value, card_id)` as a `WITHOUT ROWID` primary key, so the key
+    *is* the storage: one write per row, no separate index to maintain, and a filter on
+    the value is a range scan over a covering index.
+
+    Args:
+        table: the junction table's name, e.g. "card_colors".
+        value_column: the column holding one element, e.g. "color_code".
+    """
+
+    table: str
+    value_column: str
 
 
 @dataclass(frozen=True)

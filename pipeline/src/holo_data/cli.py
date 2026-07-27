@@ -11,8 +11,8 @@ steps that cost money or touch production are explicit.
     holo-data verify              diff against v1's data               (local, free)
     holo-data verify-images       coverage; --remote re-checks bytes   (local / ~2.4k reqs)
     holo-data publish             images + artifacts -> R2             (uploads)
-    holo-data seed --dry          row counts + D1 write estimate       (Phase 3)
-    holo-data seed --confirm      diff-based upsert into D1            (Phase 3)
+    holo-data seed --dry          row counts + D1 write estimate       (reads only)
+    holo-data seed --confirm      diff-based upsert into D1            (writes)
 
     holo-data migrate-images      one-time v1 flat -> set-scoped tree
 
@@ -23,16 +23,22 @@ budget or corrupt live data.
 `publish` deliberately takes no `--confirm` — see its docstring. Uploading is cheap and
 idempotent; what it checks instead is that the artifact is current and the image set is
 complete, which are the failures that actually happen.
+
+`seed` does take one, because it writes to production and the daily D1 write budget is
+finite. Its gates are described on the command itself.
 """
 
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
 import typer
 from dotenv import load_dotenv
+
+from holo_schema import SCHEMA_VERSION
 
 from . import build as build_module
 from . import images as images_module
@@ -601,20 +607,230 @@ def migrate_images(
     typer.echo("  next: `holo-data images` to convert, then `verify-images --remote`")
 
 
-# --- Phase 3 placeholder -----------------------------------------------------
+# --- seed --------------------------------------------------------------------
 
 
 @app.command()
 def seed(
-    dry: bool = typer.Option(False, "--dry", help="report row counts and write estimate"),
-    confirm: bool = typer.Option(False, "--confirm", help="perform the upsert"),
+    dry: bool = typer.Option(
+        False, "--dry", help="report row counts and the D1 write estimate, write nothing"
+    ),
+    confirm: bool = typer.Option(False, "--confirm", help="required to write to D1"),
+    full: bool = typer.Option(
+        False, "--full", help="rewrite every card, ignoring the diff"
+    ),
+    prune: bool = typer.Option(
+        False, "--prune", help="delete cards that are in D1 but not in the build"
+    ),
 ) -> None:
-    """Seed D1 from the published artifact. (Phase 3)"""
-    typer.echo("`seed` arrives in Phase 3, with the D1 schema.", err=True)
-    typer.echo(
-        "It will require a --dry run first and gate --full separately (D10).", err=True
+    """Seed D1 from the built card set, writing only what changed.
+
+    The diff baseline is D1 itself — every row carries a content hash, so an
+    interrupted run resumes correctly and a second run writes nothing.
+
+    Gates (D10). Three of them are facts rather than ceremony, and no flag gets past
+    them: a stale `cards.json`, a card set that collapsed since the last seed, and a
+    write estimate that would not fit in today's remaining D1 budget. Deleting is
+    separately gated behind `--prune` because it is the one irreversible thing here.
+    """
+    from . import d1, seed as seed_module
+
+    try:
+        config = d1.load_config()
+    except d1.D1Error as exc:
+        typer.echo(f"✗ {exc}", err=True)
+        raise typer.Exit(1)
+
+    # Same staleness check `publish` uses: seeding a stale artifact is the realistic
+    # failure, and it is one --confirm would not catch because the person typing it
+    # also believes the build is current.
+    staleness = publish_module.check_staleness()
+    if staleness.is_stale:
+        typer.echo("✗ build/cards.json is older than its inputs:", err=True)
+        for path in staleness.newer_inputs:
+            typer.echo(f"    {path}", err=True)
+        typer.echo("", err=True)
+        typer.echo("Run `holo-data build` first.", err=True)
+        raise typer.Exit(1)
+
+    collection = build_module.load()
+    if collection is None:
+        typer.echo("no build found — run `holo-data build` first", err=True)
+        raise typer.Exit(1)
+
+    typer.echo(f"→ {config.database_name} ({len(collection.cards)} cards in the build)")
+
+    http = d1.client(config)
+    try:
+        if not d1.table_exists(http, config, "cards"):
+            typer.echo("✗ the `cards` table does not exist in this database.", err=True)
+            typer.echo("", err=True)
+            typer.echo("Apply the schema first:", err=True)
+            typer.echo(
+                f"    npx wrangler d1 execute {config.database_name} --remote "
+                "--file=packages/schema/sql/schema.sql",
+                err=True,
+            )
+            raise typer.Exit(1)
+
+        typer.echo("→ reading the diff baseline from D1")
+        stored = seed_module.read_stored_hashes(http, config)
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        plan = seed_module.diff(rows, stored)
+
+        if full:
+            # --full is its own path, not a bigger diff: it rebuilds the FTS index with
+            # one `rebuild` statement instead of 2,448 delete/insert pairs.
+            plan.new, plan.changed, plan.qa_updated = rows, [], []
+            plan.unchanged = 0
+
+        typer.echo(f"  stored {plan.stored_count}, incoming {plan.incoming_count}")
+        typer.echo(f"  new            {len(plan.new):5d}")
+        typer.echo(f"  changed        {len(plan.changed):5d}")
+        typer.echo(f"  qa only        {len(plan.qa_updated):5d}")
+        typer.echo(f"  unchanged      {plan.unchanged:5d}")
+        if plan.missing_ids:
+            typer.echo(
+                f"  in D1, not in the build: {len(plan.missing_ids)}"
+                + ("  → will be deleted (--prune)" if prune else "  → left alone")
+            )
+
+        writes_used = d1.writes_used_today(config, http)
+        estimated = plan.estimated_writes
+        if prune:
+            estimated += len(plan.missing_ids) * (2 + len(seed_module.JUNCTIONS))
+
+        typer.echo("")
+        if writes_used is None:
+            typer.echo(
+                f"  estimated writes {estimated:,} "
+                f"({100 * estimated / d1.DAILY_WRITE_LIMIT:.1f}% of the daily limit)"
+            )
+            typer.echo(
+                "  could not read today's usage — the token may lack Account "
+                "Analytics Read (docs/infra.md)"
+            )
+        else:
+            remaining = d1.DAILY_WRITE_LIMIT - writes_used
+            typer.echo(
+                f"  estimated writes {estimated:,} of {remaining:,} remaining today "
+                f"({writes_used:,} already used)"
+            )
+
+        refusals = seed_module.check_gates(
+            plan, collection, SCHEMA_VERSION, writes_used, prune
+        )
+        if refusals:
+            typer.echo("")
+            for refusal in refusals:
+                typer.echo(f"✗ {refusal.reason}", err=True)
+                typer.echo(f"  {refusal.detail}", err=True)
+            raise typer.Exit(1)
+
+        if plan.is_empty and not full:
+            typer.echo("")
+            typer.echo("✓ D1 is already up to date — nothing to write")
+            return
+
+        if dry or not confirm:
+            typer.echo("")
+            typer.echo(
+                f"Would write {len(plan.to_write)} card(s), ~{estimated:,} rows."
+            )
+            if prune and plan.missing_ids:
+                typer.echo(f"Would DELETE {len(plan.missing_ids)} card(s).")
+            if not confirm:
+                typer.echo("This writes to production D1. Re-run with --confirm.")
+            raise typer.Exit(0 if dry else 1)
+
+        seeded_at = (
+            datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+        )
+        groups = [seed_module.statements_for(row, seeded_at) for row in plan.to_write]
+        if prune and plan.missing_ids:
+            groups.extend(seed_module.prune_statements(plan.missing_ids))
+
+        batches = d1.pack_groups(groups)
+        typer.echo("")
+        typer.echo(f"→ writing {len(batches)} batch(es)")
+
+        report = d1.WriteReport()
+        progress = _progress("batches")
+        for index, batch in enumerate(batches):
+            try:
+                report.merge(d1.execute(http, config, batch))
+            except d1.D1Error as exc:
+                typer.echo("", err=True)
+                typer.echo(f"✗ batch {index + 1} failed: {exc}", err=True)
+                typer.echo(
+                    "  A D1 batch is atomic, so that batch wrote nothing. Cards in "
+                    "earlier batches are committed; re-run to continue from there.",
+                    err=True,
+                )
+                raise typer.Exit(1)
+            progress(index + 1, len(batches))
+
+        if full:
+            typer.echo("→ rebuilding the FTS index")
+            report.merge(
+                d1.execute(
+                    http, config, [d1.Statement("INSERT INTO cards_fts(cards_fts) VALUES('rebuild')")]
+                )
+            )
+
+        typer.echo("")
+        typer.echo(
+            f"  wrote {report.rows_written:,} rows "
+            f"(estimated {estimated:,}), read {report.rows_read:,}"
+        )
+        if report.size_after:
+            typer.echo(f"  database is now {report.size_after / 1024 / 1024:.1f} MB")
+
+        status = seed_module.build_status(
+            plan,
+            collection,
+            report,
+            mode="full" if full else "diff",
+            pruned=plan.missing_ids if prune else (),
+        )
+        _upload_status(status)
+
+        typer.echo("")
+        typer.echo(f"✓ seeded {len(plan.to_write)} card(s)")
+    finally:
+        http.close()
+
+
+def _upload_status(status: dict) -> None:
+    """Write `status.json` locally and push it to R2.
+
+    `seed` uploads it rather than leaving it for the next `publish`, because publish
+    runs *before* seed — a status file written here and uploaded there would always
+    describe the previous run (D11, ADR 0004).
+
+    A failed upload is a warning, not an error: the seeding itself succeeded, and
+    status.json is a status page, not data.
+    """
+    paths.ensure_dirs()
+    local = paths.BUILD_DIR / "status.json"
+    local.write_text(
+        json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
-    raise typer.Exit(1)
+    typer.echo(f"  wrote {local}")
+
+    try:
+        config = r2.load_config()
+        s3 = r2.client(config)
+        r2.upload(
+            s3,
+            config.artifacts_bucket,
+            r2.UploadItem("status.json", local, "new"),
+            r2.ARTIFACT_CACHE_CONTROL,
+        )
+        typer.echo("  uploaded status.json to R2")
+    except Exception as exc:  # noqa: BLE001 — a status page must not fail a good seed
+        typer.echo(f"  status.json not uploaded: {exc}")
+        typer.echo("  (the seed itself succeeded; re-upload with `holo-data publish`)")
 
 
 # --- status ------------------------------------------------------------------

@@ -1,8 +1,7 @@
 {
   // The Worker that will serve the API and the static site (D2 — one Worker, not
-  // Pages + Worker). It does not exist yet: this file currently declares only the
-  // Phase 2 resources, and `main`, `assets`, and `d1_databases` arrive with the things
-  // they describe in Phases 3 and 4.
+  // Pages + Worker). It does not exist yet: this file declares the Phase 2 R2 buckets
+  // and the Phase 3 D1 database; `main` and `assets` arrive with the Worker in Phase 4.
   //
   // It is committed deliberately. v1's `wrangler.toml`, `wrangler.service.toml`,
   // `migrations/`, and `migration.sql` were all gitignored, so the infrastructure
@@ -29,6 +28,21 @@
       // and (from Phase 3) status.json.
       "binding": "ARTIFACTS",
       "bucket_name": "hololive-ocg-wiki-artifacts"
+    }
+  ],
+
+  "d1_databases": [
+    {
+      // One row per card (D8), with translations and Q&A as JSON payload columns and
+      // the filterable lists as junction tables. Schema:
+      // packages/schema/sql/schema.sql, generated from the pydantic models.
+      //
+      // `holo-data seed` reads database_name and database_id from here — the infra
+      // config is the one place a resource is named. Created 2026-07-27; see
+      // docs/infra.md.
+      "binding": "DB",
+      "database_name": "hololive-ocg-wiki-db",
+      "database_id": "75238170-4525-4a06-bfd3-5a32c4daef57"
     }
   ]
 
