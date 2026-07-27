@@ -157,6 +157,48 @@ SFCs — a feature Nuxt does not use, because it derives routing from the file s
 end of `make check`, which is the pre-commit hook. Real errors still print and a non-zero
 exit still fails the target; both were verified by introducing a type error.
 
+## Found while porting (commit 3)
+
+The typecheck against the generated contract turned up **36 errors** in code that had been
+running in production for a year. Most were drift the contract makes visible:
+
+- **`oshi_skill.cost` rendered in two `v-if` blocks that have never fired.** ADR 0001
+  found the field declared in three files and present on zero of 2,448 cards; the
+  templates were reading a property that does not exist.
+- **`related_card_numbers` was flat**; the contract nests it as
+  `related_cards.card_number`.
+- **`AppHeader` duplicated `AppInfoButton`'s entire info fetch**, including a
+  `safeJsonParse` helper needed only because raw.githubusercontent.com serves JSON as
+  `text/plain`. Both now share one `useAsyncData("info")` against `/api/info`.
+- **The Discord link was built as `` `https://discord.gg/${url}` `` from a value that is
+  already a full URL** — a doubled URL in both components.
+- **Five hardcoded `lichingchester.dev` URLs in JSON-LD pointed at images that never
+  existed** (`icons/icon-512x512.png`, four `how-to-use/*.png`). Structured data
+  referencing 404s; dropped rather than re-pointed.
+- **`plugins/seo.ts` set a *static* canonical URL on every page**, alongside a
+  route-aware one in `app.vue`. The two disagreed on every page but the home page.
+- **`@tanstack/vue-table` and the shadcn `ui/table` wrapper were unreachable** —
+  `StatusCardTable.vue` is a hand-written `<table>`.
+
+**Candidates 02 and 04 landed here rather than in their own commits.** Not scope creep —
+the alternative was worse. The empty-filter literal appears five times in v1, each a
+hand-written list of every enum member, and the typecheck rejected all five against the
+contract. Hand-correcting five copies to match a generated enum is exactly the failure
+mode the refactor exists to prevent, so `createEmpty()` replaced them. `useDeckCards` has
+the same story: its duplicated derivation carried a type error.
+
+**A gap in credential-free local dev, now closed.** `fixtures.sql` gives a local D1, but
+nothing populated local **R2** — so `make dev` served a site whose filter dropdowns 404ed
+in six of seven locales and whose about dialog was empty. `fixtures/build_local_artifacts.py`
+now builds all three artifacts from the committed fixtures, reusing the pipeline's own
+`filter_options()` so local and published shapes cannot diverge.
+
+**Verified in a real browser**, since a typecheck cannot prove a template renders: all
+three pages load with **zero exceptions, zero console errors and zero failed requests**,
+20 cards rendering with correctly composed D9 CDN URLs
+(`img.hololive-ocg-wiki.tskrlabs.com/hBP01/hBP01-001_OUR.webp`), and the status page
+showing the adapted v2 shape. Driven one-off over CDP — not added to `make check`, per Q5.
+
 ## Consequences
 
 - Nine endpoints. `apps/api` gains `routes/artifacts.ts`; `smoke.sh` grows from 34 checks

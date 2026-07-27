@@ -31,6 +31,18 @@ DEFAULT_LOCALE: Locale = "tc"
 """The site's default locale. Matches v1's `DEFAULT_LOCALE` in worker.ts."""
 
 
+MAX_BATCH = 50
+"""Most ids or card numbers one batch request may carry.
+
+A shared API constraint, so it lives in the contract rather than on one side of it. The
+Worker rejects an over-cap request with 400 (v1 sliced to the first 50 and said nothing,
+so a deck longer than 50 cards rendered short with no error); the site chunks its
+requests to fit. Those two numbers must agree, and a legal deck already exceeds this —
+1 oshi + 50 main + 20 yell is 71 cards — so the disagreement would be reached in normal
+use, not at some edge.
+"""
+
+
 # --- Card type ---------------------------------------------------------------
 #
 # 13 distinct values across 2,448 cards, plus `supportStaff` (see below). v1's

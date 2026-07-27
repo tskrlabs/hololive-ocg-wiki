@@ -47,8 +47,9 @@ dev: ## Run the site and the API together (two processes, Ctrl-C stops both)
 	 $(MAKE) --no-print-directory dev-web & \
 	 wait
 
-dev-api: ## Just the Worker, on local D1 + fixtures (no credentials)
-	@cd apps/api && npm run db:local >/dev/null && npx wrangler dev --local --port 8787
+dev-api: ## Just the Worker, on local D1 + R2 fixtures (no credentials)
+	@cd apps/api && npm run db:local >/dev/null && ./scripts/seed-local-r2.sh
+	@cd apps/api && npx wrangler dev --local --port 8787
 
 dev-web: ## Just the site, with HMR
 	@npm run dev --workspace @holo/web
@@ -57,7 +58,8 @@ preview: ## Rehearse production: generate the site and serve it from the Worker 
 	@# The only thing that exercises the real SPA fallback and same-origin requests.
 	@# `make dev` proxies /api, which is Nuxt's behaviour, not the Worker's — this is.
 	@npm run generate --workspace @holo/web
-	@cd apps/api && npm run db:local >/dev/null && npx wrangler dev --local --port 8787
+	@cd apps/api && npm run db:local >/dev/null && ./scripts/seed-local-r2.sh
+	@cd apps/api && npx wrangler dev --local --port 8787
 
 check-schema: ## Fail if the committed generated files are stale
 	@uv run python packages/schema/scripts/generate.py --check

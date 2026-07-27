@@ -29,6 +29,7 @@ from .enums import (
     CARD_TYPE_VALUES,
     COLOR_VALUES,
     DEFAULT_LOCALE,
+    MAX_BATCH,
     FUSED_COLORS,
     KEYWORD_TYPE_VALUES,
     LOCALE_VALUES,
@@ -95,6 +96,7 @@ __all__ = [
     # Domain constants
     "DEFAULT_LOCALE",
     "FUSED_COLORS",
+    "MAX_BATCH",
     "MAIN_CARD_TYPES",
     "OSHI_CARD_TYPES",
     "SOURCE_LOCALE",

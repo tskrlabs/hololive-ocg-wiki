@@ -20,11 +20,18 @@ import {
   COLORS,
   DEFAULT_LOCALE,
   LOCALES,
+  MAX_BATCH,
   RARITIES,
 } from "@holo/schema/enums";
 
-/** The most ids or card numbers one batch request may carry. */
-export const MAX_BATCH = 50;
+/**
+ * The batch cap comes from the contract, not from a literal here.
+ *
+ * The site has to chunk its requests to the same number this endpoint rejects above, and
+ * a legal deck already exceeds it (1 oshi + 50 main + 20 yell = 71 cards) — so two
+ * copies of the value would be reached in normal use, not at some edge.
+ */
+export { MAX_BATCH };
 
 /** Longest accepted search string, matching v1's cap. */
 const MAX_QUERY = 500;

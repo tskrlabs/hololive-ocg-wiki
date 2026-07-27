@@ -1,19 +1,55 @@
 <script setup lang="ts">
-/**
- * Placeholder — replaced by the real card list in commit 3 (the port).
- *
- * It exists so commit 2 is verifiable: `nuxt generate` needs at least one route to prove
- * the static build, the i18n prefix strategy and the asset pipeline actually work before
- * ~12k lines of ported code arrive on top of them.
- */
-const { locale } = useI18n();
+const { t, locale } = useI18n();
+const { siteUrl } = useRuntimeConfig().public;
+
+// SEO Meta tags for the main page
+useSeoMeta({
+  title: t("Card List"),
+  description: t("nuxtSiteConfig.description"),
+  author: "Hololive OCG Wiki Contributors",
+  ogTitle: t("Card List"),
+  ogDescription: t("nuxtSiteConfig.description"),
+  ogType: "website",
+  ogUrl: siteUrl,
+  ogImage: `${siteUrl}/icon.png`,
+  ogSiteName: t("Card List"),
+  twitterCard: "summary_large_image",
+  twitterTitle: t("Card List"),
+  twitterDescription: t("nuxtSiteConfig.description"),
+  twitterImage: `${siteUrl}/icon.png`,
+});
+
+useHead({
+  bodyAttrs: {
+    class: "overflow-hidden",
+  },
+  htmlAttrs: {
+    lang: locale.value,
+  },
+});
 </script>
 
 <template>
-  <div class="flex min-h-svh flex-col items-center justify-center gap-2">
-    <h1 class="text-2xl font-semibold">Hololive OCG Wiki</h1>
-    <p class="text-muted-foreground text-sm">
-      Phase 5 scaffold — locale {{ locale }}
-    </p>
+  <AppHeader>
+    <!-- filter -->
+    <FilterAPI />
+
+    <!-- search -->
+    <SearchInputAPI />
+  </AppHeader>
+
+  <!-- Card List -->
+  <div class="grow">
+    <CardListViewAPI />
   </div>
+
+  <FloatingDeck />
+
+  <AppFooter>
+    <AppFooterCurrentDeck />
+    <div class="ml-auto flex items-center gap-2">
+      <AppFooterOptionsButton />
+      <AppFooterDeckButton />
+    </div>
+  </AppFooter>
 </template>

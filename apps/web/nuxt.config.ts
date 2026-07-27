@@ -16,7 +16,6 @@
  * second pass over every file later.
  */
 
-import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 
 /**
@@ -184,16 +183,6 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      // The contract is a workspace package of TypeScript source, not a built bundle.
-      // Vite is pointed at it explicitly so `localize()` and `cardImage()` resolve the
-      // same way in dev, in `nuxt generate`, and in vitest.
-      alias: {
-        "@holo/schema": fileURLToPath(
-          new URL("../../packages/schema/dist/index.d.ts", import.meta.url),
-        ),
-      },
-    },
   },
 
   nitro: {
