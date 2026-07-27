@@ -237,6 +237,68 @@ class TestRowMapping:
             json.loads(payload)
             json.loads(qa)
 
+    def test_a_card_reassembles_from_its_row_alone(self, db, collection):
+        """The Worker must rebuild a card without touching the junction tables.
+
+        This is the property Phase 4 added `color_codes` and `card_sets` to the payload
+        for. `localize()` reads both; they live in junction tables keyed for *filtering*
+        (value first), so reading them back per card would mean an extra query per list
+        page — the `enrichCardDataBatch` fan-out the payload design exists to delete.
+
+        Asserted as an equality against `localize()` on the original card, so it fails
+        if a future field is added to `Card` and reaches `LocalizedCard` without
+        reaching the payload.
+        """
+        from holo_schema.enums import LOCALE_VALUES
+        from holo_schema.localize import localize
+
+        for card in collection.cards:
+            row = seed_module.to_row(card)
+            stored = dict(zip(seed_module.CARD_COLUMNS, row.columns))
+            payload = json.loads(row.payload)
+
+            rebuilt = {
+                key: value
+                for key, value in stored.items()
+                if value is not None and key not in seed_module.DERIVED_COLUMNS
+            }
+            # The one JSON-array column; the Worker decodes it the same way.
+            if rebuilt.get("baton_touch_types") is not None:
+                rebuilt["baton_touch_types"] = json.loads(rebuilt["baton_touch_types"])
+            rebuilt.update(payload)
+            for locale, items in json.loads(row.qa_payload).items():
+                rebuilt["translations"][locale]["qa_items"] = items
+
+            from_row = CardCollection.model_validate(
+                {"generated_at": SEEDED_AT, "cards": [rebuilt]}
+            ).cards[0]
+
+            for locale in LOCALE_VALUES:
+                assert localize(from_row, locale) == localize(card, locale), (
+                    f"card {card.id} does not survive the payload round trip in "
+                    f"{locale} — a field reaches LocalizedCard but not the payload"
+                )
+
+    def test_name_ja_is_the_source_locale_name(self, db, collection):
+        """The `name` filter's key.
+
+        It is the ja name, not the requested locale's: 41% of characters have an
+        inconsistent name in at least one locale, so a per-locale match splits a
+        character across two filter entries (findings F-015).
+        """
+        from holo_schema.enums import SOURCE_LOCALE
+
+        card = collection.cards[0]
+        row = seed_module.to_row(card)
+        index = seed_module.CARD_COLUMNS.index("name_ja")
+        assert row.columns[index] == card.translations[SOURCE_LOCALE].name
+
+        apply(db, [row])
+        stored = db.execute(
+            "SELECT name_ja FROM cards WHERE id = ?", (card.id,)
+        ).fetchone()[0]
+        assert stored == card.translations[SOURCE_LOCALE].name
+
     def test_qa_is_split_out_of_the_payload(self, db, collection):
         """Q&A is 53% of the translation bytes and the only part that churns.
 

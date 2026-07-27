@@ -41,7 +41,11 @@ BANNER = """-- DO NOT EDIT — generated from the pydantic models in
 -- `make check` fails if this file is stale.
 --
 -- Apply with:
---   npx wrangler d1 execute hololive-ocg-wiki --remote --file=packages/schema/sql/schema.sql
+--   npx wrangler d1 execute hololive-ocg-wiki-db --remote \
+--       --file=packages/schema/sql/schema.sql
+--
+-- Run from apps/api/, where wrangler.jsonc declares the binding. Note the database is
+-- `hololive-ocg-wiki-db`; `hololive-ocg-wiki` is the Worker's name and does not resolve.
 --
 -- `holo-data seed` never runs DDL. Schema changes are rare and human-driven; giving an
 -- agent-driven command the power to DROP TABLE is exactly the blast radius D10 exists to
@@ -150,6 +154,22 @@ TEMPLATE = """{banner}
 CREATE TABLE IF NOT EXISTS cards (
 {columns},
 
+    -- The card's name in the source locale — the stable per-character identity, and
+    -- what the `name` filter ("show me every Fubuki card") matches on.
+    --
+    -- Not a `Card` field: it is a projection of translations['ja'].name, derived by the
+    -- seeder. It exists as a column because the filter needs an index, and the name
+    -- lives inside a JSON payload that no index can reach.
+    --
+    -- Deliberately the *ja* name, not the requested locale's. 122 of 296 characters
+    -- (41%) have an inconsistent name in at least one locale — Shirakami Fubuki's 44
+    -- cards carry both "Shirakami Fubuki" and "白上フブキ" in `en` — so v1's
+    -- per-locale exact match split those characters into two filter entries that each
+    -- returned a subset. The ja name is the one key that groups them all. The API pairs
+    -- it with the locale's display name so the dropdown still reads in the user's
+    -- language. See findings F-015.
+    name_ja TEXT NOT NULL,
+
     -- Language-independent nested data plus all 7 locales' translations, minus Q&A:
     -- {blobs}.
     payload TEXT NOT NULL,
@@ -247,6 +267,11 @@ def render() -> str:
         f"CREATE INDEX IF NOT EXISTS idx_{table}_card_id ON {table}(card_id);"
         for _field, table, value_column in junctions
     )
+
+    # `name_ja` is declared in the template rather than derived from a model field —
+    # see the comment beside it — so its index is appended here rather than emitted by
+    # `column_definitions()`.
+    indexes.append("CREATE INDEX IF NOT EXISTS idx_cards_name_ja ON cards(name_ja);")
 
     return TEMPLATE.format(
         banner=BANNER.rstrip("\n"),
