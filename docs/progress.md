@@ -6,11 +6,12 @@ idempotent, D1 is populated and reseeded into the Phase 4 shape (2,448 cards), a
 Worker is built and green — now **nine endpoints**, `make check` covers them end-to-end
 against local D1.
 
-✅ **Deployed and verified against the real 2,448 cards** on
-`hololive-ocg-wiki-tskrlabs-com.liching-chester.workers.dev` (2026-07-27). Every number
-Phases 3 and 4 measured came back exactly. **The custom domain is not attached yet** —
-that is the last step, and it is deliberate (Q16). See
-[the deploy runbook](#the-deploy--maintainer-steps).
+✅ **Phase 5 is deployed and live** at `hololive-ocg-wiki.tskrlabs.com` (2026-07-27).
+Every number Phases 3 and 4 measured came back exactly against the real 2,448 cards.
+
+⚠️ **One dashboard toggle outstanding** — Cloudflare's zone-level managed `robots.txt`
+prepends `Allow: /` above ours, inverting the indexing guard Q10 put in place. The
+`noindex` meta still holds, but see [F-017](./findings.md#f-017) for the one-click fix.
 
 **Phase 5 design is settled.** Sixteen decisions, recorded in
 [ADR 0006](adr/0006-website.md) with the full interview in
@@ -435,7 +436,8 @@ inside one:**
 | 7 | Candidate 04 — `useDeckCards` | ✅ done |
 | 8 | `assets` binding + SPA fallback + `run_worker_first` | ✅ built, rehearsed |
 | — | **deploy to workers.dev** | ✅ done — verified against 2,448 cards |
-| — | **attach the custom domain** | 🔑 **maintainer — last step** |
+| — | **attach the custom domain** | ✅ done — live at `hololive-ocg-wiki.tskrlabs.com` |
+| — | disable Cloudflare's managed `robots.txt` | 🔑 **maintainer — [F-017](./findings.md#f-017)** |
 
 **Candidate 02 arrived early, by necessity.** The empty-filter literal was written out
 five times in v1, each a hand-maintained list of every colour, card type, rarity and bloom
@@ -576,13 +578,23 @@ Two notes: `/api/info` and `/api/status` were built this phase and had **never b
 before** — they work. And `run_worker_first` is confirmed doing its job: without it, every
 one of the `curl` checks above would have returned HTML.
 
-#### 3. Only then, attach the domain
+#### ✅ 3. The domain — attached 2026-07-27
 
-Cloudflare dashboard → the Worker → Settings → Domains & Routes → add
-`hololive-ocg-wiki.tskrlabs.com`. Record it in [`infra.md`](./infra.md) with the rest of
-the imperative steps.
+`hololive-ocg-wiki.tskrlabs.com` serves the site and the API from one origin, which is
+D2's whole point. Verified: `/tc/` 200, `/api/health` ok, SPA fallback on an unknown deck
+code, `noindex` meta present.
 
-The site stays `noindex` until Phase 7 (Q10) — the domain going live is not the launch.
+**It turned up one thing local rehearsal could not** — a zone-level Cloudflare setting
+rewrites what the Worker appears to serve. See [F-017](./findings.md#f-017): the managed
+`robots.txt` prepends `User-agent: * / Allow: /` above our `Disallow: /`, and Google
+resolves duplicate groups in favour of the least restrictive. Turn it off until Phase 7:
+
+> Dashboard → Security → Bots → **Configure Bot Fight Mode** → toggle off
+> *"Instruct bot traffic with robots.txt"*
+
+The site stays `noindex` until Phase 7 (Q10) — **the domain going live is not the
+launch.** Two flags flip then: `NUXT_PUBLIC_LAUNCHED=true` (indexing + analytics) and
+re-enabling the managed robots.txt, which by then agrees with us.
 
 #### About push-to-deploy
 

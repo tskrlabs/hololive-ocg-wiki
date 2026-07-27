@@ -463,3 +463,56 @@ matches 6, and the API returns 6.
 drop the separate `blue_red` / `white_green` checkboxes: those cards now appear under
 both of their constituent colours, which is what a player expects. Left for Phase 5
 because it is a UI decision, not an API one.
+
+---
+
+## F-017 — Cloudflare's managed `robots.txt` inverts our `Disallow` 🔧 action required
+
+**Found:** Phase 5, on attaching the custom domain · **Affects:** indexing policy while
+v1 is still live
+
+Attaching `hololive-ocg-wiki.tskrlabs.com` surfaced a zone-level setting that rewrites
+what the site serves. Cloudflare's **managed `robots.txt`** (Security → Bots) prepends its
+own block to whatever the origin returns, producing this:
+
+```
+# BEGIN Cloudflare Managed content
+User-agent: *
+Content-Signal: search=yes,ai-train=no,use=reference
+Allow: /                       ← Cloudflare's
+...Disallow rules for GPTBot, ClaudeBot, CCBot, etc...
+# END Cloudflare Managed Content
+
+# START nuxt-robots (indexing disabled)
+User-agent: *
+Disallow: /                    ← ours
+```
+
+**Two `User-agent: *` groups with opposite directives.** Google merges rules from
+duplicate groups and resolves an `Allow`/`Disallow` conflict on the same path in favour of
+the *least restrictive*, so on this domain `robots.txt` most likely reads as **crawlable**
+— the opposite of what ADR 0006 Q10 decided. The `workers.dev` origin is unaffected and
+still serves our rule alone; only the zone rewrites it.
+
+**What still holds:** the `noindex, nofollow` meta tag, which is present in the static
+HTML a non-JS crawler sees (added in Phase 5 commit 8 precisely because `@nuxtjs/robots`
+could not emit it under `ssr: false`). That is the stronger signal — `robots.txt` governs
+*crawling*, `noindex` governs *indexing*. But Q10 wanted two independent guards while v1
+stays indexed on the same 2,448 cards, and one of them is now inverted.
+
+**Decision: turn the managed `robots.txt` off until Phase 7.**
+
+> Dashboard → Security → Bots → **Configure Bot Fight Mode** → toggle off
+> *"Instruct bot traffic with robots.txt"*.
+> (Also reachable at Security Settings → filter **Bot traffic** → *"Set your preference to
+> block training in robots.txt"*.)
+
+It is a **zone** setting, so it also covers `img.hololive-ocg-wiki.tskrlabs.com`.
+Re-enable it at Phase 7, when the AI-crawler `Disallow` rules become genuinely useful and
+our own rule flips to `Allow` anyway — at that point the two agree and the merge is
+harmless.
+
+**Not a bug in our code, and worth knowing generally:** a zone-level Cloudflare feature can
+change what a Worker appears to serve. `curl` against `workers.dev` and against the custom
+domain returned different bytes for the same path, which is the only reason this was
+caught.

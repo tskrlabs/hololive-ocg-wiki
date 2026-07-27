@@ -18,7 +18,7 @@ This file is that record. **Update it when you change a resource.**
 | R2 bucket | `hololive-ocg-wiki-images` | yes — `img.hololive-ocg-wiki.tskrlabs.com` | 2 |
 | R2 bucket | `hololive-ocg-wiki-artifacts` | **no** | 2 |
 | D1 database | `hololive-ocg-wiki-db` — `75238170-4525-4a06-bfd3-5a32c4daef57` | **no** | 3 |
-| Worker | `hololive-ocg-wiki-tskrlabs-com` — deployed 2026-07-27, version `c44d51a1` | `…liching-chester.workers.dev`; **custom domain not attached yet** | 4–5 |
+| Worker | `hololive-ocg-wiki-tskrlabs-com` — deployed 2026-07-27, version `c44d51a1` | yes — `hololive-ocg-wiki.tskrlabs.com` | 4–5 |
 
 Zone `tskrlabs.com` is on Cloudflare nameservers (verified during the v2 design session),
 which is the prerequisite for an R2 custom domain.
@@ -255,6 +255,19 @@ npx wrangler d1 insights hololive-ocg-wiki-db   # per-query stats (experimental)
 For the daily totals against the quota, the dashboard's D1 → Metrics → Row Metrics view
 is authoritative. `holo-data seed` reads the same numbers over the GraphQL analytics API
 (`d1AnalyticsAdaptiveGroups`) to decide whether a run fits in the remaining budget.
+
+### ⚠️ Zone settings can rewrite what the Worker serves
+
+Cloudflare's **managed `robots.txt`** (Security → Bots → Configure Bot Fight Mode →
+*"Instruct bot traffic with robots.txt"*) prepends its own block to whatever the origin
+returns for `/robots.txt`. On this zone that put `User-agent: * / Allow: /` **above** our
+`Disallow: /`, inverting the pre-launch indexing guard — see
+[F-017](./findings.md#f-017). It is off until Phase 7.
+
+The general lesson is worth more than the specific fix: a zone-level feature can change a
+Worker's apparent response, and nothing in `wrangler.jsonc` or `make preview` would show
+it. `curl` the custom domain as well as the `workers.dev` URL after any domain change; the
+two returning different bytes for the same path is the signal.
 
 ### ⚠️ Never enable Workers "Smart Caching"
 
