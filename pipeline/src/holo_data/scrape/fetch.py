@@ -6,12 +6,21 @@ part D3 explicitly says not to rewrite.
 
 Two things changed, both plumbing:
 
-- Images land in `images/png/` rather than `card_images/default/`, because Phase 1 adds
-  a WebP conversion step and the two formats need separate directories (D9: PNG is a
+- Images land in `images/png/{set}/` rather than `card_images/default/`, because Phase 1
+  adds a WebP conversion step and the two formats need separate directories (D9: PNG is a
   local intermediate, only WebP is uploaded).
 - `image_path` is no longer stored on the card. It was a local filesystem path baked
   into the published data; the contract stores `image_key` and composes URLs (D9). The
   filename is derived from `image_url` at build time instead.
+
+The `{set}` folder is a Phase 2 amendment, and it is load-bearing rather than tidy. v1
+wrote every image into one flat directory keyed by filename, and skipped any filename
+already on disk — so when the hCO01 set reprinted `hBP03-044_SR.png` and
+`hBP03-055_SR.png` under *different artwork*, the second card's image was never
+downloaded and both cards rendered the first card's art. See F-006: the two prints were
+fetched and hashed, and they are genuinely different illustrations by different artists.
+Scoping the path by set is what makes the two files coexist; `image_key` alone does not,
+since two keys pointing at one flat file still upload identical bytes twice.
 """
 
 from __future__ import annotations
@@ -24,7 +33,8 @@ from typing import Any, Callable
 import requests
 from bs4 import BeautifulSoup
 
-from ..paths import PNG_DIR, ensure_dirs, raw_html_file
+from ..paths import PNG_DIR, ensure_dirs, png_path_for_key, raw_html_file
+from ..transform import image_key_from_url
 
 CARD_DETAIL_URL = "https://hololive-official-cardgame.com/cardlist/?id="
 IMG_BASE_URL = "https://hololive-official-cardgame.com"
@@ -36,14 +46,23 @@ MAX_DELAY = 0.3
 
 
 def download_image(img_src: str) -> str | None:
-    """Download one card image if it is not already on disk.
+    """Download one card image to `images/png/{set}/{stem}.png` if not already there.
 
     Returns the filename (not a path) so callers can derive an `image_key` without
     depending on where images happen to live.
+
+    The skip-if-exists check is keyed on the **set-scoped path**, not the bare filename.
+    That distinction is the F-006 fix: two cards can legitimately share a filename across
+    sets while being different artwork, and a filename-keyed check would treat the second
+    as already downloaded and silently keep the first card's image.
     """
     ensure_dirs()
     img_filename = img_src.split("/")[-1]
-    img_path = PNG_DIR / img_filename
+
+    image_key = image_key_from_url(img_src, img_filename)
+    if not image_key:
+        return None
+    img_path = png_path_for_key(image_key)
 
     if img_path.exists():
         return img_filename
@@ -52,6 +71,7 @@ def download_image(img_src: str) -> str | None:
     if img_response.status_code != 200:
         return None
 
+    img_path.parent.mkdir(parents=True, exist_ok=True)
     with open(img_path, "wb") as img_file:
         for chunk in img_response.iter_content(1024):
             img_file.write(chunk)

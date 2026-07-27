@@ -32,6 +32,12 @@ DATA_DIR = _env_path("HOLO_DATA_DIR", PIPELINE_ROOT / "data")
 LOCALES_DIR = _env_path("HOLO_LOCALES_DIR", PIPELINE_ROOT / "locales")
 
 # Downloaded PNGs (intermediate) and converted WebP (what Phase 2 uploads).
+#
+# Both are laid out as `{set}/{stem}.{ext}`, mirroring `Card.image_key` exactly. That
+# equivalence is the point: `publish` can walk the WebP tree and use each relative path
+# (minus extension) as the R2 object key, with no lookup against cards.json. It also
+# keeps the two hCO01 reprints apart on disk — see F-006, where a flat tree silently
+# dropped one card's artwork for a year.
 IMAGES_DIR = _env_path("HOLO_IMAGES_DIR", PIPELINE_ROOT / "images")
 PNG_DIR = IMAGES_DIR / "png"
 WEBP_DIR = IMAGES_DIR / "webp"
@@ -41,6 +47,13 @@ CORRECTIONS_DIR = _env_path("HOLO_CORRECTIONS_DIR", PIPELINE_ROOT / "corrections
 
 # Build output: the canonical cards.json that Phase 2 publishes and Phase 3 seeds.
 BUILD_DIR = _env_path("HOLO_BUILD_DIR", PIPELINE_ROOT / "build")
+
+# Editorial site copy, committed at the repo root. `info.json` lives here rather than in
+# the pipeline because it is not generated — it is prose the maintainer writes, which
+# `publish` merely uploads (D11). It carries no facts about the data: the card count and
+# date the v1 file embedded in its prose come from `cards.json`'s own `generated_at`,
+# so nothing here can go stale.
+CONTENT_DIR = _env_path("HOLO_CONTENT_DIR", REPO_ROOT / "content")
 
 SOURCE_SUBDIR = "default"
 """v1 named the JP scrape directory `default`. Kept so an existing working directory
@@ -93,3 +106,31 @@ def corrections_file(locale: str) -> Path:
 
 def cards_json() -> Path:
     return BUILD_DIR / "cards.json"
+
+
+def info_json() -> Path:
+    """Editorial site copy. Source, not build output — committed and reviewed."""
+    return CONTENT_DIR / "info.json"
+
+
+# --- Image paths, keyed the same way the CDN is ---
+#
+# An image key is `{set}/{stem}` (no extension) — the same string `Card.image_key` holds
+# and the same path R2 serves. These two helpers are the only places that turn a key into
+# a local path, so the "local tree mirrors the bucket" property has one enforcement point.
+
+def png_path_for_key(image_key: str) -> Path:
+    return PNG_DIR / f"{image_key}.png"
+
+
+def webp_path_for_key(image_key: str) -> Path:
+    return WEBP_DIR / f"{image_key}.webp"
+
+
+def key_for_webp_path(path: Path) -> str:
+    """Inverse of `webp_path_for_key` — the R2 object key for a file in the WebP tree.
+
+    Returns POSIX-separated text regardless of platform, because object keys are not
+    filesystem paths and must not pick up a backslash on Windows.
+    """
+    return path.relative_to(WEBP_DIR).with_suffix("").as_posix()

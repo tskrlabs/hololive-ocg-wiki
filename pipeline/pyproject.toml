@@ -14,6 +14,12 @@ dependencies = [
     "typer>=0.15",
 ]
 
+[project.optional-dependencies]
+# Only `holo-data publish` needs an S3 client, and only the maintainer can publish —
+# it requires Cloudflare credentials no contributor has (D14). boto3 is 27 MB against a
+# ~53 MB environment, so it is not everyone's tax to pay: `uv sync --extra publish`.
+publish = ["boto3>=1.35"]
+
 [project.scripts]
 holo-data = "holo_data.cli:app"
 

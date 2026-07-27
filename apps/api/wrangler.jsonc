@@ -1,0 +1,39 @@
+{
+  // The Worker that will serve the API and the static site (D2 — one Worker, not
+  // Pages + Worker). It does not exist yet: this file currently declares only the
+  // Phase 2 resources, and `main`, `assets`, and `d1_databases` arrive with the things
+  // they describe in Phases 3 and 4.
+  //
+  // It is committed deliberately. v1's `wrangler.toml`, `wrangler.service.toml`,
+  // `migrations/`, and `migration.sql` were all gitignored, so the infrastructure
+  // config existed only on one laptop and in the Cloudflare dashboard (v2-plan.md §6).
+  // A partial config that cannot deploy yet is still a record of which resources exist
+  // and what they are called.
+  //
+  // Bucket creation, the custom domain, and disabling the r2.dev URL are imperative
+  // steps that no config file captures — they are written down in docs/infra.md.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hololive-ocg-wiki",
+  "compatibility_date": "2026-07-26",
+
+  "r2_buckets": [
+    {
+      // Public, behind img.hololive-ocg-wiki.tskrlabs.com. Card art only.
+      // Objects are `{set}/{stem}.webp`, matching `Card.image_key` exactly.
+      "binding": "IMAGES",
+      "bucket_name": "hololive-ocg-wiki-images"
+    },
+    {
+      // Private — no custom domain, no r2.dev. Read by the Phase 3 seeder over the S3
+      // API and by the Phase 4 Worker over this binding. Holds cards.json, info.json,
+      // and (from Phase 3) status.json.
+      "binding": "ARTIFACTS",
+      "bucket_name": "hololive-ocg-wiki-artifacts"
+    }
+  ]
+
+  // ⚠️ Never enable Workers "Smart Caching" (v2-plan.md §6). With caching on, static
+  // asset requests become billable at the normal per-request rate; with it off — the
+  // default — they are free and unlimited. This one toggle is the difference between
+  // $0/month and a real bill.
+}

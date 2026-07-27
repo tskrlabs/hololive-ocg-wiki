@@ -5,6 +5,12 @@ description = "Workspace root — see packages/schema for the card contract."
 requires-python = ">=3.12"
 dependencies = ["holo-schema", "holo-pipeline"]
 
+[project.optional-dependencies]
+# `uv sync --extra publish` operates on the workspace root, so the extra has to exist
+# here and forward to the pipeline's own. Defined in both places rather than only here:
+# the pipeline package must still declare what *it* needs to be installable alone.
+publish = ["holo-pipeline[publish]"]
+
 [tool.uv.workspace]
 members = ["packages/schema", "pipeline"]
 

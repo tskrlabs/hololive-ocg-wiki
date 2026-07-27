@@ -9,13 +9,20 @@ steps that cost money or touch production are explicit.
     holo-data translate           Poe API                              ($$ — never implicit)
     holo-data build               merge + validate -> cards.json       (local, free)
     holo-data verify              diff against v1's data               (local, free)
-    holo-data publish             images + artifacts -> R2             (Phase 2)
+    holo-data verify-images       coverage; --remote re-checks bytes   (local / ~2.4k reqs)
+    holo-data publish             images + artifacts -> R2             (uploads)
     holo-data seed --dry          row counts + D1 write estimate       (Phase 3)
     holo-data seed --confirm      diff-based upsert into D1            (Phase 3)
+
+    holo-data migrate-images      one-time v1 flat -> set-scoped tree
 
 `translate` requires `--confirm` or refuses, and prints exactly what it would spend
 under `--dry-run`. An agent-driven run that misfires must not be able to burn the Poe
 budget or corrupt live data.
+
+`publish` deliberately takes no `--confirm` — see its docstring. Uploading is cheap and
+idempotent; what it checks instead is that the artifact is current and the image set is
+complete, which are the failures that actually happen.
 """
 
 from __future__ import annotations
@@ -29,7 +36,10 @@ from dotenv import load_dotenv
 
 from . import build as build_module
 from . import images as images_module
-from . import paths, transform, verify as verify_module
+from . import migrate_images as migrate_module
+from . import paths, r2, transform, verify as verify_module
+from . import publish as publish_module
+from . import verify_images as verify_images_module
 from .scrape import card_list, extract, fetch
 from .translate import poe
 from .translate.cache import TranslationCache
@@ -323,14 +333,275 @@ def verify(
         typer.echo("Differences above are not automatically failures — review them.")
 
 
-# --- Phase 2 / 3 placeholders ------------------------------------------------
+# --- publish -----------------------------------------------------------------
 
 @app.command()
-def publish() -> None:
-    """Upload images and artifacts to R2. (Phase 2)"""
-    typer.echo("`publish` arrives in Phase 2, with the Cloudflare resources.", err=True)
-    typer.echo("It will upload images/webp/ and build/cards.json to R2.", err=True)
+def publish(
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="report what would upload, change nothing"
+    ),
+    force: bool = typer.Option(
+        False, "--force", help="re-upload everything, ignoring the diff"
+    ),
+    images_only: bool = typer.Option(False, "--images-only"),
+    artifacts_only: bool = typer.Option(False, "--artifacts-only"),
+) -> None:
+    """Upload images and artifacts to R2.
+
+    No `--confirm`: image keys are immutable, the diff makes a re-run a no-op, and
+    ~3,000 uploads is 0.3% of the monthly allowance. The guards that matter are a
+    staleness check on `cards.json` and a coverage check on the images — both facts an
+    agent cannot wave away with a flag (D10).
+    """
+    try:
+        config = r2.load_config()
+    except r2.R2Error as exc:
+        typer.echo(f"✗ {exc}", err=True)
+        raise typer.Exit(1)
+
+    staleness = publish_module.check_staleness()
+    if staleness.is_stale:
+        typer.echo("✗ build/cards.json is older than its inputs:", err=True)
+        for path in staleness.newer_inputs:
+            typer.echo(f"    {path}", err=True)
+        typer.echo("", err=True)
+        typer.echo("Run `holo-data build` first.", err=True)
+        raise typer.Exit(1)
+
+    typer.echo(f"→ {config.images_bucket} + {config.artifacts_bucket}")
+
+    try:
+        s3 = r2.client(config)
+        typer.echo("→ listing what is already published")
+        plan = publish_module.build_plan(s3, config, force=force)
+    except r2.R2Error as exc:
+        typer.echo(f"✗ {exc}", err=True)
+        raise typer.Exit(1)
+
+    # Coverage: a card with no image renders as a broken tile. Hard failure.
+    if plan.missing_images:
+        typer.echo("", err=True)
+        typer.echo(
+            f"✗ {len(plan.missing_images)} card(s) have no local WebP:", err=True
+        )
+        for key in plan.missing_images[:10]:
+            typer.echo(f"    {key}", err=True)
+        if len(plan.missing_images) > 10:
+            typer.echo(f"    … and {len(plan.missing_images) - 10} more", err=True)
+        typer.echo("", err=True)
+        typer.echo("Run `holo-data images` (or `migrate-images`) first.", err=True)
+        raise typer.Exit(1)
+
+    if plan.orphan_images:
+        typer.echo(
+            f"  {len(plan.orphan_images)} local WebP(s) match no card — not uploaded"
+        )
+
+    typer.echo(
+        f"  images:    {len(plan.image_uploads):5d} to upload, "
+        f"{plan.images_unchanged} unchanged"
+    )
+    typer.echo(
+        f"  artifacts: {len(plan.artifact_uploads):5d} to upload, "
+        f"{plan.artifacts_unchanged} unchanged"
+    )
+
+    if plan.total_uploads == 0:
+        typer.echo("✓ everything is already published — nothing to do")
+        return
+
+    typer.echo(f"  {plan.upload_bytes / 1024 / 1024:.1f} MB total")
+
+    if dry_run:
+        typer.echo("")
+        by_reason: dict[str, int] = {}
+        for item in plan.image_uploads + plan.artifact_uploads:
+            by_reason[item.reason] = by_reason.get(item.reason, 0) + 1
+        typer.echo("Would upload: " + ", ".join(f"{n} {r}" for r, n in sorted(by_reason.items())))
+        for item in (plan.image_uploads + plan.artifact_uploads)[:15]:
+            typer.echo(f"    {item.reason:8s} {item.key}")
+        if plan.total_uploads > 15:
+            typer.echo(f"    … and {plan.total_uploads - 15} more")
+        return
+
+    failures: list[tuple[str, str]] = []
+
+    if not artifacts_only and plan.image_uploads:
+        typer.echo("→ uploading images")
+        report = _progress("images")
+        for index, item in enumerate(plan.image_uploads):
+            try:
+                r2.upload(s3, config.images_bucket, item, r2.IMAGE_CACHE_CONTROL)
+            except Exception as exc:  # noqa: BLE001
+                failures.append((item.key, str(exc)))
+            report(index + 1, len(plan.image_uploads), item.key)
+
+    if not images_only and plan.artifact_uploads:
+        typer.echo("→ uploading artifacts")
+        for item in plan.artifact_uploads:
+            try:
+                r2.upload(s3, config.artifacts_bucket, item, r2.ARTIFACT_CACHE_CONTROL)
+                typer.echo(f"  {item.key}")
+            except Exception as exc:  # noqa: BLE001
+                failures.append((item.key, str(exc)))
+
+    if failures:
+        typer.echo("")
+        typer.echo(f"✗ {len(failures)} upload(s) failed:", err=True)
+        for key, error in failures[:10]:
+            typer.echo(f"    {key}: {error}", err=True)
+        raise typer.Exit(1)
+
+    typer.echo("")
+    typer.echo(f"✓ published {plan.total_uploads} object(s)")
+
+
+# --- verify-images -----------------------------------------------------------
+
+@app.command("verify-images")
+def verify_images(
+    remote: bool = typer.Option(
+        False,
+        "--remote",
+        help="re-fetch every source image and compare bytes (~2,450 requests)",
+    ),
+    limit: Optional[int] = typer.Option(None, "--limit", help="check only the first N"),
+) -> None:
+    """Check the image set: coverage always, provenance with `--remote`.
+
+    Coverage is a set difference and free. `--remote` re-downloads every card's
+    `source_image_url` and compares bytes — that is what catches an image being the
+    *wrong card's art*, which is how F-006 went unnoticed for a year. Expensive by
+    nature, so it never runs implicitly.
+    """
+    try:
+        coverage = verify_images_module.check_coverage()
+    except FileNotFoundError as exc:
+        typer.echo(f"✗ {exc}", err=True)
+        raise typer.Exit(1)
+
+    typer.echo(f"→ {coverage.total_cards} cards")
+    typer.echo(
+        f"  missing PNG:  {len(coverage.missing_png)}\n"
+        f"  missing WebP: {len(coverage.missing_webp)}\n"
+        f"  orphan WebP:  {len(coverage.orphan_webp)}"
+    )
+
+    for label, keys in (
+        ("missing PNG", coverage.missing_png),
+        ("missing WebP", coverage.missing_webp),
+    ):
+        if keys:
+            typer.echo(f"  {label}:", err=True)
+            for key in keys[:10]:
+                typer.echo(f"    {key}", err=True)
+            if len(keys) > 10:
+                typer.echo(f"    … and {len(keys) - 10} more", err=True)
+
+    if not remote:
+        if coverage.is_clean:
+            typer.echo("✓ every card has both a PNG and a WebP")
+            typer.echo("  (pass --remote to also verify the bytes against the source)")
+        raise typer.Exit(0 if coverage.is_clean else 1)
+
+    typer.echo("")
+    typer.echo("→ re-fetching source images to compare bytes (this is the slow one)")
+    provenance = verify_images_module.check_provenance(
+        limit=limit, on_progress=_progress("checked")
+    )
+
+    typer.echo(f"  {provenance.matched}/{provenance.checked} match their source")
+
+    if provenance.mismatched:
+        typer.echo("")
+        typer.echo(f"  ✗ {len(provenance.mismatched)} differ from source:", err=True)
+        for key, problem in sorted(provenance.mismatched.items())[:20]:
+            typer.echo(f"    {key}: {problem}", err=True)
+
+    if provenance.errors:
+        typer.echo(f"  {len(provenance.errors)} could not be fetched:", err=True)
+        for key, error in sorted(provenance.errors.items())[:10]:
+            typer.echo(f"    {key}: {error}", err=True)
+
+    if provenance.is_clean and coverage.is_clean:
+        typer.echo("")
+        typer.echo("✓ every local image matches the bytes the official site serves")
+        return
     raise typer.Exit(1)
+
+
+# --- migrate-images ----------------------------------------------------------
+
+@app.command("migrate-images")
+def migrate_images(
+    source: Path = typer.Option(
+        migrate_module.V1_IMAGE_DIR, "--source", help="v1's flat image directory"
+    ),
+    mapping: Path = typer.Option(
+        migrate_module.V1_MAPPING, "--mapping", help="v1 artifact carrying imageUrl"
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="report the plan only"),
+) -> None:
+    """One-time: copy v1's flat images into the set-scoped tree.
+
+    Copies rather than re-scrapes — ~2,450 local file copies instead of ~2,450 requests
+    to a small operator's site. Files whose name is claimed by two different cards
+    (F-006) are re-fetched instead of copied, because which print the flat file holds is
+    not recoverable.
+    """
+    if not mapping.exists():
+        typer.echo(f"✗ mapping not found: {mapping}", err=True)
+        raise typer.Exit(1)
+
+    typer.echo(f"→ reading image keys from {mapping.name}")
+    key_map = migrate_module.load_key_map(mapping)
+    typer.echo(f"  {len(key_map)} image keys")
+
+    plan = migrate_module.plan(source, key_map)
+
+    typer.echo(f"→ from {source}")
+    typer.echo(f"  copy:   {len(plan.copies)}")
+    typer.echo(f"  fetch:  {len(plan.fetches)}")
+    if plan.contested:
+        typer.echo(
+            f"  {len(plan.contested)} filename(s) claimed by two cards — "
+            f"re-fetching both prints (F-006):"
+        )
+        for filename, keys in sorted(plan.contested.items()):
+            typer.echo(f"    {filename} → {', '.join(keys)}")
+    if plan.orphan_files:
+        typer.echo(f"  {len(plan.orphan_files)} file(s) on disk match no card")
+        for name in plan.orphan_files[:5]:
+            typer.echo(f"    {name}")
+        if len(plan.orphan_files) > 5:
+            typer.echo(f"    … and {len(plan.orphan_files) - 5} more")
+    if plan.unresolved:
+        typer.echo(f"  ✗ {len(plan.unresolved)} key(s) have no source at all", err=True)
+
+    if dry_run:
+        typer.echo("")
+        typer.echo(f"Would place {plan.total} image(s). Nothing written.")
+        return
+
+    typer.echo("")
+    typer.echo("→ migrating")
+    copied, fetched, failures = migrate_module.apply(
+        plan, on_progress=_progress("images")
+    )
+
+    typer.echo(f"  copied {copied}, fetched {fetched}")
+    if failures:
+        typer.echo(f"  ✗ {len(failures)} failed:", err=True)
+        for key, error in failures[:10]:
+            typer.echo(f"    {key}: {error}", err=True)
+        raise typer.Exit(1)
+
+    typer.echo("")
+    typer.echo("✓ images are in the set-scoped tree")
+    typer.echo("  next: `holo-data images` to convert, then `verify-images --remote`")
+
+
+# --- Phase 3 placeholder -----------------------------------------------------
 
 
 @app.command()
@@ -368,9 +639,11 @@ def status() -> None:
     describe(paths.cache_file(), "translation cache")
     describe(paths.cards_json(), "cards.json")
 
-    png = len(list(paths.PNG_DIR.glob("*.png")))
-    webp = len(list(paths.WEBP_DIR.glob("*.webp")))
-    typer.echo(f"  {'images':22s} {png} PNG, {webp} WebP")
+    # rglob — the trees are nested by set (`{set}/{stem}.png`).
+    png = len(list(paths.PNG_DIR.rglob("*.png")))
+    webp = len(list(paths.WEBP_DIR.rglob("*.webp")))
+    sets = len([d for d in paths.WEBP_DIR.iterdir() if d.is_dir()]) if paths.WEBP_DIR.exists() else 0
+    typer.echo(f"  {'images':22s} {png} PNG, {webp} WebP across {sets} set(s)")
 
     cache = TranslationCache.load()
     if cache.entries:

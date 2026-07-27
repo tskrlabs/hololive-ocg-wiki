@@ -1,7 +1,8 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0 and 1 done. **Phase 2 (Cloudflare resources + R2 publish) is
-next.**
+**Where we are:** Phases 0, 1 and 2 done. Images are live at
+`img.hololive-ocg-wiki.tskrlabs.com` and `publish` is idempotent.
+**Phase 3 (D1 redesign + seeder) is next.**
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -15,8 +16,8 @@ copy and is authoritative if they disagree.
 |---|---|---|---|
 | 0 | Repo skeleton + `packages/schema` | ✅ done | [ADR 0001](adr/0001-card-contract-generation.md) · `2d23999` |
 | 1 | Pipeline migration | ✅ done | [ADR 0002](adr/0002-field-level-translation-cache.md) · `6be38ff` |
-| 2 | CF resources + R2 publish | 🔜 **next** | |
-| 3 | D1 redesign + seeder | ⬜ | |
+| 2 | CF resources + R2 publish | ✅ done | [ADR 0003](adr/0003-r2-publish.md) · live |
+| 3 | D1 redesign + seeder | 🔜 **next** | |
 | 4 | Worker rewrite (Hono + Zod) | ⬜ | |
 | 5 | Website (new API/R2, 4 refactors) | ⬜ | |
 | 6 | Workers Builds + fixtures + docs | ⬜ | |
@@ -39,9 +40,12 @@ copy and is authoritative if they disagree.
 
 ```
 packages/schema/   the card contract — pydantic → JSON Schema → TS types
-pipeline/          holo-data CLI: scrape, images, translate, build, verify
+pipeline/          holo-data CLI: scrape, images, translate, build, verify, publish
+apps/api/          wrangler.jsonc — R2 bindings (Worker itself arrives in Phase 4)
+content/           info.json — editorial site copy, uploaded by publish
 fixtures/          34 cards covering every enum member and edge case
 docs/adr/          decisions made during execution
+docs/infra.md      the Cloudflare runbook — what exists and which command made it
 docs/findings.md   data anomalies awaiting maintainer review
 Makefile           `make check` — the single verification entry point
 ```
@@ -49,8 +53,10 @@ Makefile           `make check` — the single verification entry point
 ```bash
 make setup     # uv sync + npm install
 make hooks     # opt-in pre-commit check (once per clone)
-make check     # 83 tests: schema, pipeline, TS parity, typecheck
+make check     # 130 tests: schema, pipeline, TS parity, typecheck
 make help
+
+uv sync --extra publish   # adds boto3, only needed for `holo-data publish`
 ```
 
 ## Phase 0 — the card contract
@@ -84,7 +90,7 @@ v1's 9 numbered scripts are now a `pipeline/` module with one `holo-data` CLI.
 
 ```
 holo-data scrape / images / translate / build / verify / status   ← working
-holo-data publish                                                  ← Phase 2 stub
+holo-data publish / verify-images / migrate-images                 ← Phase 2
 holo-data seed                                                     ← Phase 3 stub
 ```
 
@@ -99,8 +105,9 @@ Key decisions — full reasoning in
 - **Manual corrections are cache entries** marked `source: "manual"`, superseding D14's
   overlay. The whole card still goes to the model; only *stale* fields are read back, so
   a correction survives even when the card is re-sent
-- `holo-data images` — PNG → WebP at q90 (~425 MB for the full set, 4.3% of the R2 free
-  tier). New: nothing in v1 produced WebP
+- `holo-data images` — PNG → WebP at q90. Measured over the real set in Phase 2:
+  **191 MB**, 68% smaller than the PNGs and well under the 425 MB the sample predicted.
+  New: nothing in v1 produced WebP
 - `holo-data verify` is permanent, with a `--baseline` path argument
 
 **Verified:** `verify` reports zero base-field differences against v1's 2,448-card
@@ -123,30 +130,89 @@ Recorded in the ADRs; listed here so they are not missed.
 | **D11** | `status.json` moves from `publish` to the **seeder (Phase 3)**. It is written by v1's `migrate.js`, not the pipeline, and describes a *database diff* — knowledge `publish` cannot have |
 | **D14** | The `corrections/` overlay is superseded by field-level caching. Same goal, no separate merge layer. Scripts 7/8 dropped (never used) |
 | **Phase 1 done-when** | "reproduces today's `cards.json` **shape**" → reproduces today's **data**. The artifact is snake_case now, so a byte-diff would show every key renamed |
+| **Phase 1 image tree** | Flat `images/{png,webp}/` → **set-scoped** `images/{png,webp}/{set}/`. Amended in Phase 2: the flat layout could not hold F-006's two same-named-different-artwork reprints, which is a data-loss bug, not a layout preference ([ADR 0003](adr/0003-r2-publish.md)) |
+| **D11** | `info.json` is **committed** at `content/info.json` and uploaded by `publish`, not pushed by hand. The card count comes out of its prose and is rendered from `cards.json` instead — a Phase 5 dependency |
 
-## Starting Phase 2
+## Phase 2 — R2 publish
 
-**Goal (from `v2-plan.md`):** images live at `img.hololive-ocg-wiki.tskrlabs.com`;
-`publish` is idempotent.
+Full reasoning in [ADR 0003](adr/0003-r2-publish.md); the Cloudflare runbook is
+[`infra.md`](./infra.md).
 
-What it needs to build:
+```
+holo-data publish          images + artifacts → R2   (--dry-run, --force)
+holo-data verify-images    coverage; --remote re-checks bytes against the source
+holo-data migrate-images   one-time: v1's flat images → the set-scoped tree
+```
 
-- `holo-data publish` — upload `pipeline/images/webp/` and `build/cards.json` to R2.
-  Currently a stub that explains itself and exits 1
-- The R2 bucket, its custom domain, and a committed `wrangler.jsonc` (v1's `wrangler.toml`
-  was gitignored — the infra config was not in version control at all)
+- **Two buckets.** `hololive-ocg-wiki-images` is public behind
+  `img.hololive-ocg-wiki.tskrlabs.com`; `hololive-ocg-wiki-artifacts` is private. The
+  images bucket is world-readable forever by design — artifacts have a different
+  lifecycle and stay out of it
+- **The local image tree is now set-scoped** — `images/{png,webp}/{set}/{stem}.ext`,
+  mirroring `image_key`, so `publish` is a directory sync with no lookup. This is a
+  **Phase 1 amendment**, and it is a bug fix: see F-006 below
+- **`publish` diffs by listing R2** (size, then MD5/ETag), never deletes, and has
+  **no `--confirm`**. Instead it refuses on a *stale* `cards.json` or an incomplete image
+  set — gates an agent cannot satisfy by adding a flag
+- **Custom domain from the start, `r2.dev` disabled.** `r2.dev` is rate-limited and gets
+  no CDN cache at all; the custom domain is what keeps R2 reads near zero
+- **Cache headers set explicitly at upload** — images `immutable` for a year, artifacts
+  `no-cache` — rather than inherited from Cloudflare's default extension list
+- **`boto3` is an optional extra** (`uv sync --extra publish`). 27 MB, and only the
+  maintainer can publish anyway (D14)
+- **`info.json` is committed editorial copy** at `content/info.json`, carrying no facts
+  about the data. v1's hardcoded *"2448 cards (June 19, 2026)"* is gone — Phase 5 renders
+  that from `cards.json`'s `generated_at`
 
-Facts worth having before starting:
+**F-006 resolved, and it was a live bug.** The two `hCO01` reprints were fetched and
+hashed: `hBP03-044_SR` and `hBP03-055_SR` are **different artwork by different
+illustrators** in `hBP03` and `hCO01`, not duplicate files. v1's flat image directory
+skipped any filename already on disk, so only one of each pair was ever downloaded and
+both cards rendered the same art. The set-scoped tree is what fixes it — the image key
+alone does not, since two keys can still point at one flat file.
 
-- The image key scheme is `{set}/{filename}`, e.g. `hBP08/hBP01-028_C_02`. `Card.image_url()`
-  and the TS `cardImage()` compose the URL; **nothing stores a URL** (D9)
-- `CardCollection` already rejects duplicate image keys, so the reprint collision in
-  [F-006](./findings.md#f-006) cannot ship silently
-- Full set ≈ 425 MB of WebP, comfortably inside R2's 10 GB free tier. Egress is free
-- `status.json` is **not** Phase 2 — see the D11 amendment above
-- ⚠️ Never enable Workers "Smart Caching" — it makes static asset requests billable
-  (`v2-plan.md` §6)
+### Phase 2 execution
 
-Open questions for the Phase 2 grilling: whether `publish` diffs against what is already
-in R2 or re-uploads blindly; whether `info.json` (D11) is written by `publish` or by hand;
-and whether the bucket gets a custom domain now or an `r2.dev` URL until launch.
+The code is built and `make check` is green, but **the Cloudflare resources do not exist
+yet** and the maintainer creates them. Until then `publish` fails with instructions.
+
+Commands are `uv run holo-data …` — the CLI lives in the project venv, not on your PATH.
+
+**✅ Phase 2 is complete and live.** Executed 2026-07-27:
+
+| | result |
+|---|---|
+| Buckets | both created, `r2.dev` disabled on each |
+| Custom domain | `img.hololive-ocg-wiki.tskrlabs.com` → CDN `HIT`, `immutable` cache header |
+| Images migrated | 2,448 PNG across 34 set folders (603 MB) |
+| WebP converted | 2,448 (191 MB — **68% smaller**, and well under the 425 MB estimate) |
+| `build` | 2,448 cards, 100% translation coverage in all 7 locales, 21.3 MB |
+| `verify` vs v1 | only the 2 known F-001 cards + the F-003/F-004 arts — **zero unexplained drift** |
+| `verify-images --remote` | **2,448/2,448 byte-identical to source** (after F-012) |
+| `publish` | 2,450 objects; a second run uploads nothing |
+
+R2 usage: images 191.4 MB, artifacts 21.4 MB — **2% of the 10 GB free tier.**
+
+**F-012 found during this run.** The first provenance check reported 12 images differing
+from source — not wrong cards, but stale copies: the official site had silently
+re-uploaded 7 at higher resolution and re-compressed 5. `download_image()` skips files
+already on disk, so a *replaced* upstream file is never noticed. Re-fetched and clean.
+This is why `verify-images --remote` exists, and worth re-running after each new set.
+
+### Working data lives in the main checkout
+
+`pipeline/data/`, `locales/`, `images/` and `build/` are gitignored, and they were
+populated in the **main checkout** (`/Users/chingli/tskrlabs/projects/hololive-ocg-wiki`)
+rather than in a worktree, so they survive this branch being merged. A worktree run needs:
+
+```bash
+MAIN=/Users/chingli/tskrlabs/projects/hololive-ocg-wiki/pipeline
+export HOLO_DATA_DIR=$MAIN/data HOLO_LOCALES_DIR=$MAIN/locales \
+       HOLO_IMAGES_DIR=$MAIN/images HOLO_BUILD_DIR=$MAIN/build
+```
+
+The translation cache is seeded (81,124 entries from v1), so `translate` has nothing to
+do until new cards ship.
+
+Done when images resolve at `img.hololive-ocg-wiki.tskrlabs.com/{set}/{stem}.webp` and a
+second `publish` uploads nothing.

@@ -15,15 +15,23 @@ holo-data images          # PNG -> WebP q90                      (local, free)
 holo-data translate       # Poe API                              ($$ — needs --confirm)
 holo-data build           # merge + validate -> cards.json       (local, free)
 holo-data verify          # diff against v1's data               (local, free)
+holo-data verify-images   # coverage; --remote re-checks bytes   (local / ~2.4k reqs)
 holo-data status          # what is on disk right now
 
-holo-data publish         # -> R2      (Phase 2)
+holo-data publish         # images + artifacts -> R2   (needs CF credentials)
 holo-data seed            # -> D1      (Phase 3)
+
+holo-data migrate-images  # one-time: v1's flat images -> the set-scoped tree
 ```
 
 The order is D10's gated flow: everything before `publish` is local and reversible, and
 the steps that cost money or touch production are explicit. `translate` refuses to run
 without `--confirm` and reports exactly what it would spend under `--dry-run`.
+
+**`publish` takes no `--confirm`** — uploading is cheap and idempotent, so a confirmation
+flag would only teach the habit of typing it unread before `seed` asks for it. What it
+checks instead are facts: that `cards.json` is newer than its inputs, and that every card
+has an image. See [ADR 0003](../docs/adr/0003-r2-publish.md).
 
 ## Setup
 
@@ -31,9 +39,12 @@ without `--confirm` and reports exactly what it would spend under `--dry-run`.
 make setup                      # from the repo root
 cp pipeline/.env.example pipeline/.env
 # add POE_API_KEY — only needed for `translate`
+
+uv sync --extra publish         # adds boto3 — only needed for `publish`
 ```
 
-`scrape`, `images`, `build` and `verify` need no credentials.
+`scrape`, `images`, `build`, `verify` and `verify-images` need no credentials.
+`publish` needs R2 credentials and `boto3`; see [`docs/infra.md`](../docs/infra.md).
 
 ## Translation is incremental
 
@@ -65,14 +76,21 @@ Everything under `pipeline/` except `corrections/` is gitignored working state,
 reproducible by re-running:
 
 ```
-data/default/   card ids, raw HTML, structured extraction, contract shape
-locales/        translations + the field-level cache
-images/png/     downloaded originals (local intermediate — never uploaded)
-images/webp/    what `publish` uploads (D9)
-build/          cards.json
+data/default/         card ids, raw HTML, structured extraction, contract shape
+locales/              translations + the field-level cache
+images/png/{set}/     downloaded originals (local intermediate — never uploaded)
+images/webp/{set}/    what `publish` uploads (D9)
+build/                cards.json
 ```
 
 Per D1 the published artifacts live in R2, not git.
+
+**The `{set}` folder is not decoration.** A WebP's path relative to `images/webp/` *is*
+its R2 object key, which is what lets `publish` sync without consulting `cards.json`. It
+is also load-bearing for correctness: `hBP03-044_SR.png` exists under both `hBP03` and
+`hCO01` as **different artwork**, and a flat directory can only hold one of them — see
+[F-006](../docs/findings.md#f-006), which is exactly how v1 shipped one card's art for
+two cards.
 
 ## Gotchas
 
@@ -90,3 +108,8 @@ Per D1 the published artifacts live in R2, not git.
   title.
 - **The cache starts empty.** A first `translate` on a fresh clone would be a full run.
   Seed it from v1's `cards.json` instead (see ADR 0002).
+- **`download_image` skips by *key*, not filename.** Skipping by filename is what caused
+  F-006. If you touch that logic, keep the set folder in the comparison.
+- **`verify-images --remote` is the only check that catches wrong artwork.** Coverage
+  says an image exists; only re-fetching the source says it is the *right* image. Run it
+  after any migration, and never in a loop — it is ~2,450 requests to a small site.

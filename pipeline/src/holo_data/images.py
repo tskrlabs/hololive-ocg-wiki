@@ -9,6 +9,11 @@ re-runnable: adding 30 cards should not re-download 2,400 images, a failed uploa
 not re-convert them, and `publish` reading only `images/webp/` makes "PNG stays a local
 intermediate" structural rather than a rule someone has to remember.
 
+Both trees are `{set}/{stem}.{ext}` (Phase 2). The set folder is mirrored from PNG to
+WebP, so a WebP file's path relative to `images/webp/` *is* its R2 object key — `publish`
+needs no lookup table, and F-006's two same-named-different-artwork reprints stay
+distinct all the way from disk to CDN.
+
 Sizing, measured over 25 real cards (full set ≈ 2,500):
 
 | format | avg/card | full set | R2 free tier (10 GB) |
@@ -83,11 +88,14 @@ def convert_all(
     ensure_dirs()
     result = ConversionResult()
 
-    pngs = sorted(PNG_DIR.glob("*.png"))
+    # Recursive: the tree is `{set}/{stem}.png`, so a flat glob would find nothing.
+    pngs = sorted(PNG_DIR.rglob("*.png"))
     total = len(pngs)
 
     for index, png_path in enumerate(pngs):
-        webp_path = WEBP_DIR / f"{png_path.stem}.webp"
+        # Mirror the set folder into the WebP tree, so relative paths stay identical
+        # between the two and a WebP path maps to an R2 key by suffix-stripping alone.
+        webp_path = (WEBP_DIR / png_path.relative_to(PNG_DIR)).with_suffix(".webp")
 
         if (
             not force
@@ -109,4 +117,9 @@ def convert_all(
 
 
 def directory_size(path: Path, pattern: str = "*") -> int:
-    return sum(item.stat().st_size for item in path.glob(pattern) if item.is_file())
+    """Total bytes of files matching `pattern`, searched recursively.
+
+    `rglob` rather than `glob`: the image trees are nested by set, so a flat pattern
+    would report zero.
+    """
+    return sum(item.stat().st_size for item in path.rglob(pattern) if item.is_file())
