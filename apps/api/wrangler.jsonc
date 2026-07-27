@@ -38,11 +38,11 @@
       // packages/schema/sql/schema.sql, generated from the pydantic models.
       //
       // `holo-data seed` reads database_name and database_id from here — the infra
-      // config is the one place a resource is named. Fill database_id in after
-      // `npx wrangler d1 create hololive-ocg-wiki`; see docs/infra.md.
+      // config is the one place a resource is named. Created 2026-07-27; see
+      // docs/infra.md.
       "binding": "DB",
-      "database_name": "hololive-ocg-wiki",
-      "database_id": "REPLACE_ME"
+      "database_name": "hololive-ocg-wiki-db",
+      "database_id": "75238170-4525-4a06-bfd3-5a32c4daef57"
     }
   ]
 

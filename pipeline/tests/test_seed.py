@@ -92,6 +92,64 @@ class TestSchema:
         ).fetchall()
         assert "SCAN" not in plan[0][3], plan
 
+    def test_deleting_one_cards_junction_rows_uses_an_index(self, db):
+        """The seeder's write path looks junction rows up by card_id, not by value.
+
+        Caught on the first production seed, not predicted: with only the composite
+        `(value, card_id)` key, `DELETE … WHERE card_id = ?` is a skip-scan over the
+        whole table — `SEARCH … (ANY(color_code) AND card_id=?)`. That cost 12,515 rows
+        read per card and 15.5M for a full reseed, three times the daily read budget,
+        on a command that only needed 27,203 writes.
+
+        The read path (`WHERE color_code = ?`) and the write path (`WHERE card_id = ?`)
+        want opposite key orders, so both need an index.
+        """
+        for table in ("card_colors", "card_tags", "card_sets"):
+            plan = db.execute(
+                f"EXPLAIN QUERY PLAN DELETE FROM {table} WHERE card_id = '1'"
+            ).fetchall()
+            detail = " ".join(row[3] for row in plan)
+            assert "ANY(" not in detail, f"{table} skip-scans: {detail}"
+            assert "SCAN" not in detail, f"{table} scans: {detail}"
+
+    def test_fts_rows_are_addressed_by_rowid(self, db, collection):
+        """An FTS5 column cannot be indexed for lookup — only the rowid can.
+
+        Deleting by an UNINDEXED `card_id` column scanned the whole FTS table: 2,448
+        rows read per card, ~6M for a reseed. By rowid it reads zero. Measured on
+        production, not predicted.
+
+        This test pins the consequence: the seeder must never reintroduce a `card_id`
+        column here, and every statement it emits for the FTS table must key on rowid.
+        """
+        assert "card_id" not in SCHEMA_SQL.read_text(encoding="utf-8").split(
+            "CREATE VIRTUAL TABLE"
+        )[1]
+
+        row = seed_module.to_row(collection.cards[0])
+        fts_statements = [
+            s
+            for s in seed_module.statements_for(row, SEEDED_AT)
+            if "cards_fts" in s.sql
+        ]
+        assert fts_statements
+        for statement in fts_statements:
+            assert "rowid" in statement.sql, statement.sql
+
+    def test_a_non_numeric_card_id_fails_loudly(self):
+        """The FTS rowid *is* the card id, so a non-numeric id has to be caught.
+
+        Falling back to an UNINDEXED column would work but cost a full scan per card —
+        a read-budget problem that would surface months later as mysterious growth
+        rather than as an error at the point the assumption broke.
+        """
+        with pytest.raises(seed_module.NonNumericCardId):
+            seed_module.rowid_for("hBP01-001")
+
+    def test_every_card_id_in_the_fixture_set_is_numeric(self, collection):
+        for card in collection.cards:
+            assert seed_module.rowid_for(card.id) == int(card.id)
+
     def test_a_multi_value_filter_returns_each_card_once(self, db, collection):
         """Pins the query form Phase 4 must use (ADR 0004).
 
@@ -128,8 +186,8 @@ class TestSchema:
         site's default locale is `tc` and its source locale is `ja`.
         """
         db.execute(
-            "INSERT INTO cards_fts (card_id, card_number, text) VALUES (?, ?, ?)",
-            ("1", "hBP01-001", "白上フブキ"),
+            "INSERT INTO cards_fts (rowid, card_number, text) VALUES (?, ?, ?)",
+            (1, "hBP01-001", "白上フブキ"),
         )
         hits = db.execute(
             "SELECT count(*) FROM cards_fts WHERE cards_fts MATCH ?", ("フブキ",)
@@ -143,8 +201,8 @@ class TestSchema:
         dangerous shape: a 2-character query silently looks like "no such card".
         """
         db.execute(
-            "INSERT INTO cards_fts (card_id, card_number, text) VALUES (?, ?, ?)",
-            ("1", "hBP01-001", "宝鐘マリン"),
+            "INSERT INTO cards_fts (rowid, card_number, text) VALUES (?, ?, ?)",
+            (1, "hBP01-001", "宝鐘マリン"),
         )
         assert (
             db.execute(
@@ -313,7 +371,7 @@ class TestEstimate:
         expected = (
             1
             + seed_module.CARD_INDEX_COUNT
-            + junction_rows
+            + junction_rows * seed_module.JUNCTION_WRITE_MULTIPLIER
             + seed_module.FTS_WRITE_MULTIPLIER
         )
         assert seed_module.estimate_writes([row]) == expected

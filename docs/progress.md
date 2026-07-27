@@ -1,9 +1,8 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0–3 built. Images are live at
-`img.hololive-ocg-wiki.tskrlabs.com`, `publish` is idempotent, and the D1 schema and
-seeder are written and tested — but **the D1 database does not exist yet**; the
-maintainer creates it (see Phase 3 below).
+**Where we are:** Phases 0–3 done. Images are live at
+`img.hololive-ocg-wiki.tskrlabs.com`, `publish` is idempotent, and **D1 is populated** —
+2,448 cards in `hololive-ocg-wiki-db`, with CJK search working.
 **Phase 4 (Worker rewrite) is next.**
 
 This file is the resume point for a new session. Read it, then
@@ -19,7 +18,7 @@ copy and is authoritative if they disagree.
 | 0 | Repo skeleton + `packages/schema` | ✅ done | [ADR 0001](adr/0001-card-contract-generation.md) · `2d23999` |
 | 1 | Pipeline migration | ✅ done | [ADR 0002](adr/0002-field-level-translation-cache.md) · `6be38ff` |
 | 2 | CF resources + R2 publish | ✅ done | [ADR 0003](adr/0003-r2-publish.md) · live |
-| 3 | D1 redesign + seeder | ✅ built · ⏳ awaiting the database | [ADR 0004](adr/0004-d1-schema-and-seeder.md) |
+| 3 | D1 redesign + seeder | ✅ done | [ADR 0004](adr/0004-d1-schema-and-seeder.md) · live |
 | 4 | Worker rewrite (Hono + Zod) | 🔜 **next** | |
 | 5 | Website (new API/R2, 4 refactors) | ⬜ | |
 | 6 | Workers Builds + fixtures + docs | ⬜ | |
@@ -138,7 +137,7 @@ Recorded in the ADRs; listed here so they are not missed.
 | **D8** | "filterable fields stay real indexed columns" → the three **multi-valued** ones become **junction tables**. A JSON array filtered with `LIKE` cannot use an index, so v1's three such indexes never fired. Measured on the real query shape: ~2,448 rows read vs ~50–100 ([ADR 0004](adr/0004-d1-schema-and-seeder.md)) |
 | **D8** | `/api/filter-options` and `/api/static-filters` move **off D1** to R2 artifacts — same answer for every user until the next reseed, currently four full scans per call |
 | **Plan §3** | D1 free storage is **500 MB**, not 5 GB — the plan quoted the paid tier. Not a problem: 17 MB data + 36 MB index |
-| **Phase 3 done-when** | "`seed --dry` reports ~2,500 rows" → **~29,650 writes for a full reseed, ~1,450 for a new set**. The original counted only `cards` rows, ignoring index writes, junction rows and FTS shadow tables |
+| **Phase 3 done-when** | "`seed --dry` reports ~2,500 rows" → **~47,300 writes for a full reseed, ~2,320 for a new set**. The original counted only `cards` rows, ignoring index writes, junction rows and FTS shadow tables |
 
 ## Phase 2 — R2 publish
 
@@ -275,30 +274,42 @@ applies. The junction tables are what make the payload design pay off.
 
 | scenario | writes | % of 100k/day |
 |---|---|---|
-| Full reseed | ~29,650 | 29.7% |
-| New card set (~120 cards) | ~1,450 | 1.5% |
-| Q&A-only update (100 cards) | ~400 | 0.4% |
+| Full reseed | ~47,300 | 47.3% |
+| New card set (~120 cards) | ~2,320 | 2.3% |
+| Q&A-only update (100 cards) | ~700 | 0.7% |
 
-### Phase 3 execution — the database does not exist yet
+Every constant behind these was measured against production, not estimated.
 
-The code is built and `make check` is green (155 tests), but **the maintainer creates the
-D1 database**, exactly as with Phase 2's buckets. Until then `seed` fails with
-instructions.
+### Phase 3 execution
 
-```bash
-npx wrangler d1 create hololive-ocg-wiki
-# paste the printed database_id into apps/api/wrangler.jsonc (replaces "REPLACE_ME")
+**✅ Phase 3 is complete and live.** Executed 2026-07-27 against
+`hololive-ocg-wiki-db` (`75238170-4525-4a06-bfd3-5a32c4daef57`):
 
-npx wrangler d1 execute hololive-ocg-wiki --remote \
-    --file=packages/schema/sql/schema.sql
+| | result |
+|---|---|
+| Schema applied | 4 tables + FTS virtual table, 7 indexes |
+| `seed --confirm` | 2,448 cards, 27,203 rows written, 327 batches, 81s |
+| Row counts | cards 2,448 · colors 2,032 · tags 5,443 · sets 2,592 · fts 2,448 |
+| CJK search | `フブキ` **73 hits** (v1 returns 0), `宝鐘マリン` 45, `ときのそら` 52 |
+| Second `seed --dry` | "D1 is already up to date — nothing to write" |
+| Database size | 53.8 MB (11% of the 500 MB free tier) |
 
-uv run holo-data seed --dry        # expect ~29,650 writes, 2,448 new cards
-uv run holo-data seed --confirm
-```
+**The first seed found a bug no local test could have.** It wrote 27,203 rows but
+**read 15,508,419** — three times the daily read budget — because the seeder's
+`DELETE … WHERE card_id = ?` could not use the junction tables' `(value, card_id)` key
+and skip-scanned each table per card. The read path and the write path want opposite
+key orders. Adding a `card_id` index to each junction, and keying the FTS table on rowid
+instead of an UNINDEXED column, took a full reseed from **15.5M rows read to ~22,850** —
+a 679× reduction. SQLite does not report `rows_read`; D1 does, which is why only a real
+run surfaced it. Both are now pinned by query-plan tests.
 
 `seed` needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` in `pipeline/.env` — a
 **different token from the R2 one**, scoped to D1 Edit on this database plus Account
 Analytics Read (the write-budget gate). See [`infra.md`](./infra.md).
+
+One follow-up: `status.json` was written locally but **not uploaded**, because `boto3` is
+an optional extra and was not installed in the worktree. Run `uv sync --extra publish`
+then `holo-data publish` to push it.
 
 ### Local development needs no credentials (D12)
 

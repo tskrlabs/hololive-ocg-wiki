@@ -161,12 +161,21 @@ magnitude out.
 
 | scenario | writes | % of 100k/day |
 |---|---|---|
-| Full reseed | ~29,650 | 29.7% |
-| New card set (~120 cards) | ~1,450 | 1.5% |
-| Q&A-only update (100 cards) | ~400 | 0.4% |
+| Full reseed | ~47,300 | 47.3% |
+| New card set (~120 cards) | ~2,320 | 2.3% |
+| Q&A-only update (100 cards) | ~700 | 0.7% |
 
-The FTS component (3 writes per row) is inferred rather than measured; `seed` reports
-D1's actual `rows_written` after every run, so a wrong constant surfaces immediately.
+Every constant behind these was **measured against production**, not reasoned about —
+the first attempt had two of three wrong in opposite directions, and the errors cancelled
+just enough to look plausible (it predicted 29,651 and the real seed wrote 27,203). Per
+statement group, on a card with 5 junction rows: cards upsert 5 writes, junctions 15,
+FTS 2.
+
+FTS5 is the one component that genuinely varies — it batches its index into large `data`
+blobs, so inserting into an empty table averaged ~11 shadow rows per card while replacing
+a row in a populated one charged 2. The estimator models the *replace* case, which is
+what the diff path always does; a first seed into an empty database exceeds it. The CLI
+prints the actual figure beside the estimate, so the gap is visible rather than assumed.
 
 ### Generated DDL, hand-written structure
 
@@ -193,6 +202,49 @@ with zero Cloudflare credentials; this satisfies it with no token, no network an
 Python. `seed` is not involved — it is a production tool whose entire design is about
 gating writes to a live database, and a `--local` flag on it would invite reaching for
 the wrong one.
+
+## What the first production seed changed
+
+The design above was verified locally against the full 2,448-card set before anything
+touched D1. The first real seed still exposed a bug that no local test could have found,
+because SQLite does not report `rows_read` and D1 does.
+
+**The seed wrote 27,203 rows and read 15,508,419** — three times the daily read budget,
+on a command whose entire purpose is writing.
+
+The cause was the junction primary key. `(value, card_id)` is right for the read path
+(`WHERE color_code = ?`), but the seeder's *write* path looks rows up the other way
+round — `DELETE FROM card_colors WHERE card_id = ?` — and with `card_id` trailing the
+composite key that is a skip-scan over the whole table:
+
+```
+SEARCH card_colors USING PRIMARY KEY (ANY(color_code) AND card_id=?)
+```
+
+12,515 rows read per card. **The read path and the write path want opposite key orders**,
+so both need an index. Adding `idx_<table>_card_id` to each junction took the per-card
+delete cost to zero.
+
+The same measurement exposed a second instance of the same mistake in the FTS table.
+`card_id` was declared `UNINDEXED` — and an FTS5 column *cannot* be indexed for lookup;
+it exists to be searched. So `DELETE FROM cards_fts WHERE card_id = ?` scanned all 2,448
+rows. The fix is to key on the rowid, the one thing an FTS5 table can address directly:
+card ids are numeric strings (verified across all 2,448 — unique, 1..2457, `str(int(x))
+== x`), so the rowid carries the id and the redundant column is gone. `rowid_for()`
+raises rather than falling back if the scraper ever emits a non-numeric id, because the
+fallback would reappear as unexplained read growth months later.
+
+| | before | after |
+|---|---|---|
+| Full reseed, rows read | **15,508,419** | **~22,850** |
+| Per-card delete cost | 12,515 | ~9 |
+
+A 679× reduction, measured on production both times. Both regressions are now pinned by
+tests that assert the query plan, so neither can come back silently.
+
+**The lesson worth keeping:** a schema reviewed only against the queries it was designed
+for will miss the queries that *maintain* it. Writes look up rows differently from reads,
+and on D1 the meter runs on both.
 
 ## Consequences
 

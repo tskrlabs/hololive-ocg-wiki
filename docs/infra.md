@@ -17,7 +17,7 @@ This file is that record. **Update it when you change a resource.**
 |---|---|---|---|
 | R2 bucket | `hololive-ocg-wiki-images` | yes — `img.hololive-ocg-wiki.tskrlabs.com` | 2 |
 | R2 bucket | `hololive-ocg-wiki-artifacts` | **no** | 2 |
-| D1 database | `hololive-ocg-wiki` — **not created yet**, see §5 | **no** | 3 |
+| D1 database | `hololive-ocg-wiki-db` — `75238170-4525-4a06-bfd3-5a32c4daef57` | **no** | 3 |
 | Worker | *not yet* | — | 4 |
 
 Zone `tskrlabs.com` is on Cloudflare nameservers (verified during the v2 design session),
@@ -101,11 +101,11 @@ gates, applied to credentials.
 ### 5. Create the D1 database (Phase 3)
 
 ```bash
-npx wrangler d1 create hololive-ocg-wiki
+npx wrangler d1 create hololive-ocg-wiki-db
 ```
 
-It prints a `database_id`. Paste it into `apps/api/wrangler.jsonc`, replacing the
-`"REPLACE_ME"` placeholder — `holo-data seed` reads the name and id from there, because
+Done 2026-07-27. It prints a `database_id`; paste it into `apps/api/wrangler.jsonc`,
+replacing the `"REPLACE_ME"` placeholder — `holo-data seed` reads the name and id from there, because
 the infra config is the one place a resource is named. The placeholder is checked for
 explicitly, so forgetting this step gives you the `wrangler d1 create` command rather
 than a 404 with an opaque id in it.
@@ -113,7 +113,7 @@ than a 404 with an opaque id in it.
 Then apply the schema. This is the only DDL step, and it is deliberately manual:
 
 ```bash
-npx wrangler d1 execute hololive-ocg-wiki --remote \
+npx wrangler d1 execute hololive-ocg-wiki-db --remote \
     --file=packages/schema/sql/schema.sql
 ```
 
@@ -159,8 +159,10 @@ uv run holo-data seed --dry        # reads only; prints the diff and the write e
 uv run holo-data seed --confirm    # writes
 ```
 
-A first full seed is **~29,650 writes (30% of the daily budget)**; a new card set is
-~1,450 (1.5%). `seed` refuses on a stale `cards.json`, on a card set that collapsed
+A first full seed is **~47,300 writes (47% of the daily budget)**; a new card set is
+~2,320 (2.3%). Note a *first* seed into an empty database costs more per card in FTS
+writes than a later one — FTS5 batches its index, so building it is dearer than
+replacing rows in it. `seed` refuses on a stale `cards.json`, on a card set that collapsed
 since the last run, on a schema-version mismatch, and when the estimate would not fit in
 what remains of today's budget — none of which a flag can override. Deleting cards needs
 `--prune`.
@@ -170,8 +172,8 @@ what remains of today's budget — none of which a flag can override. Deleting c
 D12's requirement is that a fresh clone runs with zero Cloudflare credentials:
 
 ```bash
-npx wrangler d1 execute hololive-ocg-wiki --local --file=packages/schema/sql/schema.sql
-npx wrangler d1 execute hololive-ocg-wiki --local --file=fixtures/fixtures.sql
+npx wrangler d1 execute hololive-ocg-wiki-db --local --file=packages/schema/sql/schema.sql
+npx wrangler d1 execute hololive-ocg-wiki-db --local --file=fixtures/fixtures.sql
 ```
 
 `fixtures/fixtures.sql` is committed and generated from the 34 fixture cards — every card
@@ -231,8 +233,8 @@ measures at ~50–100 rows for the same page. Rows-read scales with traffic whil
 not, so this is the metric to check after launch:
 
 ```bash
-npx wrangler d1 info hololive-ocg-wiki       # size and state
-npx wrangler d1 insights hololive-ocg-wiki   # per-query stats (experimental)
+npx wrangler d1 info hololive-ocg-wiki-db       # size and state
+npx wrangler d1 insights hololive-ocg-wiki-db   # per-query stats (experimental)
 ```
 
 For the daily totals against the quota, the dashboard's D1 → Metrics → Row Metrics view

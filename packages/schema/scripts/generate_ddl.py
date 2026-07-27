@@ -172,14 +172,20 @@ CREATE TABLE IF NOT EXISTS cards (
 -- ---------------------------------------------------------------------------
 -- Junction tables — the filterable lists.
 --
--- WITHOUT ROWID with the value leading the primary key: the key IS the storage, so a
--- row costs one write and no separate index, and `WHERE color_code = ?` is a range
--- scan over a covering index.
+-- WITHOUT ROWID with the value leading the primary key, so `WHERE color_code = ?` — the
+-- read path, and the hot one — is a range scan over a covering index.
 --
 -- These are not a normalisation preference. v1 stored these three as JSON arrays with
 -- an index on each, and a `LIKE '%"blue"%'` predicate cannot use an index — measured
 -- against v1's live database, the site read 882 rows per query on a 2,448-row table and
 -- breached the 5M/day free-tier read limit on 2026-07-12 (findings F-014).
+--
+-- Each table also carries an index on card_id alone, because the *write* path looks
+-- rows up the other way round: the seeder issues `DELETE FROM … WHERE card_id = ?` per
+-- card. With only the composite key that is a skip-scan over the whole table
+-- (`SEARCH … USING PRIMARY KEY (ANY(color_code) AND card_id=?)`), which cost 12,515
+-- rows read per card — 15.5M for a full reseed, three times the daily read budget.
+-- Measured on the first production seed, not predicted. See ADR 0004.
 -- ---------------------------------------------------------------------------
 
 {junctions}
@@ -206,12 +212,21 @@ CREATE TABLE IF NOT EXISTS cards (
 -- writes are invisible to `seed --dry`'s budget accounting, which would break the D10
 -- gate.
 --
+-- **The rowid is the card id.** An FTS5 column cannot be indexed for lookup — it exists
+-- to be searched, not queried — so `DELETE … WHERE card_id = ?` scans the whole table:
+-- 2,448 rows read per card, ~6M for a reseed. Deleting by rowid reads *zero*, because
+-- rowid is the one key an FTS5 table can address directly. Card ids are numeric strings
+-- (verified across all 2,448: unique, 1..2457, str->int->str stable), so the rowid can
+-- carry the id rather than duplicating it in an UNINDEXED column.
+--
+-- The seeder enforces the numeric-id assumption and fails loudly if the scraper ever
+-- emits a non-numeric id, rather than silently seeding a database it cannot update.
+--
 -- Fields feeding this index, by weight:
 {fts_fields}
 -- ---------------------------------------------------------------------------
 
 CREATE VIRTUAL TABLE IF NOT EXISTS cards_fts USING fts5(
-    card_id UNINDEXED,
     card_number,
     text,
     tokenize='trigram'
@@ -228,7 +243,8 @@ def render() -> str:
         f"    {value_column} TEXT NOT NULL,\n"
         f"    card_id TEXT NOT NULL,\n"
         f"    PRIMARY KEY ({value_column}, card_id)\n"
-        f") WITHOUT ROWID;"
+        f") WITHOUT ROWID;\n\n"
+        f"CREATE INDEX IF NOT EXISTS idx_{table}_card_id ON {table}(card_id);"
         for _field, table, value_column in junctions
     )
 

@@ -71,18 +71,65 @@ CARD_COLUMNS = (
     "illustrator",
 )
 
-# A full reseed rewrites every row; the estimate below has to match what D1 will
-# actually charge. Each indexed column costs one extra written row per insert, and FTS5
-# writes to its shadow tables (data, docsize, idx). The FTS multiplier is the one
-# number here that is inferred rather than measured — `seed` reports D1's own
-# `rows_written` afterwards, so a wrong guess shows up immediately rather than silently.
+# What D1 charges per card. Every constant here was measured against the production
+# database rather than reasoned about, because the first attempt got two of the three
+# wrong in opposite directions and the errors cancelled just enough to look plausible.
+#
+# Measured on one card with 5 junction rows (`meta.rows_written` per statement group):
+#
+#     cards upsert       1 statement   ->  5 writes   (1 row + 4 indexes)
+#     junction del+ins   8 statements  -> 15 writes   (~3 per row)
+#     fts del+ins        2 statements  ->  2 writes
+#
 CARD_INDEX_COUNT = 4
-FTS_WRITE_MULTIPLIER = 3
+
+# A junction row costs ~3: the WITHOUT ROWID key, the card_id index entry, and the
+# delete that precedes it (the seeder replaces a card's rows rather than diffing them).
+JUNCTION_WRITE_MULTIPLIER = 3
+
+# FTS5 is the one component that genuinely varies. It batches its index into large
+# `data` blobs, so the charge depends on how much text is being merged: inserting into
+# an empty table averaged ~11 shadow rows per card, while replacing a row in a populated
+# one charged 2. This is the *replace* case, which is what the diff path always does;
+# a first seed into an empty table will exceed the estimate, and the CLI prints the
+# actual figure next to it so the gap is visible rather than assumed.
+FTS_WRITE_MULTIPLIER = 2
 
 # Refuse if the incoming set is dramatically smaller than what is stored. This is the
 # empty-or-partial-scrape signature, and unlike a flag it is a fact an agent cannot
 # argue with (D4, D10).
 SHRINK_REFUSAL_RATIO = 0.10
+
+
+class NonNumericCardId(ValueError):
+    """A card id that cannot be an FTS rowid.
+
+    Raised rather than worked around, because the fallback — an UNINDEXED `card_id`
+    column — costs 2,448 rows read per card to delete, and would appear as a gradual
+    read-budget problem months later rather than as an error here.
+    """
+
+
+def rowid_for(card_id: str) -> int:
+    """The FTS rowid for a card, which is its id as an integer.
+
+    Every card id in the dataset is a numeric string (verified across all 2,448: unique,
+    1..2457, `str(int(x)) == x`). That lets the FTS table address a card by rowid — the
+    only key an FTS5 table can look up directly — instead of carrying a duplicate
+    UNINDEXED column that cannot be searched by.
+
+    If the official site ever issues a non-numeric id, this fails at seed time with an
+    explanation instead of silently building an index the seeder cannot maintain.
+    """
+    if not card_id.isdigit():
+        raise NonNumericCardId(
+            f"card id {card_id!r} is not numeric, and the FTS index uses the card id as "
+            "its rowid (see packages/schema/sql/schema.sql).\n\n"
+            "Give cards_fts its own INTEGER surrogate key and a card_id -> rowid "
+            "mapping, or reconsider the FTS shape — but do not fall back to an "
+            "UNINDEXED card_id column: deleting by it costs a full table scan per card."
+        )
+    return int(card_id)
 
 
 def _canonical(value: Any) -> str:
@@ -261,13 +308,14 @@ def statements_for(row: CardRow, seeded_at: str) -> list[d1.Statement]:
                 )
             )
 
-    statements.append(
-        d1.Statement("DELETE FROM cards_fts WHERE card_id = ?", (row.id,))
-    )
+    # By rowid, not by a card_id column. An FTS5 column cannot be indexed for lookup, so
+    # `WHERE card_id = ?` scans the table — 2,448 rows read per card, ~6M for a reseed,
+    # measured on the first production seed. By rowid it reads zero.
+    statements.append(d1.Statement("DELETE FROM cards_fts WHERE rowid = ?", (rowid_for(row.id),)))
     statements.append(
         d1.Statement(
-            "INSERT INTO cards_fts (card_id, card_number, text) VALUES (?, ?, ?)",
-            (row.id, row.columns[1], row.search_text),
+            "INSERT INTO cards_fts (rowid, card_number, text) VALUES (?, ?, ?)",
+            (rowid_for(row.id), row.columns[1], row.search_text),
         )
     )
 
@@ -285,7 +333,10 @@ def estimate_writes(rows: Sequence[CardRow]) -> int:
     total = 0
     for row in rows:
         total += 1 + CARD_INDEX_COUNT
-        total += sum(len(values) for values in row.junction_values.values())
+        total += (
+            sum(len(values) for values in row.junction_values.values())
+            * JUNCTION_WRITE_MULTIPLIER
+        )
         total += FTS_WRITE_MULTIPLIER
     return total
 
@@ -448,7 +499,7 @@ def prune_statements(ids: Iterable[str]) -> list[list[d1.Statement]]:
                 d1.Statement(f"DELETE FROM {table} WHERE card_id = ?", (card_id,))
             )
         group.append(
-            d1.Statement("DELETE FROM cards_fts WHERE card_id = ?", (card_id,))
+            d1.Statement("DELETE FROM cards_fts WHERE rowid = ?", (rowid_for(card_id),))
         )
         groups.append(group)
     return groups
