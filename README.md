@@ -13,17 +13,19 @@ A fan-made wiki for the Hololive Official Card Game — card database, search, a
 
 ## Status
 
-**Phases 0–4 done, Phase 5 in progress.** The card contract is defined once as pydantic
+**Phases 0–5 done, Phase 6 in progress.** The card contract is defined once as pydantic
 models (Phase 0), the data pipeline runs from it (Phase 1), images and artifacts are live
-in R2 (Phase 2), D1 holds all 2,448 cards (Phase 3), and the Worker serves them over nine
-endpoints (Phase 4 + 5).
+in R2 (Phase 2), D1 holds all 2,448 cards (Phase 3), and one Worker serves the API and the
+site from a single origin (Phases 4–5).
 
-**Phase 5** is the website: porting the frontend to `apps/web` on Nuxt 4, applying the
-four refactors from [`docs/architecture-review-v1.md`](docs/architecture-review-v1.md),
-and deploying the site and API together for the first time. See
-[ADR 0006](docs/adr/0006-website.md).
+**The site is live** at `hololive-ocg-wiki.tskrlabs.com` — but deliberately **`noindex`**
+until launch. v1 remains the public site, indexed on the same 2,448 cards, and an indexed
+v2 would pre-empt a domain decision that is still open (`v2-plan.md` §7). The domain going
+live is not the launch.
 
-Nothing is deployed yet — that is deliberate, and it is the last step of Phase 5.
+**Phase 6** is push-to-deploy and the contributor path: Workers Builds, a fresh clone that
+runs with no credentials, and the docs for a repo that goes public at Phase 7. See
+[ADR 0007](docs/adr/0007-push-to-deploy.md).
 
 ## Structure
 
@@ -33,33 +35,43 @@ pipeline/          ✅ Python pipeline (uv), `holo-data` CLI
 content/           ✅ editorial site copy (info.json), published to R2
 fixtures/          ✅ 34 cards covering every edge case, for credential-free local dev
 apps/api/          ✅ the Worker — Hono + Zod over D1 and R2
-apps/web/          🚧 Nuxt SPA                        (Phase 5, in progress)
+apps/web/          ✅ Nuxt 4 SPA, generated static and served as Worker assets
 ```
 
 ## Getting started
 
-Requires [uv](https://docs.astral.sh/uv/) and Node 22.6+.
+Node 24 (pinned in `.node-version`) is all you need for the site and the API:
 
 ```bash
-make setup     # install Python + Node dependencies
-make hooks     # enable the pre-commit check (once per clone, recommended)
-make dev       # run the site (:3000) and the API (:8787) against local fixtures
-make check     # run every verification
+npm install
+make dev       # site on :3000, API on :8787, against local fixtures
 make help      # list all targets
 ```
 
-`make dev` needs **no Cloudflare credentials** — the Worker runs against a local D1 seeded
-from 34 committed fixture cards (D12). That property is deliberate: it is what separates a
-public repo from a contributor-ready one.
+`make dev` needs **no Cloudflare credentials and no Python** — the Worker runs against a
+local D1 seeded from 34 committed fixture cards and a local R2 seeded from committed
+artifacts (D12). That property is deliberate, it is verified from a scratch clone each
+phase, and it is what separates a public repo from a contributor-ready one.
+
+Working on the **card contract** additionally needs [uv](https://docs.astral.sh/uv/):
+
+```bash
+make setup     # uv sync + npm install
+make hooks     # enable the pre-commit check (once per clone, recommended)
+make check     # run every verification
+```
 
 There is **no CI** — verification is local by design. `make check` is the single entry
 point, and the pre-commit hook runs it when you touch the contract.
 
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for what can be done without credentials, what
+needs the maintainer, and how to report a bad translation.
+
 ## The contract
 
 The card shape is defined **once**, in `packages/schema/src/holo_schema/`. Everything
-else — the JSON Schema, the TypeScript types, the enum lists the filter UI iterates, and
-(from Phase 3) the D1 schema — is generated from those pydantic models.
+else — the JSON Schema, the TypeScript types, the enum lists the filter UI iterates, the
+D1 schema, and the local-development fixtures — is generated from those pydantic models.
 
 This is the central fix of the v2 rebuild: in v1 the same shape was hand-written in four
 places and had measurably drifted, to the point that 24 cards were unfilterable in the

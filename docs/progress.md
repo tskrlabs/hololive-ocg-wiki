@@ -5,7 +5,9 @@
 site from one origin (D2), against 2,448 cards in D1 and images on R2.
 
 Deployed 2026-07-27; every number Phases 3 and 4 measured came back exactly against the
-real card set. **Phase 6 (Workers Builds + docs) is next.**
+real card set. **Phase 6 (Workers Builds + fixtures + docs) is under way** — the code and
+docs are built and verified from a scratch clone; connecting the git integration is a
+dashboard step only the maintainer can take. See [Phase 6](#phase-6--push-to-deploy).
 
 ℹ️ **`noindex` is the sole indexing guard until Phase 7**, by decision. Cloudflare's
 zone-level managed `robots.txt` prepends `Allow: /` above ours; the maintainer accepted
@@ -14,7 +16,9 @@ rule flips to `Allow` too. See [F-017](./findings.md#f-017).
 
 **Phase 5's design is recorded.** Sixteen decisions, in
 [ADR 0006](adr/0006-website.md) with the full interview in
-[`phase-5-grilling.md`](./phase-5-grilling.md).
+[`phase-5-grilling.md`](./phase-5-grilling.md). **Phase 6's** is fifteen decisions, in
+[ADR 0007](adr/0007-push-to-deploy.md) and
+[`phase-6-grilling.md`](./phase-6-grilling.md).
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -32,12 +36,16 @@ copy and is authoritative if they disagree.
 | 3 | D1 redesign + seeder | ✅ done | [ADR 0004](adr/0004-d1-schema-and-seeder.md) · live |
 | 4 | Worker rewrite (Hono + Zod) | ✅ done — deploys with Phase 5 | [ADR 0005](adr/0005-worker-api.md) |
 | 5 | Website (new API/R2, 4 refactors) | ✅ done | [ADR 0006](adr/0006-website.md) · live |
-| 6 | Workers Builds + fixtures + docs | 🔜 **next** | |
+| 6 | Workers Builds + fixtures + docs | 🚧 **built — needs the dashboard step** | [ADR 0007](adr/0007-push-to-deploy.md) |
 | 7 | Launch | ⬜ | |
 
 ## Working agreement
 
 - Work on **`develop`**, not `main`. Push is fine.
+- **From Phase 6, a merge to `main` deploys the site.** `main` is the production branch
+  for Workers Builds, so merging `develop` → `main` is the release action rather than a
+  bookkeeping step. A failed build promotes nothing, so the live site is never at risk
+  from a bad push — the failure mode is "no deploy", not "broken deploy".
 - **Never use GitHub Actions** — the maintainer has had an account banned over Actions
   usage. Verification is local: `make check`, plus an opt-in pre-commit hook
   (`make hooks`). Workers Builds (Phase 6) is unaffected; it runs on Cloudflare and
@@ -56,20 +64,25 @@ packages/schema/sql/schema.sql       generated D1 schema (Phase 3)
 packages/schema/sql/migrations/      evolving an already-populated database (Phase 4)
 pipeline/          holo-data CLI: scrape … publish, seed
 apps/api/          the Worker — Hono + Zod over D1 and R2 (Phase 4)
+apps/web/          the site — Nuxt 4 SPA, generated static (Phase 5)
 content/           info.json — editorial site copy, uploaded by publish
-fixtures/          34 cards + fixtures.sql — credential-free local dev (D12)
+fixtures/          34 cards + fixtures.sql + artifacts/ — credential-free local dev (D12)
 docs/adr/          decisions made during execution
 docs/infra.md      the Cloudflare runbook — what exists and which command made it
 docs/findings.md   data anomalies awaiting maintainer review
+CONTRIBUTING.md    what needs credentials and what does not (Phase 6)
 Makefile           `make check` — the single verification entry point
 ```
 
 ```bash
-make setup     # uv sync + npm install
+npm install    # enough for the site and the API — Node 24, no Python
+make dev       # site on :3000 + Worker on :8787, fixtures, no credentials
+make check-api # just the Worker: 25 unit tests + every endpoint check
+make help
+
+make setup     # uv sync + npm install — needed to work on the contract
 make hooks     # opt-in pre-commit check (once per clone)
 make check     # schema, pipeline, seeder, TS parity, Worker units + endpoints, typecheck
-make check-api # just the Worker: 25 unit tests + 34 endpoint checks (no credentials)
-make help
 
 uv sync --extra publish   # adds boto3, only needed for `holo-data publish`
 ```
@@ -162,6 +175,8 @@ Recorded in the ADRs; listed here so they are not missed.
 | **D13** | "four refactors + dead-code purge" is joined by a **framework upgrade**, Nuxt 3.17 → 4.5. Still no new features, no redesign, no rendering-mode change |
 | **Phase 5 status page** | v2's `status.json` dropped `skipped[]` and `source.valid` and is snake_case throughout, so `/status` **cannot be ported unchanged**. Ported adapted; the Skipped tab has no data source in v2 and is dropped |
 | **v2-plan §7** | The SEO decision stays deferred — which means Phase 5 must **actively block indexing** to keep it deferrable |
+| **Phase 6 done-when** | "fresh clone runs with zero CF creds" was already true and **still failed the intent**: `make dev` needed a *Python toolchain* to generate the R2 artifacts. Met by **committing** them (`fixtures/artifacts/`, 64 KB), extending ADR 0001's rule from the contract to the fixtures ([ADR 0007](adr/0007-push-to-deploy.md)) |
+| **D14** | "a `corrections/` overlay makes a translation fix a reviewable PR" — ADR 0002 replaced the mechanism with cache entries but the cache is **gitignored**, so no reviewable surface exists. A fix goes through an issue. Logged as [F-018](./findings.md#f-018), not closed |
 
 ## Phase 2 — R2 publish
 
@@ -613,3 +628,122 @@ Two things to know when Phase 6 arrives:
 - **Which branch triggers it is a Phase 6 decision.** Work lands on `develop` per the
   working agreement, so pointing Workers Builds at `main` makes merging to `main` the
   release action — which matches how the branches are already used.
+
+## Phase 6 — push-to-deploy
+
+Full reasoning in [ADR 0007](adr/0007-push-to-deploy.md); the interview, including every
+rejected option, in [`phase-6-grilling.md`](./phase-6-grilling.md).
+
+Three things, in the order they depend on each other: make the deploy reproducible from a
+clean checkout, close the last gap between "fresh clone" and "working site", then write
+the docs a repo that goes public at Phase 7 needs.
+
+### What the rehearsal found
+
+Phase 6's own lesson, and it arrived the same way Phase 3's did — by running the thing
+rather than reasoning about it. Rehearsing the Cloudflare build sequence in a scratch
+clone, **`npm ci` failed on the first command**:
+
+```
+npm error `npm ci` can only install packages when your package.json and
+npm error package-lock.json are in sync.
+npm error Missing: vue-router@5.2.0 from lock file
+```
+
+The lockfile recorded `vue-router: ^4.5.1` for `apps/web` while `apps/web/package.json`
+declares `^5.2.0` — the Nuxt 4 upgrade in `fce28d9` updated the manifest but not the lock.
+Cloudflare's auto-install runs `npm ci`, so **the first push-to-deploy build would have
+failed**, on a repo where everything looked green locally.
+
+It also means the live site was built against a tree the manifests do not describe: local
+`node_modules` held vue-router **4.6.4**, which does not satisfy Nuxt 4.5's own `^5.2.0`.
+A clean install resolves 5.2.0 under `node_modules/nuxt/`. `make check` is green on it —
+no `package.json` changed, only the lock.
+
+This is the argument for rehearsing in a scratch clone rather than trusting a working
+laptop, and it is why the rehearsal is a permanent per-phase step rather than a one-off.
+
+### The fresh-clone walk
+
+Run from `/tmp/holo-fresh`, cloned from the branch, with `uv` replaced by a shim that
+exits 127 on invocation — so any Python toolchain dependency fails loudly rather than
+silently succeeding off the maintainer's machine.
+
+| check | result |
+|---|---|
+| `npm ci` | ✅ after the lockfile fix (failed before) |
+| `npm run generate --workspace @holo/web` | ✅ builds |
+| `npx wrangler deploy --dry-run --config apps/api/wrangler.jsonc` | ✅ 98 assets, 632.50 KiB, all 4 bindings |
+| `make check-api` | ✅ 25 unit tests + every endpoint check |
+| `npm test --workspace @holo/web` | ✅ 44 tests |
+| `seed-local-r2.sh` | ✅ 7 filter-options + info + status, no Python |
+| `/api/filter-options` in **all 7 locales** | ✅ 25 names each (the bug the committed artifacts fix) |
+| `/api/status` · `/api/info` · `/api/health` | ✅ 34 cards · 3 sections · ok |
+
+The `--dry-run` numbers match the live deploy exactly, which is the point: the build
+Cloudflare will run produces what was deployed by hand.
+
+### `make dev` no longer needs Python
+
+`seed-local-r2.sh` generated the R2 artifacts on every start by running a script that
+imports `holo_data.build`, and therefore pydantic — so a frontend contributor needed
+`uv sync`, a venv and a Python toolchain before the site's filter dropdowns worked in six
+of seven locales.
+
+The artifacts are **committed** now (`fixtures/artifacts/`, 64 KB), which is ADR 0001's
+rule applied to fixtures rather than to the contract: generated output lives in git so no
+Python is needed to consume it, and `make check` fails if it is stale. The generator
+gained `--check`, catching stale *and* orphaned files, and is wired into `make generate`
+and `make check-schema`.
+
+`filter_options()` is deliberately **not** reimplemented in Node. It encodes F-015 — 41%
+of characters are spelled inconsistently across their own cards — and a second copy of
+that rule is the drift ADR 0001 exists to prevent.
+
+Verified with a `python3` shim that exits 127: local R2 seeding still succeeds.
+
+### Docs for a public repo
+
+- **`CONTRIBUTING.md`** (D14) — what needs no credentials, what needs the maintainer and
+  why, how to report a bad translation, and the one trap: regenerate after touching the
+  contract.
+- **`LICENSE`** — Apache-2.0, matching v1. Without it, "public at Phase 7" means
+  all-rights-reserved, which would contradict a `CONTRIBUTING.md` inviting contributions.
+  Code only; card data and art stay Cover Corp.'s under the Derivative Works Guidelines.
+- **[F-018](./findings.md#f-018)** — writing the above surfaced that D14 promised
+  translation fixes as a reviewable PR, and ADR 0002 replaced the mechanism without
+  replacing that property: the cache is gitignored, so there is no file to edit. Logged,
+  not fixed — closing it is pipeline design work, and the repo is private until Phase 7.
+
+### The dashboard step — maintainer
+
+Everything above is committed and verified. What is left needs the Cloudflare dashboard.
+
+Settings for the connection are in [`infra.md` §7](./infra.md) — production branch `main`,
+the build and deploy commands, root directory `/`, non-production branch builds off,
+caching off.
+
+Then **merge `develop` → `main`**, which is both the release action and the test: the tree
+is already what is live, so a successful build produces a version identical in behaviour
+to the running one. A failed build promotes nothing, so the site is never at risk.
+
+Verify afterwards — build log green, a new version in the dashboard, and the Phase 5 checks
+against the custom domain:
+
+```bash
+SITE=https://hololive-ocg-wiki.tskrlabs.com
+curl -s "$SITE/api/cards/search?q=フブキ" | jq '.cards | length'   # 73
+curl -s "$SITE/api/filter-options?locale=en" | jq '.names | length' # 296
+curl -s "$SITE/api/status" | jq '.counts.total'                     # 2448
+curl -sL "$SITE/tc/" | grep -c noindex                              # 1 — still invisible
+```
+
+### Three switches to flip at Phase 7
+
+Was two; the rehearsal added a third.
+
+| switch | where | why it is off now |
+|---|---|---|
+| `NUXT_PUBLIC_LAUNCHED=true` | build variable | flips indexing **and** analytics together |
+| `workers_dev: false` | `wrangler.jsonc` | kept while [F-017](./findings.md#f-017) is open — comparing the two origins is the only way that bug is visible |
+| repo public + v1 archived | GitHub | v2-plan §7 |
