@@ -50,6 +50,7 @@
   "Loading cards": "กำลังโหลดการ์ด",
   "Loading more cards": "กำลังโหลดการ์ดเพิ่มเติม",
   "No cards found": "ไม่พบการ์ด",
+  "Showing {count} of {total} cards": "แสดง {count} จาก {total} การ์ด",
   "Try adjusting your filters": "ลองปรับตัวกรองของคุณ",
   "No filter changes detected, skipping filter application": "ไม่พบการเปลี่ยนแปลงตัวกรอง ข้ามการใช้ตัวกรอง",
   "Filter": "ตัวกรอง",

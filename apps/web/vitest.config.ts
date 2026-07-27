@@ -13,16 +13,27 @@
  * unfilterable in the live UI. Typecheck catches the second; a `toApiParams` test catches
  * the first.
  *
- * No template is asserted to render — a known, accepted gap. Templates are verified by
- * running the site (`make dev`), and end-to-end coverage was weighed and declined:
- * `make check` is the pre-commit hook, and a browser is the most brittle thing that
- * could live in it.
+ * **That last paragraph used to say templates were an accepted gap** — verified by running
+ * the site, with a component harness declined as a large dependency covering nothing the
+ * pure tests missed. F-019 disproved it. `CardListViewAPI` needed one prop
+ * (`emit-update`) for `RecycleScroller` to emit `scroll-end`; without it the homepage
+ * showed 200 of 2,448 cards and no test could see the difference, because a prop that was
+ * never passed lives only in a template. The gap was not that templates are untested — it
+ * is that *wiring* was, and wiring is where a component's behaviour actually lives.
+ *
+ * So `component.test.ts` mounts, with `happy-dom` and `@vue/test-utils`. Two devDeps, no
+ * browser: `make check` stays the pre-commit hook, and end-to-end coverage is still
+ * declined for the reason originally given.
  */
 
+import vue from "@vitejs/plugin-vue";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  // Needed only by the component tests, but harmless to the rest: without it Vitest
+  // cannot parse an SFC at all.
+  plugins: [vue()],
   resolve: {
     alias: {
       "~": fileURLToPath(new URL("./app", import.meta.url)),
@@ -33,6 +44,8 @@ export default defineConfig({
     },
   },
   test: {
+    // `node` remains the default — the pure tests are the majority and do not need a DOM.
+    // Only the files that mount pay for one, via a `@vitest-environment` docblock.
     environment: "node",
     include: ["tests/**/*.test.ts"],
   },
