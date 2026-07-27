@@ -1,19 +1,18 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0–4 done; **Phase 5 is in progress** on branch
-`phase-5-website`. Images are live at `img.hololive-ocg-wiki.tskrlabs.com`, `publish` is
-idempotent, D1 is populated and reseeded into the Phase 4 shape (2,448 cards), and the
-Worker is built and green — now **nine endpoints**, `make check` covers them end-to-end
-against local D1.
+**Where we are:** Phases 0–5 done. The site is **live** at
+`hololive-ocg-wiki.tskrlabs.com` — one Worker serving nine API endpoints and the static
+site from one origin (D2), against 2,448 cards in D1 and images on R2.
 
-✅ **Phase 5 is deployed and live** at `hololive-ocg-wiki.tskrlabs.com` (2026-07-27).
-Every number Phases 3 and 4 measured came back exactly against the real 2,448 cards.
+Deployed 2026-07-27; every number Phases 3 and 4 measured came back exactly against the
+real card set. **Phase 6 (Workers Builds + docs) is next.**
 
-⚠️ **One dashboard toggle outstanding** — Cloudflare's zone-level managed `robots.txt`
-prepends `Allow: /` above ours, inverting the indexing guard Q10 put in place. The
-`noindex` meta still holds, but see [F-017](./findings.md#f-017) for the one-click fix.
+ℹ️ **`noindex` is the sole indexing guard until Phase 7**, by decision. Cloudflare's
+zone-level managed `robots.txt` prepends `Allow: /` above ours; the maintainer accepted
+that rather than change a zone setting mid-phase. It resolves itself at Phase 7 when our
+rule flips to `Allow` too. See [F-017](./findings.md#f-017).
 
-**Phase 5 design is settled.** Sixteen decisions, recorded in
+**Phase 5's design is recorded.** Sixteen decisions, in
 [ADR 0006](adr/0006-website.md) with the full interview in
 [`phase-5-grilling.md`](./phase-5-grilling.md).
 
@@ -32,8 +31,8 @@ copy and is authoritative if they disagree.
 | 2 | CF resources + R2 publish | ✅ done | [ADR 0003](adr/0003-r2-publish.md) · live |
 | 3 | D1 redesign + seeder | ✅ done | [ADR 0004](adr/0004-d1-schema-and-seeder.md) · live |
 | 4 | Worker rewrite (Hono + Zod) | ✅ done — deploys with Phase 5 | [ADR 0005](adr/0005-worker-api.md) |
-| 5 | Website (new API/R2, 4 refactors) | 🚧 **in progress** | [ADR 0006](adr/0006-website.md) |
-| 6 | Workers Builds + fixtures + docs | ⬜ | |
+| 5 | Website (new API/R2, 4 refactors) | ✅ done | [ADR 0006](adr/0006-website.md) · live |
+| 6 | Workers Builds + fixtures + docs | 🔜 **next** | |
 | 7 | Launch | ⬜ | |
 
 ## Working agreement
@@ -437,7 +436,7 @@ inside one:**
 | 8 | `assets` binding + SPA fallback + `run_worker_first` | ✅ built, rehearsed |
 | — | **deploy to workers.dev** | ✅ done — verified against 2,448 cards |
 | — | **attach the custom domain** | ✅ done — live at `hololive-ocg-wiki.tskrlabs.com` |
-| — | disable Cloudflare's managed `robots.txt` | 🔑 **maintainer — [F-017](./findings.md#f-017)** |
+| — | Cloudflare's managed `robots.txt` conflict | 🔍 accepted, deferred to Phase 7 — [F-017](./findings.md#f-017) |
 
 **Candidate 02 arrived early, by necessity.** The empty-filter literal was written out
 five times in v1, each a hand-maintained list of every colour, card type, rarity and bloom
@@ -586,15 +585,12 @@ code, `noindex` meta present.
 
 **It turned up one thing local rehearsal could not** — a zone-level Cloudflare setting
 rewrites what the Worker appears to serve. See [F-017](./findings.md#f-017): the managed
-`robots.txt` prepends `User-agent: * / Allow: /` above our `Disallow: /`, and Google
-resolves duplicate groups in favour of the least restrictive. Turn it off until Phase 7:
-
-> Dashboard → Security → Bots → **Configure Bot Fight Mode** → toggle off
-> *"Instruct bot traffic with robots.txt"*
+`robots.txt` prepends `User-agent: * / Allow: /` above our `Disallow: /`. Accepted and
+deferred; `noindex` carries the guard alone until Phase 7, when the conflict resolves
+itself.
 
 The site stays `noindex` until Phase 7 (Q10) — **the domain going live is not the
-launch.** Two flags flip then: `NUXT_PUBLIC_LAUNCHED=true` (indexing + analytics) and
-re-enabling the managed robots.txt, which by then agrees with us.
+launch.** `NUXT_PUBLIC_LAUNCHED=true` flips indexing and analytics together.
 
 #### About push-to-deploy
 

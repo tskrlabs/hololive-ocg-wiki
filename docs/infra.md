@@ -262,7 +262,8 @@ Cloudflare's **managed `robots.txt`** (Security → Bots → Configure Bot Fight
 *"Instruct bot traffic with robots.txt"*) prepends its own block to whatever the origin
 returns for `/robots.txt`. On this zone that put `User-agent: * / Allow: /` **above** our
 `Disallow: /`, inverting the pre-launch indexing guard — see
-[F-017](./findings.md#f-017). It is off until Phase 7.
+[F-017](./findings.md#f-017). **Left on, by decision** — `noindex` carries the guard
+alone until Phase 7, when our own rule flips to `Allow` and the two agree.
 
 The general lesson is worth more than the specific fix: a zone-level feature can change a
 Worker's apparent response, and nothing in `wrangler.jsonc` or `make preview` would show

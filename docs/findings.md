@@ -466,7 +466,7 @@ because it is a UI decision, not an API one.
 
 ---
 
-## F-017 — Cloudflare's managed `robots.txt` inverts our `Disallow` 🔧 action required
+## F-017 — Cloudflare's managed `robots.txt` inverts our `Disallow` 🔍 accepted, deferred
 
 **Found:** Phase 5, on attaching the custom domain · **Affects:** indexing policy while
 v1 is still live
@@ -500,17 +500,24 @@ could not emit it under `ssr: false`). That is the stronger signal — `robots.t
 *crawling*, `noindex` governs *indexing*. But Q10 wanted two independent guards while v1
 stays indexed on the same 2,448 cards, and one of them is now inverted.
 
-**Decision: turn the managed `robots.txt` off until Phase 7.**
+**Decision (2026-07-27): left as-is for now.** The maintainer accepted the risk rather
+than change a zone setting mid-phase, so **`noindex` is the sole indexing guard until
+Phase 7.**
+
+That is a deliberate narrowing of ADR 0006 Q10, which wanted two independent guards. It is
+defensible: `noindex` is the signal that governs *indexing*, it is in the static HTML a
+non-JS crawler sees, and the domain is un-announced. The exposure is a crawler that obeys
+`robots.txt` but never parses the HTML — it would crawl the site, though it should still
+not index it.
+
+**Revisit at Phase 7**, when this resolves itself: our own rule flips to `Allow`, the two
+groups agree, and the AI-crawler `Disallow` rules become genuinely useful. If the site
+needs to be hard-blocked before then, the one-click fix is:
 
 > Dashboard → Security → Bots → **Configure Bot Fight Mode** → toggle off
 > *"Instruct bot traffic with robots.txt"*.
-> (Also reachable at Security Settings → filter **Bot traffic** → *"Set your preference to
-> block training in robots.txt"*.)
-
-It is a **zone** setting, so it also covers `img.hololive-ocg-wiki.tskrlabs.com`.
-Re-enable it at Phase 7, when the AI-crawler `Disallow` rules become genuinely useful and
-our own rule flips to `Allow` anyway — at that point the two agree and the merge is
-harmless.
+> (Also at Security Settings → filter **Bot traffic**.) It is a **zone** setting, so it
+> also covers `img.hololive-ocg-wiki.tskrlabs.com`.
 
 **Not a bug in our code, and worth knowing generally:** a zone-level Cloudflare feature can
 change what a Worker appears to serve. `curl` against `workers.dev` and against the custom
