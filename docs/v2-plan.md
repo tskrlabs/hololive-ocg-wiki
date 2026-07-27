@@ -252,9 +252,9 @@ first means building against a moving contract.
 | 2 | CF resources + R2 publish | Images live at `img.hololive-ocg-wiki.tskrlabs.com`; `publish` is idempotent |
 | 3 | D1 redesign + seeder | `seed --dry` reports ~2,500 rows; production D1 populated; FTS5 working |
 | 4 | Worker rewrite (Hono + Zod, assets binding) | All 8 endpoints serve correctly; SPA + API from one Worker |
-| 5 | Website (new API/R2, 4 refactors, dead-code purge) | Site works end-to-end on `hololive-ocg-wiki.tskrlabs.com` |
-| 6 | Workers Builds + fixtures + docs | Push-to-deploy works; **fresh clone runs with zero CF creds** |
-| 7 | Launch | v1 archived; this repo public; domain decision executed |
+| 5 | Website (new API/R2, 4 refactors, dead-code purge) | ✅ **Done** — live at `hololive-ocg-wiki.tskrlabs.com`, `noindex` until launch. See [ADR 0006](adr/0006-website.md) |
+| 6 | Workers Builds + fixtures + docs | Push-to-deploy works; **fresh clone runs with zero CF creds** — and, amended, with no Python toolchain either. See [ADR 0007](adr/0007-push-to-deploy.md) |
+| 7 | Launch | v1 archived; this repo public; domain decision executed; the three switches in `progress.md` flipped |
 
 ---
 
