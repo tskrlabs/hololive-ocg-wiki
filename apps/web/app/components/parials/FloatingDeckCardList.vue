@@ -6,47 +6,13 @@ const props = defineProps<{
   cardIds: string[];
 }>();
 
-// Use the decks store's optimized method to get cards
-// const decksStore = useDecks();
+// The count → dedupe → fetch → join pipeline, once (Candidate 04). v1 had it written
+// out verbatim here and in DeckDetailCardList, plus a hand-rolled Map variant in the
+// compact list — six copies of one derivation across three files.
+const { deckCards, isLoading } = useDeckCards(() => props.cardIds);
 
-const cardQuery = useCardQuery();
-const isLoading = ref(true);
-const cards = ref<Card[]>([]);
 const decks = useDecks();
-const { locale } = useI18n();
-
-const uniqueCardIds = computed(() => {
-  const cardCounts = props.cardIds.reduce((acc, cardId) => {
-    acc[cardId] = (acc[cardId] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  return Object.keys(cardCounts).map((id) => ({ id, count: cardCounts[id] }));
-});
-
-watch(
-  () => props.cardIds,
-  async (newCardIds) => {
-    // console.log("Card IDs changed, fetching cards...");
-
-    isLoading.value = true;
-    if (newCardIds.length === 0) {
-      cards.value = [];
-      isLoading.value = false;
-      return;
-    }
-
-    // Fetch cards by IDs using the new batch method with locale
-    const fetchedCards =
-      (await cardQuery.getCardsByIds(
-        uniqueCardIds.value.map((item) => item.id),
-        locale.value
-      )) || [];
-    cards.value = fetchedCards;
-    isLoading.value = false;
-  },
-  { immediate: true, deep: true }
-);
+const cardImage = useCardImage();
 
 // Optimized action methods with cached context
 // Using arrow functions with parameter destructuring for better performance
@@ -68,12 +34,6 @@ const removeAll = (cardId: string, cardTypeCode: CardTypeCode) => {
   }
 };
 
-// Resolve a card's art URL by id (D9: the key is stored, the URL is composed).
-// v1 repeated this helper verbatim in three components and read a baked-in
-// `image_path`; Candidate 04 merges the surrounding derivation.
-const cardImage = useCardImage();
-const getImagePath = (cardId: string) =>
-  cardImage(cards.value.find((c) => c.id === cardId)?.image_key);
 </script>
 
 <template>
@@ -84,32 +44,32 @@ const getImagePath = (cardId: string) =>
   </div>
 
   <div
-    v-else-if="uniqueCardIds.length === 0"
+    v-else-if="deckCards.length === 0"
     class="p-4 text-center text-sm text-gray-500"
   >
     {{ $t("No cards to display") }}
   </div>
 
   <div v-else class="grid grid-cols-4 md:grid-cols-10 gap-1 md:gap-2">
-    <template v-for="item in cards" :key="item.id">
+    <template v-for="{ card, count } in deckCards" :key="card.id">
       <div class="relative flex">
         <Dialog>
           <DialogTrigger class="w-full">
             <Image
               class="aspect-400/559"
-              :src="getImagePath(item.id)"
+              :src="cardImage(card.image_key)"
               :img-attributes="{ class: '' }"
             />
           </DialogTrigger>
 
-          <CardItemDialogContent v-if="item" :item="item" />
+          <CardItemDialogContent :item="card" />
         </Dialog>
 
         <!-- actions -->
         <div class="absolute bottom-0 left-0 w-full flex gap-1 p-1">
           <button
             class="w-2/4 h-6 md:h-6 bg-secondary/95 rounded-sm"
-            @click.prevent="add(item.id, item.card_type_code)"
+            @click.prevent="add(card.id, card.card_type_code)"
             aria-label="Add card"
           >
             <div class="flex items-center justify-center text-xs">
@@ -118,7 +78,7 @@ const getImagePath = (cardId: string) =>
           </button>
           <button
             class="w-2/4 h-6 md:h-6 bg-red-500/95 rounded-sm"
-            @click.prevent="remove(item.id, item.card_type_code)"
+            @click.prevent="remove(card.id, card.card_type_code)"
             aria-label="Remove card"
           >
             <div class="flex items-center justify-center text-xs">
@@ -130,7 +90,7 @@ const getImagePath = (cardId: string) =>
         <div class="absolute top-0 right-0 flex flex-col gap-1 p-1">
           <button
             class="bg-red-500/90 rounded-sm size-7 md:size-8"
-            @click.prevent="removeAll(item.id, item.card_type_code)"
+            @click.prevent="removeAll(card.id, card.card_type_code)"
             aria-label="Remove all cards"
           >
             <div class="flex items-center justify-center text-xs">
@@ -139,13 +99,8 @@ const getImagePath = (cardId: string) =>
           </button>
         </div>
 
-        <CardCountBadge
-          :count="
-            uniqueCardIds.find((cardIdObj) => cardIdObj.id === item.id)
-              ?.count || 0
-          "
-          :size="'small'"
-        />
+        <!-- The count comes with the card now; v1 looked it back up by id. -->
+        <CardCountBadge :count="count" :size="'small'" />
       </div>
     </template>
     <!-- </TransitionGroup> -->

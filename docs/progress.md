@@ -429,17 +429,27 @@ inside one:**
 | 3 | port the **live** code only — green on fixtures | ✅ done |
 | 4 | Candidate 01 — one `useCardQuery` interface | ✅ done |
 | 5 | Candidate 02 — deep Filter module | ✅ done in 3 — see below |
-| 6 | Candidate 03 — Deck as sections, **wire format frozen** | ⬜ |
-| 7 | Candidate 04 — `useDeckCards` | 🟡 written, wiring left |
+| 6 | Candidate 03 — Deck as sections, **wire format frozen** | ✅ done |
+| 7 | Candidate 04 — `useDeckCards` | ✅ done |
+| 8 | `assets` binding + deploy + domain | ⬜ **next** |
 
-**Candidates 02 and 04 arrived early, by necessity.** The empty-filter literal was written
-out five times in v1, each a hand-maintained list of every colour, card type, rarity and
-bloom level — and the typecheck rejected all five against the contract's enums (missing
-`HR`, `supportStaff`, `unknown`). Correcting five copies by hand to match a generated enum
-would have been the bug the refactor exists to prevent, so `createEmpty()` landed instead.
-Same for `useDeckCards`: the duplicated count-and-join derivation had a type error in it,
-so the composable was written; wiring the three components onto it is still commit 7.
-| 8 | `assets` binding + deploy + domain | ⬜ |
+**Candidate 02 arrived early, by necessity.** The empty-filter literal was written out
+five times in v1, each a hand-maintained list of every colour, card type, rarity and bloom
+level — and the typecheck rejected all five against the contract's enums (missing `HR`,
+`supportStaff`, `unknown`). Correcting five copies by hand to match a generated enum would
+have been the bug the refactor exists to prevent, so `createEmpty()` landed in commit 3
+instead. `useDeckCards` was written there for the same reason and wired up in commit 7.
+
+**All four candidates are done.** What they removed, measured:
+
+| | before | after |
+|---|---|---|
+| `useCardStoreAPI` → `useCardQuery` + `cardSource` | 581 | 240 + 155 (seam, no Vue) |
+| `filter-states.ts` | 413 | 158, and ~25 members → 9 |
+| `decks-states.ts` | 488 | 254 + 158 `deckSections` + 103 `deckCode` |
+| `DeckDetailCompactModeCardList.vue` | 219 | 120 |
+| `DeckDetailCardList.vue` | 122 | 55 |
+| `FloatingDeckCardList.vue` | 137 | 108 |
 
 ### Working on the site
 

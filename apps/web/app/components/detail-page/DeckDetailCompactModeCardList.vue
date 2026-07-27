@@ -1,110 +1,22 @@
 <script setup lang="ts">
-import type { Card } from "~/types/card";
-
 const props = defineProps<{
   oshiCardIds: string[];
   mainCardIds: string[];
   yellCardIds: string[];
 }>();
 
-const cardQuery = useCardQuery();
-const isLoading = ref(true);
-const oshiCards = ref<Card[]>([]);
-const mainCards = ref<Card[]>([]);
-const yellCards = ref<Card[]>([]);
-const { locale } = useI18n();
+// One composable per section (Candidate 04). v1 built a `uniqueCards` factory returning a
+// closure over a Map, called it three times, and ran three parallel fetch branches inside
+// a single watcher — all to do what `useDeckCards` does once.
+const oshi = useDeckCards(() => props.oshiCardIds);
+const main = useDeckCards(() => props.mainCardIds);
+const yell = useDeckCards(() => props.yellCardIds);
 
-// Group cards by ID and count occurrences
-const uniqueCards = computed(() => {
-  return (cardIds: string[], cards: Card[]) => {
-    const cardMap = new Map();
-
-    // Skip processing if there are no card IDs
-    if (!cardIds.length || !cards.length) return [];
-
-    // Collect card IDs and count occurrences
-    cardIds.forEach((cardId) => {
-      if (!cardMap.has(cardId)) {
-        cardMap.set(cardId, { cardId, count: 0 });
-      }
-      cardMap.get(cardId).count++;
-    });
-
-    // Get unique card IDs for efficient lookup
-    const uniqueCardIds = Array.from(cardMap.keys());
-
-    // Create a result array with card data and counts
-    return uniqueCardIds
-      .map((cardId) => {
-        const card = cards.find((c) => c.id === cardId);
-        if (!card) return null;
-        const count = cardMap.get(cardId).count;
-        return {
-          cardId: card.id,
-          count,
-          card,
-        };
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null);
-  };
-});
-
-// Computed properties for each deck type
-const uniqueOshiCards = computed(() =>
-  uniqueCards.value(props.oshiCardIds, oshiCards.value)
-);
-const uniqueMainCards = computed(() =>
-  uniqueCards.value(props.mainCardIds, mainCards.value)
-);
-const uniqueYellCards = computed(() =>
-  uniqueCards.value(props.yellCardIds, yellCards.value)
+const isLoading = computed(
+  () => oshi.isLoading.value || main.isLoading.value || yell.isLoading.value,
 );
 
-// Watch for changes in card IDs and fetch cards
-watch(
-  [() => props.oshiCardIds, () => props.mainCardIds, () => props.yellCardIds],
-  async ([newOshiIds, newMainIds, newYellIds]) => {
-    isLoading.value = true;
-
-    try {
-      // Get unique card IDs for each deck type
-      const uniqueOshiIds = [...new Set(newOshiIds)];
-      const uniqueMainIds = [...new Set(newMainIds)];
-      const uniqueYellIds = [...new Set(newYellIds)];
-
-      // Fetch cards for each deck type
-      const [fetchedOshiCards, fetchedMainCards, fetchedYellCards] =
-        await Promise.all([
-          uniqueOshiIds.length > 0
-            ? cardQuery.getCardsByIds(uniqueOshiIds, locale.value)
-            : [],
-          uniqueMainIds.length > 0
-            ? cardQuery.getCardsByIds(uniqueMainIds, locale.value)
-            : [],
-          uniqueYellIds.length > 0
-            ? cardQuery.getCardsByIds(uniqueYellIds, locale.value)
-            : [],
-        ]);
-
-      oshiCards.value = fetchedOshiCards || [];
-      mainCards.value = fetchedMainCards || [];
-      yellCards.value = fetchedYellCards || [];
-    } catch (error) {
-      console.error("Failed to fetch cards:", error);
-      oshiCards.value = [];
-      mainCards.value = [];
-      yellCards.value = [];
-    } finally {
-      isLoading.value = false;
-    }
-  },
-  { immediate: true, deep: true }
-);
-
-// As in the other deck lists, but over a list passed per section (D9).
 const cardImage = useCardImage();
-const getImagePath = (cardId: string, cards: Card[]) =>
-  cardImage(cards.find((c) => c.id === cardId)?.image_key);
 </script>
 
 <template>
@@ -116,9 +28,9 @@ const getImagePath = (cardId: string, cards: Card[]) =>
 
   <div
     v-else-if="
-      uniqueOshiCards.length === 0 &&
-      uniqueYellCards.length === 0 &&
-      uniqueMainCards.length === 0
+      oshi.deckCards.value.length === 0 &&
+      yell.deckCards.value.length === 0 &&
+      main.deckCards.value.length === 0
     "
     class="p-4 text-center text-sm text-gray-500"
   >
@@ -129,7 +41,7 @@ const getImagePath = (cardId: string, cards: Card[]) =>
     <div
       class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-12 gap-2"
     >
-      <template v-for="(item, index) in uniqueOshiCards" :key="`oshi-${index}`">
+      <template v-for="{ card, count } in oshi.deckCards.value" :key="`oshi-${card.id}`">
         <div class="flex flex-col gap-2">
           <Badge class="px-1 text-md w-full">
             {{ $t("Oshi") }}
@@ -140,20 +52,20 @@ const getImagePath = (cardId: string, cards: Card[]) =>
               <DialogTrigger class="w-full">
                 <Image
                   class="flex-[0_0_400px] aspect-400/559"
-                  :src="getImagePath(item.card.id, oshiCards)"
+                  :src="cardImage(card.image_key)"
                   :img-attributes="{ class: '' }"
                 />
               </DialogTrigger>
 
-              <CardItemDialogContent :item="item.card" />
+              <CardItemDialogContent :item="card" />
             </Dialog>
 
-            <CardCountBadge :count="item.count" :size="'large'" />
+            <CardCountBadge :count="count" :size="'large'" />
           </div>
         </div>
       </template>
 
-      <template v-for="(item, index) in uniqueYellCards" :key="`yell-${index}`">
+      <template v-for="{ card, count } in yell.deckCards.value" :key="`yell-${card.id}`">
         <div class="flex flex-col gap-2">
           <Badge class="px-1 text-md w-full">
             {{ $t("Yell Deck") }}
@@ -164,15 +76,15 @@ const getImagePath = (cardId: string, cards: Card[]) =>
               <DialogTrigger class="w-full">
                 <Image
                   class="flex-[0_0_400px] aspect-400/559"
-                  :src="getImagePath(item.card.id, yellCards)"
+                  :src="cardImage(card.image_key)"
                   :img-attributes="{ class: '' }"
                 />
               </DialogTrigger>
 
-              <CardItemDialogContent :item="item.card" />
+              <CardItemDialogContent :item="card" />
             </Dialog>
 
-            <CardCountBadge :count="item.count" :size="'large'" />
+            <CardCountBadge :count="count" :size="'large'" />
           </div>
         </div>
       </template>
@@ -180,7 +92,7 @@ const getImagePath = (cardId: string, cards: Card[]) =>
     <div
       class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-12 gap-2"
     >
-      <template v-for="(item, index) in uniqueMainCards" :key="`main-${index}`">
+      <template v-for="{ card, count } in main.deckCards.value" :key="`main-${card.id}`">
         <div class="flex flex-col gap-2">
           <Badge class="px-1 text-md w-full">
             {{ $t("Main Deck") }}
@@ -191,15 +103,15 @@ const getImagePath = (cardId: string, cards: Card[]) =>
               <DialogTrigger class="w-full">
                 <Image
                   class="flex-[0_0_400px] aspect-400/559"
-                  :src="getImagePath(item.card.id, mainCards)"
+                  :src="cardImage(card.image_key)"
                   :img-attributes="{ class: '' }"
                 />
               </DialogTrigger>
 
-              <CardItemDialogContent :item="item.card" />
+              <CardItemDialogContent :item="card" />
             </Dialog>
 
-            <CardCountBadge :count="item.count" :size="'large'" />
+            <CardCountBadge :count="count" :size="'large'" />
           </div>
         </div>
       </template>

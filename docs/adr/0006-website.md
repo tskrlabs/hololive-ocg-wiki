@@ -230,6 +230,37 @@ depth" (TS2321) — an error about its own type-checker, not our code. The trans
 `$fetch` through an untyped alias to skip that inference, and casts once. One cast at the
 boundary, rather than nine at the call sites.
 
+## Found while modelling the deck (commits 6–7)
+
+Candidates 03 and 04, and the last of the four.
+
+**The deck rules had no home, and nothing enforced them.** v1's `addCardToDeck` pushed
+unconditionally — there was no cap anywhere in the store — so a 60-card main deck was
+reachable and the only feedback was a badge turning red. The limits existed solely as
+numbers typed into templates (`${deck.mainCardIds.length}/50`), with the status-colour
+ternary copied **six times** across `pages/deck/[code]/index.vue` and `FloatingDeck.vue`.
+`deckSections.ts` owns them now, `DeckSectionBadge.vue` renders them once, and
+`addToSection` refuses to exceed a limit.
+
+**The measurements:**
+
+| file | before | after |
+|---|---|---|
+| `decks-states.ts` | 488 | 254 (+ 158 `deckSections` + 103 `deckCode`, both pure) |
+| `DeckDetailCompactModeCardList.vue` | 219 | 120 |
+| `DeckDetailCardList.vue` | 122 | 55 |
+| `FloatingDeckCardList.vue` | 137 | 108 |
+
+**The wire format is verified frozen, not merely intended to be.** Beyond the unit tests,
+a browser check seeds `localStorage` with a v1-shaped deck, reloads, and then navigates to
+a **hand-built v1 deck code** — one this codebase's encoder did not produce. It renders
+`1/1`, `2/50`, `1/20` with card art and zero console errors. That is the Q11 claim tested
+against the real thing rather than against our own round trip.
+
+One deliberate asymmetry: limits are enforced on *add*, but `sectionStatus` can still
+report `over`. A deck imported from an old code or written by an earlier build may exceed
+them, and the badge has to be able to say so.
+
 ## Consequences
 
 - Nine endpoints. `apps/api` gains `routes/artifacts.ts`; `smoke.sh` grows from 34 checks

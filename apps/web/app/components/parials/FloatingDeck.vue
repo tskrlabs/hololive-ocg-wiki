@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Expand, Shrink, Eye } from "lucide-vue-next";
+import { sectionByKey } from "~/composables/deckSections";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
@@ -97,20 +98,11 @@ const goToDetailPage = () => {
               <div class="border rounded-lg p-2 md:p-3 flex flex-col gap-3">
                 <div class="flex items-center gap-2">
                   {{ $t("Oshi") }}
-                  <Badge
-                    class="px-1 text-[8px] md:text-xs"
-                    :class="
-                      oshiCardIds.length > 1
-                        ? 'bg-red-500/15 border-red-500/50 text-red-500'
-                        : oshiCardIds.length === 1
-                        ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500'
-                        : 'border-gray-400 dark:border-gray-600 bg-gray-400/20 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400'
-                    "
-                    variant="outline"
-                    size="sm"
-                  >
-                    {{ `${oshiCardIds.length}/1` }}
-                  </Badge>
+                  <DeckSectionBadge
+                    v-if="currentDeck"
+                    :deck="currentDeck"
+                    :section="sectionByKey('oshi')"
+                  />
                 </div>
 
                 <FloatingDeckCardList
@@ -123,20 +115,11 @@ const goToDetailPage = () => {
               <div class="border rounded-lg p-2 md:p-3 flex flex-col gap-3">
                 <div class="flex items-center gap-2">
                   {{ $t("Main Deck") }}
-                  <Badge
-                    class="px-1 text-[8px] md:text-xs"
-                    :class="
-                      mainCardIds.length > 50
-                        ? 'bg-red-500/15 border-red-500/50 text-red-500'
-                        : mainCardIds.length === 50
-                        ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500'
-                        : 'border-gray-400 dark:border-gray-600 bg-gray-400/20 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400'
-                    "
-                    variant="outline"
-                    size="sm"
-                  >
-                    {{ `${mainCardIds.length}/50` }}
-                  </Badge>
+                  <DeckSectionBadge
+                    v-if="currentDeck"
+                    :deck="currentDeck"
+                    :section="sectionByKey('main')"
+                  />
                 </div>
                 <FloatingDeckCardList
                   v-show="isActive"
@@ -149,20 +132,11 @@ const goToDetailPage = () => {
                 <div class="flex items-center gap-2">
                   {{ $t("Yell Deck") }}
 
-                  <Badge
-                    class="px-1 text-[8px] md:text-xs"
-                    :class="
-                      yellCardIds.length > 20
-                        ? 'bg-red-500/15 border-red-500/50 text-red-500'
-                        : yellCardIds.length === 20
-                        ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500'
-                        : 'border-gray-400 dark:border-gray-600 bg-gray-400/20 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400'
-                    "
-                    variant="outline"
-                    size="sm"
-                  >
-                    {{ `${yellCardIds.length}/20` }}
-                  </Badge>
+                  <DeckSectionBadge
+                    v-if="currentDeck"
+                    :deck="currentDeck"
+                    :section="sectionByKey('yell')"
+                  />
                 </div>
                 <FloatingDeckCardList
                   v-show="isActive"

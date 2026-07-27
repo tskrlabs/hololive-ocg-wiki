@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { sectionByKey } from "~/composables/deckSections";
 import { toast } from "vue-sonner";
 import type { Deck } from "~/types/deck";
 import { Database, Scaling } from "lucide-vue-next";
@@ -122,20 +123,10 @@ useHead({
           <div class="text-md md:text-lg font-semibold">
             {{ $t("Oshi") }}
           </div>
-          <Badge
-            class="px-1 text-[8px] md:text-xs"
-            :class="
-              deck.oshiCardIds.length > 1
-                ? 'bg-red-500/15 border-red-500/50 text-red-500'
-                : deck.oshiCardIds.length === 1
-                ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500'
-                : 'border-gray-400 dark:border-gray-600 bg-gray-400/20 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400'
-            "
-            variant="outline"
-            size="sm"
-          >
-            {{ `${deck.oshiCardIds.length}/1` }}
-          </Badge>
+          <DeckSectionBadge
+            :deck="deck"
+            :section="sectionByKey('oshi')"
+          />
         </div>
 
         <DeckDetailCardList
@@ -149,20 +140,10 @@ useHead({
           <div class="text-md md:text-lg font-semibold">
             {{ $t("Main Deck") }}
           </div>
-          <Badge
-            class="px-1 text-[8px] md:text-xs"
-            :class="
-              deck.mainCardIds.length > 50
-                ? 'bg-red-500/15 border-red-500/50 text-red-500'
-                : deck.mainCardIds.length === 50
-                ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500'
-                : 'border-gray-400 dark:border-gray-600 bg-gray-400/20 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400'
-            "
-            variant="outline"
-            size="sm"
-          >
-            {{ `${deck.mainCardIds.length}/50` }}
-          </Badge>
+          <DeckSectionBadge
+            :deck="deck"
+            :section="sectionByKey('main')"
+          />
         </div>
 
         <DeckDetailCardList
@@ -176,20 +157,10 @@ useHead({
           <div class="text-md md:text-lg font-semibold">
             {{ $t("Yell Deck") }}
           </div>
-          <Badge
-            class="px-1 text-[8px] md:text-xs"
-            :class="
-              deck.yellCardIds.length > 20
-                ? 'bg-red-500/15 border-red-500/50 text-red-500'
-                : deck.yellCardIds.length === 20
-                ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500'
-                : 'border-gray-400 dark:border-gray-600 bg-gray-400/20 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400'
-            "
-            variant="outline"
-            size="sm"
-          >
-            {{ `${deck.yellCardIds.length}/20` }}
-          </Badge>
+          <DeckSectionBadge
+            :deck="deck"
+            :section="sectionByKey('yell')"
+          />
         </div>
 
         <DeckDetailCardList
