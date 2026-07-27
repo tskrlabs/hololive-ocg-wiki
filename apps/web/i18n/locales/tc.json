@@ -51,6 +51,7 @@
   "Loading cards": "正在載入卡片",
   "Loading more cards": "正在載入更多卡片",
   "No cards found": "找不到卡片",
+  "Showing {count} of {total} cards": "顯示 {count} / {total} 張卡片",
   "Try adjusting your filters": "請嘗試調整篩選器",
   "No filter changes detected, skipping filter application": "未偵測到篩選器變更，跳過篩選器套用",
   "Filter": "篩選器",

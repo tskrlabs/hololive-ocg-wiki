@@ -50,6 +50,7 @@
   "Loading cards": "카드 로딩 중",
   "Loading more cards": "더 많은 카드 로딩 중",
   "No cards found": "카드를 찾을 수 없음",
+  "Showing {count} of {total} cards": "{total}장 중 {count}장 표시",
   "Try adjusting your filters": "필터를 조정해 보세요",
   "No filter changes detected, skipping filter application": "필터 변경이 감지되지 않음, 필터 적용을 건너뜁니다",
   "Filter": "필터",

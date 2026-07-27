@@ -50,6 +50,7 @@
   "Loading cards": "Cargando cartas",
   "Loading more cards": "Cargando más cartas",
   "No cards found": "No se encontraron cartas",
+  "Showing {count} of {total} cards": "Mostrando {count} de {total} cartas",
   "Try adjusting your filters": "Intenta ajustar tus filtros",
   "No filter changes detected, skipping filter application": "No se detectaron cambios en los filtros, omitiendo la aplicación de filtros",
   "Filter": "Filtrar",

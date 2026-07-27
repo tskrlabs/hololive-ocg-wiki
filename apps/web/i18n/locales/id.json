@@ -50,6 +50,7 @@
   "Loading cards": "Memuat kartu",
   "Loading more cards": "Memuat lebih banyak kartu",
   "No cards found": "Tidak ada kartu ditemukan",
+  "Showing {count} of {total} cards": "Menampilkan {count} dari {total} kartu",
   "Try adjusting your filters": "Coba sesuaikan filter Anda",
   "No filter changes detected, skipping filter application": "Tidak ada perubahan filter yang terdeteksi, melewati penerapan filter",
   "Filter": "Filter",

@@ -50,6 +50,7 @@
   "Loading cards": "カードを読み込み中",
   "Loading more cards": "カードをさらに読み込み中",
   "No cards found": "カードが見つかりません",
+  "Showing {count} of {total} cards": "{total} 枚中 {count} 枚を表示",
   "Try adjusting your filters": "フィルターを調整してみてください",
   "No filter changes detected, skipping filter application": "フィルターの変更が検出されませんでした、フィルター適用をスキップします",
   "Filter": "フィルター",

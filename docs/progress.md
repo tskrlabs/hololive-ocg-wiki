@@ -9,6 +9,15 @@ real card set. **Phase 6 (Workers Builds + fixtures + docs) is under way** — t
 docs are built and verified from a scratch clone; connecting the git integration is a
 dashboard step only the maintainer can take. See [Phase 6](#phase-6--push-to-deploy).
 
+⚠️ **Phase 5 needed a follow-up.** Visual QA of the live site found the homepage serving
+**200 of 2,448 cards** — infinite scroll had never fired, because `RecycleScroller` gates
+its `scroll-end` emit behind an `emit-update` prop the card list did not pass. One prop
+fixed it. The reason it survived a whole phase is the part worth keeping: all 44 web tests
+targeted pure functions, so a prop that was never passed was invisible to `make check`,
+and `make dev`'s 34-card fixture set is too small to ever produce a second page. Web tests
+now include a mounted component; local QA of pagination still requires pointing the dev
+server at the deployed Worker. See [F-019](./findings.md#f-019).
+
 ℹ️ **`noindex` is the sole indexing guard until Phase 7**, by decision. Cloudflare's
 zone-level managed `robots.txt` prepends `Allow: /` above ours; the maintainer accepted
 that rather than change a zone setting mid-phase. It resolves itself at Phase 7 when our
