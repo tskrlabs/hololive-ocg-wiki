@@ -3,7 +3,10 @@
 -- `make check` fails if this file is stale.
 --
 -- Apply with:
---   npx wrangler d1 execute hololive-ocg-wiki --remote --file=packages/schema/sql/schema.sql
+--   npx wrangler d1 execute hololive-ocg-wiki-db --remote --       --file=packages/schema/sql/schema.sql
+--
+-- Run from apps/api/, where wrangler.jsonc declares the binding. Note the database is
+-- `hololive-ocg-wiki-db`; `hololive-ocg-wiki` is the Worker's name and does not resolve.
 --
 -- `holo-data seed` never runs DDL. Schema changes are rare and human-driven; giving an
 -- agent-driven command the power to DROP TABLE is exactly the blast radius D10 exists to
@@ -36,8 +39,24 @@ CREATE TABLE IF NOT EXISTS cards (
     baton_touch_types TEXT,
     illustrator TEXT,
 
+    -- The card's name in the source locale — the stable per-character identity, and
+    -- what the `name` filter ("show me every Fubuki card") matches on.
+    --
+    -- Not a `Card` field: it is a projection of translations['ja'].name, derived by the
+    -- seeder. It exists as a column because the filter needs an index, and the name
+    -- lives inside a JSON payload that no index can reach.
+    --
+    -- Deliberately the *ja* name, not the requested locale's. 122 of 296 characters
+    -- (41%) have an inconsistent name in at least one locale — Shirakami Fubuki's 44
+    -- cards carry both "Shirakami Fubuki" and "白上フブキ" in `en` — so v1's
+    -- per-locale exact match split those characters into two filter entries that each
+    -- returned a subset. The ja name is the one key that groups them all. The API pairs
+    -- it with the locale's display name so the dropdown still reads in the user's
+    -- language. See findings F-015.
+    name_ja TEXT NOT NULL,
+
     -- Language-independent nested data plus all 7 locales' translations, minus Q&A:
-    -- arts, keyword, oshi_skill, sp_oshi_skill, translations.
+    -- color_codes, card_sets, arts, keyword, oshi_skill, sp_oshi_skill, translations.
     payload TEXT NOT NULL,
     -- Q&A only, keyed by locale. Absent on 65% of cards, so frequently '{}'.
     qa_payload TEXT NOT NULL DEFAULT '{}',
@@ -57,6 +76,7 @@ CREATE INDEX IF NOT EXISTS idx_cards_card_number ON cards(card_number);
 CREATE INDEX IF NOT EXISTS idx_cards_card_type_code ON cards(card_type_code);
 CREATE INDEX IF NOT EXISTS idx_cards_rarity_code ON cards(rarity_code);
 CREATE INDEX IF NOT EXISTS idx_cards_bloom_level_code ON cards(bloom_level_code);
+CREATE INDEX IF NOT EXISTS idx_cards_name_ja ON cards(name_ja);
 
 -- ---------------------------------------------------------------------------
 -- Junction tables — the filterable lists.

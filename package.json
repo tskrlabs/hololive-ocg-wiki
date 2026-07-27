@@ -11,5 +11,9 @@
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "workerd@1.20260722.1": true
   }
 }

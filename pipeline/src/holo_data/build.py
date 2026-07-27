@@ -22,8 +22,9 @@ from typing import Any
 from pydantic import ValidationError
 
 from holo_schema import Card, CardCollection
+from holo_schema.enums import SOURCE_LOCALE
 
-from .paths import cards_json, ensure_dirs
+from .paths import cards_json, ensure_dirs, filter_options_json
 from .translate.cache import TranslationCache, field_keys
 
 
@@ -151,6 +152,81 @@ def save(collection: CardCollection) -> int:
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     cards_json().write_text(text, encoding="utf-8")
     return len(text.encode("utf-8"))
+
+
+def _best_label(ja_name: str, labels: dict[str, int]) -> str:
+    """Pick one display name for a character from the spellings its cards carry.
+
+    A spelling that differs from the ja name wins, because that is the one that was
+    actually translated; among equals, the most common, then the text itself so the
+    result does not depend on dict ordering. See `filter_options` for the measurements.
+    """
+    return max(
+        labels.items(), key=lambda item: (item[0] != ja_name, item[1], item[0])
+    )[0]
+
+
+def filter_options(collection: CardCollection, locale: str) -> dict[str, Any]:
+    """The dropdown values for one locale: names, tags and sets.
+
+    Each entry is `{value, label}` — `value` is what the API filters on, `label` is what
+    the dropdown shows.
+
+    **Names key on the source locale.** `value` is the ja name and `label` is this
+    locale's, because the ja name is the stable per-character identity while the
+    localised one is not: 122 of 296 characters (41%) have an inconsistent name in at
+    least one locale, so keying on the displayed text splits a character into two
+    entries that each return a subset of their cards (findings F-015).
+
+    Where a character's cards disagree on the label, a spelling that **differs from the
+    ja name wins** over the most common one. Most cards leave the character name
+    untranslated — only 6 of Shirakami Fubuki's 44 cards romanise it in `en` — so
+    picking the majority would show Japanese text to an English reader while a perfectly
+    good "Shirakami Fubuki" sat in the data. This recovers a readable label for 103 of
+    296 characters in `en` and 65 in `ko`. Ties break on the label text so the artifact
+    is deterministic.
+
+    Tags and sets have no such split: tags are localised display text with no stable
+    identity to preserve, and set names are language-independent.
+    """
+    label_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    tags: set[str] = set()
+    sets: set[str] = set()
+
+    for card in collection.cards:
+        source = card.translations[SOURCE_LOCALE]
+        translation = card.translations.get(locale) or source
+        label_counts[source.name][translation.name] += 1
+        tags.update(translation.tags or [])
+        sets.update(card.card_sets)
+
+    names = [
+        {"value": ja_name, "label": _best_label(ja_name, labels)}
+        for ja_name, labels in sorted(label_counts.items())
+    ]
+
+    return {
+        "locale": locale,
+        "generated_at": collection.generated_at,
+        "names": names,
+        "tags": [{"value": tag, "label": tag} for tag in sorted(tags)],
+        "sets": [{"value": name, "label": name} for name in sorted(sets)],
+    }
+
+
+def save_filter_options(collection: CardCollection, locales: list[str]) -> dict[str, int]:
+    """Write `filter-options/{locale}.json` for every locale. Returns byte sizes."""
+    ensure_dirs()
+    written: dict[str, int] = {}
+    for locale in locales:
+        path = filter_options_json(locale)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        text = json.dumps(
+            filter_options(collection, locale), ensure_ascii=False, indent=2
+        ) + "\n"
+        path.write_text(text, encoding="utf-8")
+        written[locale] = len(text.encode("utf-8"))
+    return written
 
 
 def load() -> CardCollection | None:

@@ -281,6 +281,14 @@ def build(
         f"✓ wrote {paths.cards_json()} — {report.valid} cards, {size / 1024 / 1024:.1f} MB"
     )
 
+    # The dropdown values for /api/filter-options. Built here, beside the data they
+    # summarise, so they can never describe a different cards.json than the one shipped.
+    options = build_module.save_filter_options(collection, ["ja", *locales])
+    typer.echo(
+        f"✓ wrote {len(options)} filter-options files — "
+        f"{sum(options.values()) / 1024:.0f} KB total"
+    )
+
 
 # --- verify ------------------------------------------------------------------
 

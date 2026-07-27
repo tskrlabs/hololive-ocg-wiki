@@ -219,8 +219,14 @@ class Card(BaseModel):
     # site, and a `LIKE '%"blue"%'` predicate cannot use an index. Phase 3 measured the
     # difference on a filtered, sorted, paginated page — the shape /api/cards/filter
     # actually issues — at ~2,448 rows read against ~50-100. See ADR 0004.
+    #
+    # Also `Blob()`: the junction table is how a card is *found*, the payload is what a
+    # card *is*. `localize()` reads `card.color_codes`, so without it in the payload the
+    # Worker cannot reassemble a card from the row it just selected — it would need a
+    # second query per list page against the junction, which is the fan-out shape
+    # `enrichCardDataBatch` was deleted for. The duplication is deliberate; see ADR 0005.
     color_codes: Annotated[
-        Optional[list[ColorCode]], Junction("card_colors", "color_code")
+        Optional[list[ColorCode]], Junction("card_colors", "color_code"), Blob()
     ] = None
     # Absent on 733 cards — only Holomem cards bloom.
     bloom_level_code: Annotated[Optional[BloomLevelCode], Column(indexed=True)] = None
@@ -252,7 +258,8 @@ class Card(BaseModel):
     illustrator: Annotated[Optional[str], Column(), FullText()] = None
     # Always present, never empty. Usually 1 set, but up to 17 for reprinted cards.
     # Filterable, so a junction table — 2,592 rows across 34 distinct sets.
-    card_sets: Annotated[list[str], Junction("card_sets", "set_name")]
+    # Also `Blob()`, for the same reason as `color_codes` above.
+    card_sets: Annotated[list[str], Junction("card_sets", "set_name"), Blob()]
 
     # The card's tags in the source language, unprefixed: ["EN", "Promise", "歌"].
     # Distinct from `Translation.tags`, which holds the *localised* tag with a display

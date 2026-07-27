@@ -30,7 +30,7 @@ from typing import Annotated, Any, Iterable, Sequence, get_args, get_origin
 
 from holo_schema import Card, CardCollection
 from holo_schema.annotations import Junction
-from holo_schema.enums import LOCALE_VALUES
+from holo_schema.enums import LOCALE_VALUES, SOURCE_LOCALE
 
 from . import d1
 
@@ -69,7 +69,15 @@ CARD_COLUMNS = (
     "baton_touch_count",
     "baton_touch_types",
     "illustrator",
+    # Not a `Card` field — a projection of translations['ja'].name, written by
+    # `to_row()`. It is a column because the `name` filter needs an index and the name
+    # itself lives inside the JSON payload, where no index can reach it. See the comment
+    # beside its declaration in schema.sql for why it is the *ja* name specifically.
+    "name_ja",
 )
+
+# `CARD_COLUMNS` entries that are computed rather than read off the model.
+DERIVED_COLUMNS = {"name_ja"}
 
 # What D1 charges per card. Every constant here was measured against the production
 # database rather than reasoned about, because the first attempt got two of the three
@@ -81,7 +89,11 @@ CARD_COLUMNS = (
 #     junction del+ins   8 statements  -> 15 writes   (~3 per row)
 #     fts del+ins        2 statements  ->  2 writes
 #
-CARD_INDEX_COUNT = 4
+# Raised 4 -> 5 in Phase 4 with the addition of idx_cards_name_ja. The other four are
+# card_number, card_type_code, rarity_code, bloom_level_code. A full reseed moves
+# ~47,337 -> ~49,785 writes (49.8% of the 100k/day free tier); `seed --dry` prints the
+# estimate beside the actual, so a wrong constant shows up rather than hiding.
+CARD_INDEX_COUNT = 5
 
 # A junction row costs ~3: the WITHOUT ROWID key, the card_id index entry, and the
 # delete that precedes it (the seeder replaces a card's rows rather than diffing them).
@@ -161,6 +173,14 @@ def card_payloads(card: Card) -> tuple[str, str]:
         "oshi_skill": dumped.get("oshi_skill"),
         "sp_oshi_skill": dumped.get("sp_oshi_skill"),
         "translations": translations,
+        # Duplicated from the junction tables, deliberately. The junctions are how a
+        # card is *found*; the payload is what a card *is*. `localize()` reads both of
+        # these, so without them here the Worker would need a second query per list
+        # page to reassemble the rows it just selected. Measured at +3.2% payload
+        # (2,933 -> 3,027 B/card). `tags` is absent on purpose: LocalizedCard.tags comes
+        # from translation.tags, which is already inside `translations` above. ADR 0005.
+        "color_codes": dumped.get("color_codes"),
+        "card_sets": dumped.get("card_sets"),
     }
     payload = {key: value for key, value in payload.items() if value is not None}
 
@@ -226,6 +246,11 @@ def to_row(card: Card) -> CardRow:
 
     columns: list[Any] = []
     for name in CARD_COLUMNS:
+        if name == "name_ja":
+            # SOURCE_LOCALE is guaranteed present by Card's own validator, so this
+            # cannot KeyError on a card that validated.
+            columns.append(card.translations[SOURCE_LOCALE].name)
+            continue
         value = getattr(card, name)
         # SQLite has no array type; these are the lists that are never filtered on.
         if isinstance(value, list):

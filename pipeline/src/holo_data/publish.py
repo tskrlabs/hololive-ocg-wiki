@@ -126,6 +126,15 @@ def build_plan(s3, config: r2.R2Config, force: bool = False) -> PublishPlan:
     if info.exists():
         artifacts["info.json"] = info
 
+    # Per-locale dropdown values, read by /api/filter-options straight from R2. Written
+    # by `build`, so they are absent on a working directory built before Phase 4 — the
+    # endpoint 404s rather than the publish failing, and the next `build` supplies them.
+    #
+    # `status.json` is deliberately not here: it is uploaded by `seed`, which runs after
+    # publish, so a copy pushed from here would always describe the previous run.
+    for path in sorted((paths.BUILD_DIR / paths.FILTER_OPTIONS_PREFIX).glob("*.json")):
+        artifacts[f"{paths.FILTER_OPTIONS_PREFIX}/{path.name}"] = path
+
     remote_artifacts = r2.list_objects(s3, config.artifacts_bucket)
     plan.artifact_uploads, plan.artifacts_unchanged = r2.diff(
         artifacts, remote_artifacts, force
