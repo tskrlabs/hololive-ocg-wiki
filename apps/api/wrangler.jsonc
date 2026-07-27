@@ -1,7 +1,11 @@
 {
-  // The Worker that will serve the API and the static site (D2 — one Worker, not
-  // Pages + Worker). It does not exist yet: this file declares the Phase 2 R2 buckets
-  // and the Phase 3 D1 database; `main` and `assets` arrive with the Worker in Phase 4.
+  // The Worker that serves the API, and from Phase 5 the static site too (D2 — one
+  // Worker, not Pages + Worker).
+  //
+  // `assets` is deliberately absent. D2's second half needs `apps/web`, which does not
+  // exist until Phase 5; binding a placeholder directory would prove nothing about
+  // Nuxt's real output and its `_nuxt/` asset paths. Phase 5 adds `assets`,
+  // `not_found_handling: "single-page-application"`, and the custom domain together.
   //
   // It is committed deliberately. v1's `wrangler.toml`, `wrangler.service.toml`,
   // `migrations/`, and `migration.sql` were all gitignored, so the infrastructure
@@ -13,7 +17,26 @@
   // steps that no config file captures — they are written down in docs/infra.md.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "hololive-ocg-wiki",
+  "main": "src/index.ts",
   "compatibility_date": "2026-07-26",
+
+  // Phase 4 deploys to workers.dev only. The apex domain
+  // (hololive-ocg-wiki.tskrlabs.com) is attached in Phase 5, so it goes live once with
+  // a site behind it rather than briefly serving JSON 404s to anyone who wanders by.
+  "workers_dev": true,
+
+  "observability": {
+    // Workers Logs. Free tier, and the reason D2 merged Pages into a Worker at all —
+    // a Pages project could not have this.
+    "enabled": true
+  },
+
+  "vars": {
+    // CORS allowlist. Production traffic is same-origin from Phase 5 and sends no
+    // Origin header, so this is effectively belt-and-braces; localhost belongs in a
+    // local override (`wrangler dev --var`), never in a deployed value.
+    "ALLOWED_ORIGINS": "https://hololive-ocg-wiki.tskrlabs.com"
+  },
 
   "r2_buckets": [
     {

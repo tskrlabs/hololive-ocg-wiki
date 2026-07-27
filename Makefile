@@ -7,7 +7,7 @@
 # once per clone to have `make check` run automatically before each commit.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup hooks generate golden fixtures check check-schema check-py check-ts typecheck clean
+.PHONY: help setup hooks generate golden fixtures check check-schema check-py check-ts check-api typecheck clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -35,7 +35,7 @@ fixtures: ## Re-select the fixture card set (needs v1 data — see script docstr
 golden: ## Regenerate the localize() golden files from the Python reference
 	uv run python packages/schema/scripts/golden.py
 
-check: check-schema check-py check-ts typecheck ## Run every verification
+check: check-schema check-py check-ts check-api typecheck ## Run every verification
 	@echo ""
 	@echo "✓ all checks passed"
 
@@ -50,8 +50,13 @@ check-py: ## Run the Python tests (schema + pipeline)
 check-ts: ## Run the TypeScript parity tests
 	@npm test --workspace @holo/schema --silent
 
-typecheck: ## Typecheck the generated TypeScript
+check-api: ## Run the Worker's unit tests and the endpoint smoke test
+	@npm test --workspace @holo/api --silent
+	@apps/api/tests/smoke.sh
+
+typecheck: ## Typecheck the generated TypeScript and the Worker
 	@npm run typecheck --workspace @holo/schema --silent
+	@npm run typecheck --workspace @holo/api --silent
 
 clean: ## Remove caches and build artifacts (not generated output — that is committed)
 	find . -name __pycache__ -type d -prune -exec rm -rf {} + 2>/dev/null || true

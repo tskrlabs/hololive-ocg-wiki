@@ -1,0 +1,24 @@
+{
+  "name": "@holo/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The Worker: Hono API over D1 and R2. Static assets arrive in Phase 5.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "db:local": "wrangler d1 execute hololive-ocg-wiki-db --local --file=../../packages/schema/sql/schema.sql && wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtures.sql"
+  },
+  "dependencies": {
+    "hono": "^4.12.32",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260727.1",
+    "@holo/schema": "*",
+    "typescript": "^5.7.0",
+    "wrangler": "^4.114.0"
+  }
+}
