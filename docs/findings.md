@@ -31,6 +31,7 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-016](#f-016) | ✅ fixed | site | v1's colour filter misses fused dual-colour cards |
 | [F-017](#f-017) | 🔍 open | infra | Cloudflare's managed `robots.txt` inverts our `Disallow` |
 | [F-018](#f-018) | 🔍 open | process | A translation fix has no reviewable surface — the cache is not in git |
+| [F-019](#f-019) | ✅ fixed | site | Infinite scroll never fired; the homepage showed 200 of 2,448 cards |
 
 ---
 
@@ -567,3 +568,67 @@ also private until Phase 7, so there is no contributor being turned away today.
   (most fields are machine-translated) and diffs cleanly.
 - Leave it as issue-driven and delete the empty `corrections/` carve-out, which currently
   documents a mechanism that does not exist.
+
+---
+
+## F-019 — infinite scroll never fired ✅ fixed
+
+**Found:** after Phase 6, by the maintainer looking at the live site ·
+**Fixed:** same pass · **Affects:** the card list — i.e. the homepage
+
+Scrolling the homepage stopped after the first page. The live site served **200 of 2,448
+cards** and there was no way to reach the rest; the deck builder could only use whichever
+cards happened to fall in that first page. It had been that way since Phase 5 deployed.
+
+Nothing was wrong with the data or the API. `/api/cards/filter?page=1&limit=200` returns
+`total: 2448`, and page 13 returns the final 48 cards. The site simply never asked for
+page 2.
+
+`CardListViewAPI.vue` renders a `RecycleScroller` and listens for `@scroll-end` to call
+`loadMore`. In `vue-virtual-scroller@2.0.1` that emit is gated:
+
+```js
+a.emitUpdate && (s?.onUpdate)?.call(s, P, A, ge, ze)
+// onUpdate: (…, we) => { …; we >= t.items.length - 1 && s("scrollEnd") }
+```
+
+`emitUpdate` defaults to `false` and the component never passed it. The handler, the
+debounce, the `hasMore` guard and `useCardQuery.loadMore` were all correct and all
+unreachable. The fix is one prop: `:emit-update="true"`.
+
+**Three things kept it hidden**, and each is worth more than the bug:
+
+- **The results summary was commented out** (`CardListViewAPI.vue`, "Showing X of Y
+  cards"). It would have read *"Showing 200 of 2448"* on every page load. It is restored,
+  but repositioned — in flow it sat below a `height: 100dvh` scroller, so it was never on
+  screen, which is the likeliest reason it was disabled instead of fixed.
+- **`make dev` cannot reproduce it.** The fixtures are 34 cards and the page size is 200,
+  so `hasMore` is false locally and there is never a page 2. Local QA of the card list is
+  structurally incapable of exercising pagination. Verifying this fix needed the dev
+  server pointed at the deployed Worker.
+- **No test could see it.** All 44 web tests targeted pure functions; not one mounted a
+  component. A prop that was never passed exists only in a template, so `make check`
+  passed a homepage showing 8% of the database. `apps/web/tests/component.test.ts` now
+  mounts the card list — both fixes here were confirmed to fail it before they were
+  applied.
+
+**A second bug rode along.** Filtering while scrolled down left the scroller's offset
+where it was, so a new result set began mid-list. It was invisible while page 1 was all
+that ever loaded, and would have become visible the moment this fix landed. Fixed in the
+same pass.
+
+**Also removed:** seven components referenced by nothing —
+`CardListViewAPIBasic`, `CardListViewAPIVirtualScroller`, `StatusCardGrid`, `FilterView`,
+`FilterButton`, `IconGlobe`, `IconGitlab`. The first two are of a piece with this
+finding: they are v1-era copies of the card list that ADR 0006 records as collapsed, and
+they carry their own drifted pagination logic — one calls `loadMore` without passing
+`pageSize`, so it would have paged in 50s while claiming 200. Two files named
+`CardListViewAPI*` sitting beside the real one is a working trap for whoever next goes to
+fix "the card list".
+
+**The open question this leaves** is Phase 5's verification, not this component. The site
+was checked by looking at it, and a homepage that renders 200 cards beautifully looks
+exactly like one that renders 2,448 until you scroll to the bottom and count. The
+component test closes this specific hole; whether the rest of the site has similar
+never-fires wiring has been surveyed once — `@scroll-end` was the only event binding of
+its kind — but not proven.

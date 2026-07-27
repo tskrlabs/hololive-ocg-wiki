@@ -108,6 +108,24 @@ const handleScrollEnd = useDebounceFn(() => {
   }
 }, 100); // Debounce to prevent multiple rapid calls
 
+/**
+ * Return to the top of the list.
+ *
+ * A new filter replaces the items but not the scroll offset, so without this the first
+ * page of a fresh result set renders under a viewport still scrolled to where the last
+ * one was — the user applies a filter and appears to land in the middle of it. Invisible
+ * until infinite scroll started working, because there was never a second page to be
+ * scrolled into.
+ *
+ * `shouldPreserveScroll` is cleared alongside: it belongs to the append path, and a
+ * pending restore would otherwise scroll us straight back down.
+ */
+const scrollToTop = () => {
+  shouldPreserveScroll.value = false;
+  scrollPosition.value = 0;
+  virtualScroller.value?.scrollToItem?.(0);
+};
+
 // Apply filters when filter changes - simplified
 watch(
   () => filter.filter.value,
@@ -192,6 +210,9 @@ const applyFiltersWithPreciseLoading = () => {
       if (wasLoading && !isLoading) {
         // Add a small delay to ensure DOM has updated
         nextTick(() => {
+          // After the new results are in the DOM, not before — scrolling a list that
+          // still holds the previous filter's items would be undone by the re-render.
+          scrollToTop();
           isFiltering.value = false;
           stopWatching(); // Stop watching
         });
@@ -278,6 +299,7 @@ watch(
           :grid-items="gridColCount"
           :buffer="600"
           key-field="id"
+          :emit-update="true"
           @scroll-end="handleScrollEnd"
           v-resize-observer="onResizeObserver"
         >
@@ -334,17 +356,29 @@ watch(
       </div>
     </div>
 
-    <!-- Results summary -->
-    <!-- <div v-if="displayedCards.length > 0" class="flex justify-center py-4">
-      <p class="text-sm text-muted-foreground">
-        Showing {{ displayedCards.length }} of
-        {{ cardQuery.total.value }} cards
-        <span v-if="hasMore">(scroll for more)</span>
-      </p>
-    </div> -->
+    <!--
+      Results summary.
 
-    <!-- Spacer for bottom padding -->
-    <!-- <div class="h-[65vh]"></div> -->
+      Floated rather than placed in flow. In flow it sits *below* a scroller that is
+      `height: 100dvh`, so it is never on screen — which is how it came to be commented
+      out, and why "Showing 200 of 2448" went unseen while infinite scroll was broken.
+      Mirrors FloatingDeck (bottom-left) on the opposite side so the two do not overlap.
+    -->
+    <div
+      v-if="displayedCards.length > 0"
+      class="fixed bottom-13 md:bottom-16 right-0 m-2 md:m-4 z-40 pointer-events-none"
+    >
+      <p
+        class="rounded-md border bg-background/90 px-2 py-1 text-xs text-muted-foreground backdrop-blur"
+      >
+        {{
+          $t("Showing {count} of {total} cards", {
+            count: displayedCards.length,
+            total: cardQuery.total.value,
+          })
+        }}
+      </p>
+    </div>
   </div>
 </template>
 

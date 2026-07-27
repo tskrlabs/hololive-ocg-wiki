@@ -50,6 +50,7 @@
   "Loading cards": "Loading cards",
   "Loading more cards": "Loading more cards",
   "No cards found": "No cards found",
+  "Showing {count} of {total} cards": "Showing {count} of {total} cards",
   "Try adjusting your filters": "Try adjusting your filters",
   "No filter changes detected, skipping filter application": "No filter changes detected, skipping filter application",
   "Filter": "Filter",
