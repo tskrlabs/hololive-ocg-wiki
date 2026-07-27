@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { Funnel, PanelTopClose, RotateCcw } from "lucide-vue-next";
 import { FILTERABLE_COLORS } from "~/composables/filter-states";
+import type { Locales } from "~/types/card";
+import type { FilterOption } from "~/types/filter";
 
 const { locale, t } = useI18n();
 
@@ -38,56 +40,46 @@ const isNameOpen = ref(false);
 const isTagOpen = ref(false);
 const isSetOpen = ref(false);
 
-// Loading state for all filter options
+// Dropdown values, fetched through the one interface (Candidate 01).
+//
+// v1 called `$fetch("/api/filter-options")` right here, bypassing the store — which
+// meant the store's own `getNameOptions` / `getTagOptions` / `getSetOptions` /
+// `precomputeFilterOptions` had **no callers at all**, four methods maintained for a
+// consumer that had gone its own way. `useCardQuery.filterOptions` caches per locale and
+// dedupes concurrent calls, neither of which the hand-rolled version did.
+const cardQuery = useCardQuery();
+
+const nameFilterOptions = ref<FilterOption[]>([]);
+const tagFilterOptions = ref<FilterOption[]>([]);
+const setFilterOptions = ref<FilterOption[]>([]);
 const isLoadingFilterOptions = ref(false);
 
-// Options from API
-const nameFilterOptions = ref<{ value: string; label: string }[]>([]);
-const tagFilterOptions = ref<{ value: string; label: string }[]>([]);
-const setFilterOptions = ref<{ value: string; label: string }[]>([]);
-
-// Track if options have been loaded
-const optionsLoaded = ref(false);
-
-// Load all filter options with a single API call
 const loadAllFilterOptions = async () => {
-  if (optionsLoaded.value || isLoadingFilterOptions.value) return;
-
+  if (isLoadingFilterOptions.value) return;
   isLoadingFilterOptions.value = true;
   try {
-    const response = await $fetch<{
-      names: { value: string; label: string }[];
-      tags: { value: string; label: string }[];
-      sets: { value: string; label: string }[];
-    }>(`/api/filter-options?locale=${locale.value}`);
-
-    nameFilterOptions.value = response.names || [];
-    tagFilterOptions.value = response.tags || [];
-    setFilterOptions.value = response.sets || [];
-    optionsLoaded.value = true;
-  } catch (error) {
-    console.error("Failed to load filter options:", error);
+    const options = await cardQuery.filterOptions(locale.value as Locales);
+    nameFilterOptions.value = options.names;
+    tagFilterOptions.value = options.tags;
+    setFilterOptions.value = options.sets;
   } finally {
     isLoadingFilterOptions.value = false;
   }
 };
 loadAllFilterOptions();
 
-// Individual loading functions that trigger the shared loader
-// const loadNameOptions = () => loadAllFilterOptions();
-// const loadTagOptions = () => loadAllFilterOptions();
-// const loadSetOptions = () => loadAllFilterOptions();
-
-// Clear options when locale changes
-watch(
-  () => locale.value,
-  () => {
-    nameFilterOptions.value = [];
-    tagFilterOptions.value = [];
-    setFilterOptions.value = [];
-    optionsLoaded.value = false;
-  }
+// Derived, not tracked separately: v1 kept an `optionsLoaded` flag beside the data and
+// had to reset both on a locale change.
+const optionsLoaded = computed(
+  () =>
+    nameFilterOptions.value.length > 0 ||
+    tagFilterOptions.value.length > 0 ||
+    setFilterOptions.value.length > 0,
 );
+
+// Refetch when the locale changes: the labels are translated, and the cache is keyed by
+// locale so this is a hit after the first visit.
+watch(() => locale.value, loadAllFilterOptions);
 
 // Initialize draft filters when component mounts
 onMounted(() => {

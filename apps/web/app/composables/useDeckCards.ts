@@ -15,7 +15,7 @@
  * edited while these lists are on screen, so the fetch has to follow.
  */
 
-import type { Card } from "~/types/card";
+import type { Card, Locales } from "~/types/card";
 
 export type DeckCard = {
   /** Convenience alias of `card.id`, which several templates key on. */
@@ -26,7 +26,7 @@ export type DeckCard = {
 };
 
 export function useDeckCards(cardIds: () => string[]) {
-  const cardStore = useCardStoreAPI();
+  const cardQuery = useCardQuery();
   const { locale } = useI18n();
 
   const isLoading = ref(true);
@@ -61,7 +61,7 @@ export function useDeckCards(cardIds: () => string[]) {
         return;
       }
       // Chunked to the API's batch cap inside the store — a legal deck is 71 cards.
-      cards.value = (await cardStore.getCardsByIds(ids, locale.value)) ?? [];
+      cards.value = (await cardQuery.getCardsByIds(ids, locale.value as Locales)) ?? [];
       isLoading.value = false;
     },
     { immediate: true },

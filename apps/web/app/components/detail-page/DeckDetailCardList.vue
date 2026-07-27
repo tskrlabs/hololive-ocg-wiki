@@ -6,7 +6,7 @@ const props = defineProps<{
   isCompactMode: Boolean;
 }>();
 
-const cardStore = useCardStoreAPI();
+const cardQuery = useCardQuery();
 const isLoading = ref(true);
 const cards = ref<Card[]>([]);
 const { locale } = useI18n();
@@ -53,7 +53,7 @@ watch(
 
     // Fetch cards by IDs using the new batch method with locale
     const fetchedCards =
-      (await cardStore.getCardsByIds(
+      (await cardQuery.getCardsByIds(
         uniqueCardIds.value.map((item) => item.id),
         locale.value
       )) || [];

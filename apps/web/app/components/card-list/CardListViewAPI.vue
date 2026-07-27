@@ -6,7 +6,7 @@ import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 
 const { locale } = useI18n();
 const filter = useFilter();
-const cardStore = useCardStoreAPI(); // Use the new API-based store
+const cardQuery = useCardQuery(); 
 
 // Ref to the virtual scroller
 const virtualScroller = ref();
@@ -19,7 +19,7 @@ const shouldPreserveScroll = ref(false);
 const pageSize = ref(200); // Increased for virtual scrolling
 const currentPage = ref(1);
 const hasMore = computed(() => {
-  return cardStore.filteredCards.value.length < cardStore.totalCards.value;
+  return cardQuery.cards.value.length < cardQuery.total.value;
 });
 
 /**
@@ -75,7 +75,7 @@ const applyFilters = useDebounceFn(async () => {
   currentPage.value = 1;
 
   // Make the API call directly - the cardStore will handle loading states
-  await cardStore.getFilteredCards(
+  await cardQuery.getFilteredCards(
     filter.filter.value,
     locale.value,
     1,
@@ -83,7 +83,7 @@ const applyFilters = useDebounceFn(async () => {
   );
 }, 300); // Slightly increased debounce for API calls// Load more cards for infinite scroll with virtual scroller
 const loadMore = async () => {
-  if (cardStore.isLoading.value || !hasMore.value) return;
+  if (cardQuery.isLoading.value || !hasMore.value) return;
 
   // Save current scroll position before loading
   if (virtualScroller.value && virtualScroller.value.$el) {
@@ -92,7 +92,7 @@ const loadMore = async () => {
   }
 
   currentPage.value++;
-  await cardStore.loadMoreCards(
+  await cardQuery.loadMore(
     filter.filter.value,
     locale.value,
     currentPage.value,
@@ -103,7 +103,7 @@ const loadMore = async () => {
 // Virtual scroller infinite loading with improved scroll handling
 const handleScrollEnd = useDebounceFn(() => {
   // Load more when reaching the end of virtual scroller
-  if (hasMore.value && !cardStore.isLoading.value) {
+  if (hasMore.value && !cardQuery.isLoading.value) {
     loadMore();
   }
 }, 100); // Debounce to prevent multiple rapid calls
@@ -133,7 +133,7 @@ watch(
     currentPage.value = 1;
     // Use setTimeout to prevent blocking
     setTimeout(() => {
-      cardStore.clearCache();
+      cardQuery.clearCache();
       applyFiltersWithPreciseLoading();
     }, 0);
   }
@@ -156,7 +156,7 @@ onUnmounted(() => {
 });
 
 // Use the filtered cards from the store
-const displayedCards = computed(() => cardStore.filteredCards.value);
+const displayedCards = computed(() => cardQuery.cards.value);
 
 // Window size tracking for responsive design (simplified for virtual scroller)
 const windowHeight = ref(0);
@@ -167,11 +167,11 @@ const updateWindowHeight = () => {
 
 // Loading state for better UX
 const showLoadingIndicator = computed(() => {
-  return cardStore.isLoading.value && displayedCards.value.length === 0;
+  return cardQuery.isLoading.value && displayedCards.value.length === 0;
 });
 
 const showLoadMoreIndicator = computed(() => {
-  return cardStore.isLoading.value && displayedCards.value.length > 0;
+  return cardQuery.isLoading.value && displayedCards.value.length > 0;
 });
 
 // Track if we're filtering (not just loading more)
@@ -186,7 +186,7 @@ const applyFiltersWithPreciseLoading = () => {
 
   // Watch for the loading state to change to track when API call completes
   const stopWatching = watch(
-    () => cardStore.isLoading.value,
+    () => cardQuery.isLoading.value,
     (isLoading, wasLoading) => {
       // When loading goes from true to false, the API call is done
       if (wasLoading && !isLoading) {
@@ -338,7 +338,7 @@ watch(
     <!-- <div v-if="displayedCards.length > 0" class="flex justify-center py-4">
       <p class="text-sm text-muted-foreground">
         Showing {{ displayedCards.length }} of
-        {{ cardStore.totalCards.value }} cards
+        {{ cardQuery.total.value }} cards
         <span v-if="hasMore">(scroll for more)</span>
       </p>
     </div> -->

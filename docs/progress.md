@@ -427,10 +427,10 @@ inside one:**
 | 1 | `/api/info` + `/api/status` | ✅ done |
 | 2 | scaffold `apps/web` on Nuxt 4 (`app/` srcDir, `nuxt generate`, `make dev`) | ✅ done |
 | 3 | port the **live** code only — green on fixtures | ✅ done |
-| 4 | Candidate 01 — one `useCardQuery` interface | ⬜ |
+| 4 | Candidate 01 — one `useCardQuery` interface | ✅ done |
 | 5 | Candidate 02 — deep Filter module | ✅ done in 3 — see below |
 | 6 | Candidate 03 — Deck as sections, **wire format frozen** | ⬜ |
-| 7 | Candidate 04 — `useDeckCards` | 🟡 written in 3, not yet wired |
+| 7 | Candidate 04 — `useDeckCards` | 🟡 written, wiring left |
 
 **Candidates 02 and 04 arrived early, by necessity.** The empty-filter literal was written
 out five times in v1, each a hand-maintained list of every colour, card type, rarity and

@@ -199,6 +199,37 @@ three pages load with **zero exceptions, zero console errors and zero failed req
 (`img.hololive-ocg-wiki.tskrlabs.com/hBP01/hBP01-001_OUR.webp`), and the status page
 showing the adapted v2 shape. Driven one-off over CDP — not added to `make check`, per Q5.
 
+## Found while unifying the stores (commit 4)
+
+Candidate 01's *deletion* half was satisfied in commit 3; this is the unification half —
+one `useCardQuery` over a `cardSource` seam, replacing a 581-line `useCardStoreAPI`.
+
+Mapping the store's ~20 exported members to their consumers turned up more dead surface:
+
+- **Four filter-option methods had no callers at all** — `getNameOptions`,
+  `getTagOptions`, `getSetOptions`, `precomputeFilterOptions` — because `FilterAPI.vue`
+  fetched `/api/filter-options` with its own `$fetch` and never used them.
+- **`useCardDetail` also called `$fetch` directly**, so opening a card detail bypassed
+  every cache the store maintained and refetched a card the list already had.
+- **`allCards`, `loadCards`, `searchCards` and `getCacheStats` had no consumers either.**
+
+So the store maintained caches two of its own consumers routed around. Both now go
+through the interface, which also **dedupes in-flight requests** — two components mounting
+in the same tick previously made the same request twice.
+
+**The seam is real, not ceremonial.** `cardSource.ts` takes a `Transport` and touches no
+Vue; production passes the `$fetch` adapter and the tests pass a recorder. That is what
+lets the endpoint contract — batch chunking, `skip_count`, the filter mapping — be
+asserted with no network, database or browser. Two adapters is the bar the review set for
+a seam being worth having.
+
+**One TypeScript quirk worth recording.** `$fetch` types its result by matching the URL
+against Nuxt's generated route table; our paths are the *Worker's* routes, so there is
+nothing to match and the inference recurses until TypeScript reports "excessive stack
+depth" (TS2321) — an error about its own type-checker, not our code. The transport reaches
+`$fetch` through an untyped alias to skip that inference, and casts once. One cast at the
+boundary, rather than nine at the call sites.
+
 ## Consequences
 
 - Nine endpoints. `apps/api` gains `routes/artifacts.ts`; `smoke.sh` grows from 34 checks

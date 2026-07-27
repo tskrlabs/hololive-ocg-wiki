@@ -4,7 +4,7 @@ import type { Card, CardCollection } from "@/types/card";
 import { UseClipboard } from "@vueuse/components";
 
 const { locale } = useI18n();
-const { getCardsByCardNumbers } = useCardStoreAPI();
+const { getCardsByCardNumbers } = useCardQuery();
 
 const props = defineProps<{
   item: Card;

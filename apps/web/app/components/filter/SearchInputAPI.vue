@@ -3,7 +3,7 @@
 const filter = useFilter();
 
 // Use API-based store instead of local processing
-const cardStore = useCardStoreAPI();
+const cardQuery = useCardQuery();
 
 // Local search value that user types into (not immediately applied to filter)
 const localSearchValue = ref(filter.filter.value.search || "");
@@ -44,7 +44,7 @@ watch(
       class="pr-8 w-full"
     />
     <div
-      v-if="cardStore.isLoading.value"
+      v-if="cardQuery.isLoading.value"
       class="absolute right-2 top-1/2 transform -translate-y-1/2"
     >
       <div

@@ -3,13 +3,13 @@ import { useDebounceFn } from "@vueuse/core";
 
 const { locale } = useI18n();
 const filter = useFilter();
-const cardStore = useCardStoreAPI(); // Use the new API-based store
+const cardQuery = useCardQuery(); 
 
 // Pagination state
 const pageSize = ref(10); // Reduced for better API performance
 const currentPage = ref(1);
 const hasMore = computed(() => {
-  return cardStore.filteredCards.value.length < cardStore.totalCards.value;
+  return cardQuery.cards.value.length < cardQuery.total.value;
 });
 
 // Debounced filter application - simplified
@@ -18,7 +18,7 @@ const applyFilters = useDebounceFn(async () => {
   currentPage.value = 1;
 
   // Make the API call directly - the cardStore will handle loading states
-  await cardStore.getFilteredCards(
+  await cardQuery.getFilteredCards(
     filter.filter.value,
     locale.value,
     1,
@@ -26,10 +26,10 @@ const applyFilters = useDebounceFn(async () => {
   );
 }, 300); // Slightly increased debounce for API calls// Load more cards for infinite scroll
 const loadMore = async () => {
-  if (cardStore.isLoading.value || !hasMore.value) return;
+  if (cardQuery.isLoading.value || !hasMore.value) return;
 
   currentPage.value++;
-  await cardStore.loadMoreCards(
+  await cardQuery.loadMore(
     filter.filter.value,
     locale.value,
     currentPage.value,
@@ -58,7 +58,7 @@ watch(
   () => {
     // Use setTimeout to prevent blocking
     setTimeout(() => {
-      cardStore.clearCache();
+      cardQuery.clearCache();
       applyFiltersWithPreciseLoading();
     }, 0);
   }
@@ -73,7 +73,7 @@ onMounted(() => {
 });
 
 // Use the filtered cards from the store
-const displayedCards = computed(() => cardStore.filteredCards.value);
+const displayedCards = computed(() => cardQuery.cards.value);
 
 // Window size tracking for responsive trigger distance
 const windowHeight = ref(0);
@@ -96,7 +96,7 @@ onMounted(() => {
 
   const { reset } = useInfiniteScroll(window, loadMore, {
     distance: triggerDistance.value,
-    canLoadMore: () => hasMore.value && !cardStore.isLoading.value,
+    canLoadMore: () => hasMore.value && !cardQuery.isLoading.value,
   });
 
   // Handle window resize and recreate infinite scroll with new distance
@@ -107,7 +107,7 @@ onMounted(() => {
     nextTick(() => {
       useInfiniteScroll(window, loadMore, {
         distance: triggerDistance.value,
-        canLoadMore: () => hasMore.value && !cardStore.isLoading.value,
+        canLoadMore: () => hasMore.value && !cardQuery.isLoading.value,
       });
     });
   };
@@ -132,11 +132,11 @@ onMounted(() => {
 
 // Loading state for better UX
 const showLoadingIndicator = computed(() => {
-  return cardStore.isLoading.value && displayedCards.value.length === 0;
+  return cardQuery.isLoading.value && displayedCards.value.length === 0;
 });
 
 const showLoadMoreIndicator = computed(() => {
-  return cardStore.isLoading.value && displayedCards.value.length > 0;
+  return cardQuery.isLoading.value && displayedCards.value.length > 0;
 });
 
 // Track if we're filtering (not just loading more)
@@ -151,7 +151,7 @@ const applyFiltersWithPreciseLoading = () => {
 
   // Watch for the loading state to change to track when API call completes
   const stopWatching = watch(
-    () => cardStore.isLoading.value,
+    () => cardQuery.isLoading.value,
     (isLoading, wasLoading) => {
       // When loading goes from true to false, the API call is done
       if (wasLoading && !isLoading) {
@@ -227,7 +227,7 @@ const applyFiltersWithPreciseLoading = () => {
     <div v-if="!showLoadingIndicator" class="flex justify-center py-4">
       <p class="text-sm text-muted-foreground">
         Showing {{ displayedCards.length }} of
-        {{ cardStore.totalCards.value }} cards
+        {{ cardQuery.total.value }} cards
         <span v-if="hasMore">(scroll for more)</span>
       </p>
     </div>

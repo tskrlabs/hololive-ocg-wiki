@@ -7,7 +7,7 @@ const props = defineProps<{
   yellCardIds: string[];
 }>();
 
-const cardStore = useCardStoreAPI();
+const cardQuery = useCardQuery();
 const isLoading = ref(true);
 const oshiCards = ref<Card[]>([]);
 const mainCards = ref<Card[]>([]);
@@ -76,13 +76,13 @@ watch(
       const [fetchedOshiCards, fetchedMainCards, fetchedYellCards] =
         await Promise.all([
           uniqueOshiIds.length > 0
-            ? cardStore.getCardsByIds(uniqueOshiIds, locale.value)
+            ? cardQuery.getCardsByIds(uniqueOshiIds, locale.value)
             : [],
           uniqueMainIds.length > 0
-            ? cardStore.getCardsByIds(uniqueMainIds, locale.value)
+            ? cardQuery.getCardsByIds(uniqueMainIds, locale.value)
             : [],
           uniqueYellIds.length > 0
-            ? cardStore.getCardsByIds(uniqueYellIds, locale.value)
+            ? cardQuery.getCardsByIds(uniqueYellIds, locale.value)
             : [],
         ]);
 

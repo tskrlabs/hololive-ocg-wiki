@@ -9,7 +9,7 @@ const props = defineProps<{
 // Use the decks store's optimized method to get cards
 // const decksStore = useDecks();
 
-const cardStore = useCardStoreAPI();
+const cardQuery = useCardQuery();
 const isLoading = ref(true);
 const cards = ref<Card[]>([]);
 const decks = useDecks();
@@ -38,7 +38,7 @@ watch(
 
     // Fetch cards by IDs using the new batch method with locale
     const fetchedCards =
-      (await cardStore.getCardsByIds(
+      (await cardQuery.getCardsByIds(
         uniqueCardIds.value.map((item) => item.id),
         locale.value
       )) || [];

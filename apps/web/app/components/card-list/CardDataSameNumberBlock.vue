@@ -4,7 +4,7 @@ import { SwatchBook } from "lucide-vue-next";
 import type { Card, CardCollection } from "@/types/card";
 
 const { locale } = useI18n();
-const { getCardsByCardNumber } = useCardStoreAPI();
+const { getCardsByCardNumber } = useCardQuery();
 
 const props = defineProps<{
   item: Card;
