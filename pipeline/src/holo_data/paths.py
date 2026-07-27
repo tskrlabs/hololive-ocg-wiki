@@ -108,6 +108,22 @@ def cards_json() -> Path:
     return BUILD_DIR / "cards.json"
 
 
+FILTER_OPTIONS_PREFIX = "filter-options"
+"""R2 key prefix for the per-locale filter dropdown data. The Worker reads
+`filter-options/{locale}.json` from the artifacts bucket."""
+
+
+def filter_options_json(locale: str) -> Path:
+    """One locale's dropdown values — names, tags and sets.
+
+    Served by `/api/filter-options` straight from R2 rather than computed in D1. The
+    answer is identical for every user until the next reseed, and v1 recomputed it with
+    four `SELECT DISTINCT` full scans per call on the endpoint family whose read count
+    breached the free tier (findings F-014). ~9-13 KB per locale, 70 KB for all seven.
+    """
+    return BUILD_DIR / FILTER_OPTIONS_PREFIX / f"{locale}.json"
+
+
 def info_json() -> Path:
     """Editorial site copy. Source, not build output — committed and reviewed."""
     return CONTENT_DIR / "info.json"
