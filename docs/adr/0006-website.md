@@ -261,6 +261,44 @@ One deliberate asymmetry: limits are enforced on *add*, but `sectionStatus` can 
 report `over`. A deck imported from an old code or written by an earlier build may exceed
 them, and the badge has to be able to say so.
 
+## Found while wiring the assets (commit 8)
+
+**A routing trap that would have looked like an API failure.** With a compatibility date
+of 2025-04-01 or later — ours is 2026-07-26 — Cloudflare defaults to *not* invoking the
+Worker for navigation requests (those carrying `Sec-Fetch-Mode: navigate`), to reduce
+billable invocations. The effect: `fetch("/api/status")` from the page returns JSON, but
+typing that URL into the address bar returns the SPA's HTML. Cloudflare's own docs call
+this "surprising but intentional".
+
+It would have made every `curl` against the deployed API return HTML — so the Phase 4
+verification commands would have appeared to fail for a reason unrelated to the API.
+`"run_worker_first": ["/api/*"]` disables the heuristic and routes on the path, which is
+what we actually mean. Verified: `/api/status` returns `application/json` under a
+navigation request.
+
+**`noindex` was weaker than Q10 intended.** `@nuxtjs/robots` emits the meta tag through a
+*server render*, and this app is `ssr: false` + `nuxt generate` — so there was no render
+to inject into. Measured: the tag was absent from the generated HTML **and** after
+hydration; only `robots.txt` carried the rule. That is the directive well-behaved crawlers
+obey first, but v1 stays indexed on the same 2,448 cards, so the tag is now stated
+directly in `app.head.meta` and is present in the static file a non-JS crawler sees. Both
+directions re-verified.
+
+**Two non-issues, checked rather than assumed:**
+
+- `/tc` returns 307 to `/tc/` — Cloudflare's standard directory redirect, serving the
+  correct per-locale file (byte-identical to `.output/public/tc/index.html`).
+- A "hydration mismatch" warning appears on the redirecting URL `/tc` but **not** on the
+  canonical `/tc/`, where every page is clean. Transient, and confined to the redirect.
+
+**`wrangler deploy` creates no GitHub connection.** It is a direct upload; Cloudflare never
+learns the repo exists. Workers Builds is a separate dashboard-only git integration, and
+Cloudflare documents a "Connect an existing Worker" path — so Phase 6 can add
+push-to-deploy to a Worker first created by hand. Two constraints for then: the dashboard
+Worker name must match `name` in `wrangler.jsonc` (both are `hololive-ocg-wiki`, already
+satisfied), and manual and build-triggered deploys both produce *versions*, so whichever
+is promoted last wins.
+
 ## Consequences
 
 - Nine endpoints. `apps/api` gains `routes/artifacts.ts`; `smoke.sh` grows from 34 checks

@@ -101,6 +101,18 @@ export default defineNuxtConfig({
       meta: [
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { charset: "utf-8" },
+        // The `noindex` tag is stated here rather than left to `@nuxtjs/robots`.
+        //
+        // The module does emit one from `site.indexable: false` — but only through a
+        // server render, and this app is `ssr: false` + `nuxt generate`, so there is no
+        // render to inject into. Verified: with the module alone, the tag was absent
+        // from the generated HTML *and* after hydration; only `robots.txt` carried the
+        // rule. `robots.txt` is what well-behaved crawlers obey first, but v1 stays
+        // indexed on the same 2,448 cards, so this is worth belt-and-braces (Q10).
+        //
+        // Spread so the tag simply does not exist once launched, rather than saying
+        // "index, follow" — the absence of a robots tag already means index.
+        ...(IS_PUBLIC ? [] : [{ name: "robots", content: "noindex, nofollow" }]),
         { name: "format-detection", content: "telephone=no" },
         { name: "application-name", content: "Hololive OCG Wiki" },
         { name: "apple-mobile-web-app-title", content: "Hololive OCG Wiki" },

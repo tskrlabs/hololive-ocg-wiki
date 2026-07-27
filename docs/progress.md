@@ -6,9 +6,10 @@ idempotent, D1 is populated and reseeded into the Phase 4 shape (2,448 cards), a
 Worker is built and green — now **nine endpoints**, `make check` covers them end-to-end
 against local D1.
 
-⚠️ **Nothing is deployed yet, deliberately.** Phase 5 decided on a *single* deploy at the
-end, shipping the Worker and the static site together — so there is no API-only interim
-deploy. See [Phase 5](#phase-5--the-website).
+🔑 **All code is done; the deploy is the one remaining step, and it needs the
+maintainer.** `wrangler deploy` requires a token with *Workers Scripts Edit* — the
+seeder's is scoped to D1 Edit + Analytics Read, which is correct and worth keeping. The
+exact commands are in [the deploy runbook](#the-deploy--maintainer-steps).
 
 **Phase 5 design is settled.** Sixteen decisions, recorded in
 [ADR 0006](adr/0006-website.md) with the full interview in
@@ -431,7 +432,8 @@ inside one:**
 | 5 | Candidate 02 — deep Filter module | ✅ done in 3 — see below |
 | 6 | Candidate 03 — Deck as sections, **wire format frozen** | ✅ done |
 | 7 | Candidate 04 — `useDeckCards` | ✅ done |
-| 8 | `assets` binding + deploy + domain | ⬜ **next** |
+| 8 | `assets` binding + SPA fallback + `run_worker_first` | ✅ built, rehearsed |
+| — | **deploy + domain** | 🔑 **maintainer — see below** |
 
 **Candidate 02 arrived early, by necessity.** The empty-filter literal was written out
 five times in v1, each a hand-maintained list of every colour, card type, rarity and bloom
@@ -488,19 +490,34 @@ decision, and an indexed v2 would pre-empt it) and **analytics off** (pre-launch
 would pollute the container holding v1's real year of data). If these are missed at
 launch, the new site stays invisible.
 
-### The deploy, when commit 8 lands
+### The deploy — maintainer steps
 
-Split in two deliberately — everything before it is verified against **34 fixture cards**,
-and Phase 3's lesson was that the expensive bug only appears against a real database:
+**Everything is built and rehearsed.** `wrangler.jsonc` has the `assets` binding, the SPA
+fallback and `run_worker_first`; `make preview` runs the exact production composition
+locally and is green. What is left needs a token only the maintainer has.
+
+Split in two deliberately (Q16): everything so far is verified against **34 fixture
+cards**, and Phase 3's lesson was that the expensive bug appears only against a real
+database.
+
+#### 1. Build the site and deploy
 
 ```bash
+make check                       # green before anything is uploaded
+npm run generate --workspace @holo/web    # ⚠️ required — wrangler uploads this directory
 cd apps/api
-npx wrangler login          # or export a token with Workers Scripts Edit
-npx wrangler deploy         # Worker + assets → workers.dev
+npx wrangler login               # needs Workers Scripts Edit; the seeder token is
+                                 # scoped to D1 Edit + Analytics Read and will not do
+npx wrangler deploy              # Worker + assets → workers.dev
 ```
 
-Verify against the real 2,448 cards **before** attaching the domain. These are the
-numbers Phase 3 and 4 measured, so they double as a check that the reseed landed:
+`nuxt generate` is not optional: `assets.directory` points at `apps/web/.output/public`,
+which is gitignored, so a fresh clone has nothing there and would deploy an empty site.
+
+#### 2. Verify against the real 2,448 cards, before the domain
+
+These are the numbers Phases 3 and 4 measured, so they double as a check that the reseed
+landed:
 
 ```bash
 API=https://hololive-ocg-wiki.<your-subdomain>.workers.dev
@@ -514,5 +531,40 @@ curl -s "$API/api/status" | jq '.counts.total'                       # expect 24
 curl -s "$API/api/info"   | jq '.contents | length'                  # expect 3
 ```
 
-Then walk the site itself on that URL — filter, search, open a card, build a deck, share
-a deck code — and only then point `hololive-ocg-wiki.tskrlabs.com` at it.
+And the site itself:
+
+```bash
+curl -sL  "$API/tc/" -o /dev/null -w '%{http_code}\n'          # 200
+curl -sL  "$API/tc/" | grep -c noindex                          # 1 — still invisible
+curl -s   "$API/robots.txt"                                     # Disallow: /
+curl -s   "$API/tc/deck/ANYTHING" -o /dev/null -w '%{http_code}\n'  # 200, SPA fallback
+```
+
+Then walk it in a browser — filter, search, open a card, build a deck, share a deck code,
+switch locale. This is the first time any of it meets 2,448 cards rather than 34.
+
+#### 3. Only then, attach the domain
+
+Cloudflare dashboard → the Worker → Settings → Domains & Routes → add
+`hololive-ocg-wiki.tskrlabs.com`. Record it in [`infra.md`](./infra.md) with the rest of
+the imperative steps.
+
+The site stays `noindex` until Phase 7 (Q10) — the domain going live is not the launch.
+
+#### About push-to-deploy
+
+`wrangler deploy` is a **direct upload**; it creates no GitHub connection and Cloudflare
+never learns this repo exists. Workers Builds is a separate, dashboard-only git
+integration, and Cloudflare supports connecting an *existing* Worker — so Phase 6 can add
+push-to-deploy on top of a Worker first deployed by hand, with no rework.
+
+Two things to know when Phase 6 arrives:
+
+- The dashboard Worker name must match `name` in `wrangler.jsonc`. Both are
+  `hololive-ocg-wiki`, so that is already satisfied.
+- Manual and build-triggered deploys both produce **versions**; whichever is promoted
+  last becomes active. After Phase 6, a manual `wrangler deploy` would override the last
+  pushed build until the next push.
+- **Which branch triggers it is a Phase 6 decision.** Work lands on `develop` per the
+  working agreement, so pointing Workers Builds at `main` makes merging to `main` the
+  release action — which matches how the branches are already used.

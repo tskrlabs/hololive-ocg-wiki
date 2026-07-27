@@ -1,17 +1,10 @@
 {
-  // The Worker that serves the API, and from Phase 5 the static site too (D2 — one
-  // Worker, not Pages + Worker).
-  //
-  // `assets` is deliberately absent. D2's second half needs `apps/web`, which does not
-  // exist until Phase 5; binding a placeholder directory would prove nothing about
-  // Nuxt's real output and its `_nuxt/` asset paths. Phase 5 adds `assets`,
-  // `not_found_handling: "single-page-application"`, and the custom domain together.
+  // The Worker that serves both the API and the static site (D2 — one Worker, not
+  // Pages + Worker).
   //
   // It is committed deliberately. v1's `wrangler.toml`, `wrangler.service.toml`,
   // `migrations/`, and `migration.sql` were all gitignored, so the infrastructure
   // config existed only on one laptop and in the Cloudflare dashboard (v2-plan.md §6).
-  // A partial config that cannot deploy yet is still a record of which resources exist
-  // and what they are called.
   //
   // Bucket creation, the custom domain, and disabling the r2.dev URL are imperative
   // steps that no config file captures — they are written down in docs/infra.md.
@@ -20,15 +13,48 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-07-26",
 
-  // Phase 4 deploys to workers.dev only. The apex domain
-  // (hololive-ocg-wiki.tskrlabs.com) is attached in Phase 5, so it goes live once with
-  // a site behind it rather than briefly serving JSON 404s to anyone who wanders by.
+  // The apex domain is attached **after** the first deploy is verified against the real
+  // 2,448 cards on workers.dev (ADR 0006, Q16). Everything before that point is tested
+  // against 34 fixture cards, and Phase 3's most expensive bug — 15.5M rows read —
+  // appeared only against a real database.
   "workers_dev": true,
 
   "observability": {
     // Workers Logs. Free tier, and the reason D2 merged Pages into a Worker at all —
     // a Pages project could not have this.
     "enabled": true
+  },
+
+  // The static site (D2's second half). `apps/web` is built with `nuxt generate`, so
+  // this directory is plain files — no Nitro server ships, and the Worker stays exactly
+  // the Hono app Phase 4 built.
+  //
+  // ⚠️ Never enable Workers "Smart Caching" (v2-plan.md §6). With caching on, static
+  // asset requests become billable at the normal per-request rate; with it off — the
+  // default — they are free and unlimited. Requests are only billable when a Worker
+  // script is *invoked*, which is what `run_worker_first` below is really controlling.
+  "assets": {
+    "directory": "../web/.output/public",
+
+    // An unmatched path serves `/index.html` with 200, so the SPA router can handle it
+    // client-side. Nuxt also emits `200.html` for hosts that use that convention;
+    // Cloudflare rewrites to `index.html`, which is byte-identical here.
+    "not_found_handling": "single-page-application",
+
+    // `run_worker_first` is explicit rather than inferred, and this is load-bearing.
+    //
+    // With a compatibility date of 2025-04-01 or later — ours is 2026-07-26 — Cloudflare
+    // defaults to *not* invoking the Worker for navigation requests (those carrying
+    // `Sec-Fetch-Mode: navigate`), to reduce billable invocations. The effect is that
+    // `fetch("/api/status")` from the page reaches the Worker and returns JSON, while
+    // typing the same URL into the address bar serves the SPA's HTML instead. Cloudflare
+    // documents this as "surprising but intentional".
+    //
+    // Surprising is right: it would make every `curl` against the deployed API return
+    // HTML, so the Phase 4 verification commands would appear to fail for a reason
+    // unrelated to the API. Listing the prefix disables the navigation heuristic
+    // entirely and routes on the path, which is what we actually mean.
+    "run_worker_first": ["/api/*"]
   },
 
   "vars": {
