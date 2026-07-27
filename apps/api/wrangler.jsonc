@@ -9,7 +9,19 @@
   // Bucket creation, the custom domain, and disabling the r2.dev URL are imperative
   // steps that no config file captures — they are written down in docs/infra.md.
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "hololive-ocg-wiki",
+
+  // Named for the domain it serves, not for the project.
+  //
+  // A Pages project called `hololive-ocg-wiki` already exists in the account — it is
+  // v1, and v2-plan.md §1 requires it stay live and untouched until cutover. Workers and
+  // Pages do not share a namespace, so a Worker of the same name would not disturb it;
+  // the rename is about not having two same-named things in one dashboard during exactly
+  // the window where confusing them is most expensive.
+  //
+  // It also settles the name before Phase 6: Workers Builds requires the dashboard name
+  // to match this field, so renaming later would mean disconnecting and reconnecting the
+  // git integration.
+  "name": "hololive-ocg-wiki-tskrlabs-com",
   "main": "src/index.ts",
   "compatibility_date": "2026-07-26",
 

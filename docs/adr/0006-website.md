@@ -295,9 +295,16 @@ directions re-verified.
 learns the repo exists. Workers Builds is a separate dashboard-only git integration, and
 Cloudflare documents a "Connect an existing Worker" path — so Phase 6 can add
 push-to-deploy to a Worker first created by hand. Two constraints for then: the dashboard
-Worker name must match `name` in `wrangler.jsonc` (both are `hololive-ocg-wiki`, already
-satisfied), and manual and build-triggered deploys both produce *versions*, so whichever
-is promoted last wins.
+Worker name must match `name` in `wrangler.jsonc`, and manual and build-triggered deploys
+both produce *versions*, so whichever is promoted last wins.
+
+**The Worker is named `hololive-ocg-wiki-tskrlabs-com`, not `hololive-ocg-wiki`.** A Pages
+project of the latter name already exists in the account — it is v1, which v2-plan.md §1
+requires stay live and untouched until cutover. Workers and Pages do not share a
+namespace, so the name would not have collided; the rename is about not having two
+same-named things in one dashboard during exactly the window where confusing them is most
+expensive. It also settles the name *before* Phase 6, since renaming after the git
+integration exists would mean disconnecting and reconnecting it.
 
 ## Consequences
 

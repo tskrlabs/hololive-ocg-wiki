@@ -520,7 +520,7 @@ These are the numbers Phases 3 and 4 measured, so they double as a check that th
 landed:
 
 ```bash
-API=https://hololive-ocg-wiki.<your-subdomain>.workers.dev
+API=https://hololive-ocg-wiki-tskrlabs-com.<your-subdomain>.workers.dev
 curl -s "$API/api/health"
 curl -s "$API/api/cards/search?q=フブキ"    | jq '.cards | length'   # expect 73
 curl -s "$API/api/cards/search?q=そら"      | jq '.cards | length'   # 2 chars → LIKE path
@@ -560,8 +560,12 @@ push-to-deploy on top of a Worker first deployed by hand, with no rework.
 
 Two things to know when Phase 6 arrives:
 
-- The dashboard Worker name must match `name` in `wrangler.jsonc`. Both are
-  `hololive-ocg-wiki`, so that is already satisfied.
+- The dashboard Worker name must match `name` in `wrangler.jsonc` —
+  `hololive-ocg-wiki-tskrlabs-com`. Deliberately **not** `hololive-ocg-wiki`: a Pages
+  project of that name already exists (v1, which stays live until cutover). Workers and
+  Pages do not share a namespace so it would not have collided, but two same-named things
+  in one dashboard is avoidable confusion, and settling it now avoids a
+  disconnect/reconnect after the git integration exists.
 - Manual and build-triggered deploys both produce **versions**; whichever is promoted
   last becomes active. After Phase 6, a manual `wrangler deploy` would override the last
   pushed build until the next push.
