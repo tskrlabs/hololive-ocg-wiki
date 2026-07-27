@@ -29,6 +29,8 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-014](#f-014) | 🔍 open | infra | v1 exceeded the D1 free read tier on 2026-07-12 |
 | [F-015](#f-015) | 🔍 open | data | 41% of characters are named inconsistently across their own cards |
 | [F-016](#f-016) | ✅ fixed | site | v1's colour filter misses fused dual-colour cards |
+| [F-017](#f-017) | 🔍 open | infra | Cloudflare's managed `robots.txt` inverts our `Disallow` |
+| [F-018](#f-018) | 🔍 open | process | A translation fix has no reviewable surface — the cache is not in git |
 
 ---
 
@@ -523,3 +525,45 @@ needs to be hard-blocked before then, the one-click fix is:
 change what a Worker appears to serve. `curl` against `workers.dev` and against the custom
 domain returned different bytes for the same path, which is the only reason this was
 caught.
+
+---
+
+## F-018 — a translation fix has no reviewable surface 🔍 open
+
+**Found:** Phase 6, writing `CONTRIBUTING.md` · **Affects:** outside contribution
+
+D14's reasoning is explicit about what an outside contributor actually wants to do:
+*"the contribution people actually want to make is fixing a bad translation, which is
+currently impossible: fixes get overwritten on the next pipeline run. An overlay makes it
+a reviewable PR."* The mechanism it named was a committed `corrections/` directory applied
+after translation.
+
+**ADR 0002 replaced the mechanism and, without meaning to, the property.** Field-level
+caching made a correction durable in a better way — an entry marked `source: "manual"` is
+never overwritten, because a field's value comes from the cache rather than from the
+model, so there is nothing to overwrite it with. That is strictly better than an overlay
+for *durability*.
+
+But the cache lives in `pipeline/locales/`, which is **gitignored** (D1: generated data
+lives in R2, not git). So the file a contributor would edit does not exist in a clone, and
+`pipeline/corrections/` — which `.gitignore` explicitly carves out as "deliberately NOT
+ignored… reviewing them as a PR diff is the point" — is empty and unread by any code.
+
+The result: a translation fix can only be reported, then applied by the maintainer. That
+works, and `CONTRIBUTING.md` now says so plainly rather than implying a PR path that does
+not exist. But it is a narrowing of D14, and it was silent until someone tried to write
+the contributor docs.
+
+**Not fixed in Phase 6, deliberately.** Closing it is pipeline work — deciding what a
+committed correction file looks like, how `translate` merges it into the cache, and how a
+correction is verified without a Poe key — which deserves its own design pass. The repo is
+also private until Phase 7, so there is no contributor being turned away today.
+
+**Options when it is picked up**, none chosen yet:
+
+- A committed `pipeline/corrections/{locale}.json` that `translate` folds into the cache
+  as `source: "manual"` entries. Closest to D14's intent; the directory already exists.
+- Commit the manual entries only — a filtered projection of the cache, which is small
+  (most fields are machine-translated) and diffs cleanly.
+- Leave it as issue-driven and delete the empty `corrections/` carve-out, which currently
+  documents a mechanism that does not exist.
