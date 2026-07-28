@@ -15,8 +15,8 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 |---|---|---|---|
 | [F-001](#f-001) | ✅ fixed | pipeline | `サポート・スタッフ` had no mapping, so 2 cards shipped as `unknown` |
 | [F-002](#f-002) | ✅ fixed | data | `cost_count` counted the 特攻 icon; the field had no readers and is dropped |
-| [F-003](#f-003) | 🔍 open | data | 2 cards have arts translated into a `value` field instead of `effect` |
-| [F-004](#f-004) | 🔍 open | data | 2 cards have base arts but no `en` translated arts |
+| [F-003](#f-003) | ✅ fixed | data | A stray `value` field on 4 arts; no producer, no reader, dropped |
+| [F-004](#f-004) | ✅ resolved | data | 2 cards had base arts but no `en` translated arts — the cache filled them in |
 | [F-005](#f-005) | 🔍 open | data | `hBP02-065`'s image filename does not match its card number |
 | [F-006](#f-006) | ✅ fixed | data | `hCO01` reprints reuse the original set's image filename |
 | [F-007](#f-007) | 🔍 open | data | Two encodings for dual-colour cards |
@@ -32,6 +32,9 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-017](#f-017) | 🔍 open | infra | Cloudflare's managed `robots.txt` inverts our `Disallow` |
 | [F-018](#f-018) | 🔍 open | process | A translation fix has no reviewable surface — the cache is not in git |
 | [F-019](#f-019) | ✅ fixed | site | Infinite scroll never fired; the homepage showed 200 of 2,448 cards |
+| [F-020](#f-020) | ✅ resolved | data | The card list is not all cards — a rules notice is not a `Card` |
+| [F-021](#f-021) | 🔍 open | data | Art names are 47–81% untranslated, and inconsistently so |
+| [F-022](#f-022) | 🔍 open | pipeline | The generated fixture corpus cannot be regenerated — both generators fail |
 
 ---
 
@@ -105,43 +108,94 @@ produce no cost `<img>` tags. `cost_count` never really encoded that distinction
 
 ---
 
-## F-003 — arts translated into `value` instead of `effect` 🔍
+## F-003 — arts carried a stray `value` field ✅ fixed
 
-**Found:** Phase 0 · **Affects:** 4 arts on 2 cards, `tc` only
+**Found:** Phase 0 · **Fixed:** 2026-07-29 (field removed from the contract) ·
+**Affected:** 4 arts on 2 cards, `tc` only
 
-`hBP03-011` and `hSD01-005` have arts whose `tc` translation carries a `value` key
-holding what looks like a translation of the art's *name*:
+Two cards carried a `tc` art translation with a `value` key beside `name`:
 
 ```json
 {"name": "おつルーナ", "value": "辛苦啦露娜～"}
 ```
 
-Every other art in every other locale uses `name` + `effect`. No other locale has `value`
-on these cards.
+The finding's original title was wrong, and worth correcting because it pointed at the
+wrong layer. These arts have **no `effect` at all**, in any locale — nothing was lost
+*into* `value` from `effect`. `value` sat alongside a `name` that was still Japanese.
 
-`Card` models the field so those cards validate, and `localize()` ignores it — so the
-translations are effectively invisible to the site today.
+**It is not a scraping bug.** Every prompt in `translate/prompts.json` says
+*「只翻譯 value」* ("translate only `value`"). On four arts the model took that literally
+and emitted a sibling `value` key holding its translation instead of replacing `name`.
+It is LLM output-shape noise, so the original "is this a scraping bug or is the card
+really like that?" framing had no answer — neither.
 
-**Needs a decision:** is `辛苦啦露娜～` the intended `tc` name for that art (in which case
-these are lost translations that should move into `name`), or leftover junk from a
-one-off translation run? Only someone reading the cards can say.
+**v2 cannot produce it.** `transform._arts()` writes `name`/`effect` only, and
+`translate.cache.field_keys()` yields `arts[i].name` / `arts[i].effect` — there is no
+path that writes `value`. A full build over 2,463 cards produces **zero**, and the
+81,124-entry translation cache holds **zero** `.value` keys. The field survived only in
+`fixtures/cards.json`, which is still selected from *v1's* data through `v1_adapter.py`,
+which passes unknown keys through.
+
+**Fix:** removed from `TranslatedArt`, as F-002 removed `cost_count` — a field with no
+producer and no reader. `localize()` never emitted it, which the golden files confirm:
+they are **byte-identical before and after**, so nothing the API serves changes.
+
+**The four strings are real, and they are recorded here rather than applied.**
+`hBP03-011` has three prints, and id 691 was translated independently — its
+`arts[1].name` is `晚安～`, byte-identical to what id 2164 has stranded in `value`:
+
+| card | id | `arts[0]` | `arts[1]` |
+|---|---|---|---|
+| hBP03-011 | 2164 | `value: 辛苦啦露娜～` | `value: 晚安～` |
+| hSD01-005 | 2181 | `value: 來ぬんぬん吧` | `value: 你的心情是……陰轉晴！` |
+
+They are **not** written into the translation cache. The cache is gitignored, so a
+correction to it has no reviewable surface and would not survive a clone — that is
+[F-018](#f-018), and applying four strings into an ungitted file would have quietly
+depended on the very gap F-018 records. Recorded verbatim above so the strings survive
+the cache being deleted; they can be applied when F-018 is closed.
+
+**Not reseeded**, for F-002's reason: `localize()` picks fields explicitly, so a stale
+`value` still sitting in a D1 payload is dropped on the way out and never reaches a
+client. It clears at the next natural reseed.
+
+**What it exposed:** art names are untranslated far more widely than these 4 arts — see
+[F-021](#f-021). These two cards are simply the only ones carrying evidence of what the
+translation should have been.
 
 ---
 
-## F-004 — arts present but no `en` translation 🔍
+## F-004 — arts present but no `en` translation ✅ resolved
 
-**Found:** Phase 0 · **Affects:** `hSD03-009`, `hSD04-009`
+**Found:** Phase 0 · **Resolved:** 2026-07-29, confirmed against a fresh build ·
+**Affected:** `hSD03-009`, `hSD04-009`
 
-Both cards have 2 entries in `Card.arts` but 0 in their `en` translation, while every
-other locale has 2. The arts pair by index, so `localize()` emits the art with its costs
-and damage but no name or effect.
+Both cards had 2 entries in `Card.arts` but 0 in their `en` translation, while every
+other locale had 2. The arts pair by index, so `localize()` emitted the art with its
+costs and damage but no name or effect.
 
-Both are golden-file fixtures, so the behaviour is pinned by test.
+**Resolved exactly as this finding predicted** — *"the field-level cache will re-request
+them next run, which may resolve this by itself"*. It did. In a build from the current
+cache both cards have 2 `en` arts:
 
-**Needs a decision:** whether the `en` translation was simply never produced (in which
-case re-running `translate` for those two cards fixes it) or the site genuinely has no
-English text for them. The field-level cache will re-request them next run, which may
-resolve this by itself — worth re-checking after the first real `translate`.
+| card | id | `en` arts |
+|---|---|---|
+| hSD03-009 | 446 | `MOGMOG`, `おかゆ～` |
+| hSD04-009 | 447 | `33… 22… 11…`, `あくとっ` |
+
+So the answer to the open question is *never produced*, not *genuinely absent* — v1 had
+`"arts": null` for `en` on both, and the cache filled them in.
+
+The names come back as Japanese, which is not this finding — see [F-021](#f-021).
+
+⚠️ **The fixture corpus still shows the old shape.** `fixtures/cards.json` is selected
+from v1's data, so cards 446/447 still carry `en arts: null` there, and the short-list
+zip in `localize()` is still pinned by them. That is load-bearing: merge rule 2 (arts
+pair by index, tolerating a short list) is exercised in **both** the Python and the
+TypeScript implementation only because these fixtures have that shape. When the fixture
+generator is repointed at `holo-data build` output (see [F-022](#f-022)), the corpus
+stops covering that path and needs a replacement fixture — otherwise a rule that runs in
+production goes untested.
 
 ---
 
@@ -741,3 +795,119 @@ only by calling the endpoint directly.
 It is safe because the contract checks the other half — a `rulesNotice` carrying a
 `card_number` is rejected — so a genuinely new bare-`サポート` *card* still fails `build`
 loudly. But if the site ever publishes a notice *with* a number, this needs revisiting.
+
+---
+
+## F-021 — art names are largely untranslated, inconsistently 🔍
+
+**Found:** 2026-07-29, while resolving [F-003](#f-003) · **Affects:** every locale
+
+F-003's four stranded `value` strings were evidence of a much larger pattern. Measured
+over the full 2,463-card build, comparing each locale's `arts[].name` against the `ja`
+name for the same art:
+
+| locale | art names identical to `ja` | |
+|---|---|---:|
+| en | 930 / 1,991 | 47% |
+| es | 1,151 / 1,991 | 58% |
+| ko | 1,202 / 1,991 | 60% |
+| tc | 1,203 / 1,991 | 60% |
+| th | 1,561 / 1,991 | 78% |
+| id | 1,620 / 1,991 | 81% |
+
+This is the same shape as [F-015](#f-015) — inconsistent naming across a locale — but on
+art names rather than card names, and much larger.
+
+**Much of this is correct by policy.** Every prompt in `translate/prompts.json` says
+*「"arts.name", "keyword.name" 中的角色名稱不用翻譯」* — do not translate character names
+inside art names. An art called `おつルーナ` is a pun on a character's name, so leaving it
+alone is defensible and probably intended.
+
+**But the data contradicts itself, which policy cannot explain.** `hBP03-011` has three
+prints of the same card, with the same two arts:
+
+| id | rarity | `tc` `arts[0].name` | `tc` `arts[1].name` |
+|---|---|---|---|
+| 575 | C | `おつルーナ` | `ぐっどないと～` |
+| 691 | S | **`晚安囉～`** | **`晚安～`** |
+| 2164 | P | `おつルーナ` | `ぐっどないと～` |
+
+Same card, same art, same locale, three different answers. Whatever the right policy is,
+*this* cannot be it — and id 691 shows the model will translate these names when asked
+the same question twice.
+
+**Needs a decision, and it is a judgement about the game, not the data:** should art
+names be translated at all? If yes, the prompt rule needs narrowing and a re-translation
+pass follows. If no, the ~20–50% that *were* translated are the anomaly and the prompt
+needs strengthening. Either way the current state — roughly half, chosen unpredictably —
+is the one answer that is certainly wrong.
+
+Nothing is broken today: the site renders whatever the cache holds, and a Japanese art
+name on a Chinese card page is odd rather than incorrect. Logged rather than fixed
+because picking a direction is a call about the audience.
+
+---
+
+## F-022 — the generated fixture corpus cannot be regenerated 🔍
+
+**Found:** 2026-07-29, while fixing [F-003](#f-003) · **Affects:** `make fixtures`,
+`holo-data build`
+
+`fixtures/cards.json` is a generated artifact — `build_fixtures.py` selects it, and
+ADR 0001's rule is that generated output is committed so no Python toolchain is needed to
+consume it. But **both generators that feed it are currently broken**, and `make check`
+cannot see either.
+
+| command | state |
+|---|---|
+| `make fixtures` | fails on **1,715 of 2,448** cards |
+| `holo-data build` | fails on **1,991 arts** — `arts.cost_count: Extra inputs are not permitted` |
+
+**Cause.** [F-002](#f-002) removed `cost_count` from the contract, which is correct. But
+`Card` is `extra="forbid"`, and both inputs still carry the field:
+
+- `build_fixtures.py` selects from **v1's** `cards.json` through `v1_adapter.py`, which
+  passes unknown keys straight through into the model.
+- `holo-data build` reads `pipeline/data/default/cards_i18n.json`, which was transformed
+  before the field was dropped.
+
+Neither is a data problem — re-transforming from the already-scraped
+`cards_structured.json` produces clean output (2,463 valid, 0 failed, no `cost_count`,
+no `value`). The data is fine; the *derived* files on disk are stale.
+
+**Why nothing noticed.** F-002 hand-edited `fixtures/cards.json` (24 deletions) instead of
+regenerating it, so the corpus is correct while the generator that claims to produce it
+is not. `make check` runs neither `build_fixtures.py` nor `holo-data build`, so a
+generated file and its generator can disagree indefinitely. This finding's fix was
+hand-edited too, for the same reason — a second offence, recorded rather than hidden.
+
+**Three things to do when this is picked up**, none done:
+
+1. **Add `holo-data transform`** — a transform-only command, `cards_structured.json` →
+   `cards_i18n.json`. The rung missing from `scrape → images → translate → build`. Today
+   the only supported repair after a contract change is a full re-scrape of 2,464 pages
+   from a small operator's site, which is a bad reason to hit someone's server.
+2. **Repoint `build_fixtures.py` at `holo-data build` output.** Its own docstring already
+   says this was the plan — *"Once Phase 1 lands, this reads from `holo-data build` output
+   instead of v1's cards.json"* — and Phase 1 landed in Phase 1. It currently reads a
+   hardcoded absolute path into a v1 checkout that exists on one laptop.
+3. **Have `make check` verify the corpus against its generator**, so this class of drift
+   fails loudly rather than lying dormant for two commits.
+
+**Measured consequences of doing (2)**, so the work is scoped rather than guessed:
+
+- the corpus changes by **exactly one card**: 2164 drops (it was selected only to cover
+  the now-deleted `arts[].value` rule) and nothing is added. All 12 pinned anomalies
+  survive with correct data.
+- **two coverage rules become unsatisfiable and should be deleted**: `card_type=unknown`
+  (F-001 fixed the mapping, so no card classifies as `unknown` any more) and
+  `card_type=rulesNotice` (F-020 made it structurally impossible for a `Card` to hold
+  one). `test_card.py` **already asserts both are absent** — the rules and the tests
+  contradict each other today, and only the stale v1 source hides it. If `unknown` should
+  stay covered, it needs a synthetic fixture; it is a deliberate safety valve (F-001).
+- **[F-004](#f-004)'s short-list fixtures stop existing**, taking `localize()`'s
+  tolerate-a-short-list rule out of test coverage in both Python and TypeScript. Needs a
+  replacement fixture.
+- any synthetic fixture **must use a numeric id**: `schema.sql` makes the card id the
+  FTS5 rowid and `seed.py` raises `NonNumericCardId` by design. Reserving a high range
+  (e.g. `9000000+`) works; `synthetic-short-arts` does not.

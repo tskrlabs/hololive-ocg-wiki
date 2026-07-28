@@ -57,6 +57,12 @@ PINNED: dict[str, str] = {
     "1877": "hBP07-091 — cardTypeCode 'unknown' (scraper could not classify)",
     "2003": "hBP07-091 — the other 'unknown', different rarity",
     "2444": "hBP01-028 HR — rarity missing from v1's TypeScript union",
+    # Selected when the corpus came from v1, to cover an `arts[].value` field the
+    # contract no longer models (F-003). Pinned rather than dropped because removing it
+    # means hand-editing the generated corpus, and this generator cannot currently run
+    # (it selects from v1 data through a contract that has moved on). The repaired
+    # generator does not select this card; see the fixture-toolchain finding.
+    "2164": "hBP03-011 P — was `arts[].value`; kept until the generator is repaired",
     "2138": "hBP03-044 SR (hCO01 reprint) — image_key collision pair A",
     "726": "hBP03-044 SR (hBP03 original) — image_key collision pair B",
     "2139": "hBP03-055 SR (hCO01 reprint) — image_key collision pair C",
@@ -130,14 +136,6 @@ def _coverage_rules() -> list[tuple[str, Callable[[Card], bool]]]:
                 q.related_cards
                 for t in c.translations.values()
                 for q in (t.qa_items or [])
-            ),
-        ),
-        (
-            "has_art_value_field",
-            lambda c: any(
-                a.value
-                for t in c.translations.values()
-                for a in (t.arts or [])
             ),
         ),
     ]

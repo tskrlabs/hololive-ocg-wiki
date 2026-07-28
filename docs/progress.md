@@ -184,6 +184,8 @@ Recorded in the ADRs; listed here so they are not missed.
 | **v2-plan §7** | The SEO decision stays deferred — which means Phase 5 must **actively block indexing** to keep it deferrable |
 | **Phase 6 done-when** | "fresh clone runs with zero CF creds" was already true and **still failed the intent**: `make dev` needed a *Python toolchain* to generate the R2 artifacts. Met by **committing** them (`fixtures/artifacts/`, 64 KB), extending ADR 0001's rule from the contract to the fixtures ([ADR 0007](adr/0007-push-to-deploy.md)) |
 | **D14** | "a `corrections/` overlay makes a translation fix a reviewable PR" — ADR 0002 replaced the mechanism with cache entries but the cache is **gitignored**, so no reviewable surface exists. A fix goes through an issue. Logged as [F-018](./findings.md#f-018), not closed |
+| **Phase 0 contract** | `TranslatedArt.value` is **dropped**. v2 has no path that writes it — a stray key on 4 `tc` arts in v1's data, caused by the translation prompt's own 「只翻譯 value」 wording. `localize()` never emitted it, so the golden files are byte-identical across the removal ([F-003](./findings.md#f-003)) |
+| **Fixture corpus** | `fixtures/cards.json` is generated but **both its generators fail today** — F-002 dropped `cost_count` and hand-edited the corpus rather than regenerating, leaving `make fixtures` broken on 1,715 cards and `holo-data build` on 1,991 arts. `make check` runs neither, so the drift is invisible. Logged as [F-022](./findings.md#f-022) with the repair scoped and measured |
 
 ## Phase 2 — R2 publish
 

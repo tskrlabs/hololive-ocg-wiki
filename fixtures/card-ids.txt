@@ -36,6 +36,6 @@
   2003  hBP07-091 — the other 'unknown', different rarity
   2138  hBP03-044 SR (hCO01 reprint) — image_key collision pair A
   2139  hBP03-055 SR (hCO01 reprint) — image_key collision pair C
-  2164  covers has_art_value_field
+  2164  hBP03-011 P — was `arts[].value`; kept until the generator is repaired
   2263  hBP08-060 FUWAMOCO — fused colour code 'blue_red'
   2444  hBP01-028 HR — rarity missing from v1's TypeScript union

@@ -16,9 +16,12 @@ The merge rules, all of which the data forced:
    fires — but an 8th locale is added translation-by-translation, and a half-translated
    card should render in Japanese rather than 404.
 
-2. **Arts pair by index, tolerating a short list.** hSD03-009 and hSD04-009 have 2 arts
+2. **Arts pair by index, tolerating a short list.** hSD03-009 and hSD04-009 had 2 arts
    but 0 `en` translations. The art is emitted with costs and damage and no name, since
-   dropping it would misreport what the card does.
+   dropping it would misreport what the card does. The live data no longer has a short
+   list (F-004 resolved itself), so the fixture corpus is now the only thing covering
+   this branch — in both implementations. See F-022 before changing where fixtures come
+   from.
 
 3. **Excess translated arts are dropped.** The inverse case does not occur in today's
    data. An art with a name but no cost is not a valid art, so there is nothing

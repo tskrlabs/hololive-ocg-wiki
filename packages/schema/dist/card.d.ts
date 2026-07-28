@@ -66,7 +66,6 @@ export type AbilityText = string;
 export type Extra = string;
 export type Name1 = string;
 export type Effect = string;
-export type Value = string;
 export type Arts1 = TranslatedArt[];
 export type Name2 = string;
 export type Effect1 = string;
@@ -194,10 +193,15 @@ export interface Translation {
 /**
  * The localised half of an art: what it is called and what it says.
  *
- * Paired with `Art` by list index. That pairing is fragile and the data proves it —
- * hSD03-009 and hSD04-009 each have 2 entries in `Card.arts` but 0 in their `en`
- * translation. `localize()` defines the merge rule and tolerates the short list; both
- * cards are golden-file fixtures so the behaviour stays pinned.
+ * Paired with `Art` by list index. That pairing is fragile: hSD03-009 and hSD04-009
+ * each had 2 entries in `Card.arts` but 0 in their `en` translation, so `localize()`
+ * defines the merge rule and tolerates the short list. Both cards are golden-file
+ * fixtures, which is what keeps the rule pinned in Python *and* TypeScript.
+ *
+ * The live data no longer exhibits it — the field-level cache filled both cards in
+ * (F-004) — so the fixtures are now the only thing exercising that path. Repointing the
+ * fixture generator at `holo-data build` output would silently remove that coverage;
+ * F-022 records what it needs instead.
  *
  * This interface was referenced by `CardCollection`'s JSON-Schema
  * via the `definition` "TranslatedArt".
@@ -205,7 +209,6 @@ export interface Translation {
 export interface TranslatedArt {
   name: Name1;
   effect?: Effect;
-  value?: Value;
 }
 /**
  * The localised half of a card's keyword ability.

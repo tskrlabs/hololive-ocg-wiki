@@ -109,21 +109,26 @@ class Art(BaseModel):
 class TranslatedArt(BaseModel):
     """The localised half of an art: what it is called and what it says.
 
-    Paired with `Art` by list index. That pairing is fragile and the data proves it —
-    hSD03-009 and hSD04-009 each have 2 entries in `Card.arts` but 0 in their `en`
-    translation. `localize()` defines the merge rule and tolerates the short list; both
-    cards are golden-file fixtures so the behaviour stays pinned.
+    Paired with `Art` by list index. That pairing is fragile: hSD03-009 and hSD04-009
+    each had 2 entries in `Card.arts` but 0 in their `en` translation, so `localize()`
+    defines the merge rule and tolerates the short list. Both cards are golden-file
+    fixtures, which is what keeps the rule pinned in Python *and* TypeScript.
+
+    The live data no longer exhibits it — the field-level cache filled both cards in
+    (F-004) — so the fixtures are now the only thing exercising that path. Repointing the
+    fixture generator at `holo-data build` output would silently remove that coverage;
+    F-022 records what it needs instead.
     """
 
     model_config = _STRICT
 
+    # There is no `value` field. v1 carried one on exactly 4 `tc` arts, holding a
+    # translation of `name` that sat beside an untranslated `name` — an artefact of the
+    # translation prompt's own 「只翻譯 value」 instruction, not of the scraper. v2 never
+    # emits it: `transform._arts()` writes `name`/`effect` only and the cache keys on
+    # `arts[i].name`/`.effect`, so a fresh build produces none (F-003).
     name: Annotated[str, FullText(weight=2.0)]
     effect: Annotated[Optional[str], FullText()] = None
-    # Present on exactly 4 arts, all `tc`, all holding what looks like a translation of
-    # `name` (e.g. name "おつルーナ" / value "辛苦啦露娜～"). Modelled so those 4 cards
-    # validate; `localize()` ignores it. Phase 1 should decide whether the scraper
-    # should be writing it at all.
-    value: Optional[str] = None
 
 
 class Keyword(BaseModel):
