@@ -29,3 +29,9 @@ See `docs/agents/triage-labels.md`.
 
 Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, shared across all
 workspaces. See `docs/agents/domain.md`.
+
+### Code knowledge graph
+
+GitNexus indexes symbols and call edges into a local, gitignored `.gitnexus/`, queried via
+MCP. Note that `impact` under-reports on the Python pipeline — it misses
+`from . import transform` style calls. See `docs/agents/gitnexus.md`.
