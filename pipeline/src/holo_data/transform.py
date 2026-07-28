@@ -20,6 +20,8 @@ import json
 import re
 from typing import Any, Callable
 
+from holo_schema.enums import NON_CARD_TYPES
+
 from . import mappings
 from .paths import ensure_dirs, i18n_file
 
@@ -220,8 +222,13 @@ def to_card(card: dict[str, Any]) -> dict[str, Any]:
     out: dict[str, Any] = {"id": card.get("id", "")}
     translation: dict[str, Any] = {}
 
+    # The site renders a missing card number as the literal string "null" inside the
+    # number span (id 2459), not as an empty element. Storing that verbatim would put a
+    # card_number of "null" in an indexed column and in the full-text index, where it
+    # would match searches for the word. Dropped here so the contract sees the field as
+    # genuinely absent, which is what `_card_fields_present` reasons about.
     card_number = get_field(card, mappings.LABELS["card_number"])
-    if card_number:
+    if card_number and card_number != "null":
         out["card_number"] = card_number
 
     image_key = image_key_from_url(card.get("image_url"), card.get("image_filename"))
@@ -335,10 +342,60 @@ def to_card(card: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def is_notice(entry: dict[str, Any]) -> bool:
+    """Is this entry a rules notice rather than a card?
+
+    Keyed on `card_type_code` so there is exactly one place that decides, and both
+    `build` and the tests ask the same question. See `holo_schema.notice`.
+    """
+    return entry.get("card_type_code") in NON_CARD_TYPES
+
+
+def to_notice(entry: dict[str, Any]) -> dict[str, Any]:
+    """Project a card-shaped entry into `Notice` shape.
+
+    Called at *build* time, not scrape time. Everything upstream — fetch, extract,
+    transform, translate — treats a notice exactly like a card, which is the point: the
+    notice's prose is `ability_text`, already a translatable scalar, so it flows through
+    the field-level cache with no new machinery and no second code path to keep in sync.
+
+    The remap is small on purpose. `ability_text` becomes `body` because on a notice the
+    text is not a card's rules text but the notice itself; the card-only fields (number,
+    rarity, colour, HP, arts, …) are dropped rather than carried as nulls.
+    """
+    translations: dict[str, Any] = {}
+    for locale, translation in (entry.get("translations") or {}).items():
+        projected: dict[str, Any] = {}
+        if translation.get("name"):
+            projected["name"] = translation["name"]
+        # A notice's text arrives as `ability_text` — it is what the site puts under
+        # 能力テキスト. `extra` is checked too so a site change that moves the prose does
+        # not silently produce a bodyless notice.
+        body = translation.get("ability_text") or translation.get("extra")
+        if body:
+            projected["body"] = body
+        if projected:
+            translations[locale] = projected
+
+    return {
+        "id": entry["id"],
+        "image_key": entry.get("image_key", ""),
+        "source_image_url": entry.get("source_image_url", ""),
+        "card_sets": entry.get("card_sets") or [],
+        "translations": translations,
+    }
+
+
 def transform_cards(
     structured: list[dict[str, Any]],
     on_progress: Callable[[int, int], None] | None = None,
 ) -> list[dict[str, Any]]:
+    """Transform every scraped entry, notices included.
+
+    Notices stay in this list and in `cards_i18n.json`. They are split out at build
+    time by `is_notice`, so the translate step sees one homogeneous set of entries and
+    needs no knowledge that notices exist.
+    """
     cards = []
     total = len(structured)
     for index, card in enumerate(structured):

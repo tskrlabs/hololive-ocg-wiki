@@ -245,10 +245,15 @@ def build(
     cache = TranslationCache.load()
     locales = poe.target_locales()
 
-    typer.echo(f"→ building {len(cards)} cards across {len(locales) + 1} locales")
-    collection, report = build_module.build(
+    typer.echo(f"→ building {len(cards)} entries across {len(locales) + 1} locales")
+    collection, notices, report = build_module.build(
         cards, cache, locales, allow_unknown_enums=allow_unknown_enums
     )
+    if report.notice_count:
+        typer.echo(
+            f"  {report.notice_count} rules notice(s) split out — not cards, "
+            f"published as an R2 artifact (holo_schema.notice)"
+        )
 
     typer.echo("  translation coverage:")
     for locale, count in report.translation_coverage.items():
@@ -279,6 +284,12 @@ def build(
     typer.echo("")
     typer.echo(
         f"✓ wrote {paths.cards_json()} — {report.valid} cards, {size / 1024 / 1024:.1f} MB"
+    )
+
+    notices_size = build_module.save_notices(notices)
+    typer.echo(
+        f"✓ wrote {paths.notices_json()} — {len(notices.notices)} notice(s), "
+        f"{notices_size / 1024:.1f} KB"
     )
 
     # The dropdown values for /api/filter-options. Built here, beside the data they

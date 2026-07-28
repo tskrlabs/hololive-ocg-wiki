@@ -108,6 +108,17 @@ def cards_json() -> Path:
     return BUILD_DIR / "cards.json"
 
 
+def notices_json() -> Path:
+    """Non-card entries from the official card list — format-legality notices.
+
+    An R2 artifact rather than a D1 table, for the same reason as `filter-options`: a
+    handful of records, the same answer for every user until the next pipeline run, and
+    nothing that needs an index. It also means adding one requires no migration against
+    the populated production database. See `holo_schema.notice`.
+    """
+    return BUILD_DIR / "notices.json"
+
+
 FILTER_OPTIONS_PREFIX = "filter-options"
 """R2 key prefix for the per-locale filter dropdown data. The Worker reads
 `filter-options/{locale}.json` from the artifacts bucket."""

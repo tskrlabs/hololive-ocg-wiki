@@ -159,6 +159,10 @@ echo "artifacts"
 # steps that a contributor's clone has never run.
 check "info before publish"        404 "/api/info"
 check "status before publish"      404 "/api/status"
+# Notices are the exception to the 404-when-absent rule, deliberately: "no notices
+# published" and "no notices exist" are the same answer to a caller, and a site
+# rendering a notices section should not have to treat a 404 as success.
+check "notices before publish"     200 "/api/notices" "d['notices'] == []"
 
 # `content/info.json` is the real committed artifact, not a stand-in — the same bytes
 # `holo-data publish` uploads. `status.json` has no committed copy (it is written by
@@ -181,6 +185,22 @@ check "status served from R2"      200 "/api/status" \
   "d['counts']['total'] == 34 and 'generated_at' in d"
 check "status carries the diff"    200 "/api/status" \
   "d['changed'][0]['image_key'] == 'hSD01/hSD01-001_OSR'"
+
+# A rules notice — the non-card entries the official site publishes into its card list
+# (F-020). Shaped exactly as `NoticeCollection` emits it. The assertions pin the two
+# properties that make it not-a-card: no card_number, and a body that carries the rule.
+NOTICES_FILE="$(mktemp -t holo-notices).json"
+printf '{"generated_at":"2026-07-28T00:00:00Z","schema_version":1,"notices":[{"id":"2459","image_key":"sele08/sele08_teaching","source_image_url":"https://example.invalid/sele08_teaching.png","card_sets":["【使用可能カード】セレクションカップ"],"translations":{"ja":{"name":"デッキ構築ルール","body":"※本説明用カードはデッキ登録できません。"}}}]}' >"$NOTICES_FILE"
+npx wrangler r2 object put "hololive-ocg-wiki-artifacts/notices.json" \
+  --local --file="$NOTICES_FILE" >/dev/null
+rm -f "$NOTICES_FILE"
+
+check "notices served from R2"     200 "/api/notices" \
+  "len(d['notices']) == 1 and d['notices'][0]['id'] == '2459'"
+check "a notice has no card_number" 200 "/api/notices" \
+  "'card_number' not in d['notices'][0] and 'rarity_code' not in d['notices'][0]"
+check "a notice carries its rule"  200 "/api/notices" \
+  "'デッキ登録できません' in d['notices'][0]['translations']['ja']['body']"
 
 echo ""
 echo "caching"
@@ -207,6 +227,7 @@ done <<'PATHS'
 /api/status 3600
 /api/info 3600
 /api/filter-options?locale=en 86400
+/api/notices 86400
 PATHS
 
 echo ""

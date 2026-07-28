@@ -21,10 +21,11 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from holo_schema import Card, CardCollection
+from holo_schema import Card, CardCollection, Notice, NoticeCollection
 from holo_schema.enums import SOURCE_LOCALE
 
-from .paths import cards_json, ensure_dirs, filter_options_json
+from . import transform
+from .paths import cards_json, ensure_dirs, filter_options_json, notices_json
 from .translate.cache import TranslationCache, field_keys
 
 
@@ -32,6 +33,10 @@ from .translate.cache import TranslationCache, field_keys
 class BuildReport:
     total: int = 0
     valid: int = 0
+    # Rules notices are counted separately and excluded from `total`: they are not
+    # cards, so folding them in would make the card count disagree with what the site
+    # and `status.json` report.
+    notice_count: int = 0
     errors: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     enum_violations: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     translation_coverage: dict[str, int] = field(default_factory=dict)
@@ -103,9 +108,19 @@ def build(
     cache: TranslationCache,
     locales: list[str],
     allow_unknown_enums: bool = False,
-) -> tuple[CardCollection | None, BuildReport]:
-    """Merge translations, validate every card, and assemble the collection."""
-    report = BuildReport(total=len(cards))
+) -> tuple[CardCollection | None, NoticeCollection | None, BuildReport]:
+    """Merge translations, validate every entry, and assemble both collections.
+
+    Rules notices are split off here rather than upstream. Everything before this point
+    treats them as cards — they are scraped, extracted, transformed and translated
+    identically — so the split happens at the one place that knows about the contract.
+    See `holo_schema.notice` for why they are not `Card`s.
+    """
+    entries = cards
+    cards = [entry for entry in entries if not transform.is_notice(entry)]
+    notice_entries = [entry for entry in entries if transform.is_notice(entry)]
+
+    report = BuildReport(total=len(cards), notice_count=len(notice_entries))
     validated: list[Card] = []
 
     for raw in cards:
@@ -122,6 +137,23 @@ def build(
                 message = f"{location}: {error['msg']}"
                 report.add_error(str(raw.get("id")), message, is_enum=is_enum)
 
+    validated_notices: list[Notice] = []
+    for raw in notice_entries:
+        merged = apply_translations(dict(raw), cache, locales)
+        try:
+            validated_notices.append(Notice.model_validate(transform.to_notice(merged)))
+        except ValidationError as exc:
+            # A malformed notice blocks the build exactly as a malformed card does. It
+            # states a rule that affects deck legality, so shipping the card set without
+            # it would be shipping cards whose format legality nothing explains.
+            for error in exc.errors():
+                location = ".".join(
+                    str(part) for part in error["loc"] if not isinstance(part, int)
+                )
+                report.add_error(
+                    str(raw.get("id")), f"notice {location}: {error['msg']}"
+                )
+
     for locale in ["ja", *locales]:
         report.translation_coverage[locale] = sum(
             1 for card in cards if card.get("translations", {}).get(locale)
@@ -129,15 +161,14 @@ def build(
 
     blocking = bool(report.errors) or (report.enum_violations and not allow_unknown_enums)
     if blocking or len(validated) != len(cards):
-        return None, report
+        return None, None, report
 
-    collection = CardCollection(
-        generated_at=datetime.now(timezone.utc).isoformat(timespec="seconds").replace(
-            "+00:00", "Z"
-        ),
-        cards=validated,
+    generated_at = datetime.now(timezone.utc).isoformat(timespec="seconds").replace(
+        "+00:00", "Z"
     )
-    return collection, report
+    collection = CardCollection(generated_at=generated_at, cards=validated)
+    notices = NoticeCollection(generated_at=generated_at, notices=validated_notices)
+    return collection, notices, report
 
 
 def save(collection: CardCollection) -> int:
@@ -151,6 +182,20 @@ def save(collection: CardCollection) -> int:
     payload = collection.model_dump(mode="json", exclude_none=True)
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     cards_json().write_text(text, encoding="utf-8")
+    return len(text.encode("utf-8"))
+
+
+def save_notices(collection: NoticeCollection) -> int:
+    """Write `notices.json`, returning the byte size.
+
+    Always written, even when empty: a consumer distinguishing "no notices" from "the
+    artifact is missing" otherwise has to guess, and `/api/notices` would 404 on a
+    perfectly valid build.
+    """
+    ensure_dirs()
+    payload = collection.model_dump(mode="json", exclude_none=True)
+    text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    notices_json().write_text(text, encoding="utf-8")
     return len(text.encode("utf-8"))
 
 
@@ -234,3 +279,18 @@ def load() -> CardCollection | None:
     if not path.exists():
         return None
     return CardCollection.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+def load_notices() -> list[Notice]:
+    """The built notices, or none if this working directory predates them.
+
+    Returns a bare list rather than the collection: every caller wants the notices
+    themselves, and an absent artifact is not an error — it is what a build from before
+    F-020 looks like.
+    """
+    path = notices_json()
+    if not path.exists():
+        return []
+    return NoticeCollection.model_validate_json(
+        path.read_text(encoding="utf-8")
+    ).notices

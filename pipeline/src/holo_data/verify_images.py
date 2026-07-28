@@ -31,7 +31,7 @@ from typing import Callable
 import requests
 
 from . import paths
-from .build import load as load_build
+from .build import load as load_build, load_notices
 
 
 @dataclass
@@ -70,12 +70,17 @@ def check_coverage() -> CoverageReport:
     report = CoverageReport(total_cards=len(collection.cards))
     expected: set[str] = set()
 
-    for card in collection.cards:
-        expected.add(card.image_key)
-        if not paths.png_path_for_key(card.image_key).exists():
-            report.missing_png.append(card.image_key)
-        if not paths.webp_path_for_key(card.image_key).exists():
-            report.missing_webp.append(card.image_key)
+    # Notices carry images too, referenced by `notices.json` rather than by any card.
+    # They are checked alongside cards so a missing notice image is caught, and — just
+    # as importantly — so a *present* one is not reported as an orphan on every run.
+    entries = [*collection.cards, *load_notices()]
+
+    for entry in entries:
+        expected.add(entry.image_key)
+        if not paths.png_path_for_key(entry.image_key).exists():
+            report.missing_png.append(entry.image_key)
+        if not paths.webp_path_for_key(entry.image_key).exists():
+            report.missing_webp.append(entry.image_key)
 
     if paths.WEBP_DIR.exists():
         for path in paths.WEBP_DIR.rglob("*.webp"):
@@ -134,10 +139,13 @@ def check_provenance(
             f"no build at {paths.cards_json()} — run `holo-data build` first."
         )
 
+    # Notices are checked too: their images come from the same site by the same route,
+    # so they are subject to the same F-012 staleness (the site silently re-uploading a
+    # file) that makes this check worth its ~2,450 requests.
     targets = [
-        (card.image_key, card.source_image_url)
-        for card in collection.cards
-        if card.source_image_url
+        (entry.image_key, entry.source_image_url)
+        for entry in (*collection.cards, *load_notices())
+        if entry.source_image_url
     ]
     if limit:
         targets = targets[:limit]
