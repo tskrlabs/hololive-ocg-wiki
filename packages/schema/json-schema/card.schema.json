@@ -4,10 +4,6 @@
       "additionalProperties": false,
       "description": "The language-independent half of an art: its costs and damage.\n\nThe translated half (name, effect) lives in `Translation.arts` at the same index —\nsee `TranslatedArt` for why they are stored apart and how they are paired.",
       "properties": {
-        "cost_count": {
-          "title": "Cost Count",
-          "type": "integer"
-        },
         "cost_types": {
           "items": {
             "enum": [
@@ -60,9 +56,6 @@
           "type": "array"
         }
       },
-      "required": [
-        "cost_count"
-      ],
       "title": "Art",
       "type": "object"
     },

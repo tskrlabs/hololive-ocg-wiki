@@ -14,7 +14,7 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | ID | Status | Area | Summary |
 |---|---|---|---|
 | [F-001](#f-001) | ✅ fixed | pipeline | `サポート・スタッフ` had no mapping, so 2 cards shipped as `unknown` |
-| [F-002](#f-002) | 🔍 open | data | `cost_count` counts the 特攻 icon, so it can exceed `cost_types` by one |
+| [F-002](#f-002) | ✅ fixed | data | `cost_count` counted the 特攻 icon; the field had no readers and is dropped |
 | [F-003](#f-003) | 🔍 open | data | 2 cards have arts translated into a `value` field instead of `effect` |
 | [F-004](#f-004) | 🔍 open | data | 2 cards have base arts but no `en` translated arts |
 | [F-005](#f-005) | 🔍 open | data | `hBP02-065`'s image filename does not match its card number |
@@ -60,23 +60,48 @@ but that is a game rule, not something the data states.
 
 ---
 
-## F-002 — `cost_count` counts the 特攻 icon 🔍
+## F-002 — `cost_count` counted the 特攻 icon ✅ fixed
 
-**Found:** Phase 1 · **Affects:** 482 arts
+**Found:** Phase 1 · **Fixed:** Phase 6 (field removed from the contract) · **Affected:**
+482 arts
 
 The site's arts block renders cost icons and the 特攻 (bonus damage) icon as sibling
-`<img>` tags, so v1's extractor collects all of them. `cost_count` is the length of that
-list, which means on any art with a 特攻 marker it is **one higher than the number of
-actual costs** — and disagrees with `cost_types`, which correctly has only the costs.
+`<img>` tags, so v1's extractor collects all of them. `cost_count` was the length of that
+list, which means on any art with a 特攻 marker it was **one higher than the number of
+actual costs** — and disagreed with `cost_types`, which correctly has only the costs.
 
 Example — `hBP03-011`, art 0: `cost_count: 3`, `cost_types: ["white", "null"]`.
 
-The pipeline reproduces this deliberately: Phase 1's criterion was data equivalence, and
-this is the number the live site has shipped for a year.
+Phase 1 reproduced this deliberately (data equivalence, [ADR 0002](adr/0002-field-level-translation-cache.md)).
+The open question was whether anything computed with the number.
 
-**Needs a decision:** is `cost_count` used for anything but display? If the deck builder
-or a filter ever computes with it, the off-by-one matters. The fix is one line
-(`len(real_costs)` instead of `len(cost_icons)`) but it changes published data.
+**The answer: nothing read it at all.** A census over the whole codebase found zero
+references to `cost_count` in `apps/web`, `apps/api`, or any filter — the card detail
+view renders `art.cost_types` and never the count. It was not a D1 column or an index
+either; it rode inside the JSON payload.
+
+**Fix:** the field is **removed from the contract** rather than corrected. `cost_types`
+already carries the same fact — its length *is* the cost count — so keeping a second,
+derivable number only preserved something that could drift from it. A future cost filter
+would have reached for the obvious-sounding `cost_count` and got an off-by-one on exactly
+the 482 flashiest cards.
+
+Measured over the full build before removal, the two agreed everywhere else: of 1,991
+arts, 1,509 had `cost_count == len(cost_types)` and 482 were higher by exactly one — and
+all 482 were precisely the arts carrying `special_targets`. The inflation was the 特攻
+icon, every time, with no other cause.
+
+**Deliberately not reseeded.** The Worker does no payload validation (`db/cards.ts` is a
+bare `JSON.parse`) and `localize()` picks fields explicitly, so a stale `cost_count` still
+sitting in a D1 payload is inert — it is dropped on the way out and never reaches a
+client. A full reseed is ~47,300 writes against the free tier F-014 already flags, which
+is a bad trade for deleting a field nobody reads. Production payloads keep the key until
+the next natural reseed; **that transient skew is expected, not a bug.**
+
+**Zero costs vs unknown costs:** `transform.py` only sets `cost_types` when it is
+non-empty, so an art with no costs omits it and `localize()` coerces to `[]`. That
+conflates "zero costs" with "costs unknown" — but so did the source HTML, where both
+produce no cost `<img>` tags. `cost_count` never really encoded that distinction either.
 
 ---
 

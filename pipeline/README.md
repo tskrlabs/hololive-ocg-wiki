@@ -101,9 +101,11 @@ two cards.
   must *not* be translated (proper nouns, anything in 〈〉, rarity/set/cardType). They are
   data, not code, so they can be edited without touching Python — but edits change
   translation quality.
-- **The 特攻 icon appears in `cost_icons`.** It is a bonus-damage marker, not a cost. It
-  is filtered out of `cost_types` but still counted in `cost_count`, because that is what
-  v1 shipped.
+- **The 特攻 icon appears in `cost_icons`.** It is a bonus-damage marker, not a cost, so
+  it is filtered out of `cost_types` by its `tokkou_` filename. v1 also emitted a
+  `cost_count` taken from the *unfiltered* list, so it read one high on the 482 arts with
+  a 特攻 icon; v2 does not emit that field at all — `len(cost_types)` is the count
+  (F-002).
 - **A keyword's type is its icon's `alt`,** not its `name` — `name` is the ability's own
   title.
 - **The cache starts empty.** A first `translate` on a fresh clone would be a full run.

@@ -66,7 +66,7 @@ class TestArtsMerge:
 
         result = localize(card, "en")
         assert len(result.arts) == 2
-        assert result.arts[0].cost_count == card.arts[0].cost_count
+        assert result.arts[0].cost_types == card.arts[0].cost_types
         assert result.arts[0].name is None
 
     def test_translated_arts_merge_by_position(self, by_id: dict):
@@ -76,7 +76,7 @@ class TestArtsMerge:
         assert len(result.arts) == len(card.arts or [])
         for index, art in enumerate(result.arts):
             assert art.name == translated[index].name
-            assert art.cost_count == card.arts[index].cost_count
+            assert art.cost_types == card.arts[index].cost_types
 
 
 class TestLocaleFallback:

@@ -145,12 +145,10 @@ def _arts(card: dict[str, Any]) -> tuple[list[dict], list[dict]]:
                 for icon in cost_icons
                 if isinstance(icon, dict) and "tokkou_" not in icon.get("src", "")
             ]
-            # v1 counted every icon here, including the 特攻 one, so `cost_count` could
-            # exceed `len(cost_types)` by one. That is arguably a v1 bug — a bonus-damage
-            # marker is not a cost — but it is the number the live site has shipped for a
-            # year, and Phase 1's job is data equivalence, not correction. Revisit
-            # separately if the count is ever used for anything but display.
-            entry["cost_count"] = len(cost_icons)
+            # v1 also emitted `cost_count = len(cost_icons)` — the unfiltered list — so it
+            # read one high on exactly the 482 arts with a 特攻 icon. Nothing ever read it,
+            # and `len(cost_types)` is the real count, so v2 does not emit it at all
+            # (F-002).
             cost_types = []
             for icon in real_costs:
                 if "alt" in icon:

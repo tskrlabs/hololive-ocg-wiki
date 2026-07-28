@@ -4,10 +4,6 @@
       "additionalProperties": false,
       "description": "An art with its costs and its translated text merged into one object.\n\nIn `Card` these are two parallel lists (`Card.arts` and `Translation.arts`) paired\nby index. Merging them is the main job `localize()` does.",
       "properties": {
-        "cost_count": {
-          "title": "Cost Count",
-          "type": "integer"
-        },
         "cost_types": {
           "default": [],
           "items": {
@@ -69,9 +65,6 @@
           "type": "string"
         }
       },
-      "required": [
-        "cost_count"
-      ],
       "title": "LocalizedArt",
       "type": "object"
     },

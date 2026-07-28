@@ -76,7 +76,6 @@ def localize(card: Card, locale: Locale) -> LocalizedCard:
         translated = translated_arts[index] if index < len(translated_arts) else None
         arts.append(
             LocalizedArt(
-                cost_count=base.cost_count,
                 cost_types=base.cost_types,
                 damage=base.damage,
                 is_plus=base.is_plus,

@@ -40,7 +40,7 @@ class LocalizedArt(BaseModel):
 
     model_config = _STRICT
 
-    cost_count: int
+    # No `cost_count` — `len(cost_types)` is the cost count. See `Art` and F-002.
     cost_types: list[ColorCode] = []
     damage: Optional[int] = None
     is_plus: Optional[bool] = None

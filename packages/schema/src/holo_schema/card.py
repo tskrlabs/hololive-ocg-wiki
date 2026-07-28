@@ -73,7 +73,10 @@ class Art(BaseModel):
 
     model_config = _STRICT
 
-    cost_count: int
+    # No `cost_count`. v1 shipped one, but it was `len(cost_icons)` — the *unfiltered*
+    # icon list, which includes the 特攻 bonus-damage marker, so it read one high on the
+    # 482 arts that have one. `len(cost_types)` is the real count, and it is the only
+    # count now (F-002).
     cost_types: list[ColorCode] = Field(default_factory=list)
     damage: Optional[int] = None
     is_plus: Optional[bool] = None

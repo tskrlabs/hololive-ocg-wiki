@@ -133,7 +133,6 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "white",
           "null"
@@ -142,7 +141,6 @@
         "name": "ドリームライブ"
       },
       {
-        "cost_count": 3,
         "cost_types": [
           "white",
           "green",
@@ -210,7 +208,6 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "null",
           "null"
@@ -395,7 +392,6 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "white",
           "green"
@@ -947,7 +943,6 @@
   {
     "arts": [
       {
-        "cost_count": 4,
         "cost_types": [
           "white",
           "white",
@@ -1284,7 +1279,6 @@
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "white"
         ],
@@ -1349,7 +1343,6 @@
   {
     "arts": [
       {
-        "cost_count": 3,
         "cost_types": [
           "blue",
           "null"
@@ -1364,7 +1357,6 @@
         ]
       },
       {
-        "cost_count": 5,
         "cost_types": [
           "blue",
           "blue",
@@ -1413,7 +1405,6 @@
   {
     "arts": [
       {
-        "cost_count": 3,
         "cost_types": [
           "purple",
           "null"
@@ -1428,7 +1419,6 @@
         ]
       },
       {
-        "cost_count": 4,
         "cost_types": [
           "purple",
           "purple",
@@ -1497,7 +1487,6 @@
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "null"
         ],
@@ -1541,7 +1530,6 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "null",
           "null"
@@ -1551,7 +1539,6 @@
         "name": "Hermana Perra Guardiana del Inframundo"
       },
       {
-        "cost_count": 2,
         "cost_types": [
           "blue",
           "red"
@@ -1737,7 +1724,6 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "blue",
           "null"
@@ -1783,7 +1769,6 @@
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "purple"
         ],
@@ -1791,7 +1776,6 @@
         "name": "Está bien tener una cita en casa con Towa"
       },
       {
-        "cost_count": 2,
         "cost_types": [
           "purple",
           "null"
@@ -1832,7 +1816,6 @@
   {
     "arts": [
       {
-        "cost_count": 3,
         "cost_types": [
           "null",
           "null",
@@ -1943,7 +1926,6 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "blue",
           "null"
@@ -1989,7 +1971,6 @@
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "purple"
         ],
@@ -1997,7 +1978,6 @@
         "name": "Trato de cita en casa con Towa está bien"
       },
       {
-        "cost_count": 2,
         "cost_types": [
           "purple",
           "null"
@@ -2038,7 +2018,6 @@
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "white"
         ],
@@ -2046,7 +2025,6 @@
         "name": "Otsu Luna"
       },
       {
-        "cost_count": 2,
         "cost_types": [
           "white",
           "null"
@@ -2085,7 +2063,6 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "null",
           "null"
@@ -2132,7 +2109,6 @@
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "null"
         ],

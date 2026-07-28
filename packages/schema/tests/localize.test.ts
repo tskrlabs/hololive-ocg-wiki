@@ -96,7 +96,7 @@ test("arts with no translation keep their costs (hSD03-009 in en)", () => {
   const arts = result.arts ?? [];
   assert.equal(arts.length, 2, "arts must survive an absent translation");
   assert.equal(arts[0]?.name, undefined);
-  assert.equal(arts[0]?.cost_count, card.arts[0].cost_count);
+  assert.deepEqual(arts[0]?.cost_types, card.arts[0].cost_types);
 });
 
 test("missing locale falls back to the source locale", () => {

@@ -51,7 +51,6 @@ export function localize(card: Card, locale: Locale): LocalizedCard {
   const arts: LocalizedArt[] = baseArts.map((base, index) => {
     const translated = translatedArts[index];
     return {
-      cost_count: base.cost_count,
       cost_types: base.cost_types ?? [],
       ...(base.damage !== undefined && { damage: base.damage }),
       ...(base.is_plus !== undefined && { is_plus: base.is_plus }),

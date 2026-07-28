@@ -48,7 +48,6 @@ export type Name = string;
 export type Tags = string[];
 export type AbilityText = string;
 export type Extra = string;
-export type CostCount = number;
 export type CostTypes = (
   "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
 )[];
@@ -125,7 +124,6 @@ export interface LocalizedCard {
  * via the `definition` "LocalizedArt".
  */
 export interface LocalizedArt {
-  cost_count: CostCount;
   cost_types?: CostTypes;
   damage?: Damage;
   is_plus?: IsPlus;

@@ -120,6 +120,11 @@ A bonus-damage marker is not a cost, so this looks like a v1 bug — but it is t
 the live site has shipped for a year, and Phase 1's criterion is data equivalence, not
 correction. Flagged for a separate decision.
 
+> **Decided in Phase 6 — the field was dropped, not corrected.** A census found no reader
+> anywhere in the codebase, and `len(cost_types)` already carries the same fact. See
+> [F-002](../findings.md#f-002). This paragraph records what Phase 1 decided and stands as
+> written.
+
 ### WebP conversion is its own command
 
 Nothing in v1 produced WebP; the pipeline downloaded PNGs and the WebP files in the v1

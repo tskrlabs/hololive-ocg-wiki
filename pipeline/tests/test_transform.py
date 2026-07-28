@@ -88,8 +88,13 @@ class TestArts:
         assert base[0]["special_targets"] == ["purple"]
         assert base[0]["special_values"] == [50]
 
-    def test_cost_count_matches_v1(self):
-        """v1 counted every icon including 特攻. Kept for data equivalence."""
+    def test_no_cost_count_is_emitted(self):
+        """v1's `cost_count` was `len(cost_icons)`, so it counted the 特攻 icon too.
+
+        v2 does not emit the field at all — `cost_types` is the cost list and its length
+        is the count, which cannot drift from it (F-002). The art below is the case that
+        used to disagree: 2 icons, 1 real cost.
+        """
         base, _ = _arts(
             {
                 "arts": [
@@ -103,7 +108,7 @@ class TestArts:
                 ]
             }
         )
-        assert base[0]["cost_count"] == 2
+        assert "cost_count" not in base[0]
         assert base[0]["cost_types"] == ["white"]
 
     def test_plus_damage(self):

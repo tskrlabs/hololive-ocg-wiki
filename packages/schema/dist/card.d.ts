@@ -47,7 +47,6 @@ export type BatonTouchTypes = (
 export type Illustrator = string;
 export type CardSets = string[];
 export type Tags = string[];
-export type CostCount = number;
 export type CostTypes = (
   "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
 )[];
@@ -135,7 +134,6 @@ export interface Card {
  * via the `definition` "Art".
  */
 export interface Art {
-  cost_count: CostCount;
   cost_types?: CostTypes;
   damage?: Damage;
   is_plus?: IsPlus;

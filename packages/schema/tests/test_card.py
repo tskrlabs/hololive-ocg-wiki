@@ -124,7 +124,7 @@ class TestValidators:
                 _minimal_card(
                     arts=[
                         {
-                            "cost_count": 1,
+                            "cost_types": ["red"],
                             "special_targets": ["red", "blue"],
                             "special_values": [50],
                         }
@@ -135,7 +135,7 @@ class TestValidators:
     def test_special_pairs_both_or_neither(self):
         with pytest.raises(ValidationError, match="must both be present or both absent"):
             Card.model_validate(
-                _minimal_card(arts=[{"cost_count": 1, "special_targets": ["red"]}])
+                _minimal_card(arts=[{"cost_types": ["red"], "special_targets": ["red"]}])
             )
 
 
