@@ -34,6 +34,7 @@ from .enums import (
     KEYWORD_TYPE_VALUES,
     LOCALE_VALUES,
     MAIN_CARD_TYPES,
+    NON_CARD_TYPES,
     OSHI_CARD_TYPES,
     RARITY_VALUES,
     SOURCE_LOCALE,
@@ -54,6 +55,7 @@ from .localized import (
     LocalizedKeyword,
     LocalizedOshiSkill,
 )
+from .notice import Notice, NoticeCollection, NoticeTranslation
 
 SCHEMA_VERSION = 1
 """Bumped when the card shape changes in a way that breaks a consumer."""
@@ -71,6 +73,10 @@ __all__ = [
     "TranslatedKeyword",
     "TranslatedOshiSkill",
     "Translation",
+    # Non-card entries from the card list (R2 artifact, not D1)
+    "Notice",
+    "NoticeCollection",
+    "NoticeTranslation",
     # API projection
     "LocalizedArt",
     "LocalizedCard",
@@ -98,6 +104,7 @@ __all__ = [
     "FUSED_COLORS",
     "MAX_BATCH",
     "MAIN_CARD_TYPES",
+    "NON_CARD_TYPES",
     "OSHI_CARD_TYPES",
     "SOURCE_LOCALE",
     "YELL_CARD_TYPES",

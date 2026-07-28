@@ -22,7 +22,7 @@ import { Hono } from "hono";
 import type { Context } from "hono";
 
 import type { Env } from "../types.ts";
-import { failure, INFO_TTL, STATUS_TTL } from "../lib/respond.ts";
+import { failure, INFO_TTL, NOTICES_TTL, STATUS_TTL } from "../lib/respond.ts";
 
 export const artifacts = new Hono<{ Bindings: Env }>();
 
@@ -73,3 +73,31 @@ artifacts.get("/info", (c) => stream(c, "info.json", INFO_TTL, "holo-data publis
 artifacts.get("/status", (c) =>
   stream(c, "status.json", STATUS_TTL, "holo-data seed --confirm"),
 );
+
+/**
+ * `/api/notices` — the non-card entries the official site publishes into its card list.
+ *
+ * Currently one: a Selection Cup format-legality notice stating which products are legal
+ * and how card-number matching works across reprints. It is the legend for the
+ * `card_sets` value the same update added to ~660 cards.
+ *
+ * Served from R2 rather than D1 for the `filter-options` reason (ADR 0004): a handful of
+ * records, the same answer for every user until the next pipeline run, nothing that
+ * needs an index. Keeping them out of `cards` also avoids dropping `NOT NULL` from
+ * `card_number` and `rarity_code` on a populated table — see `holo_schema.notice`.
+ *
+ * Absent artifact returns an empty collection rather than a 404: "no notices published"
+ * and "no notices exist" are the same answer to a caller, and a site that renders a
+ * notices section should not have to treat a 404 as success.
+ */
+artifacts.get("/notices", async (c) => {
+  const object = await c.env.ARTIFACTS.get("notices.json");
+  if (!object) {
+    c.header("Cache-Control", `public, max-age=${NOTICES_TTL}`);
+    return c.json({ generated_at: null, schema_version: 1, notices: [] });
+  }
+
+  c.header("Cache-Control", `public, max-age=${NOTICES_TTL}`);
+  c.header("Content-Type", "application/json; charset=utf-8");
+  return c.body(object.body);
+});

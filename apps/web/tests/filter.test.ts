@@ -13,8 +13,9 @@
 import { describe, expect, it } from "vitest";
 import {
   BLOOM_LEVELS,
-  CARD_TYPES,
   COLORS,
+  FILTERABLE_CARD_TYPES,
+  NON_CARD_TYPES,
   RARITIES,
 } from "@holo/schema/enums";
 
@@ -29,9 +30,22 @@ describe("createEmpty", () => {
   it("covers every enum member, so no filter can be missing a checkbox", () => {
     const filter = createEmpty();
     expect(Object.keys(filter.colors).sort()).toEqual([...COLORS].sort());
-    expect(Object.keys(filter.cardTypes).sort()).toEqual([...CARD_TYPES].sort());
+    expect(Object.keys(filter.cardTypes).sort()).toEqual(
+      [...FILTERABLE_CARD_TYPES].sort(),
+    );
     expect(Object.keys(filter.rarity).sort()).toEqual([...RARITIES].sort());
     expect(Object.keys(filter.bloomLevel).sort()).toEqual([...BLOOM_LEVELS].sort());
+  });
+
+  it("offers no checkbox for a non-card type", () => {
+    // Rules notices are served by /api/notices and never appear in an /api/cards
+    // response, so a checkbox for one would always return zero results — the
+    // always-dead-UI shape of F-019. See F-020.
+    const filter = createEmpty();
+    for (const nonCard of NON_CARD_TYPES) {
+      expect(filter.cardTypes).not.toHaveProperty(nonCard);
+    }
+    expect(NON_CARD_TYPES.length).toBeGreaterThan(0);
   });
 
   it("starts with everything off", () => {

@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import paths, r2
-from .build import load as load_build
+from .build import load as load_build, load_notices
 
 
 @dataclass
@@ -108,14 +108,19 @@ def build_plan(s3, config: r2.R2Config, force: bool = False) -> PublishPlan:
         )
 
     local = r2.local_images(paths.WEBP_DIR)
+    # Notices have images too, and they are referenced by `notices.json` rather than by
+    # any card. Without them here a notice's artwork is treated as an orphan and never
+    # uploaded, so anything rendering the notice shows a broken image — the site-facing
+    # half of the F-020 split.
     card_keys = [card.image_key for card in collection.cards]
-    plan.missing_images, plan.orphan_images = check_coverage(card_keys, local)
+    referenced = card_keys + [notice.image_key for notice in load_notices()]
+    plan.missing_images, plan.orphan_images = check_coverage(referenced, local)
 
-    # Only publish images the card set actually references. An orphan is dead weight in
+    # Only publish images the build actually references. An orphan is dead weight in
     # the bucket and, unlike a local file, it is not free to leave lying around: it is
     # world-readable at a guessable URL forever.
     publishable = {
-        key: path for key, path in local.items() if key in {f"{k}.webp" for k in card_keys}
+        key: path for key, path in local.items() if key in {f"{k}.webp" for k in referenced}
     }
 
     remote_images = r2.list_objects(s3, config.images_bucket)
@@ -125,6 +130,13 @@ def build_plan(s3, config: r2.R2Config, force: bool = False) -> PublishPlan:
     info = paths.info_json()
     if info.exists():
         artifacts["info.json"] = info
+
+    # Rules notices — non-card entries from the official card list, served by
+    # /api/notices. Absent on a working directory built before they existed, in which
+    # case the endpoint returns an empty list rather than the publish failing.
+    notices = paths.notices_json()
+    if notices.exists():
+        artifacts["notices.json"] = notices
 
     # Per-locale dropdown values, read by /api/filter-options straight from R2. Written
     # by `build`, so they are absent on a working directory built before Phase 4 — the

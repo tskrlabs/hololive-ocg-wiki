@@ -632,3 +632,87 @@ exactly like one that renders 2,448 until you scroll to the bottom and count. Th
 component test closes this specific hole; whether the rest of the site has similar
 never-fires wiring has been surveyed once — `@scroll-end` was the only event binding of
 its kind — but not proven.
+
+## F-020 — the card list is not all cards ✅ resolved
+
+**Found:** 2026-07-28, testing the pipeline against the source's 2,448 → 2,464 update ·
+**Resolved:** same pass · **Affects:** the contract, the pipeline, the API
+
+The refresh added 16 ids. Fifteen are ordinary `hPR` promo reprints. The sixteenth,
+id **2459 「デッキ構築ルール」**, is not a card:
+
+```
+card_number:     "null"      the literal string, from <span>null</span>
+card_type_code:  サポート     the bare type — every real support card has a subtype
+rarity_code:     absent
+image:           sele08/sele08_teaching.png
+```
+
+It is a **Selection Cup format-legality notice**. Its body states which products are
+legal for the event and how card-number matching works across reprints — the rule that
+decides whether a given deck may be registered.
+
+`build` refused it, with two validation errors, and that refusal was correct:
+`mappings.py` maps the bare `サポート` to a code the contract's enum does not accept,
+specifically so a genuinely new type fails loudly. It was the first time that guard ever
+fired, and it fired on the first thing it was written for.
+
+**It is not noise, and excluding it would have lost real information.** The same update
+added a 35th `card_sets` value — 「【使用可能カード】セレクションカップ」 — to **~660
+existing cards**. That value is a format-legality marker, and notice 2459 is the only
+place the site explains what it means. A planned deck simulator needs exactly this
+record to answer "is this deck legal for this format?".
+
+### Why it is not a `Card`
+
+Modelling it as a card was tried and reverted. `card_number` and `rarity_code` are
+`NOT NULL` in the D1 schema, so admitting a notice means dropping both constraints — and
+SQLite has no `ALTER COLUMN`, so that is a full rebuild of a populated 2,448-row
+production table (copy, drop, rename, recreate 7 indexes and the FTS triggers). Verified
+against a production-shaped table rather than assumed:
+
+```
+INSERT … card_number=NULL, rarity_code=NULL
+→ NOT NULL constraint failed: cards.card_number
+```
+
+Paying a live-database rebuild to weaken an invariant that correctly protects all 2,463
+real cards is the wrong trade. A scraper regression that stopped parsing rarity would
+then validate silently — the exact failure ADR 0001's strict contract exists to catch.
+
+### What was built instead
+
+A separate `Notice` model, published as an **R2 artifact** and served by `/api/notices`.
+This is ADR 0004's `filter-options` reasoning applied again: a handful of records, the
+same answer for every user until the next pipeline run, nothing that needs an index. The
+generated DDL is **byte-identical** to what is live — no migration, nothing touching the
+populated database.
+
+Notices ride the *same* scrape, extract, transform and translate path as cards; the
+split happens at build time. Their prose is `ability_text`, already a translatable
+scalar, so the notice is translated into all 7 locales through the existing field-level
+cache with no new machinery.
+
+Three properties are pinned by tests (`pipeline/tests/test_notices.py`, 13 cases):
+
+- `Card` **rejects** a non-card type outright, so the split cannot be bypassed into a
+  card row with a fabricated number and rarity
+- `card_number` and `rarity_code` stay **strictly required** for every real card
+- no deck section can hold a notice — structural, via `NON_CARD_TYPES`, rather than a
+  consumer-side filter every caller must remember (Phase 5's F-019 lesson)
+
+`/api/notices` returns an **empty collection** rather than 404 when the artifact is
+absent: "none published" and "none exist" are the same answer to a caller, and a site
+rendering a notices section should not have to treat a 404 as success.
+
+### Still open
+
+**Nothing renders notices yet.** The data is modelled, translated, published and served;
+no page reads `/api/notices`. That is deliberate — this pass was a pipeline test, and
+adding a site surface was not in it — but until a page exists, the notice is reachable
+only by calling the endpoint directly.
+
+**The classification is an inference.** A bare `サポート` type is taken to mean "notice".
+It is safe because the contract checks the other half — a `rulesNotice` carrying a
+`card_number` is rejected — so a genuinely new bare-`サポート` *card* still fails `build`
+loudly. But if the site ever publishes a notice *with* a number, this needs revisiting.
