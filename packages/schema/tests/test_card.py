@@ -16,6 +16,7 @@ from holo_schema import (
     BLOOM_LEVEL_VALUES,
     CARD_TYPE_VALUES,
     COLOR_VALUES,
+    NON_CARD_TYPES,
     RARITY_VALUES,
     Card,
     CardCollection,
@@ -179,13 +180,20 @@ class TestFixtures:
     def test_fixtures_cover_every_card_type(self, collection: CardCollection):
         """Every card type that any real card uses must appear in the fixtures.
 
-        `unknown` is excluded: it is the scraper's placeholder for a type it cannot
-        classify, and since F-001 fixed the missing `サポート・スタッフ` mapping, no card
-        carries it. It stays in the enum as a safety valve for the next unrecognised
-        type, but there is no card to make a fixture from.
+        Two exclusions, for different reasons:
+
+        `unknown` is the scraper's placeholder for a type it cannot classify, and since
+        F-001 fixed the missing `サポート・スタッフ` mapping, no card carries it. It stays
+        in the enum as a safety valve for the next unrecognised type, but there is no
+        card to make a fixture from.
+
+        `rulesNotice` (NON_CARD_TYPES) *cannot* appear here — `Card` rejects it outright,
+        because it is not a card. It is covered by `pipeline/tests/test_notices.py`
+        instead. Subtracting it rather than deleting the assertion is deliberate: the
+        test still fails if a genuinely new *card* type is added without a fixture.
         """
         present = {card.card_type_code for card in collection.cards}
-        assert present == set(CARD_TYPE_VALUES) - {"unknown"}
+        assert present == set(CARD_TYPE_VALUES) - {"unknown"} - set(NON_CARD_TYPES)
 
     def test_fixtures_cover_every_rarity(self, collection: CardCollection):
         present = {card.rarity_code for card in collection.cards}

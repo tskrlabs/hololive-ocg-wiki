@@ -22,8 +22,8 @@
 
 import {
   BLOOM_LEVELS,
-  CARD_TYPES,
   COLORS,
+  FILTERABLE_CARD_TYPES,
   FUSED_COLORS,
   RARITIES,
 } from "@holo/schema/enums";
@@ -63,7 +63,10 @@ export function createEmpty(): FilterOptions {
     tag: "",
     set: "",
     colors: flags(COLORS),
-    cardTypes: flags(CARD_TYPES),
+    // FILTERABLE_CARD_TYPES, not CARD_TYPES: the latter includes non-card entries
+    // (rules notices, F-020), which are never in an /api/cards response. A checkbox for
+    // one would always return zero results.
+    cardTypes: flags(FILTERABLE_CARD_TYPES),
     rarity: flags(RARITIES),
     bloomLevel: flags(BLOOM_LEVELS),
   };

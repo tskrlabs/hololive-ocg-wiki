@@ -19,6 +19,7 @@ export type CardTypeCode =
   | "buzzCharacter"
   | "character"
   | "oshiCharacter"
+  | "rulesNotice"
   | "supportCheer"
   | "supportEvent"
   | "supportEventLimited"

@@ -27,16 +27,27 @@ CARD_TYPE: dict[str, str] = {
     "サポート・マスコット": "supportMascot",
     "サポート・スタッフ": "supportStaff",
     "サポート・スタッフ・LIMITED": "supportStaffLimited",
-    "サポート": "support",
+    "サポート": "rulesNotice",
 }
 """Card type. Unmapped values become `unknown` — a documented, legitimate code.
 
 `サポート・スタッフ` was missing here until Phase 1, which is why hBP07-091 (ライブスタッフ,
 2 cards) shows as `unknown` in v1's live data. See docs/findings.md F-001.
 
-Note `サポート` and `サポート・ロケーション` map to codes the contract's enum does not
-accept. That is deliberate: no card has ever used them, so a card that did would be a
-genuinely new type and should fail `build` loudly rather than validate silently."""
+Note `サポート・ロケーション` maps to a code the contract's enum does not accept. That is
+deliberate: no card has ever used it, so a card that did would be a genuinely new type
+and should fail `build` loudly rather than validate silently.
+
+`サポート` — the bare type, with no subtype — was in that same category until the
+2,464-card refresh, when it turned up on id 2459 (デッキ構築ルール): a Selection Cup
+format-legality notice the official site publishes *into* the card list. It maps to
+`rulesNotice` now.
+
+That mapping is an inference — the type alone does not prove a thing is a notice — and
+it is safe only because the contract checks the other half. `Card._card_fields_present`
+rejects a `rulesNotice` that carries a `card_number`, so if the site ever prints a real
+bare-`サポート` *card*, it fails `build` loudly exactly as before. The classification is
+one signal; the validator is what keeps a wrong guess from shipping."""
 
 COLOR: dict[str, str] = {
     "白": "white",

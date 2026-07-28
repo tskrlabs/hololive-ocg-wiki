@@ -35,7 +35,18 @@ from .cache import TranslationCache, field_keys
 
 PROMPTS_PATH = Path(__file__).resolve().parent / "prompts.json"
 POE_BASE_URL = "https://api.poe.com/v1"
-DEFAULT_MODEL = "GPT-5-Chat"
+
+# Poe's OpenAI-compatible endpoint uses lowercase model ids. `GPT-5-Chat` — the default
+# through Phase 1 — stopped resolving: it returns 500 on every call rather than a 404,
+# which is what a wrong-but-plausible name does there (a nonexistent one 404s). Nothing
+# noticed until the 2,464-card refresh, because the cache was seeded from v1 and no
+# translation had run since.
+#
+# `gpt-5.4` is the newest of the GPT-5 line the endpoint actually lists, and it is what
+# translated the 839 cards of that refresh — 1,622 fields across 6 locales, zero API
+# errors. Override per-run with `--model`; `holo-data translate --dry-run` costs nothing
+# and is the cheap way to find out a model id has moved again.
+DEFAULT_MODEL = "gpt-5.4"
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_CONCURRENCY = 5
 DEFAULT_RATE_LIMIT = 8.0  # requests per second

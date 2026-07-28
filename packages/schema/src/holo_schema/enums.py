@@ -60,11 +60,26 @@ use, not at some edge.
 # them but no card has ever used them, so admitting them would mean shipping enum values
 # with no evidence behind them. If a Location card ever appears, `build` fails loudly —
 # which is the intended behaviour for a genuinely new card type.
+#
+# `rulesNotice` was added by the 2,464-card data refresh, and it is not a card. The
+# official site publishes format-legality notices *into the card list*: id 2459
+# (デッキ構築ルール, `sele08/sele08_teaching`) states which products are legal for the
+# Selection Cup and how card-number matching works. It has a card's envelope — id, name,
+# image, card_sets, ability text — but no card number and no rarity, and its raw type is
+# the bare `サポート` the paragraph above says must fail loudly. It did fail loudly,
+# which is how it was found.
+#
+# It is modelled rather than excluded because it is the *legend* for a field we already
+# store: the same update added 「【使用可能カード】セレクションカップ」 to ~660 existing
+# cards' `card_sets`, and this notice is the only place the site explains what that
+# means. A deck simulator needs exactly this record to answer "is this deck legal for
+# this format?". See docs/findings.md F-020.
 
 CardTypeCode = Literal[
     "buzzCharacter",
     "character",
     "oshiCharacter",
+    "rulesNotice",
     "supportCheer",
     "supportEvent",
     "supportEventLimited",
@@ -80,6 +95,12 @@ CardTypeCode = Literal[
 
 CARD_TYPE_VALUES: tuple[CardTypeCode, ...] = get_args(CardTypeCode)
 
+# Types that are not playable cards. Named rather than compared inline so every
+# consumer asks one question — the deck sections below, counts, and any future
+# format-legality check. `unknown` is NOT here: it is an unclassified *card*, which is a
+# scraper gap to fix, whereas a rules notice is correctly classified as a non-card.
+NON_CARD_TYPES: tuple[CardTypeCode, ...] = ("rulesNotice",)
+
 
 # --- Deck sections -----------------------------------------------------------
 #
@@ -89,7 +110,10 @@ CARD_TYPE_VALUES: tuple[CardTypeCode, ...] = get_args(CardTypeCode)
 # Candidate 03, Phase 5).
 #
 # Note "unknown" is deliberately absent from all three: an unclassified card cannot be
-# routed to a section, and silently dropping it into MAIN would be a guess.
+# routed to a section, and silently dropping it into MAIN would be a guess. `rulesNotice`
+# is absent for a stronger reason — it is not a card at all (NON_CARD_TYPES), so no
+# section can ever hold it. Leaving it out here is what makes the deck builder
+# structurally unable to add it, rather than relying on every consumer to filter.
 
 OSHI_CARD_TYPES: tuple[CardTypeCode, ...] = ("oshiCharacter",)
 

@@ -207,6 +207,15 @@ class Card(BaseModel):
     # rarity variants of the same card (hBP01-104 has 9) all carry one number. Any
     # lookup keyed on card_number returns a list — v1's /api/cards/by-card-numbers
     # endpoint already accounts for this.
+    #
+    # Both stay strictly required. The 2,464-card refresh surfaced an entry with
+    # neither — id 2459, a Selection Cup format-legality notice the official site
+    # publishes *into* the card list — and the answer is that it is not a card and does
+    # not live here. It is a `Notice` (see notice.py), stored as an R2 artifact rather
+    # than a `cards` row. Widening these two to Optional was tried and reverted: it
+    # would have required dropping `NOT NULL` from a populated production table, which
+    # SQLite can only do by rebuilding it, in order to weaken an invariant that
+    # correctly protects every one of the 2,463 real cards. See docs/findings.md F-020.
     id: Annotated[str, Column(primary_key=True)]
     card_number: Annotated[str, Column(indexed=True), FullText(weight=2.0)]
 
@@ -287,6 +296,24 @@ class Card(BaseModel):
         if not v:
             raise ValueError("card_sets must not be empty — every card belongs to a set")
         return v
+
+    @model_validator(mode="after")
+    def _not_a_notice(self) -> "Card":
+        """A non-card type must never reach `Card`.
+
+        `rulesNotice` entries are routed to `Notice` by `transform.to_notice()`. If one
+        arrives here it means the split was bypassed, and it would be stored as a card
+        row with a fabricated number and rarity — exactly the silent-lie outcome the
+        separate model exists to prevent.
+        """
+        from .enums import NON_CARD_TYPES
+
+        if self.card_type_code in NON_CARD_TYPES:
+            raise ValueError(
+                f"{self.id} has card_type_code {self.card_type_code!r}, which is not a "
+                "card — it belongs in `Notice`, not `Card`"
+            )
+        return self
 
     @model_validator(mode="after")
     def _source_locale_present(self) -> "Card":

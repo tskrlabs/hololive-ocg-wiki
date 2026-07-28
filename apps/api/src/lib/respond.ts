@@ -42,6 +42,16 @@ export const INFO_TTL = 3600;
  */
 export const STATUS_TTL = CARD_TTL;
 
+/**
+ * `/api/notices` — rules notices from the official card list.
+ *
+ * Matches `FILTER_OPTIONS_TTL`: like the dropdown values, a notice changes only when the
+ * pipeline runs, and the payload is a few KB. Format-legality rules are announced ahead
+ * of an event rather than mid-event, so a day-stale answer is never wrong in a way a
+ * player would notice.
+ */
+export const NOTICES_TTL = FILTER_OPTIONS_TTL;
+
 export function cached<T>(c: Context, body: T, ttl: number = CARD_TTL): Response {
   c.header("Cache-Control", `public, max-age=${ttl}`);
   return c.json(body as object);
