@@ -24,10 +24,8 @@ that rather than change a zone setting mid-phase. It resolves itself at Phase 7 
 rule flips to `Allow` too. See [F-017](./findings.md#f-017).
 
 **Phase 5's design is recorded.** Sixteen decisions, in
-[ADR 0006](adr/0006-website.md) with the full interview in
-[`phase-5-grilling.md`](./phase-5-grilling.md). **Phase 6's** is fifteen decisions, in
-[ADR 0007](adr/0007-push-to-deploy.md) and
-[`phase-6-grilling.md`](./phase-6-grilling.md).
+[ADR 0006](adr/0006-website.md). **Phase 6's** is fifteen decisions, in
+[ADR 0007](adr/0007-push-to-deploy.md).
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -432,8 +430,7 @@ correct and worth keeping. Commands are in [Phase 5](#phase-5--the-website).
 
 ## Phase 5 — the website
 
-Full reasoning in [ADR 0006](adr/0006-website.md); the complete interview, including
-every option rejected, in [`phase-5-grilling.md`](./phase-5-grilling.md).
+Full reasoning in [ADR 0006](adr/0006-website.md).
 
 **The grilling found three holes, all of them gaps *between* phases rather than bugs
 inside one:**
@@ -640,8 +637,7 @@ Two things to know when Phase 6 arrives:
 
 ## Phase 6 — push-to-deploy
 
-Full reasoning in [ADR 0007](adr/0007-push-to-deploy.md); the interview, including every
-rejected option, in [`phase-6-grilling.md`](./phase-6-grilling.md).
+Full reasoning in [ADR 0007](adr/0007-push-to-deploy.md).
 
 Three things, in the order they depend on each other: make the deploy reproducible from a
 clean checkout, close the last gap between "fresh clone" and "working site", then write

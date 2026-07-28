@@ -3,8 +3,9 @@
 **Status:** accepted · **Phase:** 6 · **Date:** 2026-07-27
 
 Supersedes nothing. Extends [ADR 0001](0001-card-contract-generation.md)'s
-committed-generated-output rule from the contract to the fixtures. The full interview,
-including every rejected option, is in [`phase-6-grilling.md`](../phase-6-grilling.md).
+committed-generated-output rule from the contract to the fixtures. Every decision below was
+put to the maintainer during a grilling session; this ADR is the record of what came out
+of it.
 
 ## Context
 

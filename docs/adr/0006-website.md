@@ -6,8 +6,8 @@
 **Supersedes nothing. Amends:** D11, D13, and Phase 4's endpoint count.
 
 The decisions behind `apps/web` and the final shape of the Worker. Every one was put to
-the maintainer individually during a grilling session; the full interview, including the
-options rejected and why, is in [`../phase-5-grilling.md`](../phase-5-grilling.md).
+the maintainer individually during a grilling session; this ADR is the record of what came
+out of it.
 
 ## Context
 
