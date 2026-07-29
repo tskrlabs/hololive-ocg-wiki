@@ -20,7 +20,7 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-005](#f-005) | ✅ resolved | data | `hBP02-065`'s image filename does not match its card number — the site's typo |
 | [F-006](#f-006) | ✅ fixed | data | `hCO01` reprints reuse the original set's image filename |
 | [F-007](#f-007) | ✅ resolved | data | Two encodings for dual-colour cards — the cards are printed identically |
-| [F-008](#f-008) | 🔍 open | pipeline | `サポート` and `サポート・ロケーション` map to codes the contract rejects |
+| [F-008](#f-008) | ✅ resolved | pipeline | `サポート・ロケーション` maps to a code the contract rejects — kept, and pinned |
 | [F-009](#f-009) | 🔍 open | data | ~127 oshi skills have no `timing` text in any locale |
 | [F-010](#f-010) | 🔍 open | data | `batonTouchTypes` is always `["null"]` |
 | [F-011](#f-011) | ✅ closed | data | v1's `card_images/en/` — 1,112 dead files from an abandoned EN scrape |
@@ -36,6 +36,7 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-021](#f-021) | 🔍 open | data | Art names are 47–81% untranslated, and inconsistently so |
 | [F-022](#f-022) | 🔍 open | pipeline | The generated fixture corpus cannot be regenerated — both generators fail |
 | [F-023](#f-023) | 🔍 open | site | The `blue_red` colour icon is 88×108 where every sibling is 330×410 |
+| [F-024](#f-024) | 🔍 open | pipeline | `card_type_code` is the one enum that absorbs an unrecognised value silently |
 
 ---
 
@@ -377,21 +378,46 @@ printed cards, and the decision this finding was waiting on has its answer.
 
 ---
 
-## F-008 — mappings that the contract rejects 🔍
+## F-008 — a mapping the contract rejects ✅ resolved
 
-**Found:** Phase 1 · **Affects:** 0 cards today
+**Found:** Phase 1 · **Resolved:** 2026-07-29 · **Affects:** 0 cards, no behaviour change
 
-`mappings.CARD_TYPE` can emit `support` (from bare `サポート`) and `supportLocation` (from
-`サポート・ロケーション`), but neither is a member of `CardTypeCode`. No card has ever used
-either, so this is invisible — until the site ships one, at which point `build` fails.
+`mappings.CARD_TYPE` can emit a code that `CardTypeCode` does not accept, so a card
+carrying it fails `build` rather than validating. The finding asked whether to drop the
+mapping entry (such a card becomes `unknown` and ships) or keep the hard failure.
 
-That failure is arguably correct: a Location card would be a new mechanic, and shipping it
-as a silently-accepted enum value is worse than stopping. But the *reason* it fails would
-be confusing — the mapping says the type is known while the contract says it is not.
+**Half of it resolved itself.** The finding named two entries. Bare `サポート → support`
+is no longer one of them: the 2,464-card refresh turned up id 2459 (デッキ構築ルール) and
+[F-020](#f-020) remapped it to `rulesNotice`, which *is* a member of the enum. Only
+`サポート・ロケーション → supportLocation` (`mappings.py:25`) still diverges.
 
-**Needs a decision:** either drop the two entries from the mapping (so such a card becomes
-`unknown` and passes), or keep them and treat the hard failure as intended. Currently the
-second, documented in `mappings.py`.
+**The surviving entry is kept.** Both branches were checked against the real contract:
+
+| | outcome |
+|---|---|
+| keep the mapping | `literal_error` on `card_type_code` — `build` blocks |
+| drop the mapping | falls through to `unknown` — validates, ships, undeckbuildable |
+
+The entry is inherited verbatim from v1's port (`6be38ff`), and a census of all 2,464
+scraped cards finds fourteen distinct `カードタイプ` values — `サポート・ロケーション` is
+not among them and never has been. So it is a guess at a string the site has never
+printed, which is the case *against* keeping it.
+
+What settles it is that bare `サポート` was the same kind of guess, and it is what caught
+F-020 — the first and only time the guard has ever fired, on exactly the thing it was
+written for. The costs are also asymmetric: a blocked build is recoverable in minutes and
+has `--allow-unknown-enums` as an escape hatch, whereas an `unknown` card ships to D1
+announced by nothing (`unknown` appears in no build report, no `status.json`, no
+`verify` census) and is silently excluded from every deck section. That is
+[F-001](#f-001) again, which sat in v1's live data from the day those cards shipped.
+
+**Pinned by a test.** `TestCardType::test_mapping_may_exceed_the_contract_deliberately`
+asserts both halves — that the mapping emits a value outside `CARD_TYPE_VALUES`, and that
+a card carrying it fails validation. Deleting the mapping entry and widening the enum are
+each individually plausible tidy-ups, and either one alone would turn the loud failure
+silent with `make check` still green.
+
+**The `unknown` channel this exposed is [F-024](#f-024)**, logged separately.
 
 ---
 
@@ -1051,3 +1077,53 @@ rendering bug to patch quietly — so it is logged rather than done.
 Worth revisiting if [F-007](#f-007)'s normalisation is ever picked up: encoding
 `blue_red` as `["blue","red"]` would render the two full-size single-colour icons and
 retire this asset entirely, fixing the blur as a side effect.
+
+---
+
+## F-024 — `card_type_code` absorbs an unrecognised value; the others report it 🔍
+
+**Found:** 2026-07-29, while resolving [F-008](#f-008) · **Affects:** 0 cards today
+
+`transform.py` writes `"unknown"` as the fallback at eight sites, across four enums. Only
+one of those enums accepts it:
+
+| field | `unknown` in the enum? | a new value today |
+|---|---|---|
+| `card_type_code` (:243) | yes | **validates, ships, reported by nothing** |
+| `bloom_level_code` (:251) | no | `literal_error` — `build` blocks |
+| `color_codes` (:78, :83, :87, :91, :109) | no | `literal_error` — `build` blocks |
+| `arts[].cost_types` (:155) | no | `literal_error` — `build` blocks |
+
+So the same event — the site printing a value we have no mapping for — has two opposite
+outcomes depending on which field it lands in. Three fields stop the build. The fourth
+absorbs it.
+
+**The absorption is deliberate**, and this finding is not arguing it is wrong.
+`unknown` is [F-001](#f-001)'s safety valve: the scraper degrading gracefully beats it
+crashing, and `deckSections.ts` deliberately routes `unknown` to no section, so such a
+card is undeckbuildable rather than misfiled. Both are documented, intentional choices.
+
+**What is missing is the census.** `unknown` appears nowhere in `verify.py`, `cli.py`,
+`publish.py`, or `status.json`. Nothing counts it, prints it, or alerts on it. Zero cards
+carry it today — F-001 was the last, and its mapping is fixed — which means the channel is
+not merely unmonitored but *silent*, with no baseline anyone would notice moving. A new
+card type would ship, be excluded from deck building, and say nothing.
+
+That is the F-001 shape exactly: two `ライブスタッフ` cards sat in v1's live database as
+`unknown` from the day they shipped, and were found by a census run by hand during the
+v2 port, not by anything the pipeline said.
+
+**Needs a decision — how loud should the valve be?** Three candidates:
+
+- **Census in the build report.** Count `unknown` per field, print it next to the
+  translation coverage lines. Non-blocking, ~10 lines, makes the quiet channel visible.
+  Weakest option if the answer is that it should stop the build.
+- **Block, like the other three.** Drop `unknown` from `CardTypeCode` and let a new type
+  fail as a Location card would. Consistent, and F-008's reasoning applies — but it
+  removes a valve that was added on purpose, and a single scraper hiccup then stops a
+  refresh.
+- **Threshold.** Block above N, report below. Handles "one weird card" and "the site
+  changed its markup" differently, at the cost of a knob to tune.
+
+Logged rather than picked: this is a judgement about how the pipeline should behave when
+operated, not a data anomaly with a right answer. Nothing is broken today.

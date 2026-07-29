@@ -8,8 +8,26 @@ produces *plausible* wrong data, so these pin the shapes rather than the plumbin
 from __future__ import annotations
 
 import pytest
+from pydantic import ValidationError
 
+from holo_data import mappings
 from holo_data.transform import _arts, image_key_from_url, to_card
+from holo_schema import Card
+from holo_schema.enums import CARD_TYPE_VALUES
+
+
+def _card_with_type(card_type: str) -> dict:
+    """A card that is valid in every respect except the type under test."""
+    return {
+        "id": "9999",
+        "card_number": "hBP99-001",
+        "card_type_code": card_type,
+        "rarity_code": "C",
+        "image_key": "default/hBP99-001_C",
+        "source_image_url": "https://example.invalid/hBP99-001_C.png",
+        "card_sets": ["hBP99"],
+        "translations": {"ja": {"name": "テスト"}},
+    }
 
 
 class TestImageKey:
@@ -194,9 +212,50 @@ class TestColors:
 
 class TestCardType:
     def test_unmapped_becomes_unknown(self):
-        """`unknown` is a documented, legitimate code — 2 cards carry it."""
+        """`unknown` is a documented, legitimate code — the scraper's safety valve.
+
+        No card carries it today (F-001 fixed the last two by adding the missing
+        `サポート・スタッフ` mapping), which is what makes it a *silent* channel — see
+        docs/findings.md F-024.
+        """
         card = to_card({"id": "1", "info": {"カードタイプ": "新種別"}})
         assert card["card_type_code"] == "unknown"
+
+    def test_mapping_may_exceed_the_contract_deliberately(self):
+        """`CARD_TYPE` emits a code `CardTypeCode` rejects, and that is the point.
+
+        `サポート・ロケーション → supportLocation` is a mapping for a string the official
+        site has never printed — a census of all 2,464 scraped cards finds fourteen
+        distinct card types and that is not one of them. It is kept anyway: a card
+        carrying it would be a genuinely new mechanic, and stopping the build beats
+        shipping it as `unknown`, which validates and is then excluded from every deck
+        section with nothing to announce it.
+
+        This is not hypothetical. Bare `サポート` was the same kind of evidence-free
+        mapping until the 2,464-card refresh printed it, and that entry is what caught
+        the Selection Cup notice (F-020) — the first and only time the guard has fired.
+
+        Two assertions because two different tidy-ups would disarm it, and `make check`
+        would stay green through either: deleting the mapping entry (the card silently
+        becomes `unknown`), or widening the enum to accept it (the card silently
+        validates). See docs/findings.md F-008.
+        """
+        assert "サポート・ロケーション" in mappings.CARD_TYPE, (
+            "the mapping entry is the guard — without it a Location card becomes "
+            "`unknown` and ships silently (findings.md F-008)"
+        )
+        emitted = mappings.CARD_TYPE["サポート・ロケーション"]
+        assert emitted not in CARD_TYPE_VALUES, (
+            "the divergence is deliberate — admitting this code to the enum makes a "
+            "genuinely new card type validate instead of failing loudly"
+        )
+
+        with pytest.raises(ValidationError) as exc:
+            Card.model_validate(_card_with_type(emitted))
+        assert any(
+            error["type"] == "literal_error" and error["loc"] == ("card_type_code",)
+            for error in exc.value.errors()
+        )
 
     @pytest.mark.parametrize(
         "japanese,expected",
