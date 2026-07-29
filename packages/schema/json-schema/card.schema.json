@@ -340,7 +340,7 @@
     },
     "TranslatedArt": {
       "additionalProperties": false,
-      "description": "The localised half of an art: what it is called and what it says.\n\nPaired with `Art` by list index. That pairing is fragile: hSD03-009 and hSD04-009\neach had 2 entries in `Card.arts` but 0 in their `en` translation, so `localize()`\ndefines the merge rule and tolerates the short list. Both cards are golden-file\nfixtures, which is what keeps the rule pinned in Python *and* TypeScript.\n\nThe live data no longer exhibits it — the field-level cache filled both cards in\n(F-004) — so the fixtures are now the only thing exercising that path. Repointing the\nfixture generator at `holo-data build` output would silently remove that coverage;\nF-022 records what it needs instead.",
+      "description": "The localised half of an art: what it is called and what it says.\n\nPaired with `Art` by list index. That pairing is fragile: hSD03-009 and hSD04-009\neach had 2 entries in `Card.arts` but 0 in their `en` translation, so `localize()`\ndefines the merge rule and tolerates the short list.\n\n**No real card exhibits this any more.** The field-level cache filled both cards in\n(F-004), and a census over all 2,463 cards finds zero arts-length mismatches in any\nlocale. The rule still runs in production, in two languages, so a *synthetic*\nfixture carries the shape instead — card `9000001`, appended by\n`scripts/build_fixtures.py`. It is the only thing keeping the rule pinned in Python\n*and* TypeScript; see SYNTHETIC_CARD there, and issue #16.",
       "properties": {
         "name": {
           "title": "Name",

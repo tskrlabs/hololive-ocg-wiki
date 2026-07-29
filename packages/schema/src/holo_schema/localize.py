@@ -18,10 +18,11 @@ The merge rules, all of which the data forced:
 
 2. **Arts pair by index, tolerating a short list.** hSD03-009 and hSD04-009 had 2 arts
    but 0 `en` translations. The art is emitted with costs and damage and no name, since
-   dropping it would misreport what the card does. The live data no longer has a short
-   list (F-004 resolved itself), so the fixture corpus is now the only thing covering
-   this branch — in both implementations. See F-022 before changing where fixtures come
-   from.
+   dropping it would misreport what the card does. F-004 resolved itself and no real
+   card has a short list any more — a census over all 2,463 finds zero mismatches in any
+   locale — so the **synthetic fixture `9000001` is the only thing covering this
+   branch**, in both implementations. Deleting it silently untests a rule that ships.
+   See SYNTHETIC_CARD in `scripts/build_fixtures.py`.
 
 3. **Excess translated arts are dropped.** The inverse case does not occur in today's
    data. An art with a name but no cost is not a valid art, so there is nothing

@@ -30,7 +30,7 @@ generate: ## Regenerate JSON Schema, TypeScript, D1 DDL, fixtures.sql and the fi
 	uv run python packages/schema/scripts/generate_fixtures_sql.py
 	uv run python fixtures/build_local_artifacts.py
 
-fixtures: ## Re-select the fixture card set (needs v1 data — see script docstring)
+fixtures: ## Re-select the fixture card set (needs `holo-data build` output)
 	uv run python packages/schema/scripts/build_fixtures.py
 
 golden: ## Regenerate the localize() golden files from the Python reference

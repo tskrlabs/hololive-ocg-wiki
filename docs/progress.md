@@ -74,7 +74,6 @@ view; this table is the offline copy.
 
 | # | what | label |
 |---|---|---|
-| [#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16) | **`holo-data build` is broken** — the pipeline cannot produce a build | `ready-for-agent` |
 | [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) | Cloudflare's managed `robots.txt` inverts our `Disallow` | `ready-for-human` `phase-7` |
 | [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface | `ready-for-human` `phase-7` |
 | [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19) | How loud should the `unknown` card-type valve be? | `ready-for-human` |
@@ -82,11 +81,11 @@ view; this table is the offline copy.
 | [#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21) | Should art names be translated at all? | `ready-for-human` |
 | [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
 
-⚠️ **#16 is the only urgent one.** `holo-data build` fails on 1,991 arts today, so **no
-card-set refresh is possible until it lands**. The live site is unaffected — D1 was seeded
-before the contract changed — which is exactly why it went unnoticed.
+✅ **#16 is closed** — it was the only urgent one. `holo-data build` produces 2,463 cards
+with zero failures again, so a card-set refresh is possible. See
+[the pipeline section](#phase-1--the-pipeline) for the new `transform` command.
 
-The other six are judgement calls with no deadline; two resolve at launch. Everything
+The remaining six are judgement calls with no deadline; two resolve at launch. Everything
 settled during phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which
 is closed.
 
@@ -153,10 +152,17 @@ present in data, `special_values` typed `string[]` when it is `number[]`, and
 v1's 9 numbered scripts are now a `pipeline/` module with one `holo-data` CLI.
 
 ```
-holo-data scrape / images / translate / build / verify / status   ← working
+holo-data scrape / transform / images / translate / build / verify / status  ← working
 holo-data publish / verify-images / migrate-images                 ← Phase 2
 holo-data seed                                                     ← Phase 3 stub
 ```
+
+**`transform` re-runs `cards_structured.json` → `cards_i18n.json` without re-scraping**
+([#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16)). `scrape` always ran the
+transform as its final step, so before this the only supported repair after a contract
+change was re-fetching 2,464 pages from a small operator's site. That is not
+hypothetical — dropping `cost_count` from the contract left a stale `cards_i18n.json`
+that failed `build` on 1,991 arts, against scraped data that was perfectly fine.
 
 Key decisions — full reasoning in
 [ADR 0002](adr/0002-field-level-translation-cache.md):
@@ -214,7 +220,9 @@ Recorded in the ADRs; listed here so they are not missed.
 | **Phase 6 done-when** | "fresh clone runs with zero CF creds" was already true and **still failed the intent**: `make dev` needed a *Python toolchain* to generate the R2 artifacts. Met by **committing** them (`fixtures/artifacts/`, 64 KB), extending ADR 0001's rule from the contract to the fixtures ([ADR 0007](adr/0007-push-to-deploy.md)) |
 | **D14** | "a `corrections/` overlay makes a translation fix a reviewable PR" — ADR 0002 replaced the mechanism with cache entries but the cache is **gitignored**, so no reviewable surface exists. A fix goes through an issue. Logged as [F-018](./archive/findings.md#f-018), not closed |
 | **Phase 0 contract** | `TranslatedArt.value` is **dropped**. v2 has no path that writes it — a stray key on 4 `tc` arts in v1's data, caused by the translation prompt's own 「只翻譯 value」 wording. `localize()` never emitted it, so the golden files are byte-identical across the removal ([F-003](./archive/findings.md#f-003)) |
-| **Fixture corpus** | `fixtures/cards.json` is generated but **both its generators fail today** — F-002 dropped `cost_count` and hand-edited the corpus rather than regenerating, leaving `make fixtures` broken on 1,715 cards and `holo-data build` on 1,991 arts. `make check` runs neither, so the drift is invisible. Logged as [F-022](./archive/findings.md#f-022) with the repair scoped and measured |
+| **Fixture corpus** | ~~`fixtures/cards.json` is generated but **both its generators fail today**~~ — **fixed**, [#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16). F-002 dropped `cost_count` and hand-edited the corpus rather than regenerating, leaving `make fixtures` broken on 1,715 cards and `holo-data build` on 1,991 arts, with `make check` running neither. New `holo-data transform` repairs derived data without re-scraping; the corpus now selects from `holo-data build` output; `v1_adapter.py` is deleted |
+| **Phase 1 pipeline** | `scrape → images → translate → build` gains a **`transform`** rung. `scrape` always ran the transform as its last step, so the only supported repair after a contract change was re-fetching 2,464 pages from a small operator's site ([#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16)) |
+| **Fixture corpus** | Merge rule 2 (arts pair by index, tolerating a short list) is covered by a **synthetic fixture**, card `9000001`. F-004 warned repointing the generator would lose the coverage; the census found it worse — **zero** of 2,463 cards have an arts-length mismatch in any locale, so no real card can cover a rule that still runs in production in two languages |
 
 ## Phase 2 — R2 publish
 
@@ -402,8 +410,13 @@ npx wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtu
 Or just `make check-api`, which does both and then exercises every endpoint.
 
 `fixtures.sql` is committed and generated from the 34 fixture cards — every card type,
-every rarity, all 9 colours, all 7 locales, 546 Q&A items. No token, no network, no
+every rarity, all 9 colours, all 7 locales, 539 Q&A items. No token, no network, no
 Python. `seed` is deliberately not involved: it only ever writes to production.
+
+33 of the 34 are real cards selected from `holo-data build` output; **one is synthetic**
+(`9000001`), carrying the only remaining cover for `localize()`'s short-arts merge rule
+([#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16)). It appears in local dev
+with an image that does not resolve, which is itself worth seeing.
 
 Done when `seed --dry` reports the estimate above, production D1 is populated, and a
 second `seed` writes nothing.

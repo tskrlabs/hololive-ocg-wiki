@@ -161,9 +161,12 @@ artifact surfaces at the next build even if the hook was skipped.
 
 ## Notes for later phases
 
-- **Phase 1** — `scripts/v1_adapter.py` is a migration aid, not contract code. Delete it
-  once `holo-data build` emits v2 shapes natively. It documents every transformation
-  applied to v1 data.
+- ~~**Phase 1** — `scripts/v1_adapter.py` is a migration aid, not contract code. Delete
+  it once `holo-data build` emits v2 shapes natively.~~ **Done**, though two phases late
+  than intended: `build_fixtures.py` kept reading v1's data through it until issue #16.
+  Selecting the fixture corpus from a schema the contract had moved on from is what let
+  the corpus and its generator disagree. The generator now reads `holo-data build`
+  output and the adapter is deleted.
 - **Phase 2** — adopt the `{set}/{filename}` image key scheme the adapter uses; it is
   what resolves the reprint collisions.
 - **Phase 3** — the DDL emitter reads `annotations.py`.

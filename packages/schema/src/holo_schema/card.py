@@ -111,13 +111,14 @@ class TranslatedArt(BaseModel):
 
     Paired with `Art` by list index. That pairing is fragile: hSD03-009 and hSD04-009
     each had 2 entries in `Card.arts` but 0 in their `en` translation, so `localize()`
-    defines the merge rule and tolerates the short list. Both cards are golden-file
-    fixtures, which is what keeps the rule pinned in Python *and* TypeScript.
+    defines the merge rule and tolerates the short list.
 
-    The live data no longer exhibits it — the field-level cache filled both cards in
-    (F-004) — so the fixtures are now the only thing exercising that path. Repointing the
-    fixture generator at `holo-data build` output would silently remove that coverage;
-    F-022 records what it needs instead.
+    **No real card exhibits this any more.** The field-level cache filled both cards in
+    (F-004), and a census over all 2,463 cards finds zero arts-length mismatches in any
+    locale. The rule still runs in production, in two languages, so a *synthetic*
+    fixture carries the shape instead — card `9000001`, appended by
+    `scripts/build_fixtures.py`. It is the only thing keeping the rule pinned in Python
+    *and* TypeScript; see SYNTHETIC_CARD there, and issue #16.
     """
 
     model_config = _STRICT
