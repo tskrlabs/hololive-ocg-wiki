@@ -79,7 +79,7 @@ def image_key_from_path(image_path: str, source_url: str | None = None) -> str:
 # v1 published these cards as `unknown` because its pipeline had no mapping for
 # `サポート・スタッフ`. The type is real; the mapping entry was simply missing. Correcting
 # it here keeps the fixtures — which are selected from v1's data — consistent with what
-# the pipeline now produces. See docs/findings.md F-001.
+# the pipeline now produces. See docs/archive/findings.md F-001.
 _CARD_TYPE_CORRECTIONS: dict[str, str] = {
     "1877": "supportStaff",  # hBP07-091 ライブスタッフ
     "2003": "supportStaff",  # hBP07-091 ライブスタッフ, different rarity

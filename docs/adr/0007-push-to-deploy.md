@@ -66,7 +66,7 @@ compile", not "a Python test failed".
 Non-production branch builds would upload preview versions **against the same bindings** —
 there is only one D1 and one R2 (D12). A preview URL would be a second live window onto
 production, and its reads count against the 5M/day that v1 already breached once
-([F-014](../findings.md#f-014)). D12 deferred the preview environment deliberately;
+([F-014](../archive/findings.md#f-014)). D12 deferred the preview environment deliberately;
 enabling this would be that decision arriving through a side door.
 
 Caching is off for correctness rather than cost. Builds are rare — merges to `main` only —
@@ -110,7 +110,7 @@ spirit is zero setup, and this was the last thing in the way.
 files no longer generated — is caught by `make check`.
 
 **`filter_options()` is not reimplemented in Node.** It encodes
-[F-015](../findings.md#f-015): 41% of characters are spelled inconsistently across their
+[F-015](../archive/findings.md#f-015): 41% of characters are spelled inconsistently across their
 own cards, and the function picks a label by a rule that is three paragraphs of docstring.
 A second copy of that rule in TypeScript is precisely the drift ADR 0001 exists to
 prevent. One implementation, output committed, staleness checked.
@@ -153,7 +153,7 @@ thing is actually run, in the environment it will actually run in.
   which `CONTRIBUTING.md` states plainly.
 - The Phase 7 switch list grows from two to three: `workers_dev: false` joins
   `NUXT_PUBLIC_LAUNCHED` and repo visibility. It is kept on while
-  [F-017](../findings.md#f-017) is open, because comparing the two origins is the only way
+  [F-017](../archive/findings.md#f-017) is open, because comparing the two origins is the only way
   that bug is visible.
-- [F-018](../findings.md#f-018) is open and deliberately unfixed: D14 promised translation
+- [F-018](../archive/findings.md#f-018) is open and deliberately unfixed: D14 promised translation
   fixes as reviewable PRs, and no reviewable surface exists.

@@ -32,7 +32,7 @@ CARD_TYPE: dict[str, str] = {
 """Card type. Unmapped values become `unknown` — a documented, legitimate code.
 
 `サポート・スタッフ` was missing here until Phase 1, which is why hBP07-091 (ライブスタッフ,
-2 cards) shows as `unknown` in v1's live data. See docs/findings.md F-001.
+2 cards) shows as `unknown` in v1's live data. See docs/archive/findings.md F-001.
 
 Note `サポート・ロケーション` maps to a code the contract's enum does not accept. That is
 deliberate: no card has ever used it, so a card that did would be a genuinely new type

@@ -223,7 +223,7 @@ class Card(BaseModel):
     # than a `cards` row. Widening these two to Optional was tried and reverted: it
     # would have required dropping `NOT NULL` from a populated production table, which
     # SQLite can only do by rebuilding it, in order to weaken an invariant that
-    # correctly protects every one of the 2,463 real cards. See docs/findings.md F-020.
+    # correctly protects every one of the 2,463 real cards. See docs/archive/findings.md F-020.
     id: Annotated[str, Column(primary_key=True)]
     card_number: Annotated[str, Column(indexed=True), FullText(weight=2.0)]
 

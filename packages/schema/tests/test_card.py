@@ -59,7 +59,7 @@ class TestEnums:
 
         No card carries it today — F-001 fixed the last two by adding the missing
         `サポート・スタッフ` mapping. It stays as the safety valve for the next
-        unrecognised type; see docs/findings.md F-024 for the fact that nothing counts
+        unrecognised type; see docs/archive/findings.md F-024 for the fact that nothing counts
         it if one ever appears.
         """
         assert "unknown" in CARD_TYPE_VALUES

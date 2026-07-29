@@ -89,7 +89,7 @@ Per D1 the published artifacts live in R2, not git.
 its R2 object key, which is what lets `publish` sync without consulting `cards.json`. It
 is also load-bearing for correctness: `hBP03-044_SR.png` exists under both `hBP03` and
 `hCO01` as **different artwork**, and a flat directory can only hold one of them — see
-[F-006](../docs/findings.md#f-006), which is exactly how v1 shipped one card's art for
+[F-006](../docs/archive/findings.md#f-006), which is exactly how v1 shipped one card's art for
 two cards.
 
 ## Gotchas

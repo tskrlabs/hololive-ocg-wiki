@@ -39,7 +39,7 @@ all raise `fts5: syntax error`. v1 caught that as control flow; a naive port ret
 ### 4. The `name` filter was broken in v1 and could not be ported as-is
 
 41% of characters (122/296) are spelled inconsistently across their own cards. Full
-measurements in [F-015](../findings.md#f-015).
+measurements in [F-015](../archive/findings.md#f-015).
 
 ### 5. `apps/web/` does not exist
 
@@ -109,7 +109,7 @@ Consequences, measured: names collapse from 381 entries in `en` to **296 in ever
 locale**, and one query returns every card for a character regardless of spelling.
 `/api/filter-options` pairs the key with a display label so the dropdown still reads in
 the user's language — and picking that label needed its own rule, because the *majority*
-spelling is usually the untranslated Japanese one. See [F-015](../findings.md#f-015).
+spelling is usually the untranslated Japanese one. See [F-015](../archive/findings.md#f-015).
 
 ### Search: a literal phrase, always
 
@@ -131,7 +131,7 @@ the table size, the result is capped, and the response is cached for an hour.
 
 `blue_red` is one printed icon, stored as printed. A request for `blue` therefore queries
 `('blue', 'blue_red')`. Without this, filtering blue silently omits those cards — which
-is what the live v1 site does today. See [F-016](../findings.md#f-016).
+is what the live v1 site does today. See [F-016](../archive/findings.md#f-016).
 
 The expansion is deliberately in the query layer: expanding on write would render two
 icons and a comma where the card shows one, and the seeder's

@@ -216,7 +216,7 @@ class TestCardType:
 
         No card carries it today (F-001 fixed the last two by adding the missing
         `サポート・スタッフ` mapping), which is what makes it a *silent* channel — see
-        docs/findings.md F-024.
+        docs/archive/findings.md F-024.
         """
         card = to_card({"id": "1", "info": {"カードタイプ": "新種別"}})
         assert card["card_type_code"] == "unknown"
@@ -238,7 +238,7 @@ class TestCardType:
         Two assertions because two different tidy-ups would disarm it, and `make check`
         would stay green through either: deleting the mapping entry (the card silently
         becomes `unknown`), or widening the enum to accept it (the card silently
-        validates). See docs/findings.md F-008.
+        validates). See docs/archive/findings.md F-008.
         """
         assert "サポート・ロケーション" in mappings.CARD_TYPE, (
             "the mapping entry is the guard — without it a Location card becomes "

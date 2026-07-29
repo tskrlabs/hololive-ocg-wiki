@@ -293,7 +293,7 @@ Everything here is free tier, and cost is a hard constraint (`v2-plan.md` §6).
 
 Writes are what `seed` spends and they have enormous headroom. **Reads are what the
 *site* spends, and v1 breached them** — 5,582,892 rows read on 2026-07-12 against a 5M
-limit, at which point D1 returns errors until 00:00 UTC ([F-014](./findings.md#f-014)).
+limit, at which point D1 returns errors until 00:00 UTC ([F-014](./archive/findings.md#f-014)).
 
 v1 scanned 882 rows per query on a 2,448-row table because JSON-array filters cannot use
 an index and `enrichCardDataBatch` issued five follow-up queries per page. The v2 schema
@@ -315,7 +315,7 @@ Cloudflare's **managed `robots.txt`** (Security → Bots → Configure Bot Fight
 *"Instruct bot traffic with robots.txt"*) prepends its own block to whatever the origin
 returns for `/robots.txt`. On this zone that put `User-agent: * / Allow: /` **above** our
 `Disallow: /`, inverting the pre-launch indexing guard — see
-[F-017](./findings.md#f-017). **Left on, by decision** — `noindex` carries the guard
+[F-017](./archive/findings.md#f-017). **Left on, by decision** — `noindex` carries the guard
 alone until Phase 7, when our own rule flips to `Allow` and the two agree.
 
 The general lesson is worth more than the specific fix: a zone-level feature can change a

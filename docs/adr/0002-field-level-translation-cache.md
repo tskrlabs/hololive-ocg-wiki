@@ -122,7 +122,7 @@ correction. Flagged for a separate decision.
 
 > **Decided in Phase 6 — the field was dropped, not corrected.** A census found no reader
 > anywhere in the codebase, and `len(cost_types)` already carries the same fact. See
-> [F-002](../findings.md#f-002). This paragraph records what Phase 1 decided and stands as
+> [F-002](../archive/findings.md#f-002). This paragraph records what Phase 1 decided and stands as
 > written.
 
 ### WebP conversion is its own command

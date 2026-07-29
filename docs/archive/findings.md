@@ -1,42 +1,54 @@
-# Findings
+# Findings — closed archive
 
-Data anomalies and suspicious behaviour turned up while building v2, recorded here
-rather than fixed on the spot.
+Data anomalies turned up while building v2, phases 0–6. **This file is closed.** Nothing
+is added to it.
 
-**The rule:** anything unambiguously wrong with an obvious fix gets fixed in the phase
-that found it, and logged here as `fixed`. Anything that needs a judgement call about the
-*game* — is this a scraping bug or is the card really like that? — is logged as `open`
-and left alone. The maintainer reviews the open ones against the real cards once the v2
-base is complete.
+Seventeen entries are **settled** — the question has an answer, including where the answer
+was "deliberately do nothing". Seven moved to the issue tracker and are stubs here.
 
-Nothing here blocks a phase. If something did, it would be an issue, not a finding.
+**Where new findings go now:**
+
+| what turned up | where it goes |
+|---|---|
+| needs a maintainer judgement | a GitHub issue, `needs-triage` |
+| broke while fixing something else | a GitHub issue, `ready-for-agent` |
+| something now *understood* | the code comment, test docstring, or ADR it explains |
+
+Nothing appends here. That rule is what kept this file growing every time an entry was
+closed: five of its ten open items were born from resolving others.
+
+**Why it is kept.** Eighty code comments cite these IDs — `# F-006` in `paths.py` means
+"the set-scoped image tree exists for a reason, and it is written down here". A settled
+finding is the reasoning behind a line of code, not a task.
+
+Open questions are tracked as issues; see [`progress.md`](../progress.md) § Open questions.
 
 | ID | Status | Area | Summary |
 |---|---|---|---|
-| [F-001](#f-001) | ✅ fixed | pipeline | `サポート・スタッフ` had no mapping, so 2 cards shipped as `unknown` |
-| [F-002](#f-002) | ✅ fixed | data | `cost_count` counted the 特攻 icon; the field had no readers and is dropped |
-| [F-003](#f-003) | ✅ fixed | data | A stray `value` field on 4 arts; no producer, no reader, dropped |
-| [F-004](#f-004) | ✅ resolved | data | 2 cards had base arts but no `en` translated arts — the cache filled them in |
-| [F-005](#f-005) | ✅ resolved | data | `hBP02-065`'s image filename does not match its card number — the site's typo |
-| [F-006](#f-006) | ✅ fixed | data | `hCO01` reprints reuse the original set's image filename |
-| [F-007](#f-007) | ✅ resolved | data | Two encodings for dual-colour cards — the cards are printed identically |
-| [F-008](#f-008) | ✅ resolved | pipeline | `サポート・ロケーション` maps to a code the contract rejects — kept, and pinned |
-| [F-009](#f-009) | 🔍 open | data | ~127 oshi skills have no `timing` text in any locale |
-| [F-010](#f-010) | 🔍 open | data | `batonTouchTypes` is always `["null"]` |
-| [F-011](#f-011) | ✅ closed | data | v1's `card_images/en/` — 1,112 dead files from an abandoned EN scrape |
-| [F-012](#f-012) | ✅ fixed | data | The official site re-uploads card images; 12 local copies were stale |
-| [F-013](#f-013) | ✅ fixed | site | Searching a partial CJK name returns nothing on the live site |
-| [F-014](#f-014) | 🔍 open | infra | v1 exceeded the D1 free read tier on 2026-07-12 |
-| [F-015](#f-015) | 🔍 open | data | 41% of characters are named inconsistently across their own cards |
-| [F-016](#f-016) | ✅ fixed | site | v1's colour filter misses fused dual-colour cards |
-| [F-017](#f-017) | 🔍 open | infra | Cloudflare's managed `robots.txt` inverts our `Disallow` |
-| [F-018](#f-018) | 🔍 open | process | A translation fix has no reviewable surface — the cache is not in git |
-| [F-019](#f-019) | ✅ fixed | site | Infinite scroll never fired; the homepage showed 200 of 2,448 cards |
-| [F-020](#f-020) | ✅ resolved | data | The card list is not all cards — a rules notice is not a `Card` |
-| [F-021](#f-021) | 🔍 open | data | Art names are 47–81% untranslated, and inconsistently so |
-| [F-022](#f-022) | 🔍 open | pipeline | The generated fixture corpus cannot be regenerated — both generators fail |
-| [F-023](#f-023) | 🔍 open | site | The `blue_red` colour icon is 88×108 where every sibling is 330×410 |
-| [F-024](#f-024) | 🔍 open | pipeline | `card_type_code` is the one enum that absorbs an unrecognised value silently |
+| [F-001](#f-001) | ✅ settled | pipeline | `サポート・スタッフ` had no mapping, so 2 cards shipped as `unknown` |
+| [F-002](#f-002) | ✅ settled | data | `cost_count` counted the 特攻 icon; the field had no readers and is dropped |
+| [F-003](#f-003) | ✅ settled | data | A stray `value` field on 4 arts; no producer, no reader, dropped |
+| [F-004](#f-004) | ✅ settled | data | 2 cards had base arts but no `en` translated arts — the cache filled them in |
+| [F-005](#f-005) | ✅ settled | data | `hBP02-065`'s image filename does not match its card number — the site's typo |
+| [F-006](#f-006) | ✅ settled | data | `hCO01` reprints reuse the original set's image filename |
+| [F-007](#f-007) | ✅ settled | data | Two encodings for dual-colour cards — the cards are printed identically |
+| [F-008](#f-008) | ✅ settled | pipeline | `サポート・ロケーション` maps to a code the contract rejects — kept, and pinned |
+| [F-009](#f-009) | ✅ settled | data | ~127 oshi skills have no `timing` text — nothing reads it; the site renders `timing_code` |
+| [F-010](#f-010) | ✅ settled | data | `batonTouchTypes` is always `["null"]` — noted for the day a coloured one appears |
+| [F-011](#f-011) | ✅ settled | data | v1's `card_images/en/` — 1,112 dead files from an abandoned EN scrape |
+| [F-012](#f-012) | ✅ settled | data | The official site re-uploads card images; 12 local copies were stale |
+| [F-013](#f-013) | ✅ settled | site | Searching a partial CJK name returns nothing on the live site |
+| [F-014](#f-014) | ✅ settled | infra | v1 exceeded the D1 free read tier — v1 is archived at Phase 7 |
+| [F-015](#f-015) | → [#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20) | data | 41% of characters are named inconsistently across their own cards |
+| [F-016](#f-016) | ✅ settled | site | v1's colour filter misses fused dual-colour cards |
+| [F-017](#f-017) | → [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) | infra | Cloudflare's managed `robots.txt` inverts our `Disallow` |
+| [F-018](#f-018) | → [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | process | A translation fix has no reviewable surface — the cache is not in git |
+| [F-019](#f-019) | ✅ settled | site | Infinite scroll never fired; the homepage showed 200 of 2,448 cards |
+| [F-020](#f-020) | ✅ settled | data | The card list is not all cards — a rules notice is not a `Card` |
+| [F-021](#f-021) | → [#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21) | data | Art names are 47–81% untranslated, and inconsistently so |
+| [F-022](#f-022) | → [#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16) | pipeline | `holo-data build` is broken — the pipeline cannot produce a build |
+| [F-023](#f-023) | → [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | site | The `blue_red` colour icon is 88×108 where every sibling is 330×410 |
+| [F-024](#f-024) | → [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19) | pipeline | `card_type_code` is the one enum that absorbs an unrecognised value silently |
 
 ---
 
@@ -77,7 +89,7 @@ actual costs** — and disagreed with `cost_types`, which correctly has only the
 
 Example — `hBP03-011`, art 0: `cost_count: 3`, `cost_types: ["white", "null"]`.
 
-Phase 1 reproduced this deliberately (data equivalence, [ADR 0002](adr/0002-field-level-translation-cache.md)).
+Phase 1 reproduced this deliberately (data equivalence, [ADR 0002](../adr/0002-field-level-translation-cache.md)).
 The open question was whether anything computed with the number.
 
 **The answer: nothing read it at all.** A census over the whole codebase found zero
@@ -421,26 +433,37 @@ silent with `make check` still green.
 
 ---
 
-## F-009 — oshi skills with no `timing` text 🔍
+## F-009 — oshi skills with no `timing` text ✅ settled
 
-**Found:** Phase 0 · **Affects:** ~127 oshi skills, ~127 SP oshi skills
+**Found:** Phase 0 · **Settled:** 2026-07-29, against the site's own code ·
+**Affects:** ~127 oshi skills, ~127 SP oshi skills
 
 `timing_code` is present on every skill (`once_per_turn` / `once_per_game`), but the
 human-readable `timing` string ("Once per turn") is missing on ~7% of them, in **all**
 locales including `ja`.
 
-Since `timing_code` is reliable, the UI can render the timing from i18n rather than the
-stored string — so this may not matter at all.
+This finding asked for a decision: render from `timing_code`, or chase a regex variant in
+the extractor?
 
-**Needs a decision:** whether the site omits the marker on those cards (nothing to fix,
-and Phase 5 should render from `timing_code`) or the extractor's `[ターンに1回]` regex
-misses a variant spelling.
+**The decision was already made, in code.** `CardDataDetailBlocks.vue` renders
+`item.oshi_skill.timing_code` and `item.sp_oshi_skill.timing_code`, gated on those same
+codes. A census over `apps/web` and `packages/schema/dist` finds **zero readers of the
+`timing` string** — nothing on the site has ever displayed it.
+
+So the missing string reaches no user, and the branch this finding worried about
+("Phase 5 should render from `timing_code`") is what Phase 5 did. Whether the extractor's
+`[ターンに1回]` regex misses a variant spelling is now a question with no consequence: the
+field it would populate is dead weight in the payload.
+
+Left in the contract rather than removed — unlike `cost_count` ([F-002](#f-002)) and
+`value` ([F-003](#f-003)), this field is genuinely produced by the source and is simply
+unused, so dropping it would be a scope choice rather than a correction.
 
 ---
 
-## F-010 — `batonTouchTypes` is always `["null"]` 🔍
+## F-010 — `batonTouchTypes` is always `["null"]` ✅ settled
 
-**Found:** Phase 0 · **Affects:** all 2,219 cards that have one
+**Found:** Phase 0 · **Settled:** 2026-07-29 · **Affects:** all 2,219 cards that have one
 
 Every baton touch cost in the entire dataset is the colourless `◇`. No card has ever had
 a coloured baton touch cost.
@@ -448,9 +471,10 @@ a coloured baton touch cost.
 Modelled as `list[ColorCode]` anyway — hardcoding `Literal["null"]` would break on the
 first coloured one.
 
-**Probably nothing.** Recorded so that if a coloured baton touch ever appears and
-something downstream assumed colourless, the assumption is on record. Worth a glance at
-whether the game rules even allow it.
+**Nothing to decide.** The modelling is already correct for both worlds, and this
+finding's own text said "probably nothing". It is kept as a note rather than a question:
+if a coloured baton touch ever ships and something downstream assumed colourless, the
+assumption is on record here with the date it was true.
 
 ---
 
@@ -545,9 +569,10 @@ back to `LIKE` below the threshold. A test pins both halves.
 
 ---
 
-## F-014 — v1 exceeded the D1 free read tier 🔍
+## F-014 — v1 exceeded the D1 free read tier ✅ settled
 
-**Found:** Phase 3 · **Affects:** the live v1 site · **Not fixed in v1**
+**Found:** Phase 3 · **Settled:** 2026-07-29 — it ends when v1 does ·
+**Affects:** the live v1 site only · **Not fixed in v1, and will not be**
 
 D1 analytics for the 30 days to 2026-07-27:
 
@@ -573,67 +598,32 @@ fixed by the Phase 3 schema:
 2. **JSON-array filters cannot use an index.** `color_codes LIKE '%"blue"%"'` reports
    `SCAN cards` in `EXPLAIN QUERY PLAN` despite `idx_cards_color_codes` existing.
 
-**Why this is `open` and not `fixed`.** v1 stays live until cutover and nothing here
+**Why this is settled rather than tracked.** v1 stays live until cutover and nothing here
 changes that; the fix ships with v2's schema, which measured at ~50–100 rows per
-filtered page against v1's 882. Left open so the maintainer knows the live site has a
-standing failure mode until Phase 7 — if traffic spikes before cutover, this is what
-breaks, and the only lever available on v1 is reducing traffic.
+filtered page against v1's 882. The live site has a standing failure mode until Phase 7 —
+if traffic spikes before cutover, this is what breaks, and the only lever available on v1
+is reducing traffic. **That is not a task, because the remedy is "launch v2", which is
+already the plan**, and v1 is archived at Phase 7 along with the failure mode. No issue
+was opened; one would sit open until it became moot.
 
 **Worth knowing for v2:** rows-read scales with traffic while writes do not. It is the
 number to watch after launch, and the reason the schema optimises for it over the row
-count D8 originally targeted. See [ADR 0004](adr/0004-d1-schema-and-seeder.md).
+count D8 originally targeted. See [ADR 0004](../adr/0004-d1-schema-and-seeder.md).
 
 ---
 
-## F-015 — 41% of characters are named inconsistently across their own cards 🔍
+## F-015 — 41% of characters are named inconsistently across their own cards → [#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20)
 
-**Found:** Phase 4 · **Affected:** the `name` filter, in every locale
+**Found:** Phase 4 · **Moved to the tracker:** 2026-07-29
 
-The `name` filter answers "show me every Fubuki card". v1 implemented it as
-`WHERE ct.name = ?` against the *requested locale's* translation. Measured over the real
-2,448-card set, that question does not have one answer:
+The API half is fixed and stays fixed: the `name` filter keys on an indexed `name_ja`
+column, so one query returns every card for a character regardless of how each card spells
+it, and `/api/filter-options` pairs that key with a display label.
 
-| | |
-|---|---|
-| Characters (distinct `ja` names) | **296** |
-| Characters spelled inconsistently in ≥1 locale | **122 (41%)** |
-| Distinct `en` names | **381** — 85 more than there are characters |
-
-Shirakami Fubuki is the clearest case. Across their 44 cards the `en` translation is:
-
-| spelling | cards |
-|---|---|
-| `白上フブキ` | 38 |
-| `Shirakami Fubuki` | 6 |
-
-So v1's dropdown had *two* Fubuki entries in English, one returning 38 cards and one
-returning 6, and neither returning the character. The same split affects `ときのそら` /
-`Tokino Sora`, `宝鐘マリン` / `Houshou Marine`, and 119 others.
-
-**What Phase 4 did.** The filter keys on the **source-locale name** — a new indexed
-`name_ja` column — so one query returns every card for a character regardless of how
-each card spells it. `/api/filter-options` pairs that key with a display label, so the
-dropdown still reads in the user's language:
-
-```json
-{ "value": "白上フブキ", "label": "Shirakami Fubuki" }
-```
-
-Picking that label needed its own rule. Because most cards leave the name untranslated,
-the *majority* spelling is usually the Japanese one — taking it would show `白上フブキ`
-to an English reader while `Shirakami Fubuki` sat unused in the data. A spelling that
-differs from the `ja` name wins instead, which recovers a readable label for 103 of 296
-characters in `en` and 65 in `ko`.
-
-**Why this is `open` and not `fixed`.** The API no longer splits a character, and that
-part is fixed. What is *not* resolved is the underlying data: 271 of 296 characters have
-no romanised `en` name on any card, and the 6-of-44 pattern suggests the official site
-translates a name only sometimes rather than never. That is a question about the source
-data — is the JP text deliberate on those 38 cards, or did the translation pass skip
-them? — and it is the kind of judgement about the *game* that belongs with the
-maintainer. Worth checking against `pipeline/corrections/` (ADR 0002 makes a correction
-a cache entry), because a handful of manual entries would give every character a proper
-label in every locale.
+What remains is a question about the *source data* — 271 of 296 characters have no
+romanised `en` name on any card, and the 6-of-44 Fubuki pattern suggests the official site
+translates a name only sometimes rather than never. Full evidence and the measurements are
+in [#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20).
 
 ---
 
@@ -671,105 +661,41 @@ because it is a UI decision, not an API one.
 
 ---
 
-## F-017 — Cloudflare's managed `robots.txt` inverts our `Disallow` 🔍 accepted, deferred
+## F-017 — Cloudflare's managed `robots.txt` inverts our `Disallow` → [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17)
 
-**Found:** Phase 5, on attaching the custom domain · **Affects:** indexing policy while
-v1 is still live
+**Found:** Phase 5 · **Accepted:** 2026-07-27 · **Moved to the tracker:** 2026-07-29
 
-Attaching `hololive-ocg-wiki.tskrlabs.com` surfaced a zone-level setting that rewrites
-what the site serves. Cloudflare's **managed `robots.txt`** (Security → Bots) prepends its
-own block to whatever the origin returns, producing this:
+A zone-level Cloudflare setting prepends `User-agent: * / Allow: /` above our
+`Disallow: /`, so `robots.txt` on the custom domain most likely reads as crawlable. The
+maintainer accepted the risk rather than change a zone setting mid-phase, so **`noindex`
+is the sole indexing guard until Phase 7**, when the conflict resolves itself.
 
-```
-# BEGIN Cloudflare Managed content
-User-agent: *
-Content-Signal: search=yes,ai-train=no,use=reference
-Allow: /                       ← Cloudflare's
-...Disallow rules for GPTBot, ClaudeBot, CCBot, etc...
-# END Cloudflare Managed Content
+Tracked at [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) — labelled
+`phase-7` — because the revisit is a launch step, not an open question. The one-click
+override, if it is ever needed sooner, is in the issue.
 
-# START nuxt-robots (indexing disabled)
-User-agent: *
-Disallow: /                    ← ours
-```
-
-**Two `User-agent: *` groups with opposite directives.** Google merges rules from
-duplicate groups and resolves an `Allow`/`Disallow` conflict on the same path in favour of
-the *least restrictive*, so on this domain `robots.txt` most likely reads as **crawlable**
-— the opposite of what ADR 0006 Q10 decided. The `workers.dev` origin is unaffected and
-still serves our rule alone; only the zone rewrites it.
-
-**What still holds:** the `noindex, nofollow` meta tag, which is present in the static
-HTML a non-JS crawler sees (added in Phase 5 commit 8 precisely because `@nuxtjs/robots`
-could not emit it under `ssr: false`). That is the stronger signal — `robots.txt` governs
-*crawling*, `noindex` governs *indexing*. But Q10 wanted two independent guards while v1
-stays indexed on the same 2,448 cards, and one of them is now inverted.
-
-**Decision (2026-07-27): left as-is for now.** The maintainer accepted the risk rather
-than change a zone setting mid-phase, so **`noindex` is the sole indexing guard until
-Phase 7.**
-
-That is a deliberate narrowing of ADR 0006 Q10, which wanted two independent guards. It is
-defensible: `noindex` is the signal that governs *indexing*, it is in the static HTML a
-non-JS crawler sees, and the domain is un-announced. The exposure is a crawler that obeys
-`robots.txt` but never parses the HTML — it would crawl the site, though it should still
-not index it.
-
-**Revisit at Phase 7**, when this resolves itself: our own rule flips to `Allow`, the two
-groups agree, and the AI-crawler `Disallow` rules become genuinely useful. If the site
-needs to be hard-blocked before then, the one-click fix is:
-
-> Dashboard → Security → Bots → **Configure Bot Fight Mode** → toggle off
-> *"Instruct bot traffic with robots.txt"*.
-> (Also at Security Settings → filter **Bot traffic**.) It is a **zone** setting, so it
-> also covers `img.hololive-ocg-wiki.tskrlabs.com`.
-
-**Not a bug in our code, and worth knowing generally:** a zone-level Cloudflare feature can
-change what a Worker appears to serve. `curl` against `workers.dev` and against the custom
+The general lesson is worth keeping here: **a zone-level Cloudflare feature can change
+what a Worker appears to serve.** `curl` against `workers.dev` and against the custom
 domain returned different bytes for the same path, which is the only reason this was
 caught.
 
 ---
 
-## F-018 — a translation fix has no reviewable surface 🔍 open
+## F-018 — a translation fix has no reviewable surface → [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18)
 
-**Found:** Phase 6, writing `CONTRIBUTING.md` · **Affects:** outside contribution
+**Found:** Phase 6 · **Moved to the tracker:** 2026-07-29
 
-D14's reasoning is explicit about what an outside contributor actually wants to do:
-*"the contribution people actually want to make is fixing a bad translation, which is
-currently impossible: fixes get overwritten on the next pipeline run. An overlay makes it
-a reviewable PR."* The mechanism it named was a committed `corrections/` directory applied
-after translation.
+D14 promised that fixing a bad translation would be a reviewable PR. ADR 0002 replaced the
+overlay mechanism with cache entries — strictly better for *durability* — but the cache
+lives in gitignored `pipeline/locales/`, so the file a contributor would edit does not
+exist in a clone, and the `pipeline/corrections/` carve-out is empty and unread by any
+code. A fix can only be reported, then applied by the maintainer.
 
-**ADR 0002 replaced the mechanism and, without meaning to, the property.** Field-level
-caching made a correction durable in a better way — an entry marked `source: "manual"` is
-never overwritten, because a field's value comes from the cache rather than from the
-model, so there is nothing to overwrite it with. That is strictly better than an overlay
-for *durability*.
-
-But the cache lives in `pipeline/locales/`, which is **gitignored** (D1: generated data
-lives in R2, not git). So the file a contributor would edit does not exist in a clone, and
-`pipeline/corrections/` — which `.gitignore` explicitly carves out as "deliberately NOT
-ignored… reviewing them as a PR diff is the point" — is empty and unread by any code.
-
-The result: a translation fix can only be reported, then applied by the maintainer. That
-works, and `CONTRIBUTING.md` now says so plainly rather than implying a PR path that does
-not exist. But it is a narrowing of D14, and it was silent until someone tried to write
-the contributor docs.
-
-**Not fixed in Phase 6, deliberately.** Closing it is pipeline work — deciding what a
-committed correction file looks like, how `translate` merges it into the cache, and how a
-correction is verified without a Poe key — which deserves its own design pass. The repo is
-also private until Phase 7, so there is no contributor being turned away today.
-
-**Options when it is picked up**, none chosen yet:
-
-- A committed `pipeline/corrections/{locale}.json` that `translate` folds into the cache
-  as `source: "manual"` entries. Closest to D14's intent; the directory already exists.
-- Commit the manual entries only — a filtered projection of the cache, which is small
-  (most fields are machine-translated) and diffs cleanly.
-- Leave it as issue-driven and delete the empty `corrections/` carve-out, which currently
-  documents a mechanism that does not exist.
+Three candidate mechanisms, none chosen, are in
+[#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18). The four `tc` art strings
+[F-003](#f-003) recovered are waiting on it — they are recorded verbatim in F-003 rather
+than written into the cache, precisely because doing so would have depended on the gap
+this records.
 
 ---
 
@@ -921,209 +847,79 @@ loudly. But if the site ever publishes a notice *with* a number, this needs revi
 
 ---
 
-## F-021 — art names are largely untranslated, inconsistently 🔍
+## F-021 — art names are largely untranslated, inconsistently → [#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21)
 
-**Found:** 2026-07-29, while resolving [F-003](#f-003) · **Affects:** every locale
+**Found:** 2026-07-29, while resolving [F-003](#f-003) · **Moved to the tracker:**
+2026-07-29
 
-F-003's four stranded `value` strings were evidence of a much larger pattern. Measured
-over the full 2,463-card build, comparing each locale's `arts[].name` against the `ja`
-name for the same art:
+Art names are 47–81% identical to the `ja` name depending on locale. Much of that is
+correct by policy — every prompt says not to translate character names inside art names —
+but the data contradicts itself: `hBP03-011`'s three prints of the same art give three
+different answers in the same locale.
 
-| locale | art names identical to `ja` | |
-|---|---|---:|
-| en | 930 / 1,991 | 47% |
-| es | 1,151 / 1,991 | 58% |
-| ko | 1,202 / 1,991 | 60% |
-| tc | 1,203 / 1,991 | 60% |
-| th | 1,561 / 1,991 | 78% |
-| id | 1,620 / 1,991 | 81% |
-
-This is the same shape as [F-015](#f-015) — inconsistent naming across a locale — but on
-art names rather than card names, and much larger.
-
-**Much of this is correct by policy.** Every prompt in `translate/prompts.json` says
-*「"arts.name", "keyword.name" 中的角色名稱不用翻譯」* — do not translate character names
-inside art names. An art called `おつルーナ` is a pun on a character's name, so leaving it
-alone is defensible and probably intended.
-
-**But the data contradicts itself, which policy cannot explain.** `hBP03-011` has three
-prints of the same card, with the same two arts:
-
-| id | rarity | `tc` `arts[0].name` | `tc` `arts[1].name` |
-|---|---|---|---|
-| 575 | C | `おつルーナ` | `ぐっどないと～` |
-| 691 | S | **`晚安囉～`** | **`晚安～`** |
-| 2164 | P | `おつルーナ` | `ぐっどないと～` |
-
-Same card, same art, same locale, three different answers. Whatever the right policy is,
-*this* cannot be it — and id 691 shows the model will translate these names when asked
-the same question twice.
-
-**Needs a decision, and it is a judgement about the game, not the data:** should art
-names be translated at all? If yes, the prompt rule needs narrowing and a re-translation
-pass follows. If no, the ~20–50% that *were* translated are the anomaly and the prompt
-needs strengthening. Either way the current state — roughly half, chosen unpredictably —
-is the one answer that is certainly wrong.
-
-Nothing is broken today: the site renders whatever the cache holds, and a Japanese art
-name on a Chinese card page is odd rather than incorrect. Logged rather than fixed
-because picking a direction is a call about the audience.
+The question is whether art names should be translated at all, which is a call about the
+audience. Full per-locale measurements and the contradiction table are in
+[#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21).
 
 ---
 
-## F-022 — the generated fixture corpus cannot be regenerated 🔍
+## F-022 — `holo-data build` is broken → [#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16)
 
-**Found:** 2026-07-29, while fixing [F-003](#f-003) · **Affects:** `make fixtures`,
-`holo-data build`
+**Found:** 2026-07-29, while fixing [F-003](#f-003) · **Moved to the tracker:** 2026-07-29
 
-`fixtures/cards.json` is a generated artifact — `build_fixtures.py` selects it, and
-ADR 0001's rule is that generated output is committed so no Python toolchain is needed to
-consume it. But **both generators that feed it are currently broken**, and `make check`
-cannot see either.
+[F-002](#f-002) removed `cost_count` from the contract, correctly — but `Card` is
+`extra="forbid"` and both inputs on disk still carry the field, so `holo-data build` fails
+on 1,991 arts and `make fixtures` on 1,715 cards. **The pipeline cannot produce a build.**
+The site is unaffected: D1 was seeded before the contract changed.
 
-| command | state |
-|---|---|
-| `make fixtures` | fails on **1,715 of 2,448** cards |
-| `holo-data build` | fails on **1,991 arts** — `arts.cost_count: Extra inputs are not permitted` |
+Not a data problem — re-transforming from `cards_structured.json` produces clean output.
+The *derived* files on disk are stale, and `make check` runs neither generator, so a
+generated file and its generator can disagree indefinitely.
 
-**Cause.** [F-002](#f-002) removed `cost_count` from the contract, which is correct. But
-`Card` is `extra="forbid"`, and both inputs still carry the field:
+The repair is scoped and measured in
+[#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16), including
+[F-004](#f-004)'s warning: repointing the fixture generator removes the only test coverage
+of `localize()`'s short-list rule, in both Python and TypeScript.
 
-- `build_fixtures.py` selects from **v1's** `cards.json` through `v1_adapter.py`, which
-  passes unknown keys straight through into the model.
-- `holo-data build` reads `pipeline/data/default/cards_i18n.json`, which was transformed
-  before the field was dropped.
-
-Neither is a data problem — re-transforming from the already-scraped
-`cards_structured.json` produces clean output (2,463 valid, 0 failed, no `cost_count`,
-no `value`). The data is fine; the *derived* files on disk are stale.
-
-**Why nothing noticed.** F-002 hand-edited `fixtures/cards.json` (24 deletions) instead of
-regenerating it, so the corpus is correct while the generator that claims to produce it
-is not. `make check` runs neither `build_fixtures.py` nor `holo-data build`, so a
-generated file and its generator can disagree indefinitely. This finding's fix was
-hand-edited too, for the same reason — a second offence, recorded rather than hidden.
-
-**Three things to do when this is picked up**, none done:
-
-1. **Add `holo-data transform`** — a transform-only command, `cards_structured.json` →
-   `cards_i18n.json`. The rung missing from `scrape → images → translate → build`. Today
-   the only supported repair after a contract change is a full re-scrape of 2,464 pages
-   from a small operator's site, which is a bad reason to hit someone's server.
-2. **Repoint `build_fixtures.py` at `holo-data build` output.** Its own docstring already
-   says this was the plan — *"Once Phase 1 lands, this reads from `holo-data build` output
-   instead of v1's cards.json"* — and Phase 1 landed in Phase 1. It currently reads a
-   hardcoded absolute path into a v1 checkout that exists on one laptop.
-3. **Have `make check` verify the corpus against its generator**, so this class of drift
-   fails loudly rather than lying dormant for two commits.
-
-**Measured consequences of doing (2)**, so the work is scoped rather than guessed:
-
-- the corpus changes by **exactly one card**: 2164 drops (it was selected only to cover
-  the now-deleted `arts[].value` rule) and nothing is added. All 12 pinned anomalies
-  survive with correct data.
-- **two coverage rules become unsatisfiable and should be deleted**: `card_type=unknown`
-  (F-001 fixed the mapping, so no card classifies as `unknown` any more) and
-  `card_type=rulesNotice` (F-020 made it structurally impossible for a `Card` to hold
-  one). `test_card.py` **already asserts both are absent** — the rules and the tests
-  contradict each other today, and only the stale v1 source hides it. If `unknown` should
-  stay covered, it needs a synthetic fixture; it is a deliberate safety valve (F-001).
-- **[F-004](#f-004)'s short-list fixtures stop existing**, taking `localize()`'s
-  tolerate-a-short-list rule out of test coverage in both Python and TypeScript. Needs a
-  replacement fixture.
-- any synthetic fixture **must use a numeric id**: `schema.sql` makes the card id the
-  FTS5 rowid and `seed.py` raises `NonNumericCardId` by design. Reserving a high range
-  (e.g. `9000000+`) works; `synthetic-short-arts` does not.
+**This was the one urgent item in this file** — it is the reason a "the site works, so
+none of this matters" reading of the findings log is not quite safe.
 
 ---
 
-## F-023 — the `blue_red` colour icon is a quarter the size of its siblings 🔍
+## F-023 — the `blue_red` colour icon is a quarter the size of its siblings → [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22)
 
-**Found:** 2026-07-29, while resolving [F-007](#f-007) · **Affects:** 5 FUWAMOCO cards,
-every locale
+**Found:** 2026-07-29, while resolving [F-007](#f-007) · **Moved to the tracker:**
+2026-07-29
 
-The colour symbol icons in `apps/web/public/icons/` are uniform except for one:
+`type_blue_red.webp` is 88 × 108 where all eight siblings are 330 × 410, so on the 5
+FUWAMOCO cards the colour symbol renders visibly soft. **Upstream has no better copy** —
+the official asset is the same size, the only one of nine that is wrong there.
 
-| asset | dimensions | size |
-|---|---|---:|
-| `type_blue_red.webp` | **88 × 108** | 4.2 KB |
-| `type_white_green.webp` | 330 × 410 | 20.4 KB |
-| `type_blue`, `type_red`, `type_green`, `type_white`, `type_purple`, `type_yellow`, `type_null` | 330 × 410 | 17.1–21.3 KB |
+Two ways out, both in [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22):
+redraw the asset (which means shipping our own art in place of official art), or take
+[F-007](#f-007)'s normalisation, which retires the asset entirely and fixes the blur as a
+side effect.
 
-`useGameIcon().color()` composes `/icons/type_${code}.webp` for every colour, so all nine
-render into the same slot. The `blue_red` icon is scaled **up** from 88 px to fill it and
-the other eight are not, so on the 5 FUWAMOCO cards the colour symbol is visibly softer
-than on every other card in the database.
-
-**Upstream has no better copy.** The official site's own
-`/wp-content/images/texticon/type_blue_red.png` is 88 × 108 / 16.6 KB, against 330 × 410
-for `type_red.png` and `type_blue.png`. So this is not a conversion or migration loss on
-our side — we faithfully carried a low-resolution asset the site itself publishes. It is
-the only one of the nine that is wrong upstream.
-
-**It was mistaken for evidence.** [F-007](#f-007) and the comment in `enums.py` both cited
-"4.2 KB against ~20 KB" as proof that `blue_red` is a *fused single symbol* rather than a
-pair. It is not — `white_green` is equally fused and is full-size, and the 88 px asset is
-itself a picture of two badges. A file-size gap that was really an export mistake was read
-as a fact about the game, and that reading shaped the contract's comment for two phases.
-
-**Not fixed.** The obvious repair is to composite a 330 × 410 replacement from
-`type_red.webp` and `type_blue.webp`, which would match what the card prints and what the
-upstream asset depicts. But that means shipping **our own redraw in place of official art**,
-and the badges on the real icon overlap at a specific offset that a naive paste would not
-reproduce. That is a call about the site's relationship to the official assets, not a
-rendering bug to patch quietly — so it is logged rather than done.
-
-Worth revisiting if [F-007](#f-007)'s normalisation is ever picked up: encoding
-`blue_red` as `["blue","red"]` would render the two full-size single-colour icons and
-retire this asset entirely, fixing the blur as a side effect.
+**Worth keeping here:** this asset's small file size was cited by [F-007](#f-007) and by
+`enums.py` as *evidence* that `blue_red` is a fused single symbol. It was not — it was an
+export mistake, and that misreading shaped the contract's comment for two phases.
 
 ---
 
-## F-024 — `card_type_code` absorbs an unrecognised value; the others report it 🔍
+## F-024 — `card_type_code` absorbs an unrecognised value; the others report it → [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)
 
-**Found:** 2026-07-29, while resolving [F-008](#f-008) · **Affects:** 0 cards today
+**Found:** 2026-07-29, while resolving [F-008](#f-008) · **Moved to the tracker:**
+2026-07-29 · **Affects:** 0 cards today
 
-`transform.py` writes `"unknown"` as the fallback at eight sites, across four enums. Only
-one of those enums accepts it:
+`transform.py` writes `"unknown"` as the fallback at eight sites across four enums, and
+only `card_type_code` accepts it. So the same event — the site printing a value we have no
+mapping for — stops the build in three fields and ships silently in the fourth.
 
-| field | `unknown` in the enum? | a new value today |
-|---|---|---|
-| `card_type_code` (:243) | yes | **validates, ships, reported by nothing** |
-| `bloom_level_code` (:251) | no | `literal_error` — `build` blocks |
-| `color_codes` (:78, :83, :87, :91, :109) | no | `literal_error` — `build` blocks |
-| `arts[].cost_types` (:155) | no | `literal_error` — `build` blocks |
+The absorption is deliberate ([F-001](#f-001)'s safety valve, and `deckSections.ts` routes
+`unknown` to no section). **What is missing is the census:** nothing counts, prints, or
+alerts on it, so the channel is not merely unmonitored but silent, with no baseline anyone
+would notice moving.
 
-So the same event — the site printing a value we have no mapping for — has two opposite
-outcomes depending on which field it lands in. Three fields stop the build. The fourth
-absorbs it.
-
-**The absorption is deliberate**, and this finding is not arguing it is wrong.
-`unknown` is [F-001](#f-001)'s safety valve: the scraper degrading gracefully beats it
-crashing, and `deckSections.ts` deliberately routes `unknown` to no section, so such a
-card is undeckbuildable rather than misfiled. Both are documented, intentional choices.
-
-**What is missing is the census.** `unknown` appears nowhere in `verify.py`, `cli.py`,
-`publish.py`, or `status.json`. Nothing counts it, prints it, or alerts on it. Zero cards
-carry it today — F-001 was the last, and its mapping is fixed — which means the channel is
-not merely unmonitored but *silent*, with no baseline anyone would notice moving. A new
-card type would ship, be excluded from deck building, and say nothing.
-
-That is the F-001 shape exactly: two `ライブスタッフ` cards sat in v1's live database as
-`unknown` from the day they shipped, and were found by a census run by hand during the
-v2 port, not by anything the pipeline said.
-
-**Needs a decision — how loud should the valve be?** Three candidates:
-
-- **Census in the build report.** Count `unknown` per field, print it next to the
-  translation coverage lines. Non-blocking, ~10 lines, makes the quiet channel visible.
-  Weakest option if the answer is that it should stop the build.
-- **Block, like the other three.** Drop `unknown` from `CardTypeCode` and let a new type
-  fail as a Location card would. Consistent, and F-008's reasoning applies — but it
-  removes a valve that was added on purpose, and a single scraper hiccup then stops a
-  refresh.
-- **Threshold.** Block above N, report below. Handles "one weird card" and "the site
-  changed its markup" differently, at the cost of a knob to tune.
-
-Logged rather than picked: this is a judgement about how the pipeline should behave when
-operated, not a data anomaly with a right answer. Nothing is broken today.
+Three candidate answers — census in the build report, block like the other three, or a
+threshold — are in [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19). Note
+that blocking would interact with [F-008](#f-008)'s pinning test.

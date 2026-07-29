@@ -16,12 +16,12 @@ fixed it. The reason it survived a whole phase is the part worth keeping: all 44
 targeted pure functions, so a prop that was never passed was invisible to `make check`,
 and `make dev`'s 34-card fixture set is too small to ever produce a second page. Web tests
 now include a mounted component; local QA of pagination still requires pointing the dev
-server at the deployed Worker. See [F-019](./findings.md#f-019).
+server at the deployed Worker. See [F-019](./archive/findings.md#f-019).
 
 ℹ️ **`noindex` is the sole indexing guard until Phase 7**, by decision. Cloudflare's
 zone-level managed `robots.txt` prepends `Allow: /` above ours; the maintainer accepted
 that rather than change a zone setting mid-phase. It resolves itself at Phase 7 when our
-rule flips to `Allow` too. See [F-017](./findings.md#f-017).
+rule flips to `Allow` too. See [F-017](./archive/findings.md#f-017).
 
 **Phase 5's design is recorded.** Sixteen decisions, in
 [ADR 0006](adr/0006-website.md). **Phase 6's** is fifteen decisions, in
@@ -60,8 +60,35 @@ copy and is authoritative if they disagree.
 - Free Cloudflare tiers only. A paid service is a decision, not an assumption.
 - Each phase is grilled before it is built. The decisions in `v2-plan.md` §4 are settled;
   if implementing one shows it was wrong, say so and propose the change.
-- Data anomalies that need a human eye go in [`findings.md`](./findings.md), not into a
-  fix. Anything unambiguously broken with an obvious fix gets fixed and logged.
+- **Surprises go to the issue tracker, not into a file.** Needs a maintainer judgement →
+  a GitHub issue (`needs-triage`). Broke while fixing something else → an issue
+  (`ready-for-agent`). Now *understood* → the code comment, test docstring, or ADR it
+  explains. Anything unambiguously broken with an obvious fix still gets fixed on the
+  spot. [`docs/archive/findings.md`](./archive/findings.md) is the closed phases-0–6
+  record; 80 code comments cite its IDs, so it stays, but nothing is appended.
+
+## Open questions
+
+Tracked as **GitHub issues**, not in this repo. `gh issue list --state open` is the live
+view; this table is the offline copy.
+
+| # | what | label |
+|---|---|---|
+| [#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16) | **`holo-data build` is broken** — the pipeline cannot produce a build | `ready-for-agent` |
+| [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) | Cloudflare's managed `robots.txt` inverts our `Disallow` | `ready-for-human` `phase-7` |
+| [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface | `ready-for-human` `phase-7` |
+| [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19) | How loud should the `unknown` card-type valve be? | `ready-for-human` |
+| [#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20) | 41% of characters are named inconsistently across their own cards | `ready-for-human` |
+| [#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21) | Should art names be translated at all? | `ready-for-human` |
+| [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
+
+⚠️ **#16 is the only urgent one.** `holo-data build` fails on 1,991 arts today, so **no
+card-set refresh is possible until it lands**. The live site is unaffected — D1 was seeded
+before the contract changed — which is exactly why it went unnoticed.
+
+The other six are judgement calls with no deadline; two resolve at launch. Everything
+settled during phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which
+is closed.
 
 ## What exists now
 
@@ -76,7 +103,7 @@ content/           info.json — editorial site copy, uploaded by publish
 fixtures/          34 cards + fixtures.sql + artifacts/ — credential-free local dev (D12)
 docs/adr/          decisions made during execution
 docs/infra.md      the Cloudflare runbook — what exists and which command made it
-docs/findings.md   data anomalies awaiting maintainer review
+docs/archive/findings.md   data anomalies awaiting maintainer review
 CONTRIBUTING.md    what needs credentials and what does not (Phase 6)
 Makefile           `make check` — the single verification entry point
 ```
@@ -113,7 +140,7 @@ Key decisions — full reasoning in [ADR 0001](adr/0001-card-contract-generation
 - snake_case everywhere
 - Colours modelled **as-is** — the source's two encodings kept, not normalised. F-007 has
   since confirmed the cards are printed identically, so normalising is now open rather
-  than ruled out; see [F-007](./findings.md#f-007)
+  than ruled out; see [F-007](./archive/findings.md#f-007)
 - Storage annotations (`Column`/`Blob`/`FullText`) recorded now, DDL emitted in Phase 3
 
 Drift this removed: `HR` rarity missing from the TS union (24 cards unfilterable in the
@@ -185,9 +212,9 @@ Recorded in the ADRs; listed here so they are not missed.
 | **Phase 5 status page** | v2's `status.json` dropped `skipped[]` and `source.valid` and is snake_case throughout, so `/status` **cannot be ported unchanged**. Ported adapted; the Skipped tab has no data source in v2 and is dropped |
 | **v2-plan §7** | The SEO decision stays deferred — which means Phase 5 must **actively block indexing** to keep it deferrable |
 | **Phase 6 done-when** | "fresh clone runs with zero CF creds" was already true and **still failed the intent**: `make dev` needed a *Python toolchain* to generate the R2 artifacts. Met by **committing** them (`fixtures/artifacts/`, 64 KB), extending ADR 0001's rule from the contract to the fixtures ([ADR 0007](adr/0007-push-to-deploy.md)) |
-| **D14** | "a `corrections/` overlay makes a translation fix a reviewable PR" — ADR 0002 replaced the mechanism with cache entries but the cache is **gitignored**, so no reviewable surface exists. A fix goes through an issue. Logged as [F-018](./findings.md#f-018), not closed |
-| **Phase 0 contract** | `TranslatedArt.value` is **dropped**. v2 has no path that writes it — a stray key on 4 `tc` arts in v1's data, caused by the translation prompt's own 「只翻譯 value」 wording. `localize()` never emitted it, so the golden files are byte-identical across the removal ([F-003](./findings.md#f-003)) |
-| **Fixture corpus** | `fixtures/cards.json` is generated but **both its generators fail today** — F-002 dropped `cost_count` and hand-edited the corpus rather than regenerating, leaving `make fixtures` broken on 1,715 cards and `holo-data build` on 1,991 arts. `make check` runs neither, so the drift is invisible. Logged as [F-022](./findings.md#f-022) with the repair scoped and measured |
+| **D14** | "a `corrections/` overlay makes a translation fix a reviewable PR" — ADR 0002 replaced the mechanism with cache entries but the cache is **gitignored**, so no reviewable surface exists. A fix goes through an issue. Logged as [F-018](./archive/findings.md#f-018), not closed |
+| **Phase 0 contract** | `TranslatedArt.value` is **dropped**. v2 has no path that writes it — a stray key on 4 `tc` arts in v1's data, caused by the translation prompt's own 「只翻譯 value」 wording. `localize()` never emitted it, so the golden files are byte-identical across the removal ([F-003](./archive/findings.md#f-003)) |
+| **Fixture corpus** | `fixtures/cards.json` is generated but **both its generators fail today** — F-002 dropped `cost_count` and hand-edited the corpus rather than regenerating, leaving `make fixtures` broken on 1,715 cards and `holo-data build` on 1,991 arts. `make check` runs neither, so the drift is invisible. Logged as [F-022](./archive/findings.md#f-022) with the repair scoped and measured |
 
 ## Phase 2 — R2 publish
 
@@ -405,12 +432,12 @@ were blockers:
 3. **Raw input crashes FTS5** — `a AND`, `-x` and a bare `"` are syntax errors. Every
    query is now wrapped as a literal phrase, so they return 200 with zero hits.
 4. **The `name` filter was broken in v1**: 41% of characters are spelled inconsistently
-   across their own cards ([F-015](findings.md#f-015)). It keys on `name_ja` now.
+   across their own cards ([F-015](archive/findings.md#f-015)). It keys on `name_ja` now.
 5. **`apps/web/` does not exist**, so the phase's own done-when was unmeetable. Scope
    became API-only.
 
 **A sixth turned up while building:** v1's colour filter silently omits fused
-dual-colour cards ([F-016](findings.md#f-016)). Filtering `blue` misses the 5 `blue_red`
+dual-colour cards ([F-016](archive/findings.md#f-016)). Filtering `blue` misses the 5 `blue_red`
 cards, because `LIKE '%"blue"%'` does not match `"blue_red"`. The Worker expands the
 filter instead of the storage.
 
@@ -461,7 +488,7 @@ inside one:**
 | 8 | `assets` binding + SPA fallback + `run_worker_first` | ✅ built, rehearsed |
 | — | **deploy to workers.dev** | ✅ done — verified against 2,448 cards |
 | — | **attach the custom domain** | ✅ done — live at `hololive-ocg-wiki.tskrlabs.com` |
-| — | Cloudflare's managed `robots.txt` conflict | 🔍 accepted, deferred to Phase 7 — [F-017](./findings.md#f-017) |
+| — | Cloudflare's managed `robots.txt` conflict | 🔍 accepted, deferred to Phase 7 — [F-017](./archive/findings.md#f-017) |
 
 **Candidate 02 arrived early, by necessity.** The empty-filter literal was written out
 five times in v1, each a hand-maintained list of every colour, card type, rarity and bloom
@@ -609,7 +636,7 @@ D2's whole point. Verified: `/tc/` 200, `/api/health` ok, SPA fallback on an unk
 code, `noindex` meta present.
 
 **It turned up one thing local rehearsal could not** — a zone-level Cloudflare setting
-rewrites what the Worker appears to serve. See [F-017](./findings.md#f-017): the managed
+rewrites what the Worker appears to serve. See [F-017](./archive/findings.md#f-017): the managed
 `robots.txt` prepends `User-agent: * / Allow: /` above our `Disallow: /`. Accepted and
 deferred; `noindex` carries the guard alone until Phase 7, when the conflict resolves
 itself.
@@ -719,7 +746,7 @@ Verified with a `python3` shim that exits 127: local R2 seeding still succeeds.
 - **`LICENSE`** — Apache-2.0, matching v1. Without it, "public at Phase 7" means
   all-rights-reserved, which would contradict a `CONTRIBUTING.md` inviting contributions.
   Code only; card data and art stay Cover Corp.'s under the Derivative Works Guidelines.
-- **[F-018](./findings.md#f-018)** — writing the above surfaced that D14 promised
+- **[F-018](./archive/findings.md#f-018)** — writing the above surfaced that D14 promised
   translation fixes as a reviewable PR, and ADR 0002 replaced the mechanism without
   replacing that property: the cache is gitignored, so there is no file to edit. Logged,
   not fixed — closing it is pipeline design work, and the repo is private until Phase 7.
@@ -754,5 +781,12 @@ Was two; the rehearsal added a third.
 | switch | where | why it is off now |
 |---|---|---|
 | `NUXT_PUBLIC_LAUNCHED=true` | build variable | flips indexing **and** analytics together |
-| `workers_dev: false` | `wrangler.jsonc` | kept while [F-017](./findings.md#f-017) is open — comparing the two origins is the only way that bug is visible |
+| `workers_dev: false` | `wrangler.jsonc` | kept while [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) is open — comparing the two origins is the only way that bug is visible |
 | repo public + v1 archived | GitHub | v2-plan §7 |
+
+Two open issues are gated on this phase and close with it:
+[#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) (the managed `robots.txt`
+conflict resolves itself once our own rule flips to `Allow`) and
+[#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) (a translation fix needs a
+reviewable surface once the repo is public and outside contributors exist). Archiving v1
+also retires [F-014](./archive/findings.md#f-014)'s standing read-tier failure mode.

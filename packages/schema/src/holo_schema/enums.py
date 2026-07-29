@@ -54,7 +54,7 @@ use, not at some edge.
 # `supportStaff` was added in Phase 1. The two cards that carry "unknown" in v1's live
 # data (both hBP07-091, ライブスタッフ / "Live Staff") are `サポート・スタッフ` — a real
 # card type that was simply missing from the pipeline's mapping table, so it fell through
-# to the placeholder. See docs/findings.md F-001.
+# to the placeholder. See docs/archive/findings.md F-001.
 #
 # `support` and `supportLocation` are deliberately NOT members: the pipeline can emit
 # them but no card has ever used them, so admitting them would mean shipping enum values
@@ -73,7 +73,7 @@ use, not at some edge.
 # store: the same update added 「【使用可能カード】セレクションカップ」 to ~660 existing
 # cards' `card_sets`, and this notice is the only place the site explains what that
 # means. A deck simulator needs exactly this record to answer "is this deck legal for
-# this format?". See docs/findings.md F-020.
+# this format?". See docs/archive/findings.md F-020.
 
 CardTypeCode = Literal[
     "buzzCharacter",
