@@ -12,18 +12,102 @@ Two changes from v1, both following Phase 0 decisions:
   layout and file extension baked into the data. D9 stores the key and composes URLs, so
   changing CDN or format needs no reseed. The key is `{set}/{filename}` derived from the
   official image URL, which also disambiguates reprints that share a filename.
+
+**Unmapped values are reported here, because here is where the evidence dies.** A
+mapping miss replaces what the site printed with `UNMAPPED` and throws the original
+away, so no later stage can name it: `build` reports the values it *accepts*, and the
+site's actual string is gone. `transform_cards` returns an `UnmappedReport` alongside
+the cards so the operator learns what to add to `mappings.py` (issue #19).
 """
 
 from __future__ import annotations
 
 import json
 import re
+from collections import defaultdict
+from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from holo_schema.enums import NON_CARD_TYPES
 
 from . import mappings
 from .paths import ensure_dirs, i18n_file
+
+# What every mapping table writes when it has no entry for a source value.
+#
+# Not a legal value in any of the four enums, so `build` fails on it — which is the
+# point. It exists to occupy a required field so validation has something to reject,
+# rather than to be shipped.
+UNMAPPED = "unknown"
+
+
+@dataclass
+class UnmappedReport:
+    """Source values no mapping table covered, and the cards that carried them.
+
+    **This is the only place the offending string still exists.** The mapping tables
+    substitute `UNMAPPED` and discard what the site actually printed, so by the time
+    `build` validates, the error it can raise names the values we *accept* — "Input
+    should be 'debut', 'first', 'second' or 'spot'" — and never the one that caused it.
+    An operator hitting that got a blocked build, a card id, and no way to learn what to
+    add to `mappings.py` short of opening the card's page by hand.
+
+    Collected here because this is the moment the evidence is destroyed. See issue #19.
+    """
+
+    # field name -> source value -> card ids that carried it
+    values: dict[str, dict[str, list[str]]] = field(
+        default_factory=lambda: defaultdict(lambda: defaultdict(list))
+    )
+
+    def record(self, field_name: str, source: str, card_id: str) -> None:
+        self.values[field_name][source].append(card_id)
+
+    @property
+    def is_empty(self) -> bool:
+        return not self.values
+
+    @property
+    def card_count(self) -> int:
+        """Distinct cards affected — a markup change hits many, a new type hits one."""
+        ids = {
+            card_id
+            for sources in self.values.values()
+            for card_ids in sources.values()
+            for card_id in card_ids
+        }
+        return len(ids)
+
+    def rows(self) -> list[tuple[str, str, list[str]]]:
+        """`(field, source value, card ids)`, most-affected first then alphabetical."""
+        return sorted(
+            (
+                (field_name, source, card_ids)
+                for field_name, sources in self.values.items()
+                for source, card_ids in sources.items()
+            ),
+            key=lambda row: (-len(row[2]), row[0], row[1]),
+        )
+
+
+def _mapped(
+    table: dict[str, str],
+    source: Any,
+    field_name: str,
+    card: dict[str, Any],
+    report: UnmappedReport | None,
+    default: str | None = UNMAPPED,
+) -> str | None:
+    """Look a source value up, recording it if the table has no entry.
+
+    `default=None` is for the lookups whose caller *skips* the value rather than writing
+    a sentinel — a different failure (silent omission rather than a blocked build), but
+    the same missing mapping, so it belongs in the same report.
+    """
+    code = table.get(source) if isinstance(source, str) else None
+    if code is None and report is not None and isinstance(source, str) and source:
+        report.record(field_name, source, str(card.get("id", "")))
+    return code if code is not None else default
 
 
 def get_field(card: dict[str, Any], keys: list[str], default: Any = None) -> Any:
@@ -63,11 +147,16 @@ def image_key_from_url(image_url: str | None, filename: str | None) -> str | Non
     return f"default/{name}"
 
 
-def _colors(card: dict[str, Any]) -> list[str] | None:
+def _colors(
+    card: dict[str, Any], report: UnmappedReport | None = None
+) -> list[str] | None:
     """Colour codes, from the alt text of the colour icons."""
     field = get_field(card, mappings.LABELS["color"])
     if not field:
         return None
+
+    def code(source: Any) -> str | None:
+        return _mapped(mappings.COLOR, source, "color", card, report)
 
     if isinstance(field, list):
         codes = []
@@ -75,25 +164,27 @@ def _colors(card: dict[str, Any]) -> list[str] | None:
             if isinstance(entry, dict) and "images" in entry:
                 for img in entry["images"]:
                     if "alt" in img:
-                        codes.append(mappings.COLOR.get(img["alt"], "unknown"))
+                        codes.append(code(img["alt"]))
         return codes or None
 
     if isinstance(field, dict):
         if "value" in field:
-            return [mappings.COLOR.get(field["value"], "unknown")]
+            return [code(field["value"])]
         if "images" in field:
             for img in field["images"]:
                 if "alt" in img:
-                    return [mappings.COLOR.get(img["alt"], "unknown")]
+                    return [code(img["alt"])]
         return None
 
     if isinstance(field, str):
-        return [mappings.COLOR.get(field, "unknown")]
+        return [code(field)]
 
     return None
 
 
-def _baton_touch(card: dict[str, Any]) -> tuple[int | None, list[str] | None]:
+def _baton_touch(
+    card: dict[str, Any], report: UnmappedReport | None = None
+) -> tuple[int | None, list[str] | None]:
     field = get_field(card, mappings.LABELS["baton_touch"])
     if not field:
         return None, None
@@ -106,7 +197,11 @@ def _baton_touch(card: dict[str, Any]) -> tuple[int | None, list[str] | None]:
                 total += entry["count"]
                 for img in entry.get("images", []):
                     if "alt" in img:
-                        types.append(mappings.COLOR.get(img["alt"], "unknown"))
+                        types.append(
+                            _mapped(
+                                mappings.COLOR, img["alt"], "baton_touch", card, report
+                            )
+                        )
         return total or None, types or None
 
     if isinstance(field, dict) and "count" in field:
@@ -115,7 +210,9 @@ def _baton_touch(card: dict[str, Any]) -> tuple[int | None, list[str] | None]:
     return None, None
 
 
-def _arts(card: dict[str, Any]) -> tuple[list[dict], list[dict]]:
+def _arts(
+    card: dict[str, Any], report: UnmappedReport | None = None
+) -> tuple[list[dict], list[dict]]:
     """Split arts into the language-independent half and the JP-translated half.
 
     The contract keeps these apart (`Card.arts` vs `Translation.arts`) because costs and
@@ -152,7 +249,11 @@ def _arts(card: dict[str, Any]) -> tuple[list[dict], list[dict]]:
             cost_types = []
             for icon in real_costs:
                 if "alt" in icon:
-                    cost_types.append(mappings.COLOR.get(icon["alt"], "unknown"))
+                    cost_types.append(
+                        _mapped(
+                            mappings.COLOR, icon["alt"], "arts.cost_types", card, report
+                        )
+                    )
             if cost_types:
                 entry["cost_types"] = cost_types
 
@@ -175,7 +276,14 @@ def _arts(card: dict[str, Any]) -> tuple[list[dict], list[dict]]:
                 # The alt text is the colour *and* the bonus ("紫+50"), so the bare
                 # colour has to be split off before the mapping will match. Looking up
                 # the whole string silently drops every special art.
-                colour = mappings.COLOR.get(alt.split("+")[0].strip())
+                colour = _mapped(
+                    mappings.COLOR,
+                    alt.split("+")[0].strip(),
+                    "arts.special_targets",
+                    card,
+                    report,
+                    default=None,
+                )
                 # The bonus amount is in the filename, e.g. tokkou_50_blue.png.
                 amount = re.search(r"tokkou_(\d+)", src)
                 if colour and amount:
@@ -197,15 +305,23 @@ def _arts(card: dict[str, Any]) -> tuple[list[dict], list[dict]]:
     return base, translated
 
 
-def _skill(card: dict[str, Any], key: str) -> tuple[dict | None, dict | None]:
+def _skill(
+    card: dict[str, Any], key: str, report: UnmappedReport | None = None
+) -> tuple[dict | None, dict | None]:
     skill = card.get(key)
     if not isinstance(skill, dict):
         return None, None
 
     base: dict[str, Any] = {}
     timing = skill.get("timing")
-    if timing and timing in mappings.TIMING:
-        base["timing_code"] = mappings.TIMING[timing]
+    if timing:
+        # Unlike the four enums above this one *omits* rather than substituting, so an
+        # unmapped timing produces a valid card with no `timing_code` — it ships, and
+        # the site renders a skill with no timing badge. Silent by construction, which
+        # is why it is reported here even though it never blocks a build.
+        code = _mapped(mappings.TIMING, timing, f"{key}.timing", card, report, default=None)
+        if code:
+            base["timing_code"] = code
 
     translation: dict[str, Any] = {}
     for field in ("name", "effect", "timing"):
@@ -215,8 +331,16 @@ def _skill(card: dict[str, Any], key: str) -> tuple[dict | None, dict | None]:
     return (base or None), (translation or None)
 
 
-def to_card(card: dict[str, Any]) -> dict[str, Any]:
-    """Convert one structured card into contract shape, JP translation only."""
+def to_card(
+    card: dict[str, Any], report: UnmappedReport | None = None
+) -> dict[str, Any]:
+    """Convert one structured card into contract shape, JP translation only.
+
+    Pass an `UnmappedReport` to collect the source values no mapping covered. It is
+    optional so a caller that only wants the card — every test here, and `to_notice` —
+    need not carry one, but `transform_cards` always does: the report is the only record
+    of what the site printed, and this function is where that string is discarded.
+    """
     out: dict[str, Any] = {"id": card.get("id", "")}
     translation: dict[str, Any] = {}
 
@@ -240,15 +364,19 @@ def to_card(card: dict[str, Any]) -> dict[str, Any]:
 
     card_type = get_field(card, mappings.LABELS["card_type"])
     if card_type:
-        out["card_type_code"] = mappings.CARD_TYPE.get(card_type, "unknown")
+        out["card_type_code"] = _mapped(
+            mappings.CARD_TYPE, card_type, "card_type", card, report
+        )
 
-    colors = _colors(card)
+    colors = _colors(card, report)
     if colors:
         out["color_codes"] = colors
 
     bloom = get_field(card, mappings.LABELS["bloom_level"])
     if bloom:
-        out["bloom_level_code"] = mappings.BLOOM_LEVEL.get(bloom, "unknown")
+        out["bloom_level_code"] = _mapped(
+            mappings.BLOOM_LEVEL, bloom, "bloom_level", card, report
+        )
 
     for label_key, out_key in (("hp", "hp"), ("life", "life")):
         value = get_field(card, mappings.LABELS[label_key])
@@ -294,13 +422,13 @@ def to_card(card: dict[str, Any]) -> dict[str, Any]:
         if value:
             translation[field] = value
 
-    baton_count, baton_types = _baton_touch(card)
+    baton_count, baton_types = _baton_touch(card, report)
     if baton_count is not None:
         out["baton_touch_count"] = baton_count
     if baton_types:
         out["baton_touch_types"] = baton_types
 
-    base_arts, translated_arts = _arts(card)
+    base_arts, translated_arts = _arts(card, report)
     if base_arts:
         out["arts"] = base_arts
     if any(translated_arts):
@@ -311,9 +439,21 @@ def to_card(card: dict[str, Any]) -> dict[str, Any]:
         # The keyword *type* is the icon's alt text ("コラボエフェクト"); `name` is the
         # ability's own title ("レッツダンス！"). Reading `name` here yields no type at
         # all — it cost 1,124 cards their keyword on the first run.
+        #
+        # Omits rather than substituting, like the skill timing above: an unmapped
+        # keyword type drops the whole keyword and the card ships without it. That is
+        # the exact shape of the 1,124-card bug, so it is reported even though nothing
+        # blocks on it.
         icon = keyword.get("icon")
         type_name = icon.get("alt") if isinstance(icon, dict) else None
-        type_code = mappings.KEYWORD_TYPE.get(type_name) if type_name else None
+        type_code = (
+            _mapped(
+                mappings.KEYWORD_TYPE, type_name, "keyword.type", card, report,
+                default=None,
+            )
+            if type_name
+            else None
+        )
         if type_code:
             out["keyword"] = {"type": type_name, "type_code": type_code}
             keyword_translation = {
@@ -326,7 +466,7 @@ def to_card(card: dict[str, Any]) -> dict[str, Any]:
         ("oshi_skill", "oshi_skill"),
         ("sp_oshi_skill", "sp_oshi_skill"),
     ):
-        base, skill_translation = _skill(card, source_key)
+        base, skill_translation = _skill(card, source_key, report)
         if base:
             out[out_key] = base
         if skill_translation:
@@ -387,20 +527,25 @@ def to_notice(entry: dict[str, Any]) -> dict[str, Any]:
 def transform_cards(
     structured: list[dict[str, Any]],
     on_progress: Callable[[int, int], None] | None = None,
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], UnmappedReport]:
     """Transform every scraped entry, notices included.
 
     Notices stay in this list and in `cards_i18n.json`. They are split out at build
     time by `is_notice`, so the translate step sees one homogeneous set of entries and
     needs no knowledge that notices exist.
+
+    Returns the cards **and** the report of source values no mapping covered. The report
+    is not optional: this is the only point in the pipeline where those strings exist,
+    and every downstream error can name only the values we accept (issue #19).
     """
     cards = []
+    report = UnmappedReport()
     total = len(structured)
     for index, card in enumerate(structured):
-        cards.append(to_card(card))
+        cards.append(to_card(card, report))
         if on_progress:
             on_progress(index + 1, total)
-    return cards
+    return cards, report
 
 
 def save_i18n(cards: list[dict[str, Any]]) -> None:

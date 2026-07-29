@@ -11,7 +11,13 @@ import pytest
 from pydantic import ValidationError
 
 from holo_data import mappings
-from holo_data.transform import _arts, image_key_from_url, to_card
+from holo_data.transform import (
+    UnmappedReport,
+    _arts,
+    image_key_from_url,
+    to_card,
+    transform_cards,
+)
 from holo_schema import Card
 from holo_schema.enums import CARD_TYPE_VALUES
 
@@ -412,3 +418,96 @@ class TestTransformMatchesTheContract:
             {"id": "9998", "name": "お知らせ", "info": {"カードタイプ": "ルール notice"}}
         )
         assert notice["id"] == "9998"
+
+
+class TestUnmappedReport:
+    """What the site printed, kept long enough to say it out loud (issue #19).
+
+    The mapping tables substitute `UNMAPPED` and discard the source string, so this is
+    the last point in the pipeline where it exists. Without the report, `build` fails
+    with "Input should be 'debut', 'first', 'second' or 'spot'" — it names the four
+    values we accept and never `超進化`, the one the site actually printed. The operator
+    got a card id and a page to open by hand.
+
+    Verified against the real 2,464-entry scrape: the report is empty, so it stays
+    silent on an ordinary run and only speaks when there is something to fix.
+    """
+
+    def test_an_unmapped_card_type_is_reported_with_its_source_value(self):
+        report = UnmappedReport()
+        card = to_card({"id": "1", "info": {"カードタイプ": "サポート・新種別"}}, report)
+
+        assert card["card_type_code"] == "unknown", "the sentinel is still written"
+        assert report.rows() == [("card_type", "サポート・新種別", ["1"])]
+
+    def test_an_unmapped_bloom_level_is_reported(self):
+        report = UnmappedReport()
+        to_card({"id": "1", "info": {"Bloomレベル": "超進化"}}, report)
+        assert ("bloom_level", "超進化", ["1"]) in report.rows()
+
+    def test_an_unmapped_colour_is_reported(self):
+        report = UnmappedReport()
+        to_card({"id": "1", "info": {"色": [{"images": [{"alt": "虹"}], "count": 1}]}}, report)
+        assert ("color", "虹", ["1"]) in report.rows()
+
+    def test_a_silently_omitted_value_is_reported_too(self):
+        """Skill timing and keyword type *drop* the value rather than substituting.
+
+        No sentinel, so nothing fails validation: the card ships with no timing badge or
+        no keyword at all. That is strictly quieter than the four enum fields — it is
+        the shape of the bug that cost 1,124 cards their keyword on the first run — so
+        it belongs in the same report even though it never blocks a build.
+        """
+        report = UnmappedReport()
+        card = to_card(
+            {
+                "id": "1",
+                "oshi_skill": {"timing": "新タイミング", "name": "x", "effect": "y"},
+                "keyword": {"icon": {"alt": "新エフェクト"}, "name": "z"},
+            },
+            report,
+        )
+
+        assert "timing_code" not in (card.get("oshi_skill") or {})
+        assert "keyword" not in card
+        fields = {row[0] for row in report.rows()}
+        assert {"oshi_skill.timing", "keyword.type"} <= fields
+
+    def test_a_mapped_value_is_not_reported(self):
+        report = UnmappedReport()
+        to_card({"id": "1", "info": {"カードタイプ": "ホロメン"}}, report)
+        assert report.is_empty
+
+    def test_cards_sharing_a_value_are_grouped(self):
+        """One row per (field, value) — a markup change is one problem, not 500."""
+        report = UnmappedReport()
+        for card_id in ("1", "2", "3"):
+            to_card({"id": card_id, "info": {"カードタイプ": "サポート・新種別"}}, report)
+
+        assert report.rows() == [("card_type", "サポート・新種別", ["1", "2", "3"])]
+        assert report.card_count == 3
+
+    def test_rows_lead_with_the_most_affected(self):
+        """A markup change should out-rank a single odd card in the output."""
+        report = UnmappedReport()
+        to_card({"id": "1", "info": {"カードタイプ": "サポート・新種別"}}, report)
+        for card_id in ("2", "3", "4"):
+            to_card(
+                {"id": card_id, "info": {"色": [{"images": [{"alt": "虹"}], "count": 1}]}},
+                report,
+            )
+
+        assert [row[0] for row in report.rows()] == ["color", "card_type"]
+
+    def test_transform_cards_always_collects_one(self):
+        """The report is not optional on the batch path — it is the whole point."""
+        cards, report = transform_cards(
+            [{"id": "1", "info": {"カードタイプ": "サポート・新種別"}}]
+        )
+        assert len(cards) == 1
+        assert not report.is_empty
+
+    def test_a_clean_batch_reports_nothing(self):
+        _cards, report = transform_cards([{"id": "1", "info": {"カードタイプ": "ホロメン"}}])
+        assert report.is_empty
+        assert report.card_count == 0

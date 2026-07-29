@@ -114,10 +114,47 @@ def scrape(
     extract.save_structured(structured)
 
     typer.echo("→ transforming to contract shape")
-    cards = transform.transform_cards(structured, on_progress=_progress("cards"))
+    cards, unmapped = transform.transform_cards(
+        structured, on_progress=_progress("cards")
+    )
     transform.save_i18n(cards)
 
     typer.echo(f"✓ scraped {len(cards)} cards")
+    _report_unmapped(unmapped)
+
+
+def _report_unmapped(report: transform.UnmappedReport) -> None:
+    """Print the source values no mapping table covered.
+
+    Printed here because this is the only place they exist. The mapping tables replace
+    an unrecognised value with `unknown` and discard what the site printed, so `build`'s
+    own error can name the values we accept and never the one that caused it — an
+    operator got "Input should be 'debut', 'first', 'second' or 'spot'", a card id, and
+    no way to learn what to add to `mappings.py` short of opening the card by hand.
+
+    Not an error: `transform` succeeded, and whether an unmapped value stops anything is
+    `build`'s call. This says what happened and what to do about it (issue #19).
+    """
+    if report.is_empty:
+        return
+
+    typer.echo("")
+    typer.echo(
+        f"⚠ {report.card_count} card(s) carry a value no mapping covers:", err=True
+    )
+    for field_name, source, card_ids in report.rows():
+        ids = ", ".join(card_ids[:5])
+        more = f" (+{len(card_ids) - 5} more)" if len(card_ids) > 5 else ""
+        typer.echo(f"    {field_name:22s} {source}", err=True)
+        typer.echo(f"    {'':22s}   {len(card_ids)} card(s): {ids}{more}", err=True)
+
+    typer.echo("", err=True)
+    typer.echo(
+        "  Add the missing entries to `mappings.py`. Until then `build` fails on these "
+        "cards — which is deliberate; a card the site prints and we cannot classify "
+        "should not ship unannounced (issue #19).",
+        err=True,
+    )
 
 
 # --- transform ---------------------------------------------------------------
@@ -146,13 +183,16 @@ def transform_() -> None:
         raise typer.Exit(1)
 
     typer.echo(f"→ transforming {len(structured)} entries to contract shape")
-    cards = transform.transform_cards(structured, on_progress=_progress("cards"))
+    cards, unmapped = transform.transform_cards(
+        structured, on_progress=_progress("cards")
+    )
     transform.save_i18n(cards)
 
     size = paths.i18n_file().stat().st_size
     typer.echo(
         f"✓ wrote {paths.i18n_file()} — {len(cards)} entries, {size / 1024 / 1024:.1f} MB"
     )
+    _report_unmapped(unmapped)
 
 
 # --- images ------------------------------------------------------------------
