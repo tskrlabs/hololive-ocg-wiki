@@ -17,9 +17,9 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-002](#f-002) | ✅ fixed | data | `cost_count` counted the 特攻 icon; the field had no readers and is dropped |
 | [F-003](#f-003) | ✅ fixed | data | A stray `value` field on 4 arts; no producer, no reader, dropped |
 | [F-004](#f-004) | ✅ resolved | data | 2 cards had base arts but no `en` translated arts — the cache filled them in |
-| [F-005](#f-005) | 🔍 open | data | `hBP02-065`'s image filename does not match its card number |
+| [F-005](#f-005) | ✅ resolved | data | `hBP02-065`'s image filename does not match its card number — the site's typo |
 | [F-006](#f-006) | ✅ fixed | data | `hCO01` reprints reuse the original set's image filename |
-| [F-007](#f-007) | 🔍 open | data | Two encodings for dual-colour cards |
+| [F-007](#f-007) | ✅ resolved | data | Two encodings for dual-colour cards — the cards are printed identically |
 | [F-008](#f-008) | 🔍 open | pipeline | `サポート` and `サポート・ロケーション` map to codes the contract rejects |
 | [F-009](#f-009) | 🔍 open | data | ~127 oshi skills have no `timing` text in any locale |
 | [F-010](#f-010) | 🔍 open | data | `batonTouchTypes` is always `["null"]` |
@@ -35,6 +35,7 @@ Nothing here blocks a phase. If something did, it would be an issue, not a findi
 | [F-020](#f-020) | ✅ resolved | data | The card list is not all cards — a rules notice is not a `Card` |
 | [F-021](#f-021) | 🔍 open | data | Art names are 47–81% untranslated, and inconsistently so |
 | [F-022](#f-022) | 🔍 open | pipeline | The generated fixture corpus cannot be regenerated — both generators fail |
+| [F-023](#f-023) | 🔍 open | site | The `blue_red` colour icon is 88×108 where every sibling is 330×410 |
 
 ---
 
@@ -199,19 +200,62 @@ production goes untested.
 
 ---
 
-## F-005 — image filename does not match card number 🔍
+## F-005 — image filename does not match card number ✅ resolved
 
-**Found:** Phase 0 · **Affects:** `hBP02-065` (1 card)
+**Found:** Phase 0 · **Resolved:** 2026-07-29, by reading the number printed on the card ·
+**Affects:** id 1373, `hBP02-065` (1 card)
 
-Card number `hBP02-065`, image `hBP02-085_HR.png`. Every other card's image filename
-starts with its card number.
+Card number `hBP02-065`, image `hBP05/hBP02-085_HR.png`. Every other card's image filename
+starts with its card number — a census over the full 2,463-card build found **exactly one**
+mismatch, this one. (Notice 2459 has no card number at all, which is [F-020](#f-020), not
+this.)
 
-Either the official site has a typo in the image path, or the card number was misparsed.
-Since the image is fetched from the URL the site gives, the file being served is
-presumably correct — but the card would sort and search oddly.
+The open question was whether the site has a typo or the number was misparsed. **Neither
+required the physical card.** The image is already on disk, and a card prints its own
+number in the bottom-right corner:
 
-**Needs a decision:** check the physical card. If the site's filename is wrong there is
-nothing to do; if the card number is misparsed, the extractor needs a look.
+```
+Illust: 南条まや    HR    hBP02-065
+```
+
+The scraped HTML says `カードナンバー：hBP02-065`. The printed card says `hBP02-065`. **The
+extractor is correct and the card number is correct** — the only wrong thing is a filename
+on someone else's server, which is the branch this finding called "nothing to do".
+
+**The site serves both names.** Not in the finding, and worth recording:
+
+| URL under `/cardlist/hBP05/` | status | bytes | last-modified | etag |
+|---|---|---:|---|---|
+| `hBP02-065_HR.png` | 200 | 111,126 | 2025-09-12 | `7d8a68c4…` |
+| `hBP02-085_HR.png` | 200 | 111,126 | 2026-03-27 | `7d8a68c4…` |
+
+Byte-identical, same etag, and a bogus filename in the same folder returns **403** — so
+this is not a catch-all soft-404. Both files genuinely exist, and the correctly-named one
+is the *older* of the two. That fits [F-012](#f-012)'s pattern exactly: the site re-uploads
+its own images, and this re-upload typo'd the name, after which the card page's `<img>`
+followed the typo.
+
+**Nothing is repointed.** `image_key` is `hBP05/hBP02-085_HR`, which only ever reaches
+`useCardImage()` for URL composition — no code parses a card number back out of a
+filename, and `card_number` is its own indexed column. So the finding's "the card would
+sort and search oddly" worry does not hold: sorting and search read the column, which is
+right. Switching the key to the correctly-named file would cost an R2 rename and a D1 write
+to fetch a byte-identical image, which buys nothing.
+
+**Left as-is deliberately**, then, with the mismatch on record so it reads as a known
+upstream quirk rather than an unnoticed bug.
+
+### The local image tree answers "check the physical card"
+
+This finding was closed by looking at our own PNG. That is worth generalising: `pipeline/images/png/{set}/`
+holds every card at the resolution the site publishes, and anything *printed* on a card —
+number, colour symbols, timing markers — can be read off it directly. It is not a substitute
+for the physical card on questions about the *game* (what a rule means, whether a card is
+legal), but it settles questions about what the card *says*.
+
+[F-007](#f-007) deferred on exactly that and was resolved in the same pass. Still open on
+this basis: [F-009](#f-009) (does the card print a timing marker?) and [F-015](#f-015)
+(which is partly a question about printed names).
 
 ---
 
@@ -257,26 +301,79 @@ is not safe to deduplicate on filename.
 
 ---
 
-## F-007 — two encodings for dual-colour cards 🔍
+## F-007 — two encodings for dual-colour cards ✅ resolved
 
-**Found:** Phase 0 · **Affects:** 8 cards
+**Found:** Phase 0 · **Resolved:** 2026-07-29, against the card images ([F-005](#f-005)) ·
+**Affects:** 10 cards
 
-The data contains both:
+The data contains two encodings for what is printed on a dual-colour card:
 
-- `["blue_red"]` — 5 FUWAMOCO cards, a **single fused symbol** with its own icon asset
-  (`type_blue_red.webp`, 4.2 KB against ~20 KB for single-colour icons)
-- `["red","blue"]` — 3 miComet cards, **two separate symbols**
+| encoding | cards | character |
+|---|---:|---|
+| `["blue_red"]` | 5 | FUWAMOCO |
+| `["white_green"]` | 2 | SorAZ |
+| `["red","blue"]` | 3 | miComet |
 
-These were nearly normalised into one form during Phase 0. They are not the same thing:
-normalising would render two icons and a comma where the card shows one.
+**The count in this finding was wrong** — it said 8 cards and listed only FUWAMOCO and
+miComet, omitting SorAZ's 2 `white_green` cards. It is 10.
 
-Modelled as-is, both encodings first-class.
+**The premise was also wrong.** This finding asserted that `blue_red` is "a **single fused
+symbol**" while miComet bears "**two separate symbols**", and asked for confirmation that
+the physical cards really differ.
 
-**Needs a decision — the one most worth checking:** confirm against the physical cards
-that FUWAMOCO and miComet really are printed differently. If they are the same and one is
-a scraping artefact, the filter logic in Phase 4 gets simpler and one enum member goes
-away. If they differ, the current model is right and Phase 4 needs `FUSED_COLORS`
-expansion so a "red" filter matches `blue_red`.
+**They do not differ.** All three cards print the *same* form — two separate circular
+badges on a gold ribbon:
+
+| card | id | printed colour symbol |
+|---|---|---|
+| hBP03-050 FUWAMOCO | 614 | two badges — blue, then red |
+| hBP05-040 miComet | 1218 | two badges — red, then blue |
+| hSD01-013 SorAZ | 13 | two badges — white, then green |
+
+**The split is an artifact of the source HTML, not of the game.** The scraped markup shows
+where it comes from:
+
+```html
+<!-- id 614, FUWAMOCO -->  <img alt="青赤" src="/texticon/type_blue_red.png">
+<!-- id 13,  SorAZ     -->  <img alt="白緑" src="/texticon/type_white_green.png">
+<!-- id 1218, miComet  -->  <img alt="赤"   src="/texticon/type_red.png">
+                            <img alt="青"   src="/texticon/type_blue.png">
+```
+
+One card gets a single pre-composited image of *both* badges; the other gets the two badges
+as separate files. `type_blue_red.png` **is itself a picture of two badges** — it is not a
+fused emblem, it is the pair supplied as one file.
+
+**The 4.2 KB figure was misread.** This finding, and the comment in `enums.py`, cited the
+asset's small size as evidence of a simpler fused symbol. It is a *resolution* difference:
+
+| asset | dimensions | size |
+|---|---|---:|
+| `type_blue_red.webp` | **88 × 108** | 4.2 KB |
+| `type_white_green.webp` | 330 × 410 | 20.4 KB |
+| every single-colour icon | 330 × 410 | ~17–21 KB |
+
+`white_green` is a fused code too and is full-size, so size never distinguished fused from
+single — it distinguishes one badly-exported asset from the rest. That gap has its own
+consequence: see [F-023](#f-023).
+
+**Normalising is now defensible — and is deliberately not done here.** This finding said
+that if the cards match, "the filter logic in Phase 4 gets simpler and one enum member goes
+away". That is now the case: `blue_red` → `["blue","red"]` and `white_green` →
+`["white","green"]` would make the data say what the cards show. The original objection —
+that normalising "would render two icons and a comma where the card shows one" — does not
+survive, because the card *does* show two.
+
+It would touch the contract (`ColorCode`, `FUSED_COLORS`), the pipeline, a populated D1
+column, the Worker's query-time expansion and its pinning test
+(`test_fused_colours_are_stored_as_printed`), and [F-016](#f-016)'s fix, which exists
+purely to make a `blue` filter match `blue_red`. Normalisation would delete the need for
+that machinery rather than change it.
+
+**Not attempted in this pass**, which was a documentation pass over [F-005](#f-005). A
+schema change across four packages on the strength of one session's finding deserves its
+own design pass. What is settled is the *fact*: the two encodings describe identically
+printed cards, and the decision this finding was waiting on has its answer.
 
 ---
 
@@ -911,3 +1008,46 @@ hand-edited too, for the same reason — a second offence, recorded rather than 
 - any synthetic fixture **must use a numeric id**: `schema.sql` makes the card id the
   FTS5 rowid and `seed.py` raises `NonNumericCardId` by design. Reserving a high range
   (e.g. `9000000+`) works; `synthetic-short-arts` does not.
+
+---
+
+## F-023 — the `blue_red` colour icon is a quarter the size of its siblings 🔍
+
+**Found:** 2026-07-29, while resolving [F-007](#f-007) · **Affects:** 5 FUWAMOCO cards,
+every locale
+
+The colour symbol icons in `apps/web/public/icons/` are uniform except for one:
+
+| asset | dimensions | size |
+|---|---|---:|
+| `type_blue_red.webp` | **88 × 108** | 4.2 KB |
+| `type_white_green.webp` | 330 × 410 | 20.4 KB |
+| `type_blue`, `type_red`, `type_green`, `type_white`, `type_purple`, `type_yellow`, `type_null` | 330 × 410 | 17.1–21.3 KB |
+
+`useGameIcon().color()` composes `/icons/type_${code}.webp` for every colour, so all nine
+render into the same slot. The `blue_red` icon is scaled **up** from 88 px to fill it and
+the other eight are not, so on the 5 FUWAMOCO cards the colour symbol is visibly softer
+than on every other card in the database.
+
+**Upstream has no better copy.** The official site's own
+`/wp-content/images/texticon/type_blue_red.png` is 88 × 108 / 16.6 KB, against 330 × 410
+for `type_red.png` and `type_blue.png`. So this is not a conversion or migration loss on
+our side — we faithfully carried a low-resolution asset the site itself publishes. It is
+the only one of the nine that is wrong upstream.
+
+**It was mistaken for evidence.** [F-007](#f-007) and the comment in `enums.py` both cited
+"4.2 KB against ~20 KB" as proof that `blue_red` is a *fused single symbol* rather than a
+pair. It is not — `white_green` is equally fused and is full-size, and the 88 px asset is
+itself a picture of two badges. A file-size gap that was really an export mistake was read
+as a fact about the game, and that reading shaped the contract's comment for two phases.
+
+**Not fixed.** The obvious repair is to composite a 330 × 410 replacement from
+`type_red.webp` and `type_blue.webp`, which would match what the card prints and what the
+upstream asset depicts. But that means shipping **our own redraw in place of official art**,
+and the badges on the real icon overlap at a specific offset that a naive paste would not
+reproduce. That is a call about the site's relationship to the official assets, not a
+rendering bug to patch quietly — so it is logged rather than done.
+
+Worth revisiting if [F-007](#f-007)'s normalisation is ever picked up: encoding
+`blue_red` as `["blue","red"]` would render the two full-size single-colour icons and
+retire this asset entirely, fixing the blur as a side effect.

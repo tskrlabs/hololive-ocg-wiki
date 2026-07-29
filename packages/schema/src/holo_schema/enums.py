@@ -162,18 +162,24 @@ RARITY_VALUES: tuple[RarityCode, ...] = get_args(RarityCode)
 
 # --- Colour ------------------------------------------------------------------
 #
-# 9 distinct values. `blue_red` and `white_green` are *fused dual-colour symbols* as
-# printed on the card, not shorthand for a two-element array — the game renders each
-# as a single icon (public/icons/type_blue_red.webp is a distinct 4.2 KB asset, vs
-# ~20 KB for each single-colour icon).
+# 9 distinct values. `blue_red` and `white_green` are the source's single-token spelling
+# of a dual-colour card: `["blue_red"]` (5 FUWAMOCO cards), `["white_green"]` (2 SorAZ
+# cards) and `["red", "blue"]` (3 miComet cards) all occur in the data.
 #
-# This matters because the data contains BOTH `["blue_red"]` (5 FUWAMOCO cards) and
-# `["red", "blue"]` (3 miComet cards). They are different things: one card bears one
-# fused symbol, the other bears two separate symbols. Normalising the fused codes into
-# arrays would render two icons and a comma where the card shows one icon.
+# These are NOT different printings. F-007 checked all three against the card images:
+# every one prints the same form, two separate badges on a gold ribbon. The split is an
+# artifact of the source HTML — FUWAMOCO and SorAZ get one <img alt="青赤"> of a
+# pre-composited pair, miComet gets two separate <img> tags. `type_blue_red.png` is
+# itself a picture of two badges, not a fused emblem, and its small file size is a
+# low-resolution export (88x108 vs 330x410 for `white_green`, which is equally "fused"),
+# not evidence of a simpler symbol. See F-023.
 #
-# Consequence for Phase 4: a "red" filter must also match fused codes containing red.
-# That is a query-layer rule, deliberately not a contract-layer one.
+# So normalising the two codes into arrays is defensible and would retire the query-layer
+# expansion below. It is not done: it touches a populated D1 column, the seeder, the
+# Worker and F-016's fix, and wants its own design pass. Kept as-is until then.
+#
+# Consequence for Phase 4, while the codes remain: a "red" filter must also match fused
+# codes containing red. That is a query-layer rule, deliberately not a contract-layer one.
 #
 # "null" is the game's colourless concept (無色 / "None"), a real domain value — not a
 # serialisation accident. i18n/locales/*.json:100 translates it in all 7 languages.

@@ -111,7 +111,9 @@ Key decisions — full reasoning in [ADR 0001](adr/0001-card-contract-generation
   `make check` fails if it is stale
 - Closed enums, collect-and-report validation, `--allow-unknown-enums` escape hatch
 - snake_case everywhere
-- Colours modelled **as-is** — see [F-007](./findings.md#f-007)
+- Colours modelled **as-is** — the source's two encodings kept, not normalised. F-007 has
+  since confirmed the cards are printed identically, so normalising is now open rather
+  than ruled out; see [F-007](./findings.md#f-007)
 - Storage annotations (`Column`/`Blob`/`FullText`) recorded now, DDL emitted in Phase 3
 
 Drift this removed: `HR` rarity missing from the TS union (24 cards unfilterable in the
