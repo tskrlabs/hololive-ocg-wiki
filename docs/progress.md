@@ -76,7 +76,6 @@ view; this table is the offline copy.
 |---|---|---|
 | [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) | Cloudflare's managed `robots.txt` inverts our `Disallow` | `ready-for-human` `phase-7` |
 | [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface | `ready-for-human` `phase-7` |
-| [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19) | How loud should the `unknown` card-type valve be? | `ready-for-human` |
 | [#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20) | 41% of characters are named inconsistently across their own cards | `ready-for-human` |
 | [#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21) | Should art names be translated at all? | `ready-for-human` |
 | [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
@@ -85,7 +84,16 @@ view; this table is the offline copy.
 with zero failures again, so a card-set refresh is possible. See
 [the pipeline section](#phase-1--the-pipeline) for the new `transform` command.
 
-The remaining six are judgement calls with no deadline; two resolve at launch. Everything
+✅ **#19 is closed** — the `unknown` card-type valve now blocks like the other three
+enums. Grilling it found two premises of the issue were false: `--allow-unknown-enums`
+had **never worked** (`build` discarded the flag on a length check that is true exactly
+when a card fails validation, untested since Phase 0), and no report could name the
+offending value, because the sentinel replaces the site's string and throws it away. Both
+were fixed first — the escape hatch now drops the bad cards and ships the rest, and
+`holo-data transform` prints the source value — which is what made blocking cheap enough
+to choose. See [the pipeline section](#phase-1--the-pipeline).
+
+The remaining five are judgement calls with no deadline; two resolve at launch. Everything
 settled during phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which
 is closed.
 
@@ -135,7 +143,10 @@ Key decisions — full reasoning in [ADR 0001](adr/0001-card-contract-generation
   test asserts byte identity across 34 cards × 7 locales
 - Generated output is **committed**, so a frontend contributor needs no Python toolchain.
   `make check` fails if it is stale
-- Closed enums, collect-and-report validation, `--allow-unknown-enums` escape hatch
+- Closed enums, collect-and-report validation, `--allow-unknown-enums` escape hatch —
+  which **had never worked** and was repaired by
+  [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19); it now drops the
+  offending cards and ships the rest, and `publish`/`seed` refuse the short artifact
 - snake_case everywhere
 - Colours modelled **as-is** — the source's two encodings kept, not normalised. F-007 has
   since confirmed the cards are printed identically, so normalising is now open rather
@@ -146,6 +157,11 @@ Drift this removed: `HR` rarity missing from the TS union (24 cards unfilterable
 live UI), `unknown` card type missing, `oshi_skill.cost` declared in three files but never
 present in data, `special_values` typed `string[]` when it is `number[]`, and
 `CARD_BLOOM_LEVELS` using `1st`/`2nd` against the data's `first`/`second`.
+
+The `unknown` card type has **since been removed from the contract**
+([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) — not a reversal of the
+drift fix, but a stronger answer to it: an unclassifiable card now stops the build rather
+than shipping with a name for its own unclassifiability.
 
 ## Phase 1 — the pipeline
 
@@ -163,6 +179,39 @@ transform as its final step, so before this the only supported repair after a co
 change was re-fetching 2,464 pages from a small operator's site. That is not
 hypothetical — dropping `cost_count` from the contract left a stale `cards_i18n.json`
 that failed `build` on 1,991 arts, against scraped data that was perfectly fine.
+
+### What happens when the site prints something new (#19)
+
+The three commands now answer this together, which is
+[#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)'s whole subject. Before
+it, an unrecognised **card type** was absorbed: the card validated, shipped, was excluded
+from every deck section, and nothing counted or printed it. The other three enums blocked.
+
+```
+holo-data transform   ⚠ 1 card(s) carry a value no mapping covers:
+                          card_type   サポート・新種別
+                                        1 card(s): 2480
+holo-data build       ✗ build failed — nothing written
+                        (add the mapping, or:)
+holo-data build --allow-unknown-enums
+                      ✓ wrote cards.json — 2462 cards, 1 dropped
+                      ⚠ publish and seed will refuse it
+```
+
+Three things had to be true for blocking to be the right answer, and only one was:
+
+- **`--allow-unknown-enums` had never worked.** `build()` honoured the flag and then
+  discarded the result on a length check true exactly when a card fails validation. It
+  had no test, and F-008 had reasoned that blocking was cheap *because this existed*.
+- **Nothing could name the offending value.** The sentinel replaces what the site printed
+  and discards it, so `build` reports the values we accept — never `サポート・新種別`.
+- The absorption itself was deliberate, and stayed deliberate; what was missing was the
+  census.
+
+So the fix runs in that order: repair the hatch, make `transform` name the value, then
+narrow the enum. A dropped card is recorded in `cards.json` and refused by both `publish`
+and `seed` with no override flag — the escape hatch unblocks `build` alone and never
+reaches the site (D4: gates are facts, not ceremony).
 
 Key decisions — full reasoning in
 [ADR 0002](adr/0002-field-level-translation-cache.md):
@@ -223,6 +272,9 @@ Recorded in the ADRs; listed here so they are not missed.
 | **Fixture corpus** | ~~`fixtures/cards.json` is generated but **both its generators fail today**~~ — **fixed**, [#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16). F-002 dropped `cost_count` and hand-edited the corpus rather than regenerating, leaving `make fixtures` broken on 1,715 cards and `holo-data build` on 1,991 arts, with `make check` running neither. New `holo-data transform` repairs derived data without re-scraping; the corpus now selects from `holo-data build` output; `v1_adapter.py` is deleted |
 | **Phase 1 pipeline** | `scrape → images → translate → build` gains a **`transform`** rung. `scrape` always ran the transform as its last step, so the only supported repair after a contract change was re-fetching 2,464 pages from a small operator's site ([#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16)) |
 | **Fixture corpus** | Merge rule 2 (arts pair by index, tolerating a short list) is covered by a **synthetic fixture**, card `9000001`. F-004 warned repointing the generator would lose the coverage; the census found it worse — **zero** of 2,463 cards have an arts-length mismatch in any locale, so no real card can cover a rule that still runs in production in two languages |
+| **Phase 0 contract** | `"unknown"` is **no longer a `card_type_code`** ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)). ADR 0001 modelled it as legitimate so the build would not fail on cards we already ship; it was the pipeline's fallback in four enums but a member of only this one, so an unmapped value blocked the build in three fields and shipped silently in the fourth — into no deck section, counted by nothing. All four now behave identically |
+| **ADR 0001 §4** | `--allow-unknown-enums` **had never worked** — `build()` honoured the flag then discarded the result on a `len(validated) != len(cards)` check that is true exactly when a card fails validation, untested since Phase 0. Its documented promise ("publishes anyway") was also unimplementable against closed `Literal`s: such a card cannot be constructed. It now **drops** those cards, records their ids in `CardCollection.dropped`, and `publish`/`seed` refuse a non-empty list with no override ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) |
+| **Phase 1 pipeline** | `transform` now reports the **source values no mapping covers**. The sentinel discards what the site printed, so every downstream error could name only the values we accept — an operator got `Input should be 'debut', 'first', 'second' or 'spot'` and a card id, never `超進化`. Two lookups that *omit* rather than substitute (skill timing, keyword type) are reported too: they fail nothing, so the card ships with no timing badge or no keyword at all ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) |
 
 ## Phase 2 — R2 publish
 
