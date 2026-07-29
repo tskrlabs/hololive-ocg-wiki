@@ -61,17 +61,28 @@ class TestEnums:
         assert "HR" in RARITY_VALUES
         assert Card.model_validate(_minimal_card(rarity_code="HR")).rarity_code == "HR"
 
-    def test_unknown_card_type_is_legitimate(self):
-        """The scraper writes 'unknown' when it cannot classify.
+    def test_unknown_card_type_is_rejected(self):
+        """The scraper's fallback must not validate (issue #19).
 
-        No card carries it today — F-001 fixed the last two by adding the missing
-        `サポート・スタッフ` mapping. It stays as the safety valve for the next
-        unrecognised type; see docs/archive/findings.md F-024 for the fact that nothing counts
-        it if one ever appears.
+        `unknown` was a legal member until #19. The pipeline writes it at eight sites
+        across four enums and this was the only one that accepted it, so an unrecognised
+        value from the site stopped the build in three fields and shipped silently in the
+        fourth — where the card was then excluded from every deck section, counted by
+        nothing and printed by nothing.
+
+        That is F-001's shape: two ライブスタッフ cards sat in v1's live data as
+        `unknown` from the day they shipped, found by a hand-run census during the v2
+        port rather than by anything the pipeline said.
+
+        The graceful-degradation argument the member was added for is now served by
+        `build --allow-unknown-enums`, which drops such cards and records that it did —
+        an operator's choice, not a silent default.
         """
-        assert "unknown" in CARD_TYPE_VALUES
-        card = Card.model_validate(_minimal_card(card_type_code="unknown"))
-        assert card.card_type_code == "unknown"
+        assert "unknown" not in CARD_TYPE_VALUES
+
+        with pytest.raises(ValidationError) as exc:
+            Card.model_validate(_minimal_card(card_type_code="unknown"))
+        assert exc.value.errors()[0]["type"] == "literal_error"
 
     def test_bloom_levels_use_data_spelling(self):
         """v1's constants said 1st/2nd; the data says first/second."""

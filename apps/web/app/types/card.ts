@@ -5,8 +5,9 @@
  * shape also written out in Python, `schema.sql` and `worker.ts` — and it had measurably
  * drifted: the `HR` rarity was missing from the rarity union, leaving 24 cards
  * unfilterable in the live UI; `supportStaff` and `unknown` were absent from the card
- * types; and a commented-out `Translations` block described a schema that no longer
- * existed.
+ * types (`unknown` was later removed from the contract by issue #19, so only
+ * `supportStaff` remains as drift); and a commented-out `Translations` block described a
+ * schema that no longer existed.
  *
  * `LocalizedCard` is what every endpoint returns — one locale, translations flattened to
  * the top. The alias keeps v1's call sites reading naturally, since to this app a card

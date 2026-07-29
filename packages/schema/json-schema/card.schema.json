@@ -86,8 +86,7 @@
             "supportMascot",
             "supportStaff",
             "supportStaffLimited",
-            "supportTool",
-            "unknown"
+            "supportTool"
           ],
           "title": "Card Type Code",
           "type": "string"

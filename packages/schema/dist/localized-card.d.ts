@@ -28,8 +28,7 @@ export type CardTypeCode =
   | "supportMascot"
   | "supportStaff"
   | "supportStaffLimited"
-  | "supportTool"
-  | "unknown";
+  | "supportTool";
 export type RarityCode = "C" | "HR" | "OC" | "OSR" | "OUR" | "P" | "R" | "RR" | "S" | "SEC" | "SR" | "SY" | "U" | "UR";
 export type ColorCodes = (
   "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"

@@ -58,9 +58,10 @@ export const SECTIONS: readonly SectionSpec[] = [
 /**
  * Which section a card type belongs to, or `null` if none does.
  *
- * `null` is a real answer, not a failure: `unknown` is a legitimate card type — the
- * scraper writes it when it cannot classify a card — and it is deliberately absent from
- * all three lists, because routing an unclassified card to `main` would be a guess.
+ * `null` is a real answer, not a failure: `rulesNotice` is not a card at all (F-020), so
+ * no section can hold it. It is the only such type — `unknown` was the other until issue
+ * #19 removed it from `CardTypeCode`, on the grounds that a card we cannot classify
+ * should stop the build rather than ship into no section, uncounted.
  */
 export function sectionForCardType(cardType: CardTypeCode): SectionSpec | null {
   return SECTIONS.find((section) => section.cardTypes.includes(cardType)) ?? null;

@@ -51,10 +51,15 @@ describe("sectionForCardType", () => {
     expect(sectionForCardType("supportStaff")?.key).toBe("main");
   });
 
-  it("refuses to guess for an unclassified card", () => {
-    // `unknown` is a real card type — the scraper writes it when it cannot classify a
-    // card — and is deliberately in no section. Routing it to main would be a guess.
-    expect(sectionForCardType("unknown")).toBeNull();
+  it("refuses to place a non-card", () => {
+    // `rulesNotice` is not a card at all — it is a format-legality notice the official
+    // site publishes into its card list (F-020) — so no section can ever hold it. This
+    // is what makes the deck builder structurally unable to add one.
+    //
+    // It used to be `unknown` here, the scraper's fallback for a card it could not
+    // classify. That value left `CardTypeCode` in issue #19, so `rulesNotice` is now
+    // the only type in no section and the null path needs it to stay exercised.
+    expect(sectionForCardType("rulesNotice")).toBeNull();
   });
 });
 

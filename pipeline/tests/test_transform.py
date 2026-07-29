@@ -217,15 +217,24 @@ class TestColors:
 
 
 class TestCardType:
-    def test_unmapped_becomes_unknown(self):
-        """`unknown` is a documented, legitimate code — the scraper's safety valve.
+    def test_unmapped_becomes_unknown_which_no_longer_validates(self):
+        """The sentinel is still written; the contract now rejects it (issue #19).
 
-        No card carries it today (F-001 fixed the last two by adding the missing
-        `サポート・スタッフ` mapping), which is what makes it a *silent* channel — see
-        docs/archive/findings.md F-024.
+        Both halves matter. `transform` keeps substituting `unknown` — the field is
+        required, so something has to occupy it for validation to have a value to
+        reject, and omitting it would fail with a confusing "Field required" instead.
+
+        What changed is the other half: `unknown` left `CardTypeCode`, so this card now
+        stops the build rather than shipping undeckbuildable and uncounted. This test
+        asserts the pair, because a tidy-up that re-admits the value to the enum would
+        leave the first assertion green while restoring exactly the silence #19 closed.
         """
         card = to_card({"id": "1", "info": {"カードタイプ": "新種別"}})
         assert card["card_type_code"] == "unknown"
+        assert "unknown" not in CARD_TYPE_VALUES, (
+            "re-admitting `unknown` makes an unclassifiable card ship silently again "
+            "— the F-001 shape that issue #19 closed"
+        )
 
     def test_mapping_may_exceed_the_contract_deliberately(self):
         """`CARD_TYPE` emits a code `CardTypeCode` rejects, and that is the point.
@@ -234,21 +243,29 @@ class TestCardType:
         site has never printed — a census of all 2,464 scraped cards finds fourteen
         distinct card types and that is not one of them. It is kept anyway: a card
         carrying it would be a genuinely new mechanic, and stopping the build beats
-        shipping it as `unknown`, which validates and is then excluded from every deck
-        section with nothing to announce it.
+        shipping it.
 
         This is not hypothetical. Bare `サポート` was the same kind of evidence-free
         mapping until the 2,464-card refresh printed it, and that entry is what caught
         the Selection Cup notice (F-020) — the first and only time the guard has fired.
 
-        Two assertions because two different tidy-ups would disarm it, and `make check`
-        would stay green through either: deleting the mapping entry (the card silently
-        becomes `unknown`), or widening the enum to accept it (the card silently
-        validates). See docs/archive/findings.md F-008.
+        **Issue #19 changed what each assertion buys.** F-008 kept the mapping entry
+        because deleting it would let a Location card fall through to `unknown` and ship
+        silently. `unknown` is no longer a legal card type, so both branches now fail the
+        build and the entry protects nothing on its own. What it still buys is the error
+        message — `card_type_code: supportLocation` names the type that appeared, where
+        `unknown` names only our own fallback — which is the same diagnosis argument
+        `holo-data transform`'s unmapped report is built on.
+
+        The second assertion keeps its full original force: widening the enum to accept
+        `supportLocation` would make a genuinely new card type validate silently, and
+        `make check` would stay green through that tidy-up.
+        See docs/archive/findings.md F-008.
         """
         assert "サポート・ロケーション" in mappings.CARD_TYPE, (
-            "the mapping entry is the guard — without it a Location card becomes "
-            "`unknown` and ships silently (findings.md F-008)"
+            "the entry names the card type in the failure — without it a Location card "
+            "fails as a bare `unknown`, which says nothing about what appeared "
+            "(findings.md F-008, issue #19)"
         )
         emitted = mappings.CARD_TYPE["サポート・ロケーション"]
         assert emitted not in CARD_TYPE_VALUES, (

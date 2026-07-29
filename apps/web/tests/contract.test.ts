@@ -49,9 +49,15 @@ describe("the generated contract is reachable from the site", () => {
   });
 
   it("includes the card types v1's list had drifted away from", () => {
-    // `supportStaff` and `unknown` were absent from v1's constants.
+    // `supportStaff` was absent from v1's constants, so such a card matched no deck
+    // section and silently vanished when added.
     expect(CARD_TYPES).toContain("supportStaff");
-    expect(CARD_TYPES).toContain("unknown");
+
+    // `unknown` was the other drift, and it is now absent here *by decision* rather
+    // than by oversight: it is the scraper's fallback for a card it cannot classify,
+    // and issue #19 removed it from the contract so such a card stops the build instead
+    // of shipping into no deck section, counted and announced by nothing.
+    expect(CARD_TYPES).not.toContain("unknown");
   });
 
   it("partitions card types into the three deck sections without overlap", () => {
