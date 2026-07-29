@@ -7,6 +7,7 @@ members exist, which fields are optional, and which validators must fire.
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -16,13 +17,19 @@ from holo_schema import (
     BLOOM_LEVEL_VALUES,
     CARD_TYPE_VALUES,
     COLOR_VALUES,
-    NON_CARD_TYPES,
     RARITY_VALUES,
     Card,
     CardCollection,
 )
 
 FIXTURES = Path(__file__).resolve().parents[3] / "fixtures" / "cards.json"
+
+# The corpus generator, imported for its *rules* — see TestFixtures. Importing it does
+# not pull in the pipeline: `_default_source()` imports `holo_data.paths` lazily, so
+# `holo-schema` stays installable and testable on its own.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+
+import build_fixtures  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -178,41 +185,96 @@ class TestCollectionValidators:
 
 
 class TestFixtures:
-    """The committed fixture set must stay valid and keep covering the edge cases."""
+    """The committed corpus must still satisfy the rules that selected it.
+
+    **This is the drift gate** (issue #16). `fixtures/cards.json` is generated, but its
+    generator's input — `holo-data build` output — is gitignored working state, so
+    `make check` cannot re-run the generator and byte-compare. That is what let a
+    generated file and the generator claiming to produce it disagree for two commits
+    with `make check` green.
+
+    So these assert the *invariants* rather than the bytes: every coverage rule the
+    generator encodes is satisfied by the committed corpus, and every pinned anomaly is
+    present. Both run from a fresh clone with no source data and no Python pipeline.
+
+    The rules come from `build_fixtures.py` itself rather than being restated here. A
+    second copy of the list is exactly how the previous version of this file ended up
+    asserting the opposite of what the generator's rules said.
+    """
 
     def test_fixtures_validate(self, collection: CardCollection):
         assert len(collection.cards) > 25
 
-    def test_fixtures_cover_every_card_type(self, collection: CardCollection):
-        """Every card type that any real card uses must appear in the fixtures.
+    def test_every_coverage_rule_is_satisfied(self, collection: CardCollection):
+        """Each rule the generator selects for must have at least one card covering it.
 
-        Two exclusions, for different reasons:
-
-        `unknown` is the scraper's placeholder for a type it cannot classify, and since
-        F-001 fixed the missing `サポート・スタッフ` mapping, no card carries it. It stays
-        in the enum as a safety valve for the next unrecognised type, but there is no
-        card to make a fixture from.
-
-        `rulesNotice` (NON_CARD_TYPES) *cannot* appear here — `Card` rejects it outright,
-        because it is not a card. It is covered by `pipeline/tests/test_notices.py`
-        instead. Subtracting it rather than deleting the assertion is deliberate: the
-        test still fails if a genuinely new *card* type is added without a fixture.
+        Fails if a rule stops being covered — whether because the source data changed,
+        the selection changed, or someone hand-edited the corpus.
         """
-        present = {card.card_type_code for card in collection.cards}
-        assert present == set(CARD_TYPE_VALUES) - {"unknown"} - set(NON_CARD_TYPES)
+        uncovered = [
+            label
+            for label, predicate in build_fixtures._coverage_rules()
+            if not any(predicate(card) for card in collection.cards)
+        ]
+        assert not uncovered, (
+            f"the committed corpus no longer covers: {', '.join(uncovered)} — "
+            "regenerate with `make fixtures`, or delete the rule if it has become "
+            "unsatisfiable (and say why, as F-001 and F-020 did)"
+        )
 
-    def test_fixtures_cover_every_rarity(self, collection: CardCollection):
-        present = {card.rarity_code for card in collection.cards}
-        assert present == set(RARITY_VALUES)
+    def test_every_pinned_card_is_present(self, collection: CardCollection):
+        """The pinned anomalies are the bugs the contract must survive.
 
-    def test_fixtures_include_arts_mismatch_cards(self, collection: CardCollection):
-        """hSD03-009 / hSD04-009: 2 arts, 0 `en` translations."""
+        Coverage selection would not necessarily pick any of them, so losing one is
+        silent: the corpus still covers every enum, and a real production bug stops
+        being pinned.
+        """
         ids = {card.id for card in collection.cards}
-        assert {"446", "447"} <= ids
+        missing = {
+            cid: reason
+            for cid, reason in build_fixtures.PINNED.items()
+            if cid not in ids
+        }
+        assert not missing, f"pinned cards missing from the corpus: {missing}"
 
-    def test_fixtures_include_reprint_collision_pairs(self, collection: CardCollection):
-        ids = {card.id for card in collection.cards}
-        assert {"726", "2138", "735", "2139"} <= ids
+    def test_the_synthetic_short_arts_card_is_present(self, collection: CardCollection):
+        """No real card can cover `localize()` merge rule 2 any more.
+
+        A census over all 2,463 cards finds zero arts-length mismatches in any locale,
+        so this fixture is the only thing exercising that branch — in Python *and*
+        TypeScript. Asserted separately from the coverage rules because it is not
+        selected by one: it is appended unconditionally.
+        """
+        by_id = {card.id: card for card in collection.cards}
+        card = by_id.get(build_fixtures.SYNTHETIC_ID)
+        assert card is not None, "the synthetic short-arts fixture is gone"
+        assert len(card.arts or []) == 2
+        assert len(card.translations["en"].arts or []) == 0, (
+            "the short translated arts list is the whole point of this fixture"
+        )
+
+    def test_the_corpus_holds_no_other_synthetic_card(self, collection: CardCollection):
+        """One synthetic fixture, deliberately.
+
+        The corpus is real data plus one documented exception; a second would mean the
+        selection had quietly become hand-curated. Ids run 1..2457, so anything in the
+        reserved range is synthetic by construction.
+        """
+        synthetic = {card.id for card in collection.cards if int(card.id) >= 9000000}
+        assert synthetic == {build_fixtures.SYNTHETIC_ID}
+
+    def test_card_ids_txt_matches_the_corpus(self, collection: CardCollection):
+        """The committed id list is the reviewable form of the selection.
+
+        If it disagrees with cards.json, a PR that changed which cards are fixtures
+        showed up as the wrong diff — which is the property the list exists to give.
+        """
+        listed = {
+            line.split()[0]
+            for line in (FIXTURES.parent / "card-ids.txt").read_text("utf-8").splitlines()
+            if line.strip() and not line.startswith("#")
+        }
+        assert listed == {card.id for card in collection.cards}
 
     def test_fixture_image_keys_unique(self, collection: CardCollection):
         keys = [card.image_key for card in collection.cards]
