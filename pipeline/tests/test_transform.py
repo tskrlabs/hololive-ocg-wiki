@@ -298,3 +298,117 @@ class TestSkills:
             {"id": "1", "oshi_skill": {"name": "x", "cost": "-2", "timing": "ターンに1回"}}
         )
         assert "cost" not in card["oshi_skill"]
+
+
+class TestTransformMatchesTheContract:
+    """The transformer's output must validate as a `Card`.
+
+    This is the gate that was missing when `holo-data build` broke (issue #16). The
+    contract dropped `cost_count` and the transformer stopped emitting it, but nothing
+    asserted the two agreed — so the disagreement was only visible three artifacts
+    downstream, in a command `make check` does not run. `make fixtures` and
+    `holo-data build` were both broken for two commits with `make check` green.
+
+    `Card` is `extra="forbid"`, so a field the transformer emits and the contract does
+    not model fails here rather than in a build nobody runs. The reverse — a required
+    field the transformer stops emitting — fails here too.
+
+    The input is a scraper-shaped literal rather than a committed sample: the real
+    inputs are gitignored working state (an 8.5 MB scrape artifact), so a test reading
+    them would pass on one laptop and skip everywhere else. That is the failure mode
+    this test exists to close, not to repeat.
+    """
+
+    def _structured_card(self) -> dict:
+        """One entry shaped like `cards_structured.json`, exercising the tricky paths.
+
+        Carries a 特攻 icon beside a real cost icon, which is the shape behind F-002:
+        the extractor collects both as sibling `<img>` tags, and v1 counted them
+        together.
+        """
+        return {
+            "id": "9999",
+            "name": "テストホロメン",
+            "image_url": (
+                "https://hololive-official-cardgame.com/wp-content/images/"
+                "cardlist/hBP99/hBP99-001_RR.png"
+            ),
+            "image_filename": "hBP99-001_RR.png",
+            "info": {
+                "カードナンバー": "hBP99-001",
+                "カードタイプ": "ホロメン",
+                "レアリティ": "RR",
+                "Bloomレベル": "1st",
+                "HP": "150",
+                "色": [{"images": [{"alt": "赤", "src": "/images/texticon/type_red.png"}]}],
+                "バトンタッチ": [
+                    {"images": [{"alt": "◇", "src": "/images/texticon/arts_null.png"}]}
+                ],
+                "タグ": [{"name": "#EN", "href": "/cardlist/cardsearch?keyword=%23EN"}],
+            },
+            "card_set": {"value": ["テストセット"], "count": 1},
+            "arts": [
+                {
+                    "name": "テストアーツ",
+                    "effect": "テスト効果",
+                    "damage": "100+",
+                    "cost_icons": [
+                        {"alt": "赤", "src": "/images/texticon/arts_red.png"},
+                        # Not a cost — the 特攻 marker. Counting it is F-002.
+                        {"alt": "紫+50", "src": "/images/texticon/tokkou_50_purple.png"},
+                    ],
+                    "tokkou": [
+                        {"alt": "紫+50", "src": "/images/texticon/tokkou_50_purple.png"}
+                    ],
+                }
+            ],
+            "qa_items": [
+                {
+                    "title": "Q1（2026.01.01）",
+                    "question": "質問",
+                    "answer": "回答",
+                    "related_cards": {
+                        "raw_html": "[hBP99-001 ： テスト]",
+                        "card_number": ["hBP99-001"],
+                    },
+                }
+            ],
+        }
+
+    def test_transform_output_validates_as_a_card(self):
+        """The whole point: `to_card` output is a valid `Card`, with no extra keys."""
+        card = Card.model_validate(to_card(self._structured_card()))
+
+        assert card.id == "9999"
+        assert card.card_type_code == "character"
+        assert card.image_key == "hBP99/hBP99-001_RR"
+
+    def test_transform_emits_no_field_the_contract_dropped(self):
+        """The exact regression: a dropped field silently surviving in the output.
+
+        Named explicitly rather than left to `extra="forbid"` so the failure says
+        *which* field came back, and so removing a field from the contract has a
+        matching assertion to update here.
+        """
+        card = to_card(self._structured_card())
+
+        for art in card.get("arts") or []:
+            assert "cost_count" not in art, "F-002 removed `cost_count` from the contract"
+        for translation in card["translations"].values():
+            for art in translation.get("arts") or []:
+                assert "value" not in art, "F-003 removed `value` from `TranslatedArt`"
+
+    def test_the_tokkou_icon_is_not_counted_as_a_cost(self):
+        """F-002's cause, pinned: 482 arts got an `unknown` cost type from this icon."""
+        card = Card.model_validate(to_card(self._structured_card()))
+
+        assert card.arts[0].cost_types == ["red"]
+        assert card.arts[0].special_targets == ["purple"]
+        assert card.arts[0].special_values == [50]
+
+    def test_a_notice_entry_also_transforms(self):
+        """Notices ride in the same list and must survive the transform (F-020)."""
+        notice = to_card(
+            {"id": "9998", "name": "お知らせ", "info": {"カードタイプ": "ルール notice"}}
+        )
+        assert notice["id"] == "9998"
