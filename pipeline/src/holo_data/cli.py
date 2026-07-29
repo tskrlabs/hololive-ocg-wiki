@@ -5,6 +5,7 @@ gated update flow: everything before `publish` is local, free and reversible, an
 steps that cost money or touch production are explicit.
 
     holo-data scrape              official site -> raw HTML + images   (local, free)
+    holo-data transform           re-transform the scrape, no refetch  (local, free)
     holo-data images              PNG -> WebP                          (local, free)
     holo-data translate           Poe API                              ($$ — never implicit)
     holo-data build               merge + validate -> cards.json       (local, free)
@@ -117,6 +118,41 @@ def scrape(
     transform.save_i18n(cards)
 
     typer.echo(f"✓ scraped {len(cards)} cards")
+
+
+# --- transform ---------------------------------------------------------------
+
+@app.command("transform")
+def transform_() -> None:
+    """Re-transform the scraped data into contract shape, without re-scraping.
+
+    `scrape` ends by running this, so the only way to repair `cards_i18n.json` used to
+    be re-fetching 2,464 pages from a small operator's site — a bad reason to hit
+    someone's server when the scrape artifact on disk is already correct.
+
+    That is not hypothetical: when the contract dropped `cost_count`, the transformer
+    stopped emitting it but `cards_i18n.json` had been written before the change, so
+    `build` failed on 1,991 arts against data that was fine. This command is the repair
+    (issue #16).
+
+    Ungated, like `build`: local, free, and reproducible from `cards_structured.json`.
+    """
+    structured = extract.load_structured()
+    if not structured:
+        typer.echo(
+            f"no scraped data at {paths.structured_file()} — run `holo-data scrape` first",
+            err=True,
+        )
+        raise typer.Exit(1)
+
+    typer.echo(f"→ transforming {len(structured)} entries to contract shape")
+    cards = transform.transform_cards(structured, on_progress=_progress("cards"))
+    transform.save_i18n(cards)
+
+    size = paths.i18n_file().stat().st_size
+    typer.echo(
+        f"✓ wrote {paths.i18n_file()} — {len(cards)} entries, {size / 1024 / 1024:.1f} MB"
+    )
 
 
 # --- images ------------------------------------------------------------------
