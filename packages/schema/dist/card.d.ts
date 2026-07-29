@@ -79,6 +79,7 @@ export type RawHtml = string;
 export type CardNumber1 = string[];
 export type QaItems = QaItem[];
 export type Cards = Card[];
+export type Dropped = string[];
 
 /**
  * The full published card set — the root shape of `cards.json`.
@@ -91,6 +92,7 @@ export interface CardCollection {
   generated_at: GeneratedAt;
   schema_version?: SchemaVersion;
   cards: Cards;
+  dropped?: Dropped;
 }
 /**
  * A single card, in every language.

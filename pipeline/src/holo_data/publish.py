@@ -7,14 +7,18 @@ Class A allowance. A `--confirm` on a harmless command teaches the habit of typi
 `--confirm` without reading, which is precisely what must not happen by the time `seed`
 asks for it.
 
-What it has instead are two gates that an agent cannot satisfy by adding a flag (D4: the
-CLI may be driven by an agent, so the guard rails must be facts rather than ceremony):
+What it has instead are three gates that an agent cannot satisfy by adding a flag (D4:
+the CLI may be driven by an agent, so the guard rails must be facts rather than
+ceremony):
 
 1. **Staleness** — `cards.json` must be newer than the inputs it was built from.
    Publishing a stale artifact is the realistic failure, and `--confirm` would not catch
    it because the person typing it also believes the build is current.
 2. **Coverage** — every card's `image_key` must resolve to a local WebP. A missing image
    is a broken tile on the site, and it is free to detect here.
+3. **Completeness** — the build must not have dropped any cards. `--allow-unknown-enums`
+   unblocks `build` alone; the artifact it produces is short a card the official site
+   prints, and this is what stops that reaching R2 (issue #19).
 
 The artifact is also re-validated against the contract before upload, which is where
 `CardCollection`'s duplicate-key check fires (F-006).
@@ -24,6 +28,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from holo_schema import CardCollection
 
 from . import paths, r2
 from .build import load as load_build, load_notices
@@ -97,6 +103,35 @@ def check_coverage(card_keys: list[str], local: dict[str, Path]) -> tuple[list[s
     return missing, orphans
 
 
+def check_dropped(collection: CardCollection) -> str | None:
+    """Did the build leave cards out? Returns the refusal message, or None.
+
+    `build --allow-unknown-enums` ships the cards that validate and records the ids it
+    dropped. Publishing that artifact puts a `cards.json` in R2 describing fewer cards
+    than the official site prints, and nothing downstream would say so — `/api/status`
+    reads its count straight from the seeded database and would report the short number
+    as fact.
+
+    The same refusal lives in `seed.check_gates`, because the same artifact feeds both
+    and either path alone would let the gap through. Neither has an override flag: the
+    way to clear it is to add the mapping and rebuild, which is the work the dropped
+    card is asking for (D4 — gates are facts, not ceremony).
+    """
+    if not collection.dropped:
+        return None
+
+    shown = ", ".join(collection.dropped[:5])
+    more = (
+        f" (+{len(collection.dropped) - 5} more)" if len(collection.dropped) > 5 else ""
+    )
+    return (
+        f"cards.json records {len(collection.dropped)} dropped card(s): {shown}{more}. "
+        "`build --allow-unknown-enums` left them out because they carry a value no "
+        "mapping covers. Add the mapping in `mappings.py` (the `transform` report names "
+        "the source value the site printed) and re-run `holo-data build`."
+    )
+
+
 def build_plan(s3, config: r2.R2Config, force: bool = False) -> PublishPlan:
     """Diff local state against both buckets without uploading anything."""
     plan = PublishPlan()
@@ -106,6 +141,10 @@ def build_plan(s3, config: r2.R2Config, force: bool = False) -> PublishPlan:
         raise r2.R2Error(
             f"no build at {paths.cards_json()} — run `holo-data build` first."
         )
+
+    dropped = check_dropped(collection)
+    if dropped:
+        raise r2.R2Error(dropped)
 
     local = r2.local_images(paths.WEBP_DIR)
     # Notices have images too, and they are referenced by `notices.json` rather than by

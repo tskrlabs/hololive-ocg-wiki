@@ -14,6 +14,8 @@ from pathlib import Path
 
 import pytest
 
+from holo_schema import CardCollection
+
 from holo_data import publish as publish_module
 from holo_data import migrate_images
 
@@ -102,6 +104,37 @@ class TestCoverageGate:
         _, publish, _ = pipeline_dirs
         local = {"hSD01/a.webp": Path("a")}
         assert publish.check_coverage(["hSD01/a"], local) == ([], [])
+
+
+class TestCompletenessGate:
+    """A build that dropped cards must not reach R2 (issue #19).
+
+    `--allow-unknown-enums` exists so an unmapped card type does not strand an entire
+    refresh, but the artifact it writes is short a card the official site prints. The
+    seeder refuses it too; both gates are needed because `publish` and `seed` are
+    separate commands reading the same file, and either alone leaves a path through.
+    """
+
+    def _collection(self, dropped: list[str]) -> CardCollection:
+        return CardCollection(
+            generated_at="2026-07-30T00:00:00Z", cards=[], dropped=dropped
+        )
+
+    def test_a_dropped_card_is_refused(self, pipeline_dirs):
+        _, publish, _ = pipeline_dirs
+        message = publish.check_dropped(self._collection(["2480"]))
+        assert message is not None
+        assert "2480" in message
+        assert "mappings.py" in message, "the refusal must say how to clear it"
+
+    def test_an_ordinary_build_passes(self, pipeline_dirs):
+        _, publish, _ = pipeline_dirs
+        assert publish.check_dropped(self._collection([])) is None
+
+    def test_many_dropped_cards_are_summarised(self, pipeline_dirs):
+        _, publish, _ = pipeline_dirs
+        message = publish.check_dropped(self._collection([str(n) for n in range(2470, 2478)]))
+        assert "+3 more" in message
 
 
 class TestMigrationPlan:

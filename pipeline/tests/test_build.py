@@ -19,6 +19,7 @@ import pytest
 from holo_schema import CardCollection
 from holo_schema.enums import LOCALE_VALUES, SOURCE_LOCALE
 from holo_data import build as build_module
+from holo_data.translate.cache import TranslationCache
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES_JSON = REPO_ROOT / "fixtures" / "cards.json"
@@ -124,3 +125,91 @@ class TestFilterOptions:
             parsed = json.loads(path.read_text(encoding="utf-8"))
             assert parsed["locale"] == locale
             assert parsed["names"] and parsed["sets"]
+
+
+def _buildable_card(card_id: str, **overrides) -> dict:
+    """The smallest dict that validates as a `Card`, for the escape-hatch tests."""
+    card = {
+        "id": card_id,
+        "card_number": f"hBP01-{card_id.zfill(3)}",
+        "card_type_code": "character",
+        "rarity_code": "C",
+        "image_key": f"hBP01/{card_id}",
+        "source_image_url": f"https://example.invalid/{card_id}.png",
+        "card_sets": ["hBP01"],
+        "bloom_level_code": "debut",
+        "translations": {"ja": {"name": f"card {card_id}"}},
+    }
+    card.update(overrides)
+    return card
+
+
+class TestUnknownEnumEscapeHatch:
+    """`--allow-unknown-enums` — what it does, and that it does anything at all.
+
+    It had never worked. `build()` computed a `blocking` flag that honoured the
+    argument, then discarded it: the very next condition was
+    `len(validated) != len(cards)`, which is true precisely when a card failed
+    validation — the case the flag exists for. So the collection came back `None`
+    whatever the caller passed, and no test covered it.
+
+    That mattered beyond the dead code path. F-008 settled `サポート・ロケーション`
+    partly on the ground that a blocked build is "recoverable in minutes and has
+    `--allow-unknown-enums` as an escape hatch", and issue #19 weighed blocking against
+    the same premise. Neither was true when written.
+    """
+
+    def test_an_unmapped_enum_value_blocks_by_default(self):
+        collection, _notices, report = build_module.build(
+            [_buildable_card("1"), _buildable_card("2", bloom_level_code="新形態")],
+            TranslationCache(),
+            [],
+        )
+        assert collection is None, "an unrecognised enum value must stop the build"
+        assert report.enum_violations
+        assert not report.errors, "an enum value is not a structural error"
+
+    def test_the_flag_ships_the_valid_cards_and_drops_the_rest(self):
+        """The regression test for the bug above: this returned `None` before.
+
+        Note what the flag cannot do. The contract's enums are closed `Literal`s, so a
+        card carrying an unmapped value cannot be constructed as a `Card` at all —
+        "publish anyway", which is what the docstring promised for four phases, was
+        never implementable. Dropping is the only coherent reading.
+        """
+        collection, _notices, report = build_module.build(
+            [_buildable_card("1"), _buildable_card("2", bloom_level_code="新形態")],
+            TranslationCache(),
+            [],
+            allow_unknown_enums=True,
+        )
+        assert collection is not None, "the flag must actually produce a collection"
+        assert [card.id for card in collection.cards] == ["1"]
+        assert collection.dropped == ["2"]
+        assert report.valid == 1
+
+    def test_a_structural_error_blocks_even_with_the_flag(self):
+        """The hatch is for unmapped enum values, not for malformed cards.
+
+        A missing required field means the scraper broke, and there is no mapping to
+        add that would fix it — so the flag must not become a way to ship past it.
+        """
+        broken = _buildable_card("2")
+        del broken["rarity_code"]
+
+        collection, _notices, report = build_module.build(
+            [_buildable_card("1"), broken],
+            TranslationCache(),
+            [],
+            allow_unknown_enums=True,
+        )
+        assert collection is None
+        assert report.errors
+
+    def test_an_ordinary_build_records_no_dropped_cards(self):
+        """`dropped` is empty on every normal build, which is what the gates key on."""
+        collection, _notices, _report = build_module.build(
+            [_buildable_card("1")], TranslationCache(), []
+        )
+        assert collection is not None
+        assert collection.dropped == []

@@ -269,7 +269,8 @@ def build(
     allow_unknown_enums: bool = typer.Option(
         False,
         "--allow-unknown-enums",
-        help="publish despite unrecognised enum values (prints what it let through)",
+        help="build without the cards carrying unrecognised enum values "
+        "(publish and seed then refuse the artifact)",
     ),
 ) -> None:
     """Merge translations and validate against the contract, producing cards.json."""
@@ -298,11 +299,20 @@ def build(
 
     if report.enum_violations:
         typer.echo("")
-        label = "allowed" if allow_unknown_enums else "unrecognised"
+        label = "dropped for" if allow_unknown_enums else "unrecognised"
         typer.echo(f"  {label} enum values:", err=not allow_unknown_enums)
         for message, ids in sorted(report.enum_violations.items()):
             typer.echo(f"    {len(ids):5d}  {message}")
             typer.echo(f"           e.g. card {', '.join(ids[:5])}")
+        if not allow_unknown_enums:
+            typer.echo("", err=True)
+            typer.echo(
+                "  Add the missing entry to `mappings.py` — `holo-data transform` "
+                "names the source value the site printed. `--allow-unknown-enums` "
+                "builds without these cards, but `publish` and `seed` then refuse "
+                "the artifact.",
+                err=True,
+            )
 
     if report.errors:
         typer.echo("")
@@ -318,9 +328,22 @@ def build(
 
     size = build_module.save(collection)
     typer.echo("")
+    dropped_note = f", {len(collection.dropped)} dropped" if collection.dropped else ""
     typer.echo(
-        f"✓ wrote {paths.cards_json()} — {report.valid} cards, {size / 1024 / 1024:.1f} MB"
+        f"✓ wrote {paths.cards_json()} — {report.valid} cards{dropped_note}, "
+        f"{size / 1024 / 1024:.1f} MB"
     )
+
+    # Said after the ✓ on purpose: the build succeeded, and the operator needs to know
+    # the artifact is not shippable before they reach for `publish` and read a refusal
+    # they have no context for.
+    if collection.dropped:
+        typer.echo("")
+        typer.echo(
+            f"⚠ {len(collection.dropped)} card(s) are missing from this artifact. "
+            "`publish` and `seed` will refuse it — add the mapping and rebuild.",
+            err=True,
+        )
 
     notices_size = build_module.save_notices(notices)
     typer.echo(

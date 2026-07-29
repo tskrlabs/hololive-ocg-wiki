@@ -374,6 +374,18 @@ class CardCollection(BaseModel):
     # break a consumer, so the seeder can refuse an artifact it does not understand.
     schema_version: int = 1
     cards: list[Card]
+    # Ids `build --allow-unknown-enums` refused and left out of `cards`.
+    #
+    # Empty on every ordinary build. A non-empty list means the artifact describes fewer
+    # cards than the site prints, which `publish` and `seed` refuse on: shipping it would
+    # make a real card absent from the site with nothing announcing it, which is the
+    # F-001 failure mode this whole escape hatch has to avoid reintroducing. There is no
+    # flag to override that refusal — clearing the list means adding the missing mapping
+    # and rebuilding, which is the actual fix (D4: gates are facts, not ceremony).
+    #
+    # Not bumped to schema_version 2: it defaults to empty, so every artifact built
+    # before it existed still validates, and no consumer reads it but the two gates.
+    dropped: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _keys_unique(self) -> "CardCollection":

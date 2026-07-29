@@ -6,9 +6,13 @@ enum value from the official site fails here rather than in production.
 
 Validation is **collect-and-report**: all problems are gathered and printed together,
 then the command exits non-zero. Failing on the first error would mean discovering
-2,448 cards' worth of problems one run at a time. `--allow-unknown-enums` publishes
-anyway and prints what it let through — deliberately ugly so it does not become the
-default path (ADR 0001).
+2,448 cards' worth of problems one run at a time.
+
+`--allow-unknown-enums` ships the cards that validate and **drops** the ones that do
+not, recording their ids in `CardCollection.dropped`. It cannot publish them: the
+contract's enums are closed `Literal`s, so a card carrying an unmapped value cannot be
+constructed at all. The dropped list is what `publish` and `seed` refuse on, so the
+hatch unblocks `build` alone and never reaches the site (ADR 0001).
 """
 
 from __future__ import annotations
@@ -44,6 +48,18 @@ class BuildReport:
     @property
     def failed(self) -> int:
         return self.total - self.valid
+
+    @property
+    def dropped_ids(self) -> list[str]:
+        """Cards that failed only on an enum value, sorted.
+
+        What `--allow-unknown-enums` leaves out of the artifact. Derived from
+        `enum_violations` rather than tracked separately so the two cannot disagree; a
+        card with a non-enum error too is still here, but that case never reaches the
+        collection because any `errors` entry blocks the build outright.
+        """
+        ids = {card_id for ids in self.enum_violations.values() for card_id in ids}
+        return sorted(ids, key=lambda value: (len(value), value))
 
     def add_error(self, card_id: str, message: str, is_enum: bool = False) -> None:
         target = self.enum_violations if is_enum else self.errors
@@ -159,14 +175,24 @@ def build(
             1 for card in cards if card.get("translations", {}).get(locale)
         )
 
-    blocking = bool(report.errors) or (report.enum_violations and not allow_unknown_enums)
-    if blocking or len(validated) != len(cards):
+    # `--allow-unknown-enums` **drops** the offending cards; it cannot publish them.
+    # `CardTypeCode` and friends are closed `Literal`s, so a card carrying an unmapped
+    # value has no way to become a `Card` object at all — there is nothing to put in the
+    # collection. The flag's promise is therefore "ship the rest", not "ship anyway".
+    #
+    # This was the bug: the old `len(validated) != len(cards)` clause fired on exactly
+    # the cards the flag was supposed to let past, so `build` returned None regardless
+    # and the hatch had never once worked. F-008 reasoned that blocking was cheap
+    # because this existed — it did not.
+    if report.errors or (report.enum_violations and not allow_unknown_enums):
         return None, None, report
 
     generated_at = datetime.now(timezone.utc).isoformat(timespec="seconds").replace(
         "+00:00", "Z"
     )
-    collection = CardCollection(generated_at=generated_at, cards=validated)
+    collection = CardCollection(
+        generated_at=generated_at, cards=validated, dropped=report.dropped_ids
+    )
     notices = NoticeCollection(generated_at=generated_at, notices=validated_notices)
     return collection, notices, report
 
