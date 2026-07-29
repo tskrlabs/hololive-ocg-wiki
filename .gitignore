@@ -44,6 +44,13 @@ pipeline/logs/
 .env.*
 !.env.example
 
+# Agent tooling. `.claude/skills/` and `.claude/settings.json` ARE committed — they are the
+# repo's shared agent config, and a contributor should get them from a clone. What is
+# ignored is per-machine state: scratch worktrees (each carries its own `node_modules` and
+# `.venv`, ~900MB apiece) and personal setting overrides.
+.claude/worktrees/
+.claude/settings.local.json
+
 # OS / editor
 .DS_Store
 .vscode/
