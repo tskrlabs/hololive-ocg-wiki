@@ -43,6 +43,10 @@
       "label": "スゴイパソコン"
     },
     {
+      "value": "テスト・ショートアーツ",
+      "label": "Test Short Arts"
+    },
+    {
       "value": "ホロリスの輪",
       "label": "Hororisu's Ring"
     },
@@ -109,6 +113,10 @@
       "label": "#0期生"
     },
     {
+      "value": "#2期生",
+      "label": "#2期生"
+    },
+    {
       "value": "#4期生",
       "label": "#4期生"
     },
@@ -141,6 +149,10 @@
       "label": "#ケモミミ"
     },
     {
+      "value": "#ゲーマーズ",
+      "label": "#ゲーマーズ"
+    },
+    {
       "value": "#シューター",
       "label": "#シューター"
     },
@@ -149,18 +161,26 @@
       "label": "#ベイビー"
     },
     {
+      "value": "#料理",
+      "label": "#料理"
+    },
+    {
       "value": "#歌",
       "label": "#歌"
     }
   ],
   "sets": [
     {
-      "value": "PRカード",
-      "label": "PRカード"
+      "value": "hSYN",
+      "label": "hSYN"
     },
     {
       "value": "hololive OFFICIAL CARD GAME ツインウエハース",
       "label": "hololive OFFICIAL CARD GAME ツインウエハース"
+    },
+    {
+      "value": "【使用可能カード】セレクションカップ",
+      "label": "【使用可能カード】セレクションカップ"
     },
     {
       "value": "オフィシャルホロカコレクション-2025ライブセット-",

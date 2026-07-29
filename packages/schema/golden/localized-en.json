@@ -19,6 +19,7 @@
     "oshi_skill": {
       "effect": "[1/Turn]Reattach 1 cheer from your stage to 1 of your holomem.",
       "name": "Replacement",
+      "timing": "Once per turn",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -71,6 +72,7 @@
     "sp_oshi_skill": {
       "effect": "[1/Game]Swap your opponent's center holomem with 1 back holomem. During this turn, your white center holomem gets Arts+50.",
       "name": "So, that Makes You My Enemy?",
+      "timing": "Once per game",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -95,6 +97,7 @@
     "oshi_skill": {
       "effect": "[1/Turn]Usable if your holomem's ability would roll a die：Declare 1 of the face numbers of the die, and regard the next result as the declared number.",
       "name": "A Map in My Left Hand",
+      "timing": "Once per turn",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -126,6 +129,7 @@
     "sp_oshi_skill": {
       "effect": "[1/Game]Send any number of cheers from your archive to 1 of your green holomem.",
       "name": "A Mic in My Right Hand",
+      "timing": "Once per game",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -421,7 +425,11 @@
     "name": "Amane Kanata",
     "qa_items": [],
     "rarity_code": "U",
-    "tags": []
+    "tags": [
+      "#JP",
+      "#4期生",
+      "#歌"
+    ]
   },
   {
     "ability_text": "Draw 3 cards from your deck.\n\nLIMITED: You can use only 1 per turn.",
@@ -475,7 +483,7 @@
     "tags": []
   },
   {
-    "ability_text": "You can’t use this card unless you archive 1 of your Cheers from your Stage.\n\nReveal 1 [1st Holomen or 2nd Holomen] card other than Buzz from your deck, add it to your hand, then shuffle your deck.\n\nLIMITED: You can only use 1 per turn.",
+    "ability_text": "You cannot use this card unless you archive 1 Cheer from your Stage.\n\nReveal 1 [1stホロメン or 2ndホロメン] other than Buzz from your deck and add it to your hand. Then shuffle your deck.\n\nLIMITED: You can use only 1 per turn.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-019",
@@ -490,7 +498,8 @@
       "ライブスタートデッキ 儒烏風亭らでん",
       "ライブスタートデッキ さくらみこ",
       "ライブスタートデッキ 星街すいせい",
-      "ライブスタートデッキ 大空スバル"
+      "ライブスタートデッキ 大空スバル",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportItemLimited",
     "color_codes": [],
@@ -633,6 +642,7 @@
     "oshi_skill": {
       "effect": "[Once per turn] Set the remaining HP of your opponent’s Center Holomem to 50.",
       "name": "Gyugyu",
+      "timing": "Once per turn",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -794,6 +804,7 @@
     "sp_oshi_skill": {
       "effect": "[Once per game] During this turn, one of your Holomems gets Arts +50. If that Holomem is white, it gets an additional +50 Arts.",
       "name": "I’ll Crush You in My Hand",
+      "timing": "Once per game",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -835,8 +846,21 @@
         "title": "Q689 (2026.06.12)"
       },
       {
-        "answer": "Yes, because the downed Holomen is treated as having all colors.",
-        "question": "If my oshi Holomen is hBP01-006〈小鳥遊キアラ〉, and my opponent uses the ability of the art “Necro Elimination!!” of hBP08-074〈一伊那尓栖〉 to make my Holomen that weren’t originally red count as having all colors, and then downs that Holomen afterward, can I use the oshi skill “Rise from the ashes” of hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "The life damage you take is 1. [Updated 6/26] There was an error in the content posted on Friday, 6/12. We apologize and have corrected it.",
+        "question": "When my oshi holomem is hBP01-006〈小鳥遊キアラ〉, and a red holomem with hBP08-103〈ホロマント〉 attached is Downed, I used hBP01-006〈小鳥遊キアラ〉's oshi skill \"Rise from the ashes\" and reduced my life loss by 1. In this case, how much life damage do I take?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-103",
+            "hBP07-044"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-103 ： ホロマント]\n[hBP07-044 ： 尾丸ポルカ]"
+        },
+        "title": "Q682 (2026.06.26)"
+      },
+      {
+        "answer": "Yes, you can, because the Downed holomem is treated as a holomem with all colors.",
+        "question": "When my oshi holomem is hBP01-006〈小鳥遊キアラ〉, my opponent used the Arts \"ネクロ・エリミネーション!!\" of hBP08-074〈一伊那尓栖〉 to make one of my holomems whose original color was not red become a holomem with all colors. After that, if that holomem is Downed, can I use hBP01-006〈小鳥遊キアラ〉's oshi skill \"Rise from the ashes\"?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -844,11 +868,11 @@
           ],
           "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-074 ： 一伊那尓栖]"
         },
-        "title": "Q673 (2026.06.12)"
+        "title": "Q673 (2026.06.26)"
       },
       {
-        "answer": "Yes, because the downed Holomen is treated as having all colors.",
-        "question": "If my oshi Holomen is hBP01-006〈小鳥遊キアラ〉, and my opponent uses the collaboration effect “Behave yourself, okay?” of hBP08-073〈一伊那尓栖〉 to make my Holomen that weren’t originally red count as having all colors, and then downs that Holomen afterward, can I use the oshi skill “Rise from the ashes” of hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Yes, you can, because the Downed holomem is treated as a holomem with all colors.",
+        "question": "When my oshi holomem is hBP01-006〈小鳥遊キアラ〉, my opponent used the collab effect \"お行儀よくしてね？\" of hBP08-073〈一伊那尓栖〉 to make one of my holomems whose original color was not red become a holomem with all colors. After that, if that holomem is Downed, can I use hBP01-006〈小鳥遊キアラ〉's oshi skill \"Rise from the ashes\"?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -856,11 +880,11 @@
           ],
           "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-073 ： 一伊那尓栖]"
         },
-        "title": "Q669 (2026.06.12)"
+        "title": "Q669 (2026.06.26)"
       },
       {
-        "answer": "Yes, because the downed Holomen is treated as having all colors.",
-        "question": "If my oshi Holomen is hBP01-006〈小鳥遊キアラ〉, and my opponent uses the collaboration effect “KiTakore!” of hBP08-068〈一伊那尓栖〉 to make my Holomen that weren’t originally red count as having all colors, and then downs that Holomen afterward, can I use the oshi skill “Rise from the ashes” of hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Yes, you can, because the Downed holomem is treated as a holomem with all colors.",
+        "question": "When my oshi holomem is hBP01-006〈小鳥遊キアラ〉, my opponent used the collab effect \"きタコれ！\" of hBP08-068〈一伊那尓栖〉 to make one of my holomems whose original color was not red become a holomem with all colors. After that, if that holomem is Downed, can I use hBP01-006〈小鳥遊キアラ〉's oshi skill \"Rise from the ashes\"?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -868,11 +892,11 @@
           ],
           "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-068 ： 一伊那尓栖]"
         },
-        "title": "Q663 (2026.06.12)"
+        "title": "Q663 (2026.06.26)"
       },
       {
-        "answer": "Yes, because the downed Holomen is treated as having all colors.",
-        "question": "If my oshi Holomen is hBP01-006〈小鳥遊キアラ〉, and my opponent uses the oshi skill “Color of Ina'nis” of hBP08-006〈一伊那尓栖〉 to make my Holomen that weren’t originally red count as having all colors, and then downs that Holomen afterward, can I use the oshi skill “Rise from the ashes” of hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Yes, you can, because the Downed holomem is treated as a holomem with all colors.",
+        "question": "When my oshi holomem is hBP01-006〈小鳥遊キアラ〉, my opponent used the oshi skill \"Ina'nisの色彩\" of hBP08-006〈一伊那尓栖〉 to make one of my holomems whose original color was not red become a holomem with all colors. After that, if that holomem is Downed, can I use hBP01-006〈小鳥遊キアラ〉's oshi skill \"Rise from the ashes\"?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -880,11 +904,11 @@
           ],
           "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-006 ： 一伊那尓栖]"
         },
-        "title": "Q647 (2026.06.12)"
+        "title": "Q647 (2026.06.26)"
       },
       {
-        "answer": "Yes, you can. If there are no Holomen in your Archive—such as when the 2 archived cards used for cost were not Holomen—then nothing happens and the effect simply resolves.",
-        "question": "When using the oshi skill “Phoenix Tail” of hBP01-006〈小鳥遊キアラ〉, I archived 2 Holopower cards as a cost. If one of them was a Holomen, can I return that same Holomen to my hand with the effect “Return 1 Holomen from your Archive to your hand”?",
+        "answer": "Yes, you can. If there are no holomems in your Archive, and even after Archiving 2 holopower as the cost there are still no holomems, resolve the ability without doing anything.",
+        "question": "I Archived 2 holopower as the cost to use hBP01-006〈小鳥遊キアラ〉's oshi skill \"フェニックステール\". If there was a holomem among them, can I return the holomem I placed into the Archive to my hand with the effect \"Return 1 holomem from your Archive to your hand\"?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -894,8 +918,8 @@
         "title": "Q232 (2024.10.30)"
       },
       {
-        "answer": "Since hBP01-071〈尾丸ポルカ〉’s Extra Ability is a continuous replacement effect, the life damage upon being downed is 2. Then, the SP oshi skill “Rise from the ashes” of hBP01-006〈小鳥遊キアラ〉 reduces that life loss by 1, so the total life damage becomes 1.",
-        "question": "If my Buzz Holomen hBP01-071〈尾丸ポルカ〉 is downed and I then use the SP oshi skill “Rise from the ashes” of hBP01-006〈小鳥遊キアラ〉, how much life damage do I take?",
+        "answer": "Because hBP01-071〈尾丸ポルカ〉's extra ability is a continuous ability with a replacement effect, the life damage when it is Downed is 2. Then, hBP01-006〈小鳥遊キアラ〉's SP oshi skill \"Rise from the ashes\" reduces that life damage by 1, so the life damage when it is Downed becomes 1.",
+        "question": "My Buzz holomem, hBP01-071〈尾丸ポルカ〉, was Downed. After that, if I use hBP01-006〈小鳥遊キアラ〉's SP oshi skill \"Rise from the ashes\", how much life damage do I take?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -905,8 +929,8 @@
         "title": "Q231 (2024.10.30)"
       },
       {
-        "answer": "Yes, you can. Abilities of Holomen or oshi Holomen can be activated even if there are no eligible cards to select.",
-        "question": "Can I use the oshi skill “Phoenix Tail” of hBP01-006〈小鳥遊キアラ〉 even if there are no Holomen in my Archive?",
+        "answer": "Yes, it can. Abilities of holomems and oshi holomems can be used even if you cannot choose the specified card.",
+        "question": "Can hBP01-006〈小鳥遊キアラ〉's oshi skill \"フェニックステール\" be used even if there are no holomems in the Archive?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -916,8 +940,8 @@
         "title": "Q40 (2024.09.21)"
       },
       {
-        "answer": "No, only the Holomen itself returns to the hand. Any Cheers and Support cards attached to it are archived as usual.",
-        "question": "When using the SP oshi skill “Rise from the ashes” of hBP01-006〈小鳥遊キアラ〉, do the Cheers attached to the Holomen that is returned to hand also return to the hand?",
+        "answer": "No. Only the holomems are added to your hand. Cheer and Support cards attached to those holomems are Archived as usual.",
+        "question": "If I use hBP01-006〈小鳥遊キアラ〉's SP oshi skill \"Rise from the ashes\", do I also add to my hand the Cheer attached to the holomem returned to my hand?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -1018,7 +1042,11 @@
       }
     ],
     "rarity_code": "UR",
-    "tags": []
+    "tags": [
+      "#JP",
+      "#4期生",
+      "#歌"
+    ]
   },
   {
     "ability_text": "The holomem equipped with this Tool gains +10 Arts.\n\n◆ Additional ability if attached to a 1st or higher 〈星街すいせい〉\nWhen the holomem equipped with this Tool downs an opponent’s holomem, send the top card of your Yell Deck to this holomem.\n\nYou can attach only one Tool to each of your holomems.",
@@ -1038,15 +1066,15 @@
     "qa_items": [
       {
         "answer": "Yes, it does.",
-        "question": "The hBP01-079 〈星街すいせい〉 equipped with hBP01-115 〈すいせいのマイク〉 downs an opponent’s holomem through special damage from a Bloom Effect. Does this satisfy the condition of hBP01-115 〈すいせいのマイク〉 that says “When the holomem equipped with this Tool downs an opponent’s holomem”?",
+        "question": "hBP01-079〈星街すいせい〉 with hBP01-115〈星街すいせいのマイク〉 attached downed an opponent's holomem with special damage from a Bloom Effect. Does this satisfy the condition \"When the holomem this Tool is attached to downs an opponent's holomem\" on hBP01-115〈星街すいせいのマイク〉?",
         "related_cards": {
           "card_number": [
             "hBP01-115",
             "hBP01-079"
           ],
-          "raw_html": "[hBP01-115 : 星街すいせいのマイク]\n[hBP01-079 : 星街すいせい]"
+          "raw_html": "[hBP01-115 ： 星街すいせいのマイク]\n[hBP01-079 ： 星街すいせい]"
         },
-        "title": "Q207 (2024.10.04)"
+        "title": "Q207 (2026.06.26)"
       },
       {
         "answer": "No, it does not apply.",
@@ -1244,6 +1272,7 @@
     "oshi_skill": {
       "effect": "[1/Turn]During this turn, your white collab holomem get Arts+20.",
       "name": "White Baton",
+      "timing": "Once per turn",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -1264,67 +1293,9 @@
     "sp_oshi_skill": {
       "effect": "[1/Game]During your opponent's turn, usable if your white holomem would take Damage from your opponent:That holomem takes -20 Damage.",
       "name": "Quick Guard",
+      "timing": "Once per game",
       "timing_code": "once_per_game"
     },
-    "tags": []
-  },
-  {
-    "arts": [
-      {
-        "cost_types": [
-          "white"
-        ],
-        "damage": 10,
-        "effect": "If you have used a Support Card this turn, this Arts gets +20.",
-        "is_plus": true,
-        "name": "Oh,Hi"
-      }
-    ],
-    "baton_touch_count": 1,
-    "baton_touch_types": [
-      "null"
-    ],
-    "bloom_level_code": "debut",
-    "card_number": "hBP01-015",
-    "card_sets": [
-      "PRカード"
-    ],
-    "card_type_code": "character",
-    "color_codes": [
-      "white"
-    ],
-    "extra": "You may include any number of this holomem in the deck",
-    "hp": 90,
-    "id": "176",
-    "image_key": "hPR/hBP01-015_P",
-    "locale": "en",
-    "name": "Nanashi Mumei",
-    "qa_items": [
-      {
-        "answer": "Yes, Arts damage is increased.Regardless of result, since the support card's ability is activated, it is considered used and Arts damage is increased.",
-        "question": "If hSD01-020〈Circle of hololive Listeners〉 is used and the die roll is 2 or less, does the Arts damage of hBP01-015〈Nanashi Mumei〉's Arts 'Oh,Hi' get increased?",
-        "related_cards": {
-          "card_number": [
-            "hBP01-015",
-            "hSD01-020"
-          ],
-          "raw_html": "[hBP01-015: Nanashi Mumei]\n[hSD01-020: Circle of hololive Listeners]"
-        },
-        "title": "Q50（September 21, 2024）"
-      },
-      {
-        "answer": "No, it is not increased.Using support cards means using cards from your hand.",
-        "question": "If hBP01-015〈Nanashi Mumei〉 uses Arts 'Oh,Hi' when you have tools or mascots attached that are already active, will Arts damage be increased?",
-        "related_cards": {
-          "card_number": [
-            "hBP01-015"
-          ],
-          "raw_html": "[hBP01-015: Nanashi Mumei]"
-        },
-        "title": "Q49（September 21, 2024）"
-      }
-    ],
-    "rarity_code": "P",
     "tags": []
   },
   {
@@ -1335,6 +1306,7 @@
           "null"
         ],
         "damage": 60,
+        "name": "MOGMOG",
         "special_targets": [
           "white"
         ],
@@ -1350,6 +1322,8 @@
           "null"
         ],
         "damage": 100,
+        "effect": "You may archive 2 Blue Cheer from this holomem: Deal 30 special damage to 1 of your opponent's Center holomem and 1 Back holomem.",
+        "name": "おかゆ～",
         "special_targets": [
           "white"
         ],
@@ -1380,7 +1354,11 @@
     "name": "Nekomata Okayu",
     "qa_items": [],
     "rarity_code": "SR",
-    "tags": []
+    "tags": [
+      "#JP",
+      "#ゲーマーズ",
+      "#ケモミミ"
+    ]
   },
   {
     "arts": [
@@ -1390,6 +1368,7 @@
           "null"
         ],
         "damage": 50,
+        "name": "33… 22… 11…",
         "special_targets": [
           "green"
         ],
@@ -1404,7 +1383,9 @@
           "null"
         ],
         "damage": 60,
+        "effect": "This Art gets +40 for each Event card you used this turn.",
         "is_plus": true,
+        "name": "あくとっ",
         "special_targets": [
           "green"
         ],
@@ -1434,7 +1415,11 @@
     "name": "Yuzuki Choco",
     "qa_items": [],
     "rarity_code": "SR",
-    "tags": []
+    "tags": [
+      "#JP",
+      "#2期生",
+      "#料理"
+    ]
   },
   {
     "ability_text": "■If a holomem leaves the stage, archive all of that holomem's cheers.\n■If a holomem Baton Passes, archive the specified number of that holomem's cheers.",
@@ -1864,7 +1849,8 @@
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」"
+      "ブースターパック「ディーヴァフィーバー」",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -1883,7 +1869,8 @@
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」"
+      "ブースターパック「ディーヴァフィーバー」",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -2052,7 +2039,8 @@
     "bloom_level_code": "first",
     "card_number": "hBP08-060",
     "card_sets": [
-      "ブースターパック バウンサーバウンド"
+      "ブースターパック バウンサーバウンド",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2096,7 +2084,8 @@
     "bloom_level_code": "debut",
     "card_number": "hBP01-028",
     "card_sets": [
-      "ブースターパック バウンサーバウンド"
+      "ブースターパック バウンサーバウンド",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2116,5 +2105,44 @@
       "#Promise",
       "#歌"
     ]
+  },
+  {
+    "arts": [
+      {
+        "cost_types": [
+          "red"
+        ],
+        "damage": 30
+      },
+      {
+        "cost_types": [
+          "red",
+          "null"
+        ],
+        "damage": 60,
+        "is_plus": true
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "debut",
+    "card_number": "hSYN-001",
+    "card_sets": [
+      "hSYN"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "red"
+    ],
+    "hp": 100,
+    "id": "9000001",
+    "image_key": "hSYN/hSYN-001_C",
+    "locale": "en",
+    "name": "Test Short Arts",
+    "qa_items": [],
+    "rarity_code": "C",
+    "tags": []
   }
 ]

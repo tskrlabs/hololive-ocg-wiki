@@ -55,12 +55,19 @@ class TestArtsMerge:
     """Arts pair by index between Card.arts and Translation.arts."""
 
     def test_short_translation_list_tolerated(self, by_id: dict):
-        """hSD03-009 has 2 arts but 0 `en` translated arts.
+        """The synthetic fixture has 2 arts but 0 `en` translated arts.
 
         The arts must still be returned — with costs and damage, without a name —
         because dropping them would misreport what the card does.
+
+        This used to key on card 446 (hSD03-009), the card that forced the rule. The
+        field-level translation cache has since filled it in (F-004), and a census over
+        the whole card set finds **zero** cards with an arts-length mismatch in any
+        locale — so the branch has no natural cover left in the data at all, and a
+        synthetic fixture is the only way to keep it tested. See SYNTHETIC_CARD in
+        `scripts/build_fixtures.py` and issue #16.
         """
-        card = by_id["446"]
+        card = by_id["9000001"]
         assert len(card.arts or []) == 2
         assert len(card.translations["en"].arts or []) == 0
 
@@ -68,6 +75,21 @@ class TestArtsMerge:
         assert len(result.arts) == 2
         assert result.arts[0].cost_types == card.arts[0].cost_types
         assert result.arts[0].name is None
+
+    def test_partial_translation_list_pairs_by_index(self, by_id: dict):
+        """A list shorter than `arts` but not empty: `tc` has 1 translation for 2 arts.
+
+        The unpaired art keeps its costs and loses only its name — the same rule as an
+        empty list, exercised at the boundary between the two.
+        """
+        card = by_id["9000001"]
+        assert len(card.translations["tc"].arts or []) == 1
+
+        result = localize(card, "tc")
+        assert len(result.arts) == 2
+        assert result.arts[0].name == "技能一"
+        assert result.arts[1].name is None
+        assert result.arts[1].cost_types == card.arts[1].cost_types
 
     def test_translated_arts_merge_by_position(self, by_id: dict):
         card = by_id["446"]

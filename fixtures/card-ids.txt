@@ -1,7 +1,10 @@
 # Fixture card selection — regenerate with `make fixtures`.
 #
 # Chosen for coverage: every enum member and every structural edge case found
-# by census over all 2,448 cards. Committed so the selection is reviewable.
+# by census over the whole card set. Committed so the selection is reviewable.
+#
+# Selected from `holo-data build` output. One entry is synthetic — see
+# SYNTHETIC_CARD in build_fixtures.py for why no real card can cover it.
 #
 # <card id>  <why this card is here>
 
@@ -23,7 +26,6 @@
    163  covers card_type=supportFan
    168  covers card_type=supportCheer
    172  covers rarity=OC
-   176  covers rarity=P
    446  hSD03-009 — 2 arts but 0 `en` translated arts (short-list zip)
    447  hSD04-009 — same arts-length mismatch
    477  covers rarity=SY
@@ -36,6 +38,7 @@
   2003  hBP07-091 — the other 'unknown', different rarity
   2138  hBP03-044 SR (hCO01 reprint) — image_key collision pair A
   2139  hBP03-055 SR (hCO01 reprint) — image_key collision pair C
-  2164  hBP03-011 P — was `arts[].value`; kept until the generator is repaired
+  2164  hBP03-011 P — rarity=P, and the card F-003's `arts[].value` came from
   2263  hBP08-060 FUWAMOCO — fused colour code 'blue_red'
   2444  hBP01-028 HR — rarity missing from v1's TypeScript union
+9000001  synthetic — short translated arts list (localize() merge rule 2)

@@ -1,4 +1,4 @@
-"""Select the fixture card set from v1's data.
+"""Select the fixture card set from `holo-data build` output.
 
 Fixtures serve two purposes at once (decision: one corpus, not two):
 
@@ -9,14 +9,25 @@ Fixtures serve two purposes at once (decision: one corpus, not two):
    contract has to handle is pinned by a test rather than living in someone's memory.
 
 Selection is by *coverage*, not by "the first 40 cards": at least one card for every
-enum member and every structural edge case found by census over all 2,448 cards. The
+enum member and every structural edge case found by census over the whole card set. The
 resulting id list is committed to `fixtures/card-ids.txt`, so the selection is
 reproducible and reviewable — a PR that changes which cards are fixtures shows up as a
 diff, not as a silently different corpus.
 
-    make fixtures       # re-select from v1 data and rewrite fixtures/
+    holo-data transform && holo-data build    # produce the source
+    make fixtures                             # re-select and rewrite fixtures/
 
-Once Phase 1 lands, this reads from `holo-data build` output instead of v1's cards.json.
+**The source is v2's own build output** (issue #16). It used to be v1's `cards.json`,
+read through a `v1_adapter.py` that translated camelCase and patched two card types — a
+hardcoded absolute path into a checkout that exists on one laptop. Selecting from a
+schema the contract had moved on from is what let the corpus and its generator disagree:
+F-002 hand-edited `fixtures/cards.json` rather than regenerating it, and the generator
+stayed broken for two commits with `make check` green.
+
+The invariants this file encodes — every coverage rule satisfied, every PINNED id
+present — are asserted against the committed corpus by
+`packages/schema/tests/test_card.py::TestFixtures`. That test is what makes the drift
+loud, since the source data is gitignored and `make check` cannot re-run this script.
 """
 
 from __future__ import annotations
@@ -28,8 +39,6 @@ from pathlib import Path
 from typing import Any, Callable
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-from v1_adapter import load_v1_cards  # noqa: E402
 
 from holo_schema import (  # noqa: E402
     BLOOM_LEVEL_VALUES,
@@ -44,9 +53,19 @@ from holo_schema import (  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 FIXTURE_DIR = REPO_ROOT / "fixtures"
-DEFAULT_SOURCE = Path(
-    "/Users/chingli/lichingchester/projects/hololive-ocg-wiki/data/cards.json"
-)
+
+
+def _default_source() -> Path:
+    """Where `holo-data build` writes, honouring HOLO_BUILD_DIR.
+
+    Imported lazily: `holo_schema` must stay installable without the pipeline, and this
+    module is imported by the schema package's own tests for its coverage rules. A
+    top-level import would invert the package dependency (holo-pipeline depends on
+    holo-schema, not the reverse) at import time.
+    """
+    from holo_data import paths
+
+    return paths.cards_json()
 
 # Cards that must be in the fixture set regardless of what coverage selection picks,
 # because they are the specific anomalies the contract has to survive. Each is a bug
@@ -57,12 +76,11 @@ PINNED: dict[str, str] = {
     "1877": "hBP07-091 — cardTypeCode 'unknown' (scraper could not classify)",
     "2003": "hBP07-091 — the other 'unknown', different rarity",
     "2444": "hBP01-028 HR — rarity missing from v1's TypeScript union",
-    # Selected when the corpus came from v1, to cover an `arts[].value` field the
-    # contract no longer models (F-003). Pinned rather than dropped because removing it
-    # means hand-editing the generated corpus, and this generator cannot currently run
-    # (it selects from v1 data through a contract that has moved on). The repaired
-    # generator does not select this card; see the fixture-toolchain finding.
-    "2164": "hBP03-011 P — was `arts[].value`; kept until the generator is repaired",
+    # Originally selected to cover an `arts[].value` field the contract no longer models
+    # (F-003). Kept pinned because it is also the `rarity=P` cover: with it pinned, the
+    # greedy pass no longer needs card 176, which is the single card repointing the
+    # source removed from the corpus.
+    "2164": "hBP03-011 P — rarity=P, and the card F-003's `arts[].value` came from",
     "2138": "hBP03-044 SR (hCO01 reprint) — image_key collision pair A",
     "726": "hBP03-044 SR (hBP03 original) — image_key collision pair B",
     "2139": "hBP03-055 SR (hCO01 reprint) — image_key collision pair C",
@@ -73,11 +91,90 @@ PINNED: dict[str, str] = {
 }
 
 
+# The one fixture with no real card behind it.
+#
+# `localize()` merge rule 2 — arts pair by index, tolerating a short translated list —
+# was covered by cards 446 and 447, which had 2 arts and 0 `en` translated arts. The
+# field-level translation cache has since filled both in (F-004), and a census over the
+# whole set finds **zero** cards with an arts-length mismatch in any locale. So the
+# branch has no natural cover left anywhere in the data, not merely none in the
+# selection.
+#
+# That branch runs in production, in two languages: `localize()` exists in Python (the
+# pipeline) and TypeScript (the Worker projects at request time, D8), and the golden
+# files are what pin them together. Without a fixture of this shape, a rule that ships
+# goes untested in both implementations with `make check` green — which is what F-004's
+# warning predicted would happen when the corpus was repointed.
+#
+# The id is numeric and deliberately far above the real range (ids run 1..2457):
+# `schema.sql` makes the card id the FTS5 rowid and `seed.py` raises `NonNumericCardId`
+# rather than work around a non-numeric one, so `synthetic-short-arts` would not seed.
+# `seed` never reads this file — it only ever writes to production from a real build —
+# but `fixtures.sql` goes through the same DDL, so the constraint is real.
+SYNTHETIC_ID = "9000001"
+SYNTHETIC_REASON = "synthetic — short translated arts list (localize() merge rule 2)"
+
+SYNTHETIC_CARD: dict[str, Any] = {
+    "id": SYNTHETIC_ID,
+    "card_number": "hSYN-001",
+    "card_type_code": "character",
+    "rarity_code": "C",
+    "color_codes": ["red"],
+    "bloom_level_code": "debut",
+    "image_key": "hSYN/hSYN-001_C",
+    "source_image_url": "https://example.invalid/cardlist/hSYN/hSYN-001_C.png",
+    "card_sets": ["hSYN"],
+    "life": None,
+    "hp": 100,
+    "baton_touch_count": 1,
+    "baton_touch_types": ["null"],
+    "arts": [
+        {"cost_types": ["red"], "damage": 30},
+        {"cost_types": ["red", "null"], "damage": 60, "is_plus": True},
+    ],
+    "translations": {
+        # `ja` carries both arts, so the pairing has something to pair against.
+        "ja": {
+            "name": "テスト・ショートアーツ",
+            "arts": [
+                {"name": "アーツ一", "effect": "効果一"},
+                {"name": "アーツ二", "effect": "効果二"},
+            ],
+        },
+        # The whole point: 2 arts, 0 translated. `localize("en")` must emit both arts
+        # with their costs and damage and no name.
+        "en": {"name": "Test Short Arts", "arts": []},
+        "tc": {"name": "測試短技能", "arts": [{"name": "技能一", "effect": "效果一"}]},
+        "ko": {"name": "테스트", "arts": []},
+        "id": {"name": "Tes Seni Pendek", "arts": []},
+        "th": {"name": "ทดสอบ", "arts": []},
+        "es": {"name": "Prueba de Artes Cortas", "arts": []},
+    },
+}
+
+
 def _coverage_rules() -> list[tuple[str, Callable[[Card], bool]]]:
     """One rule per thing that must appear at least once in the fixture set."""
     rules: list[tuple[str, Callable[[Card], bool]]] = []
 
+    # Two card types are deliberately excluded, for different reasons — and both were
+    # emitting "no card covers …" warnings on every run, which is how a warning stops
+    # being read.
+    #
+    # `unknown` is the scraper's placeholder for a type it cannot classify. F-001 fixed
+    # the missing `サポート・スタッフ` mapping, so no card carries it and none can be
+    # selected. It stays in the enum as a safety valve; whether that valve should be
+    # *loud* is issue #19, and a corpus fixture is not what answers it.
+    #
+    # `rulesNotice` cannot appear here at all: `Card` rejects it outright, because a
+    # notice is not a card (F-020). `pipeline/tests/test_notices.py` covers it.
+    #
+    # `test_card.py::TestFixtures` already asserted both were absent, so before this the
+    # coverage rules and the tests contradicted each other.
+    uncoverable = {"unknown", "rulesNotice"}
     for value in CARD_TYPE_VALUES:
+        if value in uncoverable:
+            continue
         rules.append((f"card_type={value}", lambda c, v=value: c.card_type_code == v))
     for value in RARITY_VALUES:
         rules.append((f"rarity={value}", lambda c, v=value: c.rarity_code == v))
@@ -169,6 +266,9 @@ def select(cards: list[Card]) -> tuple[list[Card], dict[str, str]]:
         else:
             print(f"  warning: no card covers {label}", file=sys.stderr)
 
+    chosen[SYNTHETIC_ID] = SYNTHETIC_REASON
+    by_id[SYNTHETIC_ID] = Card.model_validate(SYNTHETIC_CARD)
+
     selected = sorted(
         (by_id[cid] for cid in chosen), key=lambda c: int(c.id)
     )
@@ -180,29 +280,37 @@ def main() -> int:
     parser.add_argument(
         "--source",
         type=Path,
-        default=DEFAULT_SOURCE,
-        help="v1 cards.json to select from",
+        default=None,
+        help="cards.json to select from (default: `holo-data build` output)",
     )
     args = parser.parse_args()
 
-    if not args.source.exists():
-        print(f"source not found: {args.source}", file=sys.stderr)
+    source = args.source or _default_source()
+
+    if not source.exists():
+        print(f"source not found: {source}", file=sys.stderr)
         print(
-            "Pass --source, or skip: fixtures/ is committed and only needs rebuilding "
-            "when the selection rules change.",
+            "Run `holo-data transform && holo-data build` first, or pass --source. "
+            "Or skip: fixtures/ is committed and only needs rebuilding when the "
+            "selection rules change.",
             file=sys.stderr,
         )
         return 1
 
-    raw = load_v1_cards(args.source)
-    cards = [Card.model_validate(entry) for entry in raw]
-    print(f"  loaded {len(cards)} cards from {args.source}")
+    collection = CardCollection.model_validate_json(source.read_text(encoding="utf-8"))
+    cards = collection.cards
+    print(f"  loaded {len(cards)} cards from {source}")
 
     selected, reasons = select(cards)
     print(f"  selected {len(selected)} fixture cards")
 
     FIXTURE_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Deliberately fixed, not the source build's timestamp. Determinism is what makes
+    # regeneration reviewable: same input, byte-identical output, so a diff in
+    # fixtures/ means the *selection* changed. Passing the real timestamp through would
+    # produce a diff on every run and drown the signal. A fixture corpus's own build
+    # time is not a fact anyone reads.
     collection = CardCollection(
         generated_at="2026-07-25T00:00:00Z",
         cards=selected,
@@ -216,7 +324,10 @@ def main() -> int:
         "# Fixture card selection — regenerate with `make fixtures`.",
         "#",
         "# Chosen for coverage: every enum member and every structural edge case found",
-        "# by census over all 2,448 cards. Committed so the selection is reviewable.",
+        "# by census over the whole card set. Committed so the selection is reviewable.",
+        "#",
+        "# Selected from `holo-data build` output. One entry is synthetic — see",
+        "# SYNTHETIC_CARD in build_fixtures.py for why no real card can cover it.",
         "#",
         "# <card id>  <why this card is here>",
         "",

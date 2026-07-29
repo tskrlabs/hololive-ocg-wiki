@@ -43,6 +43,10 @@
       "label": "スゴイパソコン"
     },
     {
+      "value": "テスト・ショートアーツ",
+      "label": "Tes Seni Pendek"
+    },
+    {
       "value": "ホロリスの輪",
       "label": "Holoris no Wa"
     },
@@ -153,10 +157,6 @@
       "label": "#シューター"
     },
     {
-      "value": "#トリ",
-      "label": "#トリ"
-    },
-    {
       "value": "#ベイビー",
       "label": "#ベイビー"
     },
@@ -167,20 +167,20 @@
     {
       "value": "#歌",
       "label": "#歌"
-    },
-    {
-      "value": "#絵",
-      "label": "#絵"
     }
   ],
   "sets": [
     {
-      "value": "PRカード",
-      "label": "PRカード"
+      "value": "hSYN",
+      "label": "hSYN"
     },
     {
       "value": "hololive OFFICIAL CARD GAME ツインウエハース",
       "label": "hololive OFFICIAL CARD GAME ツインウエハース"
+    },
+    {
+      "value": "【使用可能カード】セレクションカップ",
+      "label": "【使用可能カード】セレクションカップ"
     },
     {
       "value": "オフィシャルホロカコレクション-2025ライブセット-",

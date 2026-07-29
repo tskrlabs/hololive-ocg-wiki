@@ -19,6 +19,7 @@
     "oshi_skill": {
       "effect": "[Una vez por turno] Cambia una carta de Apoyo en tu Escenario y asígnala a tu Holomen.",
       "name": "Reemplazo",
+      "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -71,6 +72,7 @@
     "sp_oshi_skill": {
       "effect": "[Una vez por partida] Intercambia el Holomen central y un Holomen de respaldo del oponente. Luego, durante este turno, los Artes de tu Holomen central blanco obtienen +50.",
       "name": "¿Entonces eres mi enemigo?",
+      "timing": "Una vez por partida",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -95,6 +97,7 @@
     "oshi_skill": {
       "effect": "[Una vez por turno] Puedes usarlo cuando lances un dado por una habilidad de tu Holomen: declara un número del dado, y el siguiente resultado del dado se tratará como el número declarado.",
       "name": "Mapa en la mano izquierda",
+      "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -126,6 +129,7 @@
     "sp_oshi_skill": {
       "effect": "[Una vez por partida] Envía cualquier número de cartas de Ánimo desde tu Archivo a un Holomen verde de tu elección.",
       "name": "Micrófono en la mano derecha",
+      "timing": "Una vez por partida",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -479,7 +483,7 @@
     "tags": []
   },
   {
-    "ability_text": "No puedes usar esta carta a menos que archives 1 carta de Apoyo en tu Escenario.\n\r\nRevela 1 carta de tu mazo que sea un [1stホロメン o 2ndホロメン] que no sea Buzz, agrégala a tu mano y luego baraja tu mazo.\n\r\nLIMITED: Solo puedes usar 1 por turno.",
+    "ability_text": "Esta carta no se puede usar a menos que archives 1 Cheer de tu Escenario.\n\nMuestra 1 [1stホロメン o 2ndホロメン] que no sea Buzz de tu mazo y añádelo a tu mano. Después, baraja el mazo.\n\nLIMITED: Solo puedes usar 1 carta por turno.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-019",
@@ -494,7 +498,8 @@
       "ライブスタートデッキ 儒烏風亭らでん",
       "ライブスタートデッキ さくらみこ",
       "ライブスタートデッキ 星街すいせい",
-      "ライブスタートデッキ 大空スバル"
+      "ライブスタートデッキ 大空スバル",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportItemLimited",
     "color_codes": [],
@@ -637,6 +642,7 @@
     "oshi_skill": {
       "effect": "[Una vez por turno] Reduce el HP restante del holomen central del oponente a 50.",
       "name": "ぎゅっぎゅっ",
+      "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -798,6 +804,7 @@
     "sp_oshi_skill": {
       "effect": "[Una vez por partida] Durante este turno, uno de tus holomen obtiene +50 en Artes. Si ese holomen es de color blanco, obtiene +50 adicionales.",
       "name": "握りつぶしちゃうぞ",
+      "timing": "Una vez por partida",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -839,8 +846,21 @@
         "title": "Q689（2026.06.12）"
       },
       {
-        "answer": "Sí, puedes usarla porque el Holomen derribado se considera como un Holomen que tiene todos los colores.",
-        "question": "Cuando tu Holomen favorito es hBP01-006〈小鳥遊キアラ〉 y el oponente usa la habilidad del arte «ネクロ・エリミネーション!!» del hBP08-074〈一伊那尓栖〉 para hacer que tus Holomen que no son originalmente rojos tengan todos los colores, y luego uno de esos Holomen es derribado, ¿puedes usar la habilidad favorita «Rise from the ashes» de hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "El daño de vida que recibes es 1. [Actualización 6/26] El contenido publicado el viernes 6/12 contenía un error. Lo corregimos y pedimos disculpas.",
+        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉 y un holomen rojo con hBP08-103〈ホロマント〉 equipado queda derribado, usaste la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉 y redujiste en 1 la vida que se perdería. En este caso, ¿cuánto daño de vida recibes?",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-103",
+            "hBP07-044"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-103 ： ホロマント]\n[hBP07-044 ： 尾丸ポルカ]"
+        },
+        "title": "Q682（2026.06.26）"
+      },
+      {
+        "answer": "Sí, puedes usarla, porque el holomen derribado se considera un holomen de todos los colores.",
+        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉, el oponente usó la habilidad del art \"ネクロ・エリミネーション!!\" de hBP08-074〈一伊那尓栖〉 para hacer que uno de tus holomen cuyo color original no es rojo se convierta en un holomen de todos los colores. Después, si ese holomen queda derribado, ¿puedes usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -848,11 +868,11 @@
           ],
           "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-074 ： 一伊那尓栖]"
         },
-        "title": "Q673（2026.06.12）"
+        "title": "Q673（2026.06.26）"
       },
       {
-        "answer": "Sí, puedes usarla porque el Holomen derribado se considera como un Holomen que tiene todos los colores.",
-        "question": "Cuando tu Holomen favorito es hBP01-006〈小鳥遊キアラ〉 y el oponente usa la habilidad del Colab Efect «お行儀よくしてね？» del hBP08-073〈一伊那尓栖〉 para hacer que tus Holomen que no son originalmente rojos tengan todos los colores, y luego uno de esos Holomen es derribado, ¿puedes usar la habilidad favorita «Rise from the ashes» de hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Sí, puedes usarla, porque el holomen derribado se considera un holomen de todos los colores.",
+        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉, el oponente usó la habilidad del efecto de colaboración \"お行儀よくしてね？\" de hBP08-073〈一伊那尓栖〉 para hacer que uno de tus holomen cuyo color original no es rojo se convierta en un holomen de todos los colores. Después, si ese holomen queda derribado, ¿puedes usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -860,11 +880,11 @@
           ],
           "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-073 ： 一伊那尓栖]"
         },
-        "title": "Q669（2026.06.12）"
+        "title": "Q669（2026.06.26）"
       },
       {
-        "answer": "Sí, puedes usarla porque el Holomen derribado se considera como un Holomen que tiene todos los colores.",
-        "question": "Cuando tu Holomen favorito es hBP01-006〈小鳥遊キアラ〉 y el oponente usa la habilidad del Colab Efect «きタコれ！» del hBP08-068〈一伊那尓栖〉 para hacer que tus Holomen que no son originalmente rojos tengan todos los colores, y luego uno de esos Holomen es derribado, ¿puedes usar la habilidad favorita «Rise from the ashes» de hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Sí, puedes usarla, porque el holomen derribado se considera un holomen de todos los colores.",
+        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉, el oponente usó la habilidad del efecto de colaboración \"きタコれ！\" de hBP08-068〈一伊那尓栖〉 para hacer que uno de tus holomen cuyo color original no es rojo se convierta en un holomen de todos los colores. Después, si ese holomen queda derribado, ¿puedes usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -872,11 +892,11 @@
           ],
           "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-068 ： 一伊那尓栖]"
         },
-        "title": "Q663（2026.06.12）"
+        "title": "Q663（2026.06.26）"
       },
       {
-        "answer": "Sí, puedes usarla porque el Holomen derribado se considera como un Holomen que tiene todos los colores.",
-        "question": "Cuando tu Holomen favorito es hBP01-006〈小鳥遊キアラ〉 y el oponente usa la habilidad favorita «Ina'nisの色彩» del hBP08-006〈一伊那尓栖〉 para hacer que tus Holomen que no son originalmente rojos tengan todos los colores, y luego uno de esos Holomen es derribado, ¿puedes usar la habilidad favorita «Rise from the ashes» de hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Sí, puedes usarla, porque el holomen derribado se considera un holomen de todos los colores.",
+        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉, el oponente usó la habilidad de oshi \"Ina'nisの色彩\" de hBP08-006〈一伊那尓栖〉 para hacer que uno de tus holomen cuyo color original no es rojo se convierta en un holomen de todos los colores. Después, si ese holomen queda derribado, ¿puedes usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -884,11 +904,11 @@
           ],
           "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-006 ： 一伊那尓栖]"
         },
-        "title": "Q647（2026.06.12）"
+        "title": "Q647（2026.06.26）"
       },
       {
-        "answer": "Sí, puedes devolverlo. Si no hubiera ningún Holomen en el archivo, aunque archives 2 Holopower como costo, al no haber Holomen, simplemente termina la resolución de la habilidad sin hacer nada.",
-        "question": "Como costo para usar la habilidad favorita «フェニックステール» del hBP01-006〈小鳥遊キアラ〉, archivaste 2 Holopower. Si entre ellos había un Holomen, ¿puedes devolver ese Holomen archivado a tu mano con el efecto «Devuelve 1 Holomen de tu archivo a tu mano»?",
+        "answer": "Sí, puedes. Si no había ningún holomen en tu archivo y, aun archivando 2 Holo Power como coste, seguía sin haber ningún holomen, la habilidad termina de resolverse sin hacer nada.",
+        "question": "Archivaste 2 Holo Power como coste para usar la habilidad de oshi \"フェニックステール\" de hBP01-006〈小鳥遊キアラ〉. Si entre ellas había un holomen, ¿puedes devolver a la mano ese holomen puesto en el archivo con el efecto \"Devuelve a tu mano 1 holomen de tu archivo\"?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -898,8 +918,8 @@
         "title": "Q232（2024.10.30）"
       },
       {
-        "answer": "La habilidad extra del hBP01-071〈尾丸ポルカ〉 es una habilidad continua con un efecto de reemplazo, por lo que el daño de vida al ser derribado es 2. En este caso, la habilidad SP favorita «Rise from the ashes» del hBP01-006〈小鳥遊キアラ〉 reduce ese daño de vida en 1, por lo tanto, el daño de vida final al ser derribado es 1.",
-        "question": "Cuando tu Buzz Holomen hBP01-071〈尾丸ポルカ〉 es derribado y luego usas la habilidad SP favorita «Rise from the ashes» del hBP01-006〈小鳥遊キアラ〉, ¿cuánto daño de vida recibes?",
+        "answer": "Como la habilidad extra de hBP01-071〈尾丸ポルカ〉 es una habilidad continua con efecto de reemplazo, el daño de vida al quedar derribado pasa a ser 2. Sobre ese daño de vida, la habilidad de SP oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉 reduce en 1 el daño de vida, por lo que el daño de vida al quedar derribado será \"1\".",
+        "question": "Tu Buzz holomen, hBP01-071〈尾丸ポルカ〉, quedó derribado. Después, si usas la habilidad de SP oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉, ¿cuánto daño de vida recibes?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -909,8 +929,8 @@
         "title": "Q231（2024.10.30）"
       },
       {
-        "answer": "Sí, se puede usar. Las habilidades de los Holomen o de los Holomen favoritos pueden activarse incluso si no puedes elegir la carta especificada.",
-        "question": "¿Se puede usar la habilidad favorita «フェニックステール» del hBP01-006〈小鳥遊キアラ〉 incluso si no hay Holomen en el archivo?",
+        "answer": "Sí, se puede usar. Las habilidades de holomen u oshiholomen pueden usarse aunque no se pueda elegir la carta especificada.",
+        "question": "¿Se puede usar la habilidad de oshi \"フェニックステール\" de hBP01-006〈小鳥遊キアラ〉 aunque no haya ningún holomen en el archivo?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -920,8 +940,8 @@
         "title": "Q40（2024.09.21）"
       },
       {
-        "answer": "No, solo el Holomen vuelve a tu mano. Las Ailes y las cartas de soporte unidas al Holomen se archivan como de costumbre.",
-        "question": "Cuando usas la habilidad SP favorita «Rise from the ashes» del hBP01-006〈小鳥遊キアラ〉, ¿las Ailes unidas al Holomen que regresas también vuelven a tu mano?",
+        "answer": "No. Solo se añaden a la mano los holomen. Los cheers y las cartas de soporte unidos a ese holomen se archivan de la manera habitual.",
+        "question": "Si usas la habilidad de SP oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉, ¿también añades a la mano los cheers unidos al holomen que devuelves a la mano?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -1046,7 +1066,7 @@
     "qa_items": [
       {
         "answer": "Sí, se cumple.",
-        "question": "Si hBP01-079〈星街すいせい〉 equipada con hBP01-115〈すいせいのマイク〉 deja fuera de combate a un Holomen del oponente mediante daño especial de un Efecto Bloom, ¿se cumple la condición de “cuando el Holomen que tenga esta herramienta deja fuera de combate a un Holomen del oponente” de hBP01-115〈すいせいのマイク〉?",
+        "question": "El hBP01-079〈星街すいせい〉 al que está unida hBP01-115〈星街すいせいのマイク〉 dejó fuera de combate a un holomen del oponente con daño especial del Bloom Effect. ¿Se cumple la condición de «cuando el holomen al que está unida esta herramienta deja fuera de combate a un holomen del oponente» de hBP01-115〈星街すいせいのマイク〉?",
         "related_cards": {
           "card_number": [
             "hBP01-115",
@@ -1054,7 +1074,7 @@
           ],
           "raw_html": "[hBP01-115 ： 星街すいせいのマイク]\n[hBP01-079 ： 星街すいせい]"
         },
-        "title": "Q207（2024.10.04）"
+        "title": "Q207（2026.06.26）"
       },
       {
         "answer": "No, no se aplica.",
@@ -1252,6 +1272,7 @@
     "oshi_skill": {
       "effect": "[Una vez por turno] Durante este turno, los Arts de tus Holomen colaborativos blancos obtienen +20.",
       "name": "ホワイトバトン",
+      "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -1272,73 +1293,10 @@
     "sp_oshi_skill": {
       "effect": "[Una vez por partida] Puedes usarla durante el turno del oponente, cuando uno de tus Holomen blancos vaya a recibir daño del oponente: ese Holomen recibe -20 de daño.",
       "name": "クイックガード",
+      "timing": "Una vez por partida",
       "timing_code": "once_per_game"
     },
     "tags": []
-  },
-  {
-    "arts": [
-      {
-        "cost_types": [
-          "white"
-        ],
-        "damage": 10,
-        "effect": "Si usaste una carta de Soporte durante este turno, este Arts obtiene +20.",
-        "is_plus": true,
-        "name": "Oh,Hi"
-      }
-    ],
-    "baton_touch_count": 1,
-    "baton_touch_types": [
-      "null"
-    ],
-    "bloom_level_code": "debut",
-    "card_number": "hBP01-015",
-    "card_sets": [
-      "PRカード"
-    ],
-    "card_type_code": "character",
-    "color_codes": [
-      "white"
-    ],
-    "extra": "Este holomen se puede incluir en cualquier cantidad en tu mazo.",
-    "hp": 90,
-    "id": "176",
-    "image_key": "hPR/hBP01-015_P",
-    "locale": "es",
-    "name": "七詩ムメイ",
-    "qa_items": [
-      {
-        "answer": "Sí, el daño del Arts se incrementa. Sin importar el resultado del dado, la habilidad de la carta de Soporte se considera activada, por lo tanto, se considera usada y el daño del Arts aumenta.",
-        "question": "Si usas hSD01-020〈ホロリスの輪〉 y el resultado del dado es 2 o menos, cuando utilizas el Arts «Oh,Hi» de hBP01-015〈七詩ムメイ〉, ¿el daño del Arts se incrementa?",
-        "related_cards": {
-          "card_number": [
-            "hBP01-015",
-            "hSD01-020"
-          ],
-          "raw_html": "[hBP01-015 ： 七詩ムメイ]\n[hSD01-020 ： ホロリスの輪]"
-        },
-        "title": "Q50（2024.09.21）"
-      },
-      {
-        "answer": "No, no aumenta. Usar una carta de Soporte significa jugarla desde tu mano.",
-        "question": "Si hBP01-015〈七詩ムメイ〉 usa el Arts〈Oh,Hi〉 mientras ya hay una herramienta o un mascota que esté unida a tu holomen y activa su habilidad, ¿el daño del Arts aumenta?",
-        "related_cards": {
-          "card_number": [
-            "hBP01-015"
-          ],
-          "raw_html": "[hBP01-015 ： 七詩ムメイ]"
-        },
-        "title": "Q49（2024.09.21）"
-      }
-    ],
-    "rarity_code": "P",
-    "tags": [
-      "#EN",
-      "#Promise",
-      "#トリ",
-      "#絵"
-    ]
   },
   {
     "arts": [
@@ -1891,7 +1849,8 @@
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」"
+      "ブースターパック「ディーヴァフィーバー」",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -1910,7 +1869,8 @@
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」"
+      "ブースターパック「ディーヴァフィーバー」",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -2079,7 +2039,8 @@
     "bloom_level_code": "first",
     "card_number": "hBP08-060",
     "card_sets": [
-      "ブースターパック バウンサーバウンド"
+      "ブースターパック バウンサーバウンド",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2123,7 +2084,8 @@
     "bloom_level_code": "debut",
     "card_number": "hBP01-028",
     "card_sets": [
-      "ブースターパック バウンサーバウンド"
+      "ブースターパック バウンサーバウンド",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2143,5 +2105,44 @@
       "#Promise",
       "#歌"
     ]
+  },
+  {
+    "arts": [
+      {
+        "cost_types": [
+          "red"
+        ],
+        "damage": 30
+      },
+      {
+        "cost_types": [
+          "red",
+          "null"
+        ],
+        "damage": 60,
+        "is_plus": true
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "debut",
+    "card_number": "hSYN-001",
+    "card_sets": [
+      "hSYN"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "red"
+    ],
+    "hp": 100,
+    "id": "9000001",
+    "image_key": "hSYN/hSYN-001_C",
+    "locale": "es",
+    "name": "Prueba de Artes Cortas",
+    "qa_items": [],
+    "rarity_code": "C",
+    "tags": []
   }
 ]
