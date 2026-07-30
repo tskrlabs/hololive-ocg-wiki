@@ -47,6 +47,7 @@ const getCostTypesString = (costTypes: string[]): string => {
       <!-- name -->
       <div class="font-semibold">
         {{ item.oshi_skill.name }}
+        <CardListOriginalText :text="item.original?.oshi_skill_name" />
       </div>
 
       <!-- effect -->
@@ -82,6 +83,7 @@ const getCostTypesString = (costTypes: string[]): string => {
       <!-- name -->
       <div class="font-semibold">
         {{ item.sp_oshi_skill.name }}
+        <CardListOriginalText :text="item.original?.sp_oshi_skill_name" />
       </div>
 
       <!-- effect -->
@@ -135,6 +137,7 @@ const getCostTypesString = (costTypes: string[]): string => {
       <!-- name -->
       <div class="font-semibold">
         {{ item.keyword.name }}
+        <CardListOriginalText :text="item.original?.keyword_name" />
       </div>
 
       <!-- effect -->
@@ -211,6 +214,8 @@ const getCostTypesString = (costTypes: string[]): string => {
         <!-- name -->
         <div class="font-semibold">
           {{ art.name }}
+          <!-- Positional against `arts`, which is why the loop's index is used. -->
+          <CardListOriginalText :text="item.original?.art_names?.[index]" />
         </div>
 
         <!-- effect -->
