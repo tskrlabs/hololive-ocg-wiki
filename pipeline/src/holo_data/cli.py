@@ -434,11 +434,19 @@ def build(
         raise typer.Exit(1)
 
     cache = TranslationCache.load()
+    cache_v2 = TranslationCacheV2.load()
     locales = poe.target_locales()
 
     typer.echo(f"→ building {len(cards)} entries across {len(locales) + 1} locales")
+    if cache_v2.entries:
+        typer.echo(
+            f"  content-addressed cache: {cache_v2.count()} entries "
+            f"({cache_v2.count(source='legacy')} legacy, "
+            f"{cache_v2.count(source='manual')} manual); v1 fills any gap"
+        )
     collection, notices, report = build_module.build(
-        cards, cache, locales, allow_unknown_enums=allow_unknown_enums
+        cards, cache, locales,
+        allow_unknown_enums=allow_unknown_enums, cache_v2=cache_v2,
     )
     if report.notice_count:
         typer.echo(

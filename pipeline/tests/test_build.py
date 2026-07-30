@@ -252,3 +252,114 @@ class TestUnknownEnumEscapeHatch:
         )
         assert collection is not None
         assert collection.dropped == []
+
+
+class TestDualReadTranslations:
+    """`build` reads the content-addressed cache first, the per-card cache second.
+
+    This is what carries #23's work into `cards.json`. Without it the rework's 1.49M
+    tokens sit in a cache no artifact reads — which was true for a whole phase, and is
+    the reason these tests exist rather than a manual check.
+    """
+
+    def _card(self, card_id="1", name="白上フブキ", effect="効果"):
+        return {
+            "id": card_id,
+            "translations": {
+                "ja": {
+                    "name": name,
+                    "tags": ["#EN", "#歌"],
+                    "arts": [{"name": "こんこん", "effect": effect}],
+                }
+            },
+        }
+
+    def test_v2_answers_when_it_has_the_unit(self):
+        from holo_data.translate import units
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v2 = TranslationCacheV2()
+        v2.put("en", units.Unit(kind="card_name", value="白上フブキ"), "Shirakami Fubuki")
+
+        merged = build_module.apply_translations(
+            self._card(), TranslationCache(), ["en"], v2
+        )
+
+        assert merged["translations"]["en"]["name"] == "Shirakami Fubuki"
+
+    def test_v1_fills_the_gap_so_a_half_migrated_locale_still_builds(self):
+        """D9's whole point — a locale ships when ready, not all six together."""
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v1 = TranslationCache()
+        v1.put("en", "1", "arts[0].effect", "効果", "Old effect")
+
+        merged = build_module.apply_translations(
+            self._card(), v1, ["en"], TranslationCacheV2()
+        )
+
+        assert merged["translations"]["en"]["arts"][0]["effect"] == "Old effect"
+
+    def test_v2_wins_over_v1_for_the_same_field(self):
+        from holo_data.translate import units
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v1 = TranslationCache()
+        v1.put("en", "1", "name", "白上フブキ", "Old Name")
+        v2 = TranslationCacheV2()
+        v2.put("en", units.Unit(kind="card_name", value="白上フブキ"), "Shirakami Fubuki")
+
+        merged = build_module.apply_translations(self._card(), v1, ["en"], v2)
+
+        assert merged["translations"]["en"]["name"] == "Shirakami Fubuki"
+
+    def test_two_cards_with_the_same_source_get_the_same_translation(self):
+        """The property the whole rework exists for, asserted at the artifact layer."""
+        from holo_data.translate import units
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v2 = TranslationCacheV2()
+        v2.put("en", units.Unit(kind="art_name", value="こんこん"), "Konkon")
+
+        first = build_module.apply_translations(
+            self._card("1"), TranslationCache(), ["en"], v2
+        )
+        second = build_module.apply_translations(
+            self._card("2"), TranslationCache(), ["en"], v2
+        )
+
+        assert (
+            first["translations"]["en"]["arts"][0]["name"]
+            == second["translations"]["en"]["arts"][0]["name"]
+            == "Konkon"
+        )
+
+    def test_tags_resolve_element_wise_or_not_at_all(self):
+        """v1 stores the list under one key, v2 stores each tag.
+
+        A partial answer would emit a list with some tags translated and some not, which
+        reads as corruption rather than as a missing translation.
+        """
+        from holo_data.translate import units
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v1 = TranslationCache()
+        v1.put("en", "1", "tags", ["#EN", "#歌"], ["#EN", "#Song"])
+        v2 = TranslationCacheV2()
+        v2.put("en", units.Unit(kind="tag", value="#EN"), "#EN")
+        # `#歌` deliberately absent — v2 cannot answer the whole list.
+
+        merged = build_module.apply_translations(self._card(), v1, ["en"], v2)
+
+        assert merged["translations"]["en"]["tags"] == ["#EN", "#Song"], (
+            "an incomplete v2 tag list must fall back to v1 whole, not merge"
+        )
+
+    def test_no_v2_cache_at_all_behaves_exactly_as_before(self):
+        """The migration must not change behaviour for anyone who has not run it."""
+        v1 = TranslationCache()
+        v1.put("en", "1", "name", "白上フブキ", "Old Name")
+
+        with_none = build_module.apply_translations(self._card(), v1, ["en"], None)
+
+        assert with_none["translations"]["en"]["name"] == "Old Name"

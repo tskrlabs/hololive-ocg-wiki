@@ -31,7 +31,9 @@ from holo_schema.enums import SOURCE_LOCALE
 from . import transform
 from .glossary import load_all
 from .paths import cards_json, ensure_dirs, filter_options_json, notices_json
+from .translate import units
 from .translate.cache import TranslationCache, field_keys
+from .translate.cache_v2 import TranslationCacheV2
 
 
 @dataclass
@@ -68,13 +70,26 @@ class BuildReport:
 
 
 def apply_translations(
-    card: dict[str, Any], cache: TranslationCache, locales: list[str]
+    card: dict[str, Any],
+    cache: TranslationCache,
+    locales: list[str],
+    cache_v2: TranslationCacheV2 | None = None,
 ) -> dict[str, Any]:
     """Fill in each locale's translation from the cache.
 
     The JP translation is already present from `transform`; this adds the rest. A field
     with no cache entry is simply absent from that locale — better than shipping a
     placeholder, and `localize()` falls back to JP for anything missing.
+
+    **v2 first, v1 as fallback** (ADR 0002 successor, #23 D9). The content-addressed
+    cache answers by source string, so every card printing that string gets the same
+    translation. A unit it has no entry for falls through to the per-card cache, which
+    is what lets a half-migrated locale still produce a complete build.
+
+    The two caches disagree on *shape* for tags: v1 stores the whole list under one key,
+    v2 stores each tag separately. So tags are resolved element-wise from v2 and only
+    fall back to v1 as a whole list — mixing the two would produce a list with some
+    elements translated and some not.
     """
     jp = card.get("translations", {}).get("ja", {})
     if not jp:
@@ -83,16 +98,70 @@ def apply_translations(
     for locale in locales:
         translation: dict[str, Any] = {}
 
-        for field_key, _source in field_keys(jp):
-            entry = cache.get(locale, card["id"], field_key)
-            if entry is None:
+        for field_key, source_value in field_keys(jp):
+            value = _resolve_field(
+                cache, cache_v2, locale, card["id"], field_key, source_value
+            )
+            if value is None:
                 continue
-            _assign(translation, field_key, entry.value)
+            _assign(translation, field_key, value)
 
         if translation:
             card.setdefault("translations", {})[locale] = translation
 
     return card
+
+
+# v1 field paths -> v2 unit kinds. The path carries a card and an index; the kind does
+# not, which is the whole difference between the two schemes.
+def _kind_for(field_key: str) -> str | None:
+    if field_key == "name":
+        return "card_name"
+    if field_key in ("ability_text", "extra"):
+        return field_key
+    if field_key.startswith("arts["):
+        return "art_" + field_key.rsplit(".", 1)[-1]
+    if field_key.startswith("keyword."):
+        return "keyword_" + field_key.rsplit(".", 1)[-1]
+    if field_key.startswith(("oshi_skill.", "sp_oshi_skill.")):
+        return "skill_" + field_key.rsplit(".", 1)[-1]
+    if field_key.startswith("qa_items["):
+        return units.QA_KIND
+    return None
+
+
+def _resolve_field(
+    cache: TranslationCache,
+    cache_v2: TranslationCacheV2 | None,
+    locale: str,
+    card_id: str,
+    field_key: str,
+    source_value: Any,
+) -> Any | None:
+    """One field's translation, v2 first then v1. None when neither has it."""
+    if cache_v2 is not None:
+        if field_key == "tags":
+            # Element-wise: v1's single `tags` key holds the whole list, v2 holds one
+            # entry per tag. A partial answer here would emit a list where some tags are
+            # translated and some are not, which reads as data corruption rather than as
+            # a missing translation.
+            resolved = [
+                cache_v2.value_for(locale, units.Unit(kind="tag", value=tag))
+                for tag in (source_value or [])
+            ]
+            if resolved and all(value is not None for value in resolved):
+                return resolved
+        else:
+            kind = _kind_for(field_key)
+            if kind is not None:
+                value = cache_v2.value_for(
+                    locale, units.Unit(kind=kind, value=source_value)
+                )
+                if value is not None:
+                    return value
+
+    entry = cache.get(locale, card_id, field_key)
+    return entry.value if entry is not None else None
 
 
 def _assign(target: dict[str, Any], field_key: str, value: Any) -> None:
@@ -125,6 +194,7 @@ def build(
     cache: TranslationCache,
     locales: list[str],
     allow_unknown_enums: bool = False,
+    cache_v2: TranslationCacheV2 | None = None,
 ) -> tuple[CardCollection | None, NoticeCollection | None, BuildReport]:
     """Merge translations, validate every entry, and assemble both collections.
 
@@ -141,7 +211,7 @@ def build(
     validated: list[Card] = []
 
     for raw in cards:
-        merged = apply_translations(dict(raw), cache, locales)
+        merged = apply_translations(dict(raw), cache, locales, cache_v2)
         try:
             validated.append(Card.model_validate(merged))
             report.valid += 1
@@ -156,7 +226,7 @@ def build(
 
     validated_notices: list[Notice] = []
     for raw in notice_entries:
-        merged = apply_translations(dict(raw), cache, locales)
+        merged = apply_translations(dict(raw), cache, locales, cache_v2)
         try:
             validated_notices.append(Notice.model_validate(transform.to_notice(merged)))
         except ValidationError as exc:
