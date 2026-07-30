@@ -7,7 +7,7 @@ steps that cost money or touch production are explicit.
     holo-data scrape              official site -> raw HTML + images   (local, free)
     holo-data transform           re-transform the scrape, no refetch  (local, free)
     holo-data images              PNG -> WebP                          (local, free)
-    holo-data translate           Poe API                              ($$ — never implicit)
+    holo-data translate-units     Poe API, content-addressed           ($$ — never implicit)
     holo-data build               merge + validate -> cards.json       (local, free)
     holo-data verify              diff against v1's data               (local, free)
     holo-data verify-images       coverage; --remote re-checks bytes   (local / ~2.4k reqs)
@@ -53,7 +53,7 @@ from . import paths, r2, transform, verify as verify_module
 from . import publish as publish_module
 from . import verify_images as verify_images_module
 from .scrape import card_list, extract, fetch
-from .translate import backup, mask_table, masking, poe
+from .translate import backup, batcher, mask_table, masking, poe, runner
 from .translate import units as units_module
 from .translate.cache import TranslationCache
 from .translate import cache_v2 as cache_v2_module
@@ -237,6 +237,112 @@ def images(
 
 
 # --- translate ---------------------------------------------------------------
+
+@app.command("translate-units")
+def translate_units(
+    locale: Optional[str] = typer.Option(
+        None, "--locale", help="translate one locale only"
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="report what would be sent, spend nothing"
+    ),
+    confirm: bool = typer.Option(
+        False, "--confirm", help="required to actually call the Poe API"
+    ),
+    include_qa: bool = typer.Option(
+        False, "--include-qa", help="also translate Q&A (62% of the corpus)"
+    ),
+    model: str = typer.Option(poe.DEFAULT_MODEL, "--model"),
+) -> None:
+    """Translate stale units into the content-addressed cache. Costs money — D10.
+
+    The v2 path: distinct strings batched by kind, names and tags masked out, one
+    translation per source string rather than one per card printing it.
+
+    **Q&A is excluded by default.** It is 596 units but 62% of the corpus by character
+    count, its existing translations were migrated as `legacy`, and re-doing it is a
+    separate decision from re-doing everything else (#23 D6).
+    """
+    collection = build_module.load()
+    if collection is None:
+        typer.echo("no build found — run `holo-data build` first", err=True)
+        raise typer.Exit(1)
+
+    cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
+    all_units = units_module.collect(cards)
+    work = [
+        unit
+        for unit in all_units.values()
+        if include_qa or unit.kind != units_module.QA_KIND
+    ]
+
+    names = glossary_module.Glossary.load("names")
+    tags = glossary_module.Glossary.load("tags")
+    table = mask_table.combined_table(names, tags)
+    restorer = mask_table.Restorer(names, tags)
+
+    cache = TranslationCacheV2.load()
+    locales = [locale] if locale else poe.target_locales()
+
+    typer.echo(f"→ {len(work)} translatable units, {len(locales)} locale(s)")
+    typer.echo(f"  mask table: {len(table)} entries")
+
+    plans = {}
+    total_calls = total_units = 0
+    for loc in locales:
+        stale = cache.stale(loc, work)
+        batches = batcher.build_batches(stale, loc, table)
+        plans[loc] = (stale, batches)
+        total_calls += len(batches)
+        total_units += len(stale)
+        fresh = len(work) - len(stale)
+        typer.echo(
+            f"  {loc}: {len(stale)} stale units in {len(batches)} call(s), "
+            f"{fresh} already current"
+        )
+
+    if total_units == 0:
+        typer.echo("✓ everything is up to date")
+        return
+
+    typer.echo("")
+    typer.echo(f"Would send {total_calls} call(s) covering {total_units} unit(s).")
+
+    if dry_run or not confirm:
+        if not confirm:
+            typer.echo("This costs money. Re-run with --confirm to proceed.")
+        raise typer.Exit(0 if dry_run else 1)
+
+    import asyncio
+
+    reports = []
+    for loc in locales:
+        stale, batches = plans[loc]
+        if not stale:
+            continue
+        typer.echo(f"→ translating {loc}")
+        report = asyncio.run(
+            runner.run_locale(
+                work, cache, table, restorer, loc,
+                model=model, on_progress=_progress(loc),
+            )
+        )
+        # Saved per locale, not at the end: a run is 34 calls and losing all of them to
+        # a failure on the last one is the kind of thing that happens once and is never
+        # forgiven.
+        cache.save()
+        reports.append(report)
+        for line in report.lines():
+            typer.echo(f"  {line}")
+
+    typer.echo("")
+    total_tokens = sum(r.total_tokens for r in reports)
+    translated = sum(r.units_translated for r in reports)
+    typer.echo(f"✓ {translated} units translated, {total_tokens:,} tokens")
+    for report in reports:
+        status = cache.status(report.locale, work)
+        typer.echo(f"  {status.describe()}")
+
 
 @app.command()
 def translate(
