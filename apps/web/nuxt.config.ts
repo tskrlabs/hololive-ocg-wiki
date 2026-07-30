@@ -197,6 +197,29 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
+  /**
+   * Strip throwaway prototype routes from production builds.
+   *
+   * `nuxt generate` emits one HTML file per route into `.output/public`, and
+   * `wrangler deploy` uploads that directory verbatim — so a route left in the repo
+   * ships, regardless of any runtime guard inside the component. A `.output`-level
+   * gitignore does not help: the deploy reads the built directory, not git.
+   *
+   * Prototype pages are dev-only by construction (see `app/components/prototype/`), so
+   * they are removed from the route table unless this is a dev server.
+   */
+  hooks: {
+    "pages:extend"(pages) {
+      // `nuxt.config` is evaluated in Node, where `import.meta.dev` is not the dev flag
+      // the app runtime sees — `process.env.NODE_ENV` is what distinguishes `nuxt dev`
+      // from `nuxt generate` here.
+      if (process.env.NODE_ENV !== "production") return;
+      for (let i = pages.length - 1; i >= 0; i--) {
+        if (pages[i]!.path.includes("prototype")) pages.splice(i, 1);
+      }
+    },
+  },
+
   nitro: {
     devProxy: {
       // Local development only. `nuxt dev` serves the site on :3000 and forwards `/api`
