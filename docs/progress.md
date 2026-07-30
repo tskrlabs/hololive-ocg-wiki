@@ -27,6 +27,32 @@ rule flips to `Allow` too. See [F-017](./archive/findings.md#f-017).
 [ADR 0006](adr/0006-website.md). **Phase 6's** is fifteen decisions, in
 [ADR 0007](adr/0007-push-to-deploy.md).
 
+## ✅ The translation rework is done — not yet deployed
+
+All six locales are re-translated through a content-addressed cache. **Divergence is
+zero** on every name field in every locale — not reduced, but *unrepresentable*: one
+source string has one cache slot, so two cards printing the same Japanese cannot
+disagree. That closes [#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20) and
+[#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21).
+
+Twelve decisions, in [ADR 0008](adr/0008-content-addressed-translations.md), which
+supersedes ADR 0002's cache key. Execution tracked in
+[#23](https://github.com/tskrlabs/hololive-ocg-wiki/issues/23); the design is in
+[`translation-rework-plan.md`](./translation-rework-plan.md).
+
+Cost: 1,493,321 tokens, ~356k points, **0 failures**. 204 API calls for a full cold run
+against 14,778 under the old per-card scheme.
+
+⚠️ **Nothing is published or seeded.** `cards.json` carries the new translations; R2 and
+D1 still serve the old ones. The live site is unchanged until `holo-data publish` and
+`holo-data seed --confirm` run.
+
+⚠️ **The tag filter is broken in production and fixed only locally.** `filter-options`
+shipped `#`-prefixed values against a junction table holding unprefixed ones, so **every
+tag returned zero cards, in every locale**
+([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)). The corrected artifact
+reaches production on the next publish.
+
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
 execution. Progress is mirrored to GitHub issue
@@ -75,10 +101,15 @@ view; this table is the offline copy.
 | # | what | label |
 |---|---|---|
 | [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) | Cloudflare's managed `robots.txt` inverts our `Disallow` | `ready-for-human` `phase-7` |
-| [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface | `ready-for-human` `phase-7` |
-| [#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20) | 41% of characters are named inconsistently across their own cards | `ready-for-human` |
-| [#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21) | Should art names be translated at all? | `ready-for-human` |
+| [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface — *proper nouns now have one; arbitrary fields do not* | `ready-for-human` `phase-7` |
 | [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
+| [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
+| [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
+| [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29) | The card list has no names, so the show-original toggle has nothing to act on | `ready-for-human` |
+
+✅ **#20 and #21 are closed** by the translation rework — see
+[ADR 0008](adr/0008-content-addressed-translations.md). ✅ **#26 is closed** (the tag
+filter returned zero cards for every tag), fixed locally and awaiting a publish.
 
 ✅ **#16 is closed** — it was the only urgent one. `holo-data build` produces 2,463 cards
 with zero failures again, so a card-set refresh is possible. See

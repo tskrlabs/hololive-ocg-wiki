@@ -1,6 +1,16 @@
 # ADR 0002 — Field-level translation caching
 
-**Status:** accepted
+**Status:** accepted; the cache **key** is superseded by
+[ADR 0008](0008-content-addressed-translations.md)
+
+> **The granularity decision here still stands.** Hashing each translatable field rather
+> than the whole card is correct and survives unchanged. What ADR 0008 replaces is the
+> *identity* half — keying on `(locale, card_id, field_path)` meant the same Japanese
+> string on five cards was translated five times and came back five different ways
+> (measured: 362 of 926 distinct art names had ≥2 `en` translations). The key is now
+> `(locale, kind, sha256(source))`. Everything below about staleness, `manual`
+> durability, and reading back only stale fields applies at unit granularity instead.
+
 **Date:** 2026-07-26
 **Phase:** 1
 **Amends:** D14 (corrections overlay), D11 (`status.json` ownership)

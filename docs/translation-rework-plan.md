@@ -1,6 +1,9 @@
 # Translation rework — plan
 
-**Status:** designed, not started. Closes #20, #21, and the mechanism half of #18.
+**Status:** ✅ **complete** (2026-07-30), not yet deployed. Closed #20, #21, and the
+mechanism half of #18. The decisions are recorded in
+[ADR 0008](adr/0008-content-addressed-translations.md); this file is the design that
+produced them, kept for the measurements it carries.
 
 **Execution is tracked in [issue #23](https://github.com/tskrlabs/hololive-ocg-wiki/issues/23)**
 — the nine-phase checklist and current state. This file is the design; #23 is where we are
