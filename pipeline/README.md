@@ -17,6 +17,7 @@ holo-data build           # merge + validate -> cards.json       (local, free)
 holo-data verify          # diff against v1's data               (local, free)
 holo-data verify-images   # coverage; --remote re-checks bytes   (local / ~2.4k reqs)
 holo-data status          # what is on disk right now
+holo-data backup-cache    # snapshot the translation cache       (--remote adds R2)
 
 holo-data publish         # images + artifacts -> R2   (needs CF credentials)
 holo-data seed            # -> D1      (Phase 3)
@@ -70,14 +71,35 @@ Nothing overwrites it. As long as the JP source has not changed, that field is n
 stale, so `translate` skips it even when the rest of the card is re-sent. This is what
 replaces D14's corrections overlay.
 
+## The cache is the one thing you cannot re-run
+
+`locales/translation-cache.json` is **not** reproducible working state, despite living
+among files that are. It is the accumulated output of a year of paid Poe calls — 82,098
+entries across 6 locales — and re-creating it means paying for it again. It is also
+gitignored, and `publish` does not upload it.
+
+So back it up before anything touches it:
+
+```bash
+holo-data backup-cache --remote
+```
+
+That writes a dated snapshot to `~/.holo-data/cache-backups/` (outside the repo, so
+`git clean -fdx` cannot take it) and a copy to `backups/` in the artifacts bucket. Both
+are verified by loading the copy back and comparing entry counts per locale — a truncated
+write fails at backup time rather than at the restore nobody rehearsed.
+
+To restore, put a snapshot back at `locales/translation-cache.json`. `holo-data status`
+will then report the entry counts, which is the check that it worked.
+
 ## Working state
 
-Everything under `pipeline/` except `corrections/` is gitignored working state,
-reproducible by re-running:
+Everything else under `pipeline/` except `corrections/` is gitignored working state,
+genuinely reproducible by re-running:
 
 ```
 data/default/         card ids, raw HTML, structured extraction, contract shape
-locales/              translations + the field-level cache
+locales/              translations + the field-level cache (⚠ see above — back this up)
 images/png/{set}/     downloaded originals (local intermediate — never uploaded)
 images/webp/{set}/    what `publish` uploads (D9)
 build/                cards.json

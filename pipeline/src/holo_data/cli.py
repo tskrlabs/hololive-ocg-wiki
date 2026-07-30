@@ -15,6 +15,7 @@ steps that cost money or touch production are explicit.
     holo-data seed --dry          row counts + D1 write estimate       (reads only)
     holo-data seed --confirm      diff-based upsert into D1            (writes)
 
+    holo-data backup-cache        snapshot the translation cache       (local / R2)
     holo-data migrate-images      one-time v1 flat -> set-scoped tree
 
 `translate` requires `--confirm` or refuses, and prints exactly what it would spend
@@ -48,7 +49,7 @@ from . import paths, r2, transform, verify as verify_module
 from . import publish as publish_module
 from . import verify_images as verify_images_module
 from .scrape import card_list, extract, fetch
-from .translate import poe
+from .translate import backup, poe
 from .translate.cache import TranslationCache
 
 app = typer.Typer(
@@ -952,6 +953,66 @@ def _upload_status(status: dict) -> None:
 
 
 # --- status ------------------------------------------------------------------
+
+@app.command("backup-cache")
+def backup_cache(
+    remote: bool = typer.Option(
+        False, "--remote", help="also upload a copy to R2 (needs credentials + boto3)"
+    ),
+    keep: int = typer.Option(10, "--keep", help="how many local snapshots to retain"),
+    backup_dir: Optional[Path] = typer.Option(
+        None, "--dir", help=f"where to write (default: {backup.DEFAULT_BACKUP_DIR})"
+    ),
+) -> None:
+    """Back up the translation cache — the one file the pipeline cannot rebuild.
+
+    Everything else under `pipeline/` is reproducible by re-running. The cache is a
+    year of paid API calls, it is gitignored, and `publish` does not upload it — so
+    until this command existed it lived in exactly one place, on one laptop.
+
+    Writes a dated snapshot outside the repo (so `git clean` cannot take it) and
+    verifies the copy by loading it back and comparing entry counts. `--remote` adds
+    a copy in the artifacts bucket, which is what survives losing the machine.
+    """
+    target_dir = backup_dir or backup.DEFAULT_BACKUP_DIR
+
+    try:
+        path, stats = backup.write_local(backup_dir=target_dir)
+    except backup.BackupError as exc:
+        typer.echo(f"✗ {exc}", err=True)
+        raise typer.Exit(1)
+
+    typer.echo(f"→ {stats.describe()}")
+    typer.echo(f"✓ local backup verified: {path}")
+
+    removed = backup.prune_local(target_dir, keep=keep)
+    if removed:
+        typer.echo(f"  pruned {len(removed)} older snapshot(s), keeping {keep}")
+
+    if not remote:
+        typer.echo("")
+        typer.echo(
+            "This copy is on the same disk as the original. Re-run with --remote to "
+            "put one in R2."
+        )
+        return
+
+    try:
+        config = r2.load_config()
+        s3 = r2.client(config)
+    except r2.R2Error as exc:
+        typer.echo(f"✗ {exc}", err=True)
+        raise typer.Exit(1)
+
+    key = backup.upload_to_r2(s3, config.artifacts_bucket, path)
+    typer.echo(f"✓ uploaded to r2://{config.artifacts_bucket}/{key}")
+
+    existing = backup.list_r2_backups(s3, config.artifacts_bucket)
+    total = sum(size for _, size in existing)
+    typer.echo(
+        f"  {len(existing)} backup(s) in the bucket, {total / 1_048_576:.1f} MB total"
+    )
+
 
 @app.command()
 def status() -> None:
