@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Database } from "lucide-vue-next";
-// import { HelpCircle } from "lucide-vue-next";
 
 /**
  * The Discord link comes from `/api/info` (D11), and is fetched **once** for the whole
@@ -29,17 +28,6 @@ const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? ""
       <slot />
 
       <div class="flex ml-auto">
-        <!-- <Button
-          variant="ghost"
-          size="icon"
-          as-child
-          class="hidden sm:inline-flex"
-          :title="$t('howToUse.title')"
-        >
-          <NuxtLink to="/how-to-use">
-            <HelpCircle class="w-5 h-5" />
-          </NuxtLink>
-        </Button> -->
         <Button
           variant="ghost"
           size="icon"
