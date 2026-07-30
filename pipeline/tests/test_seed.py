@@ -477,6 +477,23 @@ class TestGates:
         refusals = seed_module.check_gates(plan, collection, 999, 0, prune=False)
         assert any("schema version" in r.reason for r in refusals)
 
+    def test_a_dropped_card_is_refused(self, collection):
+        """A build that left cards out must not reach D1.
+
+        `build --allow-unknown-enums` ships the cards that validate and records the ids
+        it dropped. Seeding that artifact would publish a card set the official site
+        disagrees with, announced by nothing but a build log — which is F-001's shape:
+        two cards sat wrong in v1's live data from the day they shipped and were found
+        by a hand-run census, not by the pipeline.
+
+        No flag clears it, deliberately (D4). The fix is to add the mapping and rebuild.
+        """
+        plan, _ = self._plan(collection)
+        short = collection.model_copy(update={"dropped": ["2480"]})
+        refusals = seed_module.check_gates(plan, short, 1, 0, prune=False)
+        assert any("dropped" in r.reason for r in refusals)
+        assert any("mappings.py" in r.detail for r in refusals)
+
     def test_unreadable_analytics_does_not_block_a_small_run(self, collection):
         """A missing analytics permission should not stop a legitimate seed.
 

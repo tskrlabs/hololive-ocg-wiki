@@ -5,6 +5,8 @@ const props = defineProps<{
   id: string;
   name: string;
   number: string;
+  /** The source-language name, when it differs — `LocalizedCard.original.name`. */
+  originalName?: string | null;
 }>();
 
 // Use translation composable
@@ -40,6 +42,7 @@ const {
       <button class="flex items-center gap-1 font-semibold" @click="copyName()">
         <Copy class="size-3" />
         {{ getTranslatedText("names", name, name) }}
+        <CardListOriginalText :text="originalName" />
       </button>
       <Transition name="copied">
         <span

@@ -20,9 +20,8 @@ src/localize.ts         ← TypeScript port of localize.py. The Worker runs this
 
 scripts/
   generate.py           models -> json-schema/ -> dist/
-  build_fixtures.py     selects the fixture card set from v1 data
+  build_fixtures.py     selects the fixture card set from `holo-data build` output
   golden.py             writes the parity fixtures from the Python reference
-  v1_adapter.py         reads v1's camelCase cards.json (migration aid — delete in Phase 1)
 
 json-schema/  dist/  golden/     ← GENERATED AND COMMITTED. Do not hand-edit.
 tests/

@@ -6,9 +6,13 @@ enum value from the official site fails here rather than in production.
 
 Validation is **collect-and-report**: all problems are gathered and printed together,
 then the command exits non-zero. Failing on the first error would mean discovering
-2,448 cards' worth of problems one run at a time. `--allow-unknown-enums` publishes
-anyway and prints what it let through — deliberately ugly so it does not become the
-default path (ADR 0001).
+2,448 cards' worth of problems one run at a time.
+
+`--allow-unknown-enums` ships the cards that validate and **drops** the ones that do
+not, recording their ids in `CardCollection.dropped`. It cannot publish them: the
+contract's enums are closed `Literal`s, so a card carrying an unmapped value cannot be
+constructed at all. The dropped list is what `publish` and `seed` refuse on, so the
+hatch unblocks `build` alone and never reaches the site (ADR 0001).
 """
 
 from __future__ import annotations
@@ -25,8 +29,11 @@ from holo_schema import Card, CardCollection, Notice, NoticeCollection
 from holo_schema.enums import SOURCE_LOCALE
 
 from . import transform
+from .glossary import load_all
 from .paths import cards_json, ensure_dirs, filter_options_json, notices_json
+from .translate import units
 from .translate.cache import TranslationCache, field_keys
+from .translate.cache_v2 import TranslationCacheV2
 
 
 @dataclass
@@ -45,19 +52,44 @@ class BuildReport:
     def failed(self) -> int:
         return self.total - self.valid
 
+    @property
+    def dropped_ids(self) -> list[str]:
+        """Cards that failed only on an enum value, sorted.
+
+        What `--allow-unknown-enums` leaves out of the artifact. Derived from
+        `enum_violations` rather than tracked separately so the two cannot disagree; a
+        card with a non-enum error too is still here, but that case never reaches the
+        collection because any `errors` entry blocks the build outright.
+        """
+        ids = {card_id for ids in self.enum_violations.values() for card_id in ids}
+        return sorted(ids, key=lambda value: (len(value), value))
+
     def add_error(self, card_id: str, message: str, is_enum: bool = False) -> None:
         target = self.enum_violations if is_enum else self.errors
         target[message].append(card_id)
 
 
 def apply_translations(
-    card: dict[str, Any], cache: TranslationCache, locales: list[str]
+    card: dict[str, Any],
+    cache: TranslationCache,
+    locales: list[str],
+    cache_v2: TranslationCacheV2 | None = None,
 ) -> dict[str, Any]:
     """Fill in each locale's translation from the cache.
 
     The JP translation is already present from `transform`; this adds the rest. A field
     with no cache entry is simply absent from that locale — better than shipping a
     placeholder, and `localize()` falls back to JP for anything missing.
+
+    **v2 first, v1 as fallback** (ADR 0002 successor, #23 D9). The content-addressed
+    cache answers by source string, so every card printing that string gets the same
+    translation. A unit it has no entry for falls through to the per-card cache, which
+    is what lets a half-migrated locale still produce a complete build.
+
+    The two caches disagree on *shape* for tags: v1 stores the whole list under one key,
+    v2 stores each tag separately. So tags are resolved element-wise from v2 and only
+    fall back to v1 as a whole list — mixing the two would produce a list with some
+    elements translated and some not.
     """
     jp = card.get("translations", {}).get("ja", {})
     if not jp:
@@ -66,16 +98,70 @@ def apply_translations(
     for locale in locales:
         translation: dict[str, Any] = {}
 
-        for field_key, _source in field_keys(jp):
-            entry = cache.get(locale, card["id"], field_key)
-            if entry is None:
+        for field_key, source_value in field_keys(jp):
+            value = _resolve_field(
+                cache, cache_v2, locale, card["id"], field_key, source_value
+            )
+            if value is None:
                 continue
-            _assign(translation, field_key, entry.value)
+            _assign(translation, field_key, value)
 
         if translation:
             card.setdefault("translations", {})[locale] = translation
 
     return card
+
+
+# v1 field paths -> v2 unit kinds. The path carries a card and an index; the kind does
+# not, which is the whole difference between the two schemes.
+def _kind_for(field_key: str) -> str | None:
+    if field_key == "name":
+        return "card_name"
+    if field_key in ("ability_text", "extra"):
+        return field_key
+    if field_key.startswith("arts["):
+        return "art_" + field_key.rsplit(".", 1)[-1]
+    if field_key.startswith("keyword."):
+        return "keyword_" + field_key.rsplit(".", 1)[-1]
+    if field_key.startswith(("oshi_skill.", "sp_oshi_skill.")):
+        return "skill_" + field_key.rsplit(".", 1)[-1]
+    if field_key.startswith("qa_items["):
+        return units.QA_KIND
+    return None
+
+
+def _resolve_field(
+    cache: TranslationCache,
+    cache_v2: TranslationCacheV2 | None,
+    locale: str,
+    card_id: str,
+    field_key: str,
+    source_value: Any,
+) -> Any | None:
+    """One field's translation, v2 first then v1. None when neither has it."""
+    if cache_v2 is not None:
+        if field_key == "tags":
+            # Element-wise: v1's single `tags` key holds the whole list, v2 holds one
+            # entry per tag. A partial answer here would emit a list where some tags are
+            # translated and some are not, which reads as data corruption rather than as
+            # a missing translation.
+            resolved = [
+                cache_v2.value_for(locale, units.Unit(kind="tag", value=tag))
+                for tag in (source_value or [])
+            ]
+            if resolved and all(value is not None for value in resolved):
+                return resolved
+        else:
+            kind = _kind_for(field_key)
+            if kind is not None:
+                value = cache_v2.value_for(
+                    locale, units.Unit(kind=kind, value=source_value)
+                )
+                if value is not None:
+                    return value
+
+    entry = cache.get(locale, card_id, field_key)
+    return entry.value if entry is not None else None
 
 
 def _assign(target: dict[str, Any], field_key: str, value: Any) -> None:
@@ -108,6 +194,7 @@ def build(
     cache: TranslationCache,
     locales: list[str],
     allow_unknown_enums: bool = False,
+    cache_v2: TranslationCacheV2 | None = None,
 ) -> tuple[CardCollection | None, NoticeCollection | None, BuildReport]:
     """Merge translations, validate every entry, and assemble both collections.
 
@@ -124,7 +211,7 @@ def build(
     validated: list[Card] = []
 
     for raw in cards:
-        merged = apply_translations(dict(raw), cache, locales)
+        merged = apply_translations(dict(raw), cache, locales, cache_v2)
         try:
             validated.append(Card.model_validate(merged))
             report.valid += 1
@@ -139,7 +226,7 @@ def build(
 
     validated_notices: list[Notice] = []
     for raw in notice_entries:
-        merged = apply_translations(dict(raw), cache, locales)
+        merged = apply_translations(dict(raw), cache, locales, cache_v2)
         try:
             validated_notices.append(Notice.model_validate(transform.to_notice(merged)))
         except ValidationError as exc:
@@ -159,14 +246,24 @@ def build(
             1 for card in cards if card.get("translations", {}).get(locale)
         )
 
-    blocking = bool(report.errors) or (report.enum_violations and not allow_unknown_enums)
-    if blocking or len(validated) != len(cards):
+    # `--allow-unknown-enums` **drops** the offending cards; it cannot publish them.
+    # `CardTypeCode` and friends are closed `Literal`s, so a card carrying an unmapped
+    # value has no way to become a `Card` object at all — there is nothing to put in the
+    # collection. The flag's promise is therefore "ship the rest", not "ship anyway".
+    #
+    # This was the bug: the old `len(validated) != len(cards)` clause fired on exactly
+    # the cards the flag was supposed to let past, so `build` returned None regardless
+    # and the hatch had never once worked. F-008 reasoned that blocking was cheap
+    # because this existed — it did not.
+    if report.errors or (report.enum_violations and not allow_unknown_enums):
         return None, None, report
 
     generated_at = datetime.now(timezone.utc).isoformat(timespec="seconds").replace(
         "+00:00", "Z"
     )
-    collection = CardCollection(generated_at=generated_at, cards=validated)
+    collection = CardCollection(
+        generated_at=generated_at, cards=validated, dropped=report.dropped_ids
+    )
     notices = NoticeCollection(generated_at=generated_at, notices=validated_notices)
     return collection, notices, report
 
@@ -202,6 +299,9 @@ def save_notices(collection: NoticeCollection) -> int:
 def _best_label(ja_name: str, labels: dict[str, int]) -> str:
     """Pick one display name for a character from the spellings its cards carry.
 
+    **Fallback only.** The glossary is consulted first; this runs for keys it has no
+    decision for — 81 of 296 names at the time of writing.
+
     A spelling that differs from the ja name wins, because that is the one that was
     actually translated; among equals, the most common, then the text itself so the
     result does not depend on dict ordering. See `filter_options` for the measurements.
@@ -231,31 +331,71 @@ def filter_options(collection: CardCollection, locale: str) -> dict[str, Any]:
     296 characters in `en` and 65 in `ko`. Ties break on the label text so the artifact
     is deterministic.
 
-    Tags and sets have no such split: tags are localised display text with no stable
-    identity to preserve, and set names are language-independent.
+    **Tags key on the identity too, and this was a live bug.** `Card.tags` holds the
+    unprefixed source tag (`"0期生"`) and feeds the `card_tags` junction; `Translation.tags`
+    holds the localised display text with its prefix (`"#0期生"`). This function used to
+    emit the *display* spelling as `value`, so every dropdown selection sent `#0期生` to a
+    `WHERE tag = ?` matching `0期生` and **the tag filter returned zero cards for every
+    tag, in every locale** (#26). Verified against the deployed site before the fix: 0
+    rows for the prefixed value, 165 for the unprefixed one.
+
+    Sets are language-independent, so identity and label coincide unless the glossary
+    supplies a translation.
+
+    **Labels come from the glossary first.** It is the curated, committed source of truth
+    for proper nouns; `_best_label` is the fallback for keys it has no decision for.
     """
+    glossaries = load_all()
     label_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
-    tags: set[str] = set()
+    tag_labels: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     sets: set[str] = set()
 
     for card in collection.cards:
         source = card.translations[SOURCE_LOCALE]
         translation = card.translations.get(locale) or source
         label_counts[source.name][translation.name] += 1
-        tags.update(translation.tags or [])
         sets.update(card.card_sets)
 
-    names = [
-        {"value": ja_name, "label": _best_label(ja_name, labels)}
-        for ja_name, labels in sorted(label_counts.items())
-    ]
+        # `Card.tags` and `Translation.tags` are positional pairs — verified across all
+        # 2,463 cards in all 7 locales, zero length mismatches. A card that somehow
+        # disagreed would contribute its identities with no display text rather than
+        # silently pairing the wrong ones.
+        identities = card.tags or []
+        shown = translation.tags or []
+        for index, identity in enumerate(identities):
+            tag_labels[identity][
+                shown[index] if index < len(shown) else identity
+            ] += 1
+
+    def labelled(kind: str, key: str, counts: dict[str, int] | None) -> dict[str, str]:
+        curated = glossaries[kind].entries.get(key)
+        if curated is not None and curated.has(locale):
+            label = curated.display(locale)
+        else:
+            label = _best_label(key, counts) if counts else key
+
+        # The `#` is presentation and belongs in exactly one place. All 5,481 tag
+        # occurrences carry it in every locale, while the curated glossary stores the
+        # bare text ("0th Gen", not "#0th Gen") — so without this, a tag's label would
+        # have a prefix or not depending on whether someone had curated it. Normalising
+        # here keeps the artifact uniform without putting a `#` in the glossary, where
+        # it would be one more thing to get wrong on every future entry.
+        if kind == "tags" and not label.startswith("#"):
+            label = f"#{label}"
+
+        return {"value": key, "label": label}
 
     return {
         "locale": locale,
         "generated_at": collection.generated_at,
-        "names": names,
-        "tags": [{"value": tag, "label": tag} for tag in sorted(tags)],
-        "sets": [{"value": name, "label": name} for name in sorted(sets)],
+        "names": [
+            labelled("names", key, counts)
+            for key, counts in sorted(label_counts.items())
+        ],
+        "tags": [
+            labelled("tags", key, counts) for key, counts in sorted(tag_labels.items())
+        ],
+        "sets": [labelled("sets", key, None) for key in sorted(sets)],
     }
 
 

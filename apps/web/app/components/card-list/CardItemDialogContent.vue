@@ -35,6 +35,7 @@ defineProps<{
             :name="item.name || ''"
             :id="item.id"
             :number="item.card_number"
+            :original-name="item.original?.name"
           />
 
           <CardDataRowsBlock :item="item" />

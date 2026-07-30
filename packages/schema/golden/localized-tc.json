@@ -15,10 +15,18 @@
     "image_key": "hSD01/hSD01-001_OSR",
     "life": 5,
     "locale": "tc",
-    "name": "ときのそら",
+    "name": "時乃空",
+    "original": {
+      "art_names": [],
+      "name": "ときのそら",
+      "oshi_skill_name": "リプレイスメント",
+      "sp_oshi_skill_name": "じゃあ敵だね？",
+      "tags": []
+    },
     "oshi_skill": {
-      "effect": "[每回合1次]將自己舞台上的1張應援，改附加到自己的任一位Holomen上。",
+      "effect": "[每回合1次]將自己舞台上的1張應援改附到自己的holomen。",
       "name": "替換",
+      "timing": "每回合1次",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -69,8 +77,9 @@
     ],
     "rarity_code": "OSR",
     "sp_oshi_skill": {
-      "effect": "[每場遊戲1次]讓對手的中央Holomen與1位後排Holomen互換位置。之後，直到回合結束為止，自己的白色中央Holomen的藝能+50。",
-      "name": "那就是敵人了？",
+      "effect": "[每場遊戲1次]使對手的中心Holo成員與1位後台Holo成員交換。之後，在這個回合中，自己的白色中心Holo成員的藝術+50。",
+      "name": "那就是敵人囉？",
+      "timing": "每場對戰1次",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -92,15 +101,22 @@
     "life": 6,
     "locale": "tc",
     "name": "AZKi",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "左手に地図",
+      "sp_oshi_skill_name": "右手にマイク",
+      "tags": []
+    },
     "oshi_skill": {
-      "effect": "[每回合1次] 當自己的Holomen能力要擲骰時可以使用：宣告一個數字，並將下一次擲出的骰子點數視為所宣告的數字。",
-      "name": "左手握著地圖",
+      "effect": "[每回合1次]可在因自己的holomen的能力而擲骰子時使用：宣告1個骰子點數，下一次擲出的點數視為所宣告的點數。",
+      "name": "左手拿地圖",
+      "timing": "每回合1次",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
       {
-        "answer": "可以。",
-        "question": "當自己的推しHolomen是hSD01-002〈AZKi〉，自己的Holomen受到傷害時，使用了hBP01-027〈ベスティア・ゼータ〉的禮物「V.7」。這種情況下，可以使用hSD01-002〈AZKi〉的推し技能「左手握著地圖」來宣告要出的骰子點數嗎？",
+        "answer": "是的，可以。",
+        "question": "當自己的推Holomen是hSD01-002〈AZKi〉，並在自己的Holomen要受到傷害時，使用了hBP01-027〈ベスティア・ゼータ〉的禮物「V.7」。在這種情況下，能否宣告使用hSD01-002〈AZKi〉的推技能「左手に地図」所要擲出的點數？",
         "related_cards": {
           "card_number": [
             "hSD01-002",
@@ -124,8 +140,9 @@
     ],
     "rarity_code": "OSR",
     "sp_oshi_skill": {
-      "effect": "[每場遊戲1次] 從自己的檔案區域中，將任意數量的應援送給自己的一位綠色Holomen。",
-      "name": "右手握著麥克風",
+      "effect": "[每場對戰1次]將自己存檔區中的應援任意張數送給自己的1名綠色holomen。",
+      "name": "右手持麥克風",
+      "timing": "每場對戰1次",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -133,25 +150,23 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "white",
           "null"
         ],
         "damage": 50,
-        "name": "ドリームライブ"
+        "name": "夢幻演唱會"
       },
       {
-        "cost_count": 3,
         "cost_types": [
           "white",
           "green",
           "null"
         ],
         "damage": 60,
-        "effect": "當自己的舞台上有Holomen〈AZKi〉時，此藝術+50。",
+        "effect": "當自己的舞台上有Holomen的〈AZKi〉時，此藝術+50。",
         "is_plus": true,
-        "name": "SorAZ シンパシー"
+        "name": "SorAZ Sympathy"
       }
     ],
     "baton_touch_count": 2,
@@ -168,17 +183,29 @@
     "color_codes": [
       "white"
     ],
-    "extra": "當這位Holomen被擊倒時，自身生命值-2",
+    "extra": "此Holo成員倒下時，自己的生命值-2",
     "hp": 240,
     "id": "6",
     "illustrator": "I☆LA",
     "image_key": "hSD01/hSD01-006_RR",
     "locale": "tc",
-    "name": "ときのそら",
+    "name": "時乃空",
+    "original": {
+      "art_names": [
+        "ドリームライブ",
+        "SorAZ シンパシー"
+      ],
+      "name": "ときのそら",
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#歌"
+      ]
+    },
     "qa_items": [
       {
-        "answer": "是的，會+50。即使卡牌名稱中沒有對應的卡牌，只要額外能力中有「此Holomen同時視為〈ときのそら〉〈AZKi〉」等能作為特定卡名處理的卡牌存在，就能滿足該條件。",
-        "question": "hSD01-006〈ときのそら〉的藝術「SorAZ シンパシー」，在自己的Holomen中有hSD01-013〈SorAZ〉時，也會「此藝術+50」嗎？",
+        "answer": "會，會增加+50。即使卡名不一致，只要額外能力中有「此Holomen也視為〈ときのそら〉〈AZKi〉。」類似效果，便能滿足條件。",
+        "question": "hSD01-006〈ときのそら〉的藝術「SorAZ Sympathy」，當自己場上有hSD01-013〈SorAZ〉時，也會使「此藝術+50」嗎？",
         "related_cards": {
           "card_number": [
             "hSD01-006",
@@ -204,20 +231,19 @@
     "tags": [
       "#JP",
       "#0期生",
-      "#歌"
+      "#歌唱"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "null",
           "null"
         ],
         "damage": 50,
-        "effect": "可以擲骰子1次：若為奇數，將自己應援牌庫頂的1張牌送給此Holomen；若為偶數，從自己的牌庫抽1張牌。",
-        "name": "想跨越的未來"
+        "effect": "可擲1次骰子：為奇數時，將自己應援牌庫頂部1張卡送給這位Holo成員。為偶數時，抽1張自己的牌庫。",
+        "name": "想要跨越的未來"
       }
     ],
     "baton_touch_count": 1,
@@ -233,17 +259,27 @@
     "color_codes": [
       "white_green"
     ],
-    "extra": "此Holomen也視為〈ときのそら〉與〈AZKi〉。",
+    "extra": "此Holo成員也視為〈時乃空〉〈AZKi〉",
     "hp": 130,
     "id": "13",
     "illustrator": "© 2023 Victor Entertainment.",
     "image_key": "hSD01/hSD01-013_R",
     "locale": "tc",
     "name": "SorAZ",
+    "original": {
+      "art_names": [
+        "越えたい未来"
+      ],
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#歌"
+      ]
+    },
     "qa_items": [
       {
-        "answer": "代表此卡同時擁有〈ときのそら〉、〈AZKi〉與〈SorAZ〉三個卡名。",
-        "question": "hSD01-013〈SorAZ〉的額外能力「此Holomen也視為〈ときのそら〉〈AZKi〉。」是什麼意思？",
+        "answer": "表示該卡同時擁有〈ときのそら〉、〈AZKi〉、〈SorAZ〉三個卡名。",
+        "question": "hSD01-013〈SorAZ〉的額外能力「此ホロ成員同時視為〈ときのそら〉與〈AZKi〉」是什麼意思？",
         "related_cards": {
           "card_number": [
             "hSD01-013"
@@ -253,8 +289,8 @@
         "title": "Q616（2026.03.02）"
       },
       {
-        "answer": "不行，無法這麼做。",
-        "question": "當我場上有1張hSD01-013〈SorAZ〉，並讓hBP07-068〈AZKi〉進行合作時，在合作效果「共同走過的軌跡」之條件下，可以將hSD01-013〈SorAZ〉同時計作〈ときのそら〉與〈SorAZ〉兩人嗎？",
+        "answer": "不，可以。",
+        "question": "當自己場上有1位hSD01-013〈SorAZ〉時，hBP07-068〈AZKi〉進行合作。此時能否因合作效果「共同走過的軌跡」的能力，將hSD01-013〈SorAZ〉視為〈ときのそら〉與〈SorAZ〉兩人分來計算？",
         "related_cards": {
           "card_number": [
             "hSD01-013",
@@ -265,8 +301,8 @@
         "title": "Q602（2026.03.02）"
       },
       {
-        "answer": "可以，能夠加入手牌。",
-        "question": "使用hBP04-089〈ツートンカラーパソコン〉，選擇我場上顏色為單色且顏色不同的Holomen為〈ときのそら〉及〈フワワ・アビスガード〉。此時，可以將hSD01-013〈SorAZ〉與hBP03-050〈FUWAMOCO〉作為與所選Holomen同色的1st Holomen加入手牌嗎？",
+        "answer": "是的，可以加入。",
+        "question": "使用hBP04-089〈ツートンカラーパソコン〉，在自己的舞台上，選擇不同顏色的Holomen〈ときのそら〉與〈フワワ・アビスガード〉。這種情況下，能否將hSD01-013〈SorAZ〉與hBP03-050〈FUWAMOCO〉作為與所選Holomen同色的1st Holomen加入手牌？",
         "related_cards": {
           "card_number": [
             "hBP04-089",
@@ -278,8 +314,8 @@
         "title": "Q404（2025.06.11）"
       },
       {
-        "answer": "指該Holomen僅持有單一顏色，且有兩位以上。舉例來說，hBP01-021〈ときのそら〉僅有一種顏色，而hSD01-013〈SorAZ〉則持有兩種顏色。",
-        "question": "hBP04-089〈ツートンカラーパソコン〉中的「顏色為單色且顏色不同的Holomen」是什麼意思？",
+        "answer": "是指該Holomen僅擁有1種顏色，且有2位或以上。例如hBP01-021〈ときのそら〉僅有1種顏色，而hSD01-013〈SorAZ〉則擁有2種顏色。",
+        "question": "hBP04-089〈ツートンカラーパソコン〉中「顏色各為單一且不同顏色的Holomen」是什麼意思？",
         "related_cards": {
           "card_number": [
             "hBP04-089",
@@ -291,8 +327,8 @@
         "title": "Q402（2025.06.11）"
       },
       {
-        "answer": "可以，能夠這麼做。",
-        "question": "可以使用hBP02-078〈かなた建設〉將hSD01-013〈SorAZ〉加入手牌嗎？",
+        "answer": "是的，可以。",
+        "question": "能否使用 hBP02-078〈かなた建設〉將 hSD01-013〈SorAZ〉加入手牌？",
         "related_cards": {
           "card_number": [
             "hBP02-078",
@@ -315,8 +351,8 @@
         "title": "Q116（2024.09.21）"
       },
       {
-        "answer": "可以。即使卡名不符合條件，只要額外能力中（EXTRA）有「此Holomen也視為〈ときのそら〉〈AZKi〉。」類似的效果，便能滿足該條件。",
-        "question": "hSD01-021〈First Gravity〉寫著「公開任意數量的〈ときのそら〉與〈AZKi〉」時，可以公開hSD01-013〈SorAZ〉並將其加入手牌嗎？",
+        "answer": "可以，可以這麼做。即使卡名稱不符合，只要該卡具有如「此ホロ成員同時視為〈ときのそら〉與〈AZKi〉」之類的額外效果，也視為符合條件。",
+        "question": "hSD01-021〈First Gravity〉的效果「公開任意張〈ときのそら〉與〈AZKi〉，」中，是否可以公開hSD01-013〈SorAZ〉並將其加入手牌？",
         "related_cards": {
           "card_number": [
             "hSD01-021",
@@ -339,8 +375,8 @@
         "title": "Q13（2024.09.21）"
       },
       {
-        "answer": "可以，皆視為同樣處理。",
-        "question": "hSD01-013〈SorAZ〉的額外能力「此Holomen也視為〈ときのそら〉〈AZKi〉。」在不在舞台上時也能當作〈ときのそら〉〈AZKi〉使用嗎？",
+        "answer": "是的，仍會視為如此。",
+        "question": "hSD01-013〈SorAZ〉的額外效果「此ホロ成員同時視為〈ときのそら〉與〈AZKi〉」是否在不在舞台時仍視為〈ときのそら〉與〈AZKi〉？",
         "related_cards": {
           "card_number": [
             "hSD01-013"
@@ -389,19 +425,18 @@
     "tags": [
       "#JP",
       "#0期生",
-      "#歌"
+      "#歌唱"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "white",
           "green"
         ],
         "damage": 30,
-        "name": "へい"
+        "name": "嘿"
       }
     ],
     "baton_touch_count": 1,
@@ -417,22 +452,33 @@
     "color_codes": [
       "null"
     ],
-    "extra": "此成員無法進行Bloom",
+    "extra": "此Holo成員不能進行Bloom",
     "hp": 150,
     "id": "14",
     "image_key": "hSD01/hSD01-014_U",
     "locale": "tc",
-    "name": "天音かなた",
+    "name": "天音彼方",
+    "original": {
+      "art_names": [
+        "へい"
+      ],
+      "name": "天音かなた",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "U",
     "tags": [
       "#JP",
       "#4期生",
-      "#歌"
+      "#歌唱"
     ]
   },
   {
-    "ability_text": "抽３張自己的牌庫卡。\n\nLIMITED：每回合只能使用１張。",
+    "ability_text": "抽3張自己的牌庫。\n\r\nLIMITED:每回合只能使用1張。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-016",
@@ -456,13 +502,18 @@
     "illustrator": "Yoshimo",
     "image_key": "hSD01/hSD01-016_C",
     "locale": "tc",
-    "name": "春先のどか",
+    "name": "春先野花",
+    "original": {
+      "art_names": [],
+      "name": "春先のどか",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
   },
   {
-    "ability_text": "查看自己牌庫上方5張牌，從中公開1張LIMITED的支援卡並加入手牌。將剩下的牌以任意順序放回牌庫底。",
+    "ability_text": "查看自己牌庫頂的5張牌。從中公開1張LIMITED的支援卡，加入手牌。然後將剩餘的卡以任意順序放回牌庫底。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-018",
@@ -477,13 +528,18 @@
     "illustrator": "JinArt こばやかわやまと",
     "image_key": "hSD01/hSD01-018_C",
     "locale": "tc",
-    "name": "サブパソコン",
+    "name": "副電腦",
+    "original": {
+      "art_names": [],
+      "name": "サブパソコン",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
   },
   {
-    "ability_text": "使用這張卡時，必須先將自己場上的 1 張應援卡存檔。\n\r\n從自己的牌庫中公開 1 張非 Buzz 的 [1st 成員或 2nd 成員]，將其加入手牌。然後洗牌。\n\r\nLIMITED：每回合只能使用 1 張。",
+    "ability_text": "這張卡必須將自己舞台上的1張應援Archive，才能使用。\n\n從自己的牌庫公開1張Buzz以外的[1st Holomen或2nd Holomen]，加入手牌。然後將牌庫洗牌。\n\nLIMITED:每回合只能使用1張。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-019",
@@ -498,7 +554,8 @@
       "ライブスタートデッキ 儒烏風亭らでん",
       "ライブスタートデッキ さくらみこ",
       "ライブスタートデッキ 星街すいせい",
-      "ライブスタートデッキ 大空スバル"
+      "ライブスタートデッキ 大空スバル",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportItemLimited",
     "color_codes": [],
@@ -506,7 +563,12 @@
     "illustrator": "JinArt KABAKURA",
     "image_key": "hSD01/hSD01-019_C_02",
     "locale": "tc",
-    "name": "スゴイパソコン",
+    "name": "厲害的電腦",
+    "original": {
+      "art_names": [],
+      "name": "スゴイパソコン",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "是的，可以不公開。在那種情況下，洗牌後此能力結束。",
@@ -535,7 +597,7 @@
     "tags": []
   },
   {
-    "ability_text": "擲一次骰子：若為3以上，將自己檔案區域中的1張應援卡送給自己的Holomen。",
+    "ability_text": "擲 1 次骰子：若為 3 以上，將自己 Archive 的 1 張 Cheer 送到自己的 holomen。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-020",
@@ -549,7 +611,12 @@
     "illustrator": "JinArt KABAKURA",
     "image_key": "hSD01/hSD01-020_C",
     "locale": "tc",
-    "name": "Holoris之環",
+    "name": "Holo友的圈圈",
+    "original": {
+      "art_names": [],
+      "name": "ホロリスの輪",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "不可以。若自己的檔案區域中沒有應援卡，則無法僅擲骰子。",
@@ -579,7 +646,7 @@
     "tags": []
   },
   {
-    "ability_text": "這張卡必須在自己的手牌不包含這張卡的情況下為6張以下才能使用。\n\n查看自己牌庫頂的4張牌。從中可公開任意數量的〈ときのそら〉與〈AZKi〉，將公開的Holomen加入手牌。然後將剩下的卡以任意順序放回牌庫底。\n\nLIMITED：每回合只能使用1張。",
+    "ability_text": "這張卡只有在自己的手牌不包含這張卡為6張以下時才能使用。\n\n查看自己牌庫頂的4張牌。從中公開任意張帶有〈時乃空〉與〈AZKi〉的holomen，將公開的holomen加入手牌。然後將剩下的牌以任意順序放回牌庫底。\n\nLIMITED：每回合只能使用1張。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-021",
@@ -595,8 +662,8 @@
     "name": "First Gravity",
     "qa_items": [
       {
-        "answer": "可以。即使卡牌名稱中沒有對應名稱，但如果額外有「此Holomen也視為〈ときのそら〉〈AZKi〉」等效果的卡牌存在，也能滿足條件。",
-        "question": "hSD01-021〈First Gravity〉的「可公開任意數量的〈ときのそら〉與〈AZKi〉，」那麼可以公開hSD01-013〈SorAZ〉並將其加入手牌嗎？",
+        "answer": "可以，可以這麼做。即使卡名稱不符合，只要該卡具有如「此ホロ成員同時視為〈ときのそら〉與〈AZKi〉」之類的額外效果，也視為符合條件。",
+        "question": "hSD01-021〈First Gravity〉的效果「公開任意張〈ときのそら〉與〈AZKi〉，」中，是否可以公開hSD01-013〈SorAZ〉並將其加入手牌？",
         "related_cards": {
           "card_number": [
             "hSD01-021",
@@ -637,10 +704,18 @@
     "image_key": "hBP01/hBP01-001_OUR",
     "life": 5,
     "locale": "tc",
-    "name": "天音かなた",
+    "name": "天音彼方",
+    "original": {
+      "art_names": [],
+      "name": "天音かなた",
+      "oshi_skill_name": "ぎゅっぎゅっ",
+      "sp_oshi_skill_name": "握りつぶしちゃうぞ",
+      "tags": []
+    },
     "oshi_skill": {
-      "effect": "[每回合1次]將對手中央Holomen的剩餘HP變為50。",
-      "name": "ぎゅっぎゅっ",
+      "effect": "[每回合1次]將對手Center Holomen的剩餘HP變成50。",
+      "name": "緊緊抱抱",
+      "timing": "每回合1次",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -655,8 +730,15 @@
         "title": "Q382（2025.06.11）"
       },
       {
-        "answer": "可以，能夠變為50。",
-        "question": "當在裝備了hBP01-118〈あん肝〉的〈ときのそら〉上使用hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」時，該〈ときのそら〉的剩餘HP能變為「50」嗎？",
+        "answer": "是，可以的。",
+        "question": "在hBP01-118〈あん肝〉附著於〈ときのそら〉的情況下，使用了hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」。這種情況下，是否可以將附著有hBP01-118〈あん肝〉的〈ときのそら〉剩餘HP變為「50」？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-118"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-118 ： あん肝]"
+        },
         "title": "Q362（2025.03.11）"
       },
       {
@@ -665,13 +747,27 @@
         "title": "Q327（2025.03.11）"
       },
       {
-        "answer": "不會。hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」並非造成傷害的能力，因此不會觸發hBP01-116〈うぱお〉的能力。",
-        "question": "若對裝備了hBP01-116〈うぱお〉的對手中央Holomen使用hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」，我的中央Holomen會因hBP01-116〈うぱお〉的能力受到特殊傷害嗎？",
+        "answer": "不會。因為hBP01-001〈天音かなた〉的應援技能「ぎゅっぎゅっ」並不是造成傷害的能力，所以不會觸發hBP01-116〈うぱお〉的能力。",
+        "question": "若對附有hBP01-116〈うぱお〉的對手中央Holomen使用hBP01-001〈天音かなた〉的應援技能「ぎゅっぎゅっ」，自己的中央Holomen會因對手的hBP01-116〈うぱお〉能力而受到特殊傷害嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-116"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-116 ： うぱお]"
+        },
         "title": "Q26（2024.09.21）"
       },
       {
-        "answer": "不行。由於該技能並非造成傷害的能力，因此無法對hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」使用hYS01-001〈七詩ムメイ〉的SP推し技能「快速防守」。",
-        "question": "可以對hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」使用hYS01-001〈七詩ムメイ〉的SP推し技能「快速防守」嗎？",
+        "answer": "不，可以使用。由於該技能不是造成傷害的能力，因此無法對 hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」使用 hYS01-001〈七詩ムメイ〉的SP推し技能「快速防禦」的效果。",
+        "question": "可以對 hBP01-001〈天音かなた〉的推し技能〈ぎゅっぎゅっ〉使用 hYS01-001〈七詩ムメイ〉的SP推し技能「快速防禦」嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hYS01-001"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hYS01-001 ： 七詩ムメイ]"
+        },
         "title": "Q25（2024.09.21）"
       },
       {
@@ -685,18 +781,32 @@
         "title": "Q23（2024.09.21）"
       },
       {
-        "answer": "不行。該技能不是造成傷害的能力，因此無法對hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」使用hBP01-027〈ベスティア・ゼータ〉的Gift「V.7」。",
-        "question": "可以對hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」使用hBP01-027〈ベスティア・ゼータ〉的Gift「V.7」嗎？",
+        "answer": "不，不能使用。因為該技能並非造成傷害的能力，所以無法對hBP01-001〈天音かなた〉的推技能「ぎゅっぎゅっ」使用hBP01-027〈ベスティア・ゼータ〉的禮物「V.7」。",
+        "question": "能否對hBP01-001〈天音かなた〉的推技能「ぎゅっぎゅっ」使用hBP01-027〈ベスティア・ゼータ〉的禮物「V.7」？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-027"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-027 ： ベスティア・ゼータ]"
+        },
         "title": "Q22（2024.09.21）"
       },
       {
-        "answer": "不行。hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」並非造成傷害的能力，因此無法使用hBP01-002〈七詩ムメイ〉的推し技能「文明的守護者」。",
-        "question": "在對手回合中，當我方持有#Promise的Holomen因hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」剩餘HP變為50時，能否使用hBP01-002〈七詩ムメイ〉的推し技能「文明的守護者」使該Holomen的傷害減少50？",
+        "answer": "不，不能。因為 hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」並不是造成傷害的能力，所以不能使用 hBP01-002〈七詩ムメイ〉的推し技能「文明的守護者」。",
+        "question": "在對手回合中，當因 hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」使我的帶有#Promise的Holomen剩餘HP變為50時，能否使用 hBP01-002〈七詩ムメイ〉的推し技能「文明的守護者」讓該Holomen的傷害減少50？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-001",
+            "hBP01-002"
+          ],
+          "raw_html": "[hBP01-001 ： 天音かなた]\n[hBP01-002 ： 七詩ムメイ]"
+        },
         "title": "Q21（2024.09.21）"
       },
       {
-        "answer": "不會發動。因為hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」是指定剩餘HP的能力，並非回復HP。",
-        "question": "若對剩餘HP為40且裝備了〈石之斧〉的對手Holomen使用hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」，當其HP變為50時，〈石之斧〉的「當此Holomen回復時」能力會發動嗎？",
+        "answer": "不會觸發。hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」是指定剩餘HP的能力，並非回復HP。",
+        "question": "對剩餘HP40且裝備〈石の斧〉的對手Holomen使用hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」時，當剩餘HP變為50時，〈石の斧〉的「當這位Holomen回復時」的能力會觸發嗎？",
         "title": "Q20（2024.09.21）"
       },
       {
@@ -712,8 +822,9 @@
     ],
     "rarity_code": "OUR",
     "sp_oshi_skill": {
-      "effect": "[每場遊戲1次]這回合期間，使我方1位Holomen的Arts +50。若該Holomen的顏色為白色，則再額外使該Holomen的Arts +50。",
-      "name": "握りつぶしちゃうぞ",
+      "effect": "[每場對戰1次]在這個回合期間，自己的1名holomen的藝術+50。當該holomen的顏色為白色時，則再使其藝術+50。",
+      "name": "我要把你捏碎喔",
+      "timing": "每場對戰1次",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -734,65 +845,144 @@
     "image_key": "hBP01/hBP01-006_SEC",
     "life": 5,
     "locale": "tc",
-    "name": "小鳥遊キアラ",
+    "name": "小鳥遊琪亞拉",
+    "original": {
+      "art_names": [],
+      "name": "小鳥遊キアラ",
+      "oshi_skill_name": "フェニックステール",
+      "sp_oshi_skill_name": "Rise from the ashes",
+      "tags": []
+    },
     "oshi_skill": {
-      "effect": "[每回合1次]將自己檔案區域中的1張ホロメン加入手牌。",
-      "name": "鳳凰之尾",
+      "effect": "[每回合1次]將自己歸檔中的1張Holo成員返回手牌。",
+      "name": "鳳凰尾",
       "timing": "每回合1次",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
       {
-        "answer": "可以。因為被擊倒的ホロメン會被視為擁有所有顏色的ホロメン。",
-        "question": "當自己的推しホロメン是hBP01-006〈小鳥遊キアラ〉時，對手的hBP08-110〈Takodachi〉附於〈一伊那尓栖〉，該〈一伊那尓栖〉擊倒了自己原本顏色不是紅色的ホロメン。在這種情況下，可以使用hBP01-006〈小鳥遊キアラ〉的推し技能「Rise from the ashes」嗎？",
+        "answer": "可以，因為倒下的Holomem被視為擁有所有顏色的Holomem，因此可以使用。",
+        "question": "當自己的推Holomem是hBP01-006〈小鳥遊キアラ〉時，若對手的hBP08-110〈Takodachi〉附着於〈一伊那尓栖〉之上，而該〈一伊那尓栖〉使自己原本顏色不是紅色的Holomem倒下。在這種情況下，可以使用hBP01-006〈小鳥遊キアラ〉的推技能「Rise from the ashes」嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-110"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-110 ： Takodachi]"
+        },
         "title": "Q689（2026.06.12）"
       },
       {
-        "answer": "可以。因為被擊倒的ホロメン會被視為擁有所有顏色的ホロメン。",
-        "question": "當自己的推しホロメン是hBP01-006〈小鳥遊キアラ〉時，對手使用了hBP08-074〈一伊那尓栖〉的藝術「ネクロ・エリミネーション!!」的能力，使自己原本顏色不是紅色的ホロメン變為擁有所有顏色的狀態。之後該ホロメン被擊倒時，可以使用hBP01-006〈小鳥遊キアラ〉的推し技能「Rise from the ashes」嗎？",
-        "title": "Q673（2026.06.12）"
+        "answer": "會受到的生命傷害為1。[6/26更新]6/12（五）刊載時的內容有誤，特此更正並致歉。",
+        "question": "當自己的推しホロメン是hBP01-006〈小鳥遊キアラ〉，且裝備了hBP08-103〈ホロマント〉的紅色ホロメン倒下時，使用hBP01-006〈小鳥遊キアラ〉的推し技能「Rise from the ashes」能力，將要減少的生命值-1。這種情況下，會受到多少生命傷害？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-103",
+            "hBP07-044"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-103 ： ホロマント]\n[hBP07-044 ： 尾丸ポルカ]"
+        },
+        "title": "Q682（2026.06.26）"
       },
       {
-        "answer": "可以。因為被擊倒的ホロメン會被視為擁有所有顏色的ホロメン。",
-        "question": "當自己的推しホロメン是hBP01-006〈小鳥遊キアラ〉時，對手使用了hBP08-073〈一伊那尓栖〉的合作效果「要乖乖聽話喔？」的能力，使自己原本顏色不是紅色的ホロメン變為擁有所有顏色的狀態。之後該ホロメン被擊倒時，可以使用hBP01-006〈小鳥遊キアラ〉的推し技能「Rise from the ashes」嗎？",
-        "title": "Q669（2026.06.12）"
+        "answer": "可以，因為倒下的holomen被視為持有所有顏色的holomen，所以可以使用。",
+        "question": "自己的推的holomen是hBP01-006〈小鳥遊キアラ〉時，對手使用了hBP08-074〈一伊那尓栖〉的藝術「ネクロ・エリミネーション!!」的能力，讓自己原本顏色不是紅色的holomen成為持有所有顏色的holomen。之後，若那位holomen倒下時，可以使用hBP01-006〈小鳥遊キアラ〉的推技能「Rise from the ashes」嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-074"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-074 ： 一伊那尓栖]"
+        },
+        "title": "Q673（2026.06.26）"
       },
       {
-        "answer": "可以。因為被擊倒的ホロメン會被視為擁有所有顏色的ホロメン。",
-        "question": "當自己的推しホロメン是hBP01-006〈小鳥遊キアラ〉時，對手使用了hBP08-068〈一伊那尓栖〉的合作效果「きタコれ！」的能力，使自己原本顏色不是紅色的ホロメン變為擁有所有顏色的狀態。之後該ホロメン被擊倒時，可以使用hBP01-006〈小鳥遊キアラ〉的推し技能「Rise from the ashes」嗎？",
-        "title": "Q663（2026.06.12）"
+        "answer": "可以。因為倒下的ホロメン會視為持有所有顏色的ホロメン，所以可以使用。",
+        "question": "當自己的推しホロメン是hBP01-006〈小鳥遊キアラ〉時，對手使用了hBP08-073〈一伊那尓栖〉的合作效果「お行儀よくしてね？」能力，讓自己原本顏色不是紅色的ホロメン變成持有所有顏色的ホロメン。之後，若該ホロメン倒下，可以使用hBP01-006〈小鳥遊キアラ〉的推し技能「Rise from the ashes」嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-073"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-073 ： 一伊那尓栖]"
+        },
+        "title": "Q669（2026.06.26）"
       },
       {
-        "answer": "可以。因為被擊倒的ホロメン會被視為擁有所有顏色的ホロメン。",
-        "question": "當自己的推しホロメン是hBP01-006〈小鳥遊キアラ〉時，對手使用了hBP08-006〈一伊那尓栖〉的推し技能「Ina'nis的色彩」的能力，使自己原本顏色不是紅色的ホロメン變為擁有所有顏色的狀態。之後該ホロメン被擊倒時，可以使用hBP01-006〈小鳥遊キアラ〉的推し技能「Rise from the ashes」嗎？",
-        "title": "Q647（2026.06.12）"
+        "answer": "可以，因為倒下的holomen會視為持有所有顏色的holomen，所以可以使用。",
+        "question": "當自己的推しholomen是hBP01-006〈小鳥遊キアラ〉時，對手使用了hBP08-068〈一伊那尓栖〉的合作效果「きタコれ！」能力，使自己原本顏色不是紅色的holomen變成持有所有顏色的holomen。之後，若那個holomen倒下的話，可以使用hBP01-006〈小鳥遊キアラ〉的推し技能「Rise from the ashes」嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-068"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-068 ： 一伊那尓栖]"
+        },
+        "title": "Q663（2026.06.26）"
       },
       {
-        "answer": "可以。如果檔案區域中沒有ホロメン，作為成本放入了2張ホロパワー後依然沒有ホロメン的話，則不進行任何動作並結束效果處理。",
-        "question": "作為使用hBP01-006〈小鳥遊キアラ〉的推し技能「鳳凰之尾」的成本，將2張ホロパワー放進檔案區域。如果當中有ホロメン，是否可以透過「將自己檔案區域的1張ホロメン加入手牌」這個效果，把剛才放入的ホロメン取回手牌？",
+        "answer": "可以，因為倒下的holomen會視為持有所有顏色的holomen，所以可以使用。",
+        "question": "自己的推Holomen為hBP01-006〈小鳥遊キアラ〉時，對手使用了hBP08-006〈一伊那尓栖〉的推技能「Ina'nisの色彩」，使自己原本顏色不是紅色的holomen成為持有所有顏色的holomen。之後，若該holomen倒下的話，可以使用hBP01-006〈小鳥遊キアラ〉的推技能「Rise from the ashes」嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006",
+            "hBP08-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]\n[hBP08-006 ： 一伊那尓栖]"
+        },
+        "title": "Q647（2026.06.26）"
+      },
+      {
+        "answer": "可以，能返回。若檔案區域中沒有ホロメン，即使作為代價將2張ホロパワー放入檔案區域後仍然沒有ホロメン，則不做任何事，直接結束能力的處理。",
+        "question": "作為使用hBP01-006〈小鳥遊キアラ〉的推し技能「フェニックステール」的代價，將2張ホロパワー放入了檔案區域。若其中有ホロメン，是否可以透過「將自己的檔案區域中的1張ホロメン返回手牌」這個效果，將作為代價放入檔案區域的ホロメン返回手牌？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]"
+        },
         "title": "Q232（2024.10.30）"
       },
       {
-        "answer": "由於hBP01-071〈尾丸ポルカ〉的額外能力是具有替換效果的持續能力，因此被擊倒時的生命傷害為2。此時，hBP01-006〈小鳥遊キアラ〉的SP推し技能「Rise from the ashes」會讓受到的生命傷害減少1點，因此被擊倒時的生命傷害變為「1」。",
-        "question": "自己的Buzzホロメン hBP01-071〈尾丸ポルカ〉被擊倒。之後使用了hBP01-006〈小鳥遊キアラ〉的SP推し技能「Rise from the ashes」，此時受到的生命傷害會是多少？",
+        "answer": "由於hBP01-071〈尾丸ポルカ〉的額外能力是具有替代效果的持續能力，因此倒下時的生命傷害為2。在這個狀態下，對該生命傷害再適用hBP01-006〈小鳥遊キアラ〉的SP推し技能「Rise from the ashes」能力，將生命傷害減少1，所以倒下時的生命傷害會變成「1」。",
+        "question": "自己的Buzzホロメン，hBP01-071〈尾丸ポルカ〉倒下了。之後，若使用hBP01-006〈小鳥遊キアラ〉的SP推し技能「Rise from the ashes」，會受到多少生命傷害？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]"
+        },
         "title": "Q231（2024.10.30）"
       },
       {
-        "answer": "可以使用。ホロメン或推しホロメン的能力，即使無法選擇指定的卡片，也可以發動使用。",
-        "question": "hBP01-006〈小鳥遊キアラ〉的推し技能「鳳凰之尾」在檔案區域沒有ホロメン的情況下也能使用嗎？",
+        "answer": "可以使用。ホロメン或推しホロメン的能力，即使無法選擇指定的卡牌也可以使用。",
+        "question": "hBP01-006〈小鳥遊キアラ〉的推し技能「フェニックステール」，即使檔案區域中沒有ホロメン也可以使用嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]"
+        },
         "title": "Q40（2024.09.21）"
       },
       {
-        "answer": "不會。返回手牌的只有ホロメン本體。附於該ホロメン的應援與支援卡，會照常被放入檔案區域。",
-        "question": "當使用hBP01-006〈小鳥遊キアラ〉的SP推し技能「Rise from the ashes」時，附於要返回手牌的ホロメン上的應援是否也會一起返回手牌？",
+        "answer": "不會，加入手牌的只有ホロメン。附在ホロメン上的エール與支援卡，會照常放入檔案區域。",
+        "question": "使用hBP01-006〈小鳥遊キアラ〉的SP推し技能「Rise from the ashes」能力時，附在返回手牌的ホロメン上的エール，也會一併加入手牌嗎？",
+        "related_cards": {
+          "card_number": [
+            "hBP01-006"
+          ],
+          "raw_html": "[hBP01-006 ： 小鳥遊キアラ]"
+        },
         "title": "Q39（2024.09.21）"
       }
     ],
     "rarity_code": "SEC",
     "sp_oshi_skill": {
-      "effect": "[每場遊戲1次]在對手的回合中，當自己的紅色ホロメン被擊倒時可以使用：自己承受的生命減少傷害-1。此外，選擇被擊倒的1位，將該ホロメン以及與之重疊的所有ホロメン全部加入手牌。",
-      "name": "Rise from the ashes",
-      "timing": "每場遊戲1次",
+      "effect": "[每場對戰1次]可在對手的回合中，自己的紅色holomen倒下時使用：自己將要減少的生命值-1。再者，選擇那名倒下的holomen 1名，將包含該holomen在內重疊的所有holomen全部返回手牌。",
+      "name": "浴火重生",
+      "timing": "每場對戰1次",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -800,15 +990,14 @@
   {
     "arts": [
       {
-        "cost_count": 4,
         "cost_types": [
           "white",
           "white",
           "white"
         ],
         "damage": 100,
-        "effect": "使用此招式讓對手的Holomen倒下時，如果造成的傷害比剩餘HP多出50以上，對手的生命-1。",
-        "name": "♰漆黒の翼♰",
+        "effect": "當以這個藝術使對手的holomen倒下時，若給予的傷害超過其剩餘HP 50以上，則對手的生命值-1。",
+        "name": "♰漆黑之翼♰",
         "special_targets": [
           "red"
         ],
@@ -836,13 +1025,25 @@
     "illustrator": "うなぽっぽ",
     "image_key": "hBP01/hBP01-014_UR",
     "keyword": {
-      "effect": "對對手的中央Holomen造成50點特殊傷害。",
-      "name": "堕ちた天使",
+      "effect": "對對手的中心holomen造成50點特殊傷害。",
+      "name": "墮天使",
       "type": "コラボエフェクト",
       "type_code": "collab_effect"
     },
     "locale": "tc",
-    "name": "天音かなた",
+    "name": "天音彼方",
+    "original": {
+      "art_names": [
+        "♰漆黒の翼♰"
+      ],
+      "keyword_name": "堕ちた天使",
+      "name": "天音かなた",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#歌"
+      ]
+    },
     "qa_items": [
       {
         "answer": "是的，可以造成傷害。由於hBP01-014〈天音かなた〉受到了傷害，觸發了hBP01-116〈うぱお〉的「當裝備此吉祥物的Holomen受到傷害時」的能力，並進入待機狀態。接著在規則處理的倒下流程中，將hBP01-014〈天音かなた〉與hBP01-116〈うぱお〉送入檔案區域，並在檢查時機解決先前已待機的「當裝備此吉祥物的Holomen受到傷害時」的效果。",
@@ -883,11 +1084,11 @@
     "tags": [
       "#JP",
       "#4期生",
-      "#歌"
+      "#歌唱"
     ]
   },
   {
-    "ability_text": "這個工具裝備的Holomen，Arts+10。\n\n◆若裝備在1st以上的〈星街すいせい〉，則追加能力：\n當這個工具所裝備的Holomen讓對手的Holomen倒下時，從自己應援牌庫頂抽1張牌，送給該Holomen。\n\n工具每位Holomen只能裝備1張。",
+    "ability_text": "此工具所附加的 holomen 的 Arts+10。\n\n◆若附加於 1st 以上的〈星街彗星〉，則追加能力\n當此工具所附加的 holomen 使對手的 holomen Down 時，將自己 Cheer 牌庫頂的 1 張送到此 holomen。\n\n工具每位自己的 holomen 只能附加 1 張。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP01-115",
@@ -900,11 +1101,16 @@
     "illustrator": "JinArt こばやかわやまと",
     "image_key": "hBP01/hBP01-115_U",
     "locale": "tc",
-    "name": "星街すいせいのマイク",
+    "name": "星街彗星的麥克風",
+    "original": {
+      "art_names": [],
+      "name": "星街すいせいのマイク",
+      "tags": []
+    },
     "qa_items": [
       {
-        "answer": "是，已達成。",
-        "question": "hBP01-115〈すいせいのマイク〉裝備在hBP01-079〈星街すいせい〉上時，透過Bloom Effect的特殊傷害讓對手的Holomen倒下。此時，hBP01-115〈すいせいのマイク〉的「當這個工具所裝備的Holomen讓對手的Holomen倒下時」的條件是否達成？",
+        "answer": "是，滿足。",
+        "question": "附有hBP01-115〈星街すいせいのマイク〉的hBP01-079〈星街すいせい〉，以Bloom效果的特殊傷害使對手的Holomen倒下了。是否滿足hBP01-115〈星街すいせいのマイク〉的「當附有這個工具的Holomen使對手的Holomen倒下時」這個條件？",
         "related_cards": {
           "card_number": [
             "hBP01-115",
@@ -912,7 +1118,7 @@
           ],
           "raw_html": "[hBP01-115 ： 星街すいせいのマイク]\n[hBP01-079 ： 星街すいせい]"
         },
-        "title": "Q207（2024.10.04）"
+        "title": "Q207（2026.06.26）"
       },
       {
         "answer": "不，並不適用。",
@@ -930,7 +1136,7 @@
     "tags": []
   },
   {
-    "ability_text": "這個吉祥物所附著的Holomen的Arts+10。\n\n◆如果附著在〈天音かなた〉上，則追加能力\n[每回合1次] 在對手的回合中，當這個吉祥物所附著的Holomen受到傷害時，對對手的中央Holomen造成20點特殊傷害。\n\n吉祥物每位自己的Holomen只能附著1張。",
+    "ability_text": "這個吉祥物所附屬的Holomen的藝能+10。\n\r\n◆若附屬於〈天音彼方〉，追加能力\r\n[每回合1次]在對手的回合中，當這個吉祥物所附屬的Holomen受到傷害時，對對手的Center Holomen造成特殊傷害20。\n\r\n吉祥物每位自己的Holomen最多只能附屬1張。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP01-116",
@@ -947,8 +1153,8 @@
     "name": "うぱお",
     "qa_items": [
       {
-        "answer": "處理的優先順序為：首先處理規則上必須優先解決的事項（例如擊倒處理等）。接著由回合玩家優先處理需要解決的能力（例如使用時發動的能力等）。最後，非回合玩家需要解決的能力（例如受到傷害時發動的能力等）才會全部處理。由於hBP01-116〈うぱお〉屬於非回合玩家要處理的能力，因此會在最後才處理。",
-        "question": "我使用自己的hBP01-081〈星街すいせい〉的Arts「輝く彗星」，讓附有hBP01-116〈うぱお〉的中央Holomen〈天音かなた〉擊倒。之後進行擊倒處理，再使用自己的hBP01-007〈星街すいせい〉的SP應援技能「シューティングスター」，讓對手的後排Holomen中附有hBP01-116〈うぱお〉的〈天音かなた〉擊倒。這種情況下，雙方的hBP01-116〈うぱお〉能力是何時處理的？",
+        "answer": "處理順序為：首先優先處理規則上必須執行的處理（例如倒下處理等），接著優先處理回合玩家這邊應該執行的能力（例如使用時觸發的能力），最後才處理非回合玩家這邊應該執行的能力（例如受到傷害時觸發的能力）。由於hBP01-116〈うぱお〉屬於非回合玩家的能力，因此會在最後處理。",
+        "question": "自己使用hBP01-081〈星街すいせい〉的藝術「輝く彗星」讓裝備有hBP01-116〈うぱお〉的中央Holomen〈天音かなた〉倒下，進行倒下處理後，再使用自己的hBP01-007〈星街すいせい〉的SP推し技能「シューティングスター」讓對手後排裝備有hBP01-116〈うぱお〉的後排Holomen〈天音かなた〉倒下。這種情況下，hBP01-116〈うぱお〉的能力會在什麼時候處理？",
         "related_cards": {
           "card_number": [
             "hBP01-007",
@@ -971,8 +1177,8 @@
         "title": "Q286（2025.01.17）"
       },
       {
-        "answer": "可以。由於hBP01-014〈天音かなた〉受到傷害，hBP01-116〈うぱお〉的「當這個吉祥物所附著的Holomen受到傷害時」的能力會被觸發並進入待機狀態。之後在規則處理的擊倒流程中，將hBP01-014〈天音かなた〉與hBP01-116〈うぱお〉送入檔案區，並在檢查時機解決待機狀態的「當這個吉祥物所附著的Holomen受到傷害時」效果。",
-        "question": "當自己的生命值在2以上時，附有hBP01-116〈うぱお〉的hBP01-014〈天音かなた〉被對手中央Holomen的Arts擊倒，是否能透過hBP01-116〈うぱお〉的能力對對手的中央Holomen造成傷害？",
+        "answer": "是的，可以造成傷害。由於hBP01-014〈天音かなた〉受到了傷害，觸發了hBP01-116〈うぱお〉的「當裝備此吉祥物的Holomen受到傷害時」的能力，並進入待機狀態。接著在規則處理的倒下流程中，將hBP01-014〈天音かなた〉與hBP01-116〈うぱお〉送入檔案區域，並在檢查時機解決先前已待機的「當裝備此吉祥物的Holomen受到傷害時」的效果。",
+        "question": "當自己的生命為2以上時，裝備了hBP01-116〈うぱお〉的hBP01-014〈天音かなた〉因對手中央Holomen的招式而倒下，是否能透過hBP01-116〈うぱお〉的能力對對手的中央Holomen造成傷害？",
         "related_cards": {
           "card_number": [
             "hBP01-014",
@@ -994,8 +1200,8 @@
         "title": "Q212（2024.10.04）"
       },
       {
-        "answer": "不能。當HP降至0時，會立即進行規則處理的「擊倒處理」，此時自己的生命值也會變為0，未能解決待機中的〈うぱお〉效果，就會立刻敗北。",
-        "question": "當自己的生命值為1時，附有hBP01-116〈うぱお〉的hBP01-013〈天音かなた〉受到對手Arts傷害而被擊倒，是否能透過hBP01-116〈うぱお〉的能力對對手Holomen造成特殊傷害？",
+        "answer": "不，不能造成傷害。當HP變為0時，會依照規則進行「倒下處理」，自己的生命值會變為0，因此在〈うぱお〉的效果尚未結算前，自己便立即敗北。",
+        "question": "當自己的生命值為1，且裝備有hBP01-116〈うぱお〉的hBP01-013〈天音かなた〉被對手的Arts造成傷害而倒下時，可以透過hBP01-116〈うぱお〉的能力對對手的Holomen造成特殊傷害嗎？",
         "related_cards": {
           "card_number": [
             "hBP01-116",
@@ -1044,7 +1250,7 @@
     "tags": []
   },
   {
-    "ability_text": "在對手的回合中，若裝備了此應援的Holomen被擊倒時，從自己應援牌庫頂抽1張，送到自己的〈アキ・ローゼンタール〉上。\n\n此應援只能裝備在自己的〈アキ・ローゼンタール〉上，同一角色可以裝備任意張數。",
+    "ability_text": "在對手回合中，附有這個粉絲的Holomen倒下時，將自己的應援牌庫上方1張牌送給自己的〈亞綺・羅森塔爾〉。\n\n這個粉絲只能附給自己的〈亞綺・羅森塔爾〉，且每人可附任意張。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP01-122",
@@ -1057,13 +1263,18 @@
     "illustrator": "JinArt KABAKURA",
     "image_key": "hBP01/hBP01-122_C",
     "locale": "tc",
-    "name": "ロゼ隊",
+    "name": "Rose-tai",
+    "original": {
+      "art_names": [],
+      "name": "ロゼ隊",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
   },
   {
-    "ability_text": "■當Holomen離開舞台時，將該Holomen的所有應援存入檔案區域。\n■當Holomen進行接力時，將該Holomen指定數量的應援存入檔案區域。",
+    "ability_text": "■當holomen離開舞台時，將該holomen的所有應援存檔。\n■當holomen進行Baton Touch時，將該holomen指定數量的應援存檔。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hY01-001",
@@ -1085,7 +1296,12 @@
     "illustrator": "はずき",
     "image_key": "COMMON/hY01-001_C",
     "locale": "tc",
-    "name": "白エール",
+    "name": "白色應援",
+    "original": {
+      "art_names": [],
+      "name": "白エール",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
@@ -1107,9 +1323,16 @@
     "life": 5,
     "locale": "tc",
     "name": "七詩ムメイ",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "ホワイトバトン",
+      "sp_oshi_skill_name": "クイックガード",
+      "tags": []
+    },
     "oshi_skill": {
-      "effect": "[每回合1次]本回合中，我方的白色合作Holomen的藝能+20。",
-      "name": "白色指揮棒",
+      "effect": "[每回合1次]在這個回合期間，自己的白色合作holomen的藝術+20。",
+      "name": "白色接力棒",
+      "timing": "每回合1次",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
@@ -1128,8 +1351,9 @@
     ],
     "rarity_code": "OC",
     "sp_oshi_skill": {
-      "effect": "[每場遊戲1次]在對手的回合中，當我方的白色Holomen要從對手那裡受到傷害時可以使用：該Holomen所受到的傷害-20。",
+      "effect": "[每場對戰1次]可在對手的回合中，自己的白色holomen將受到對手傷害時使用：那1名holomen將受到的傷害-20。",
       "name": "快速防禦",
+      "timing": "每場對戰1次",
       "timing_code": "once_per_game"
     },
     "tags": []
@@ -1137,72 +1361,6 @@
   {
     "arts": [
       {
-        "cost_count": 1,
-        "cost_types": [
-          "white"
-        ],
-        "damage": 10,
-        "effect": "若此回合你已經使用過支援卡，這個Arts的傷害+20。",
-        "is_plus": true,
-        "name": "Oh,Hi"
-      }
-    ],
-    "baton_touch_count": 1,
-    "baton_touch_types": [
-      "null"
-    ],
-    "bloom_level_code": "debut",
-    "card_number": "hBP01-015",
-    "card_sets": [
-      "PRカード"
-    ],
-    "card_type_code": "character",
-    "color_codes": [
-      "white"
-    ],
-    "extra": "此成員卡可在牌組中放入任意張數",
-    "hp": 90,
-    "id": "176",
-    "image_key": "hPR/hBP01-015_P",
-    "locale": "tc",
-    "name": "七詩ムメイ",
-    "qa_items": [
-      {
-        "answer": "會的，Arts的傷害會增加。無論骰子結果為何，支援卡的效果仍已發動，因此視為已使用支援卡，傷害會增加。",
-        "question": "若使用 hSD01-020〈ホロリスの輪〉時，骰子點數為 2 以下，再使用 hBP01-015〈七詩ムメイ〉的Arts「Oh,Hi」，傷害會增加嗎？",
-        "related_cards": {
-          "card_number": [
-            "hBP01-015",
-            "hSD01-020"
-          ],
-          "raw_html": "[hBP01-015 ： 七詩ムメイ]\n[hSD01-020 ： ホロリスの輪]"
-        },
-        "title": "Q50（2024.09.21）"
-      },
-      {
-        "answer": "不會，傷害不會增加。所謂使用支援卡，是指從手牌中打出該卡。",
-        "question": "如果場上已有裝備在自己成員身上並已發揮效果的工具或吉祥物卡，這時 hBP01-015〈七詩ムメイ〉使用Arts〈Oh,Hi〉，傷害會增加嗎？",
-        "related_cards": {
-          "card_number": [
-            "hBP01-015"
-          ],
-          "raw_html": "[hBP01-015 ： 七詩ムメイ]"
-        },
-        "title": "Q49（2024.09.21）"
-      }
-    ],
-    "rarity_code": "P",
-    "tags": [
-      "#EN",
-      "#Promise",
-      "#トリ",
-      "#絵"
-    ]
-  },
-  {
-    "arts": [
-      {
-        "cost_count": 3,
         "cost_types": [
           "blue",
           "null"
@@ -1217,7 +1375,6 @@
         ]
       },
       {
-        "cost_count": 5,
         "cost_types": [
           "blue",
           "blue",
@@ -1225,8 +1382,8 @@
           "null"
         ],
         "damage": 100,
-        "effect": "將此Holomen的2張藍色應援送入檔案區域：對對手的中心Holomen與1位後排Holomen各造成30點特殊傷害。",
-        "name": "おかゆ～",
+        "effect": "可將此Holo成員的2張藍色應援存入存檔區：對對手的中心Holo成員與1位後備Holo成員造成特殊傷害30。",
+        "name": "粥粥～",
         "special_targets": [
           "white"
         ],
@@ -1254,19 +1411,30 @@
     "illustrator": "江田藤",
     "image_key": "hBP02/hSD03-009_SR",
     "locale": "tc",
-    "name": "猫又おかゆ",
+    "name": "貓又小粥",
+    "original": {
+      "art_names": [
+        null,
+        "おかゆ～"
+      ],
+      "name": "猫又おかゆ",
+      "tags": [
+        "#JP",
+        "#ゲーマーズ",
+        "#ケモミミ"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
-      "#ゲーマーズ",
-      "#ケモミミ"
+      "#Gamers",
+      "#獸耳"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 3,
         "cost_types": [
           "purple",
           "null"
@@ -1281,16 +1449,15 @@
         ]
       },
       {
-        "cost_count": 4,
         "cost_types": [
           "purple",
           "purple",
           "null"
         ],
         "damage": 60,
-        "effect": "這回合中你每使用過1張活動牌，此Art就+40。",
+        "effect": "這個回合自己每使用過1張活動卡，這個藝術便+40。",
         "is_plus": true,
-        "name": "あくとっ",
+        "name": "Acutto",
         "special_targets": [
           "green"
         ],
@@ -1317,7 +1484,15 @@
     "illustrator": "saihate",
     "image_key": "hBP02/hSD04-009_SR",
     "locale": "tc",
-    "name": "癒月ちょこ",
+    "name": "癒月巧可",
+    "original": {
+      "art_names": [
+        null,
+        "あくとっ"
+      ],
+      "name": "癒月ちょこ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
@@ -1327,7 +1502,7 @@
     ]
   },
   {
-    "ability_text": "■當ホロメン要離開舞台時，將該ホロメン的所有應援卡放進檔案區域。\n■當ホロメン進行接力時，將該ホロメン指定數量的應援卡放進檔案區域。",
+    "ability_text": "■當holomen離開舞台時，將該holomen的所有應援存檔。\n■當holomen進行Baton Touch時，將該holomen指定數量的應援存檔。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hY01-003",
@@ -1342,7 +1517,12 @@
     "illustrator": "リズ",
     "image_key": "hBP02/hY01-003_SY",
     "locale": "tc",
-    "name": "白エール",
+    "name": "白色應援",
+    "original": {
+      "art_names": [],
+      "name": "白エール",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "SY",
     "tags": []
@@ -1350,12 +1530,11 @@
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "null"
         ],
         "damage": 20,
-        "name": "ガハw"
+        "name": "嘎哈w"
       }
     ],
     "baton_touch_count": 1,
@@ -1376,41 +1555,51 @@
     "illustrator": "Watersnake",
     "image_key": "hSD05/hSD05-013_U",
     "keyword": {
-      "effect": "可以將自己舞台上的1張應援，轉移給除這位Holomen以外的自己的Holomen。",
-      "name": "クレッシェンドな日々",
+      "effect": "可以將自己舞台上的1張應援改附到自己其他Holomen上，但不能附給這位Holomen。",
+      "name": "漸強的每一天",
       "type": "コラボエフェクト",
       "type_code": "collab_effect"
     },
     "locale": "tc",
-    "name": "音乃瀬奏",
+    "name": "音乃瀨奏",
+    "original": {
+      "art_names": [
+        "ガハw"
+      ],
+      "keyword_name": "クレッシェンドな日々",
+      "name": "音乃瀬奏",
+      "tags": [
+        "#DEV_IS",
+        "#ReGLOSS",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "U",
     "tags": [
       "#DEV_IS",
       "#ReGLOSS",
-      "#歌"
+      "#歌唱"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "null",
           "null"
         ],
         "damage": 40,
-        "effect": "從自己的應援牌庫中公開1張[紅色應援或藍色應援]，送給自己具有#Advent的Holomen。然後洗牌應援牌庫。",
-        "name": "魔界乃番犬シスターズ"
+        "effect": "從自己的應援牌庫公開[紅色應援或藍色應援]1張，附加到自己持有#Advent的Holo成員上。然後將應援牌庫洗牌。",
+        "name": "魔界看門犬姐妹"
       },
       {
-        "cost_count": 2,
         "cost_types": [
           "blue",
           "red"
         ],
         "damage": 60,
-        "name": "2人揃ってFUWAMOCOです！"
+        "name": "我們兩個合起來就是FUWAMOCO！"
       }
     ],
     "baton_touch_count": 1,
@@ -1426,17 +1615,28 @@
     "color_codes": [
       "blue_red"
     ],
-    "extra": "此Holomen同時視為〈フワワ・アビスガード〉與〈モココ・アビスガード〉。",
+    "extra": "此Holo成員也視為〈Fuwawa Abyssguard〉〈Mococo Abyssguard〉",
     "hp": 150,
     "id": "614",
     "illustrator": "© 2016 COVER Corp. MariA",
     "image_key": "hBP03/hBP03-050_R",
     "locale": "tc",
     "name": "FUWAMOCO",
+    "original": {
+      "art_names": [
+        "魔界乃番犬シスターズ",
+        "2人揃ってFUWAMOCOです！"
+      ],
+      "tags": [
+        "#EN",
+        "#Advent",
+        "#ケモミミ"
+      ]
+    },
     "qa_items": [
       {
-        "answer": "表示作為卡名，擁有〈フワワ・アビスガード〉、〈モココ・アビスガード〉與〈FUWAMOCO〉這三個名稱。",
-        "question": "hBP03-050〈FUWAMOCO〉的額外能力「此Holomen同時視為〈フワワ・アビスガード〉與〈モココ・アビスガード〉。」是什麼意思？",
+        "answer": "這表示此卡同時擁有〈フワワ・アビスガード〉、〈モココ・アビスガード〉與〈FUWAMOCO〉這三個卡名。",
+        "question": "hBP03-050〈FUWAMOCO〉的額外能力「此Holomen同時視為〈フワワ・アビスガード〉及〈モココ・アビスガード〉」，這是什麼意思？",
         "related_cards": {
           "card_number": [
             "hBP03-050"
@@ -1470,8 +1670,8 @@
         "title": "Q404（2025.06.11）"
       },
       {
-        "answer": "是的，會增加。",
-        "question": "hBP04-049〈ムーナ・ホシノヴァ〉的Arts「Shining Moon」的能力，在自己的其他Holomen只有hBP03-050〈FUWAMOCO〉時，也會「+50」嗎？",
+        "answer": "是，會的。",
+        "question": "hBP04-049〈ムーナ・ホシノヴァ〉的技能「Shining Moon」效果中，若自己的其他Holomen只有hBP03-050〈FUWAMOCO〉時，也會「+50」嗎？",
         "related_cards": {
           "card_number": [
             "hBP04-049",
@@ -1495,8 +1695,8 @@
         "title": "Q359（2025.03.11）"
       },
       {
-        "answer": "是的，可以。hBP03-050〈FUWAMOCO〉同時具有紅與藍的屬性，因此符合條件。",
-        "question": "當自己的推しHolomen是hBP03-004〈FUWAMOCO〉時，能否用hBP03-084〈ゴージャスパソコン〉將hBP03-050〈FUWAMOCO〉加入手牌？",
+        "answer": "是的，可以。hBP03-050〈FUWAMOCO〉同時為紅與藍，因此符合條件。",
+        "question": "當我的推しHolomen是hBP03-004〈FUWAMOCO〉時，可以用hBP03-084〈ゴージャスパソコン〉將hBP03-050〈FUWAMOCO〉加入手牌嗎？",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -1520,8 +1720,8 @@
         "title": "Q322（2025.03.11）"
       },
       {
-        "answer": "是的，會加上。即使沒有該卡名的卡牌，只要有額外效果「此Holomen同時視為〈フワワ・アビスガード〉與〈モココ・アビスガード〉。」等能以特定卡名處理的角色，也能符合條件。",
-        "question": "hBP03-039〈モココ・アビスガード〉的Arts「毛茸茸的那一位」，在自己Center Holomen是hBP03-050〈FUWAMOCO〉的情況下，也會「+30」嗎？",
+        "answer": "會的。即使卡名本身不符合條件，只要額外效果中有「此Holomen也視為〈フワワ・アビスガード〉〈モココ・アビスガード〉」等能將其視為特定卡名的效果存在時，也能滿足條件。",
+        "question": "hBP03-039〈モココ・アビスガード〉的Arts「もこもこしてる方」，若我方中央Holomen是hBP03-050〈FUWAMOCO〉時，也會獲得「+30」嗎？",
         "related_cards": {
           "card_number": [
             "hBP03-039",
@@ -1532,8 +1732,8 @@
         "title": "Q321（2025.03.11）"
       },
       {
-        "answer": "是的，可以給予。即使沒有該卡名的卡牌，只要有額外效果「此Holomen同時視為〈フワワ・アビスガード〉與〈モココ・アビスガード〉。」等能以特定卡名處理的角色，也能符合條件。",
-        "question": "hBP03-042〈フワワ・アビスガード〉的Bloom Effect「フワ花流水」，在自己舞台上只有hBP03-050〈FUWAMOCO〉時，也能給予特殊傷害「20」嗎？",
+        "answer": "是的，可以造成。即使卡名中沒有符合的名稱，只要額外效果中有「此Holomen同時視為〈フワワ・アビスガード〉及〈モココ・アビスガード〉」，就視為符合條件。",
+        "question": "hBP03-042〈フワワ・アビスガード〉的Bloom效果「花流飛舞」，若舞台上只有我自己的hBP03-050〈FUWAMOCO〉，仍能造成特殊傷害「20」嗎？",
         "related_cards": {
           "card_number": [
             "hBP03-042",
@@ -1544,8 +1744,8 @@
         "title": "Q320（2025.03.11）"
       },
       {
-        "answer": "是的，可以不休息直接移動。即使沒有該卡名的卡牌，只要有額外效果「此Holomen同時視為〈フワワ・アビスガード〉與〈モココ・アビスガード〉。」等能以特定卡名處理的角色，也能符合條件。",
-        "question": "hBP03-039〈モココ・アビスガード〉的Gift「魔界乃番犬之暴走分子」，在自己Center Holomen是hBP03-050〈FUWAMOCO〉的情況下，是否也能不休息直接移動到後衛？",
+        "answer": "會的，會直接移動而不進入休息狀態。即使卡名本身不符合條件，只要額外效果中有「此Holomen也視為〈フワワ・アビスガード〉〈モココ・アビスガード〉」等能將其視為特定卡名的效果存在時，也能滿足條件。",
+        "question": "hBP03-039〈モココ・アビスガード〉的Gift「魔界乃番犬の暴れん坊」，若我方中央Holomen是hBP03-050〈FUWAMOCO〉時，也會不進入休息狀態並移動到後方位置嗎？",
         "related_cards": {
           "card_number": [
             "hBP03-039",
@@ -1584,20 +1784,19 @@
     "tags": [
       "#EN",
       "#Advent",
-      "#ケモミミ"
+      "#獸耳"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "blue",
           "null"
         ],
         "damage": 40,
-        "effect": "當你的推しHolomen是〈星街すいせい〉時，可以將此Holomen的一張藍色應援，改附加到你後排Holomen的〈星街すいせい〉上。",
-        "name": "バーチャルゴースト"
+        "effect": "當自己的推しHolo成員為〈星街彗星〉時，可將這位Holo成員的1張藍色應援改附於自己的後台Holo成員〈星街彗星〉。",
+        "name": "虛擬幽靈"
       }
     ],
     "baton_touch_count": 1,
@@ -1618,40 +1817,50 @@
     "illustrator": "えいひ",
     "image_key": "hBP03/hBP03-044_SR",
     "keyword": {
-      "effect": "查看自己牌庫頂的4張牌，從中公開1張〈星街すいせい〉並加入手牌。將剩餘的牌以任意順序放回牌庫底。",
-      "name": "プラネットステージ",
+      "effect": "查看自己牌庫最上方4張。從中公開1張〈星街彗星〉，加入手牌。然後將剩餘的牌以任意順序放回牌庫底。",
+      "name": "Planet Stage",
       "type": "ブルームエフェクト",
       "type_code": "bloom_effect"
     },
     "locale": "tc",
-    "name": "星街すいせい",
+    "name": "星街彗星",
+    "original": {
+      "art_names": [
+        "バーチャルゴースト"
+      ],
+      "keyword_name": "プラネットステージ",
+      "name": "星街すいせい",
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
       "#0期生",
-      "#歌"
+      "#歌唱"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "purple"
         ],
         "damage": 40,
-        "name": "トワとお家デートしたっていい"
+        "name": "和永遠在家約會也沒關係"
       },
       {
-        "cost_count": 2,
         "cost_types": [
           "purple",
           "null"
         ],
         "damage": 50,
-        "effect": "當自己的後場有持有#歌的Holomen時，對對手的合作Holomen造成20點特殊傷害。",
-        "name": "てんQ"
+        "effect": "當自己有持有#歌唱的後台Holo成員時，給予對手的合作Holo成員特殊傷害20。",
+        "name": "天Q"
       }
     ],
     "baton_touch_count": 1,
@@ -1672,28 +1881,40 @@
     "illustrator": "雨傘ゆん",
     "image_key": "hBP03/hBP03-055_SR",
     "locale": "tc",
-    "name": "常闇トワ",
+    "name": "常闇永遠",
+    "original": {
+      "art_names": [
+        "トワとお家デートしたっていい",
+        "てんQ"
+      ],
+      "name": "常闇トワ",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#歌",
+        "#シューター"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
       "#4期生",
-      "#歌",
-      "#シューター"
+      "#歌唱",
+      "#射手"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 3,
         "cost_types": [
           "null",
           "null",
           "null"
         ],
         "damage": 90,
-        "effect": "可以將這位Holomen的一張應援卡轉移到自己的後排Holomen身上。",
-        "name": "ビジネスパートナー"
+        "effect": "可將此Holomen的1張應援改附給自己的後場Holomen。",
+        "name": "商業夥伴"
       }
     ],
     "baton_touch_count": 1,
@@ -1710,23 +1931,35 @@
       "red",
       "blue"
     ],
-    "extra": "此Holomen同時視為〈さくらみこ〉與〈星街すいせい〉。",
+    "extra": "此Holo成員也視為〈櫻巫女〉〈星街彗星〉",
     "hp": 150,
     "id": "1218",
     "illustrator": "UIIV◇",
     "image_key": "hBP05/hBP05-040_U",
     "keyword": {
-      "effect": "若自己的生命為3或以下，則本回合Bloom過的中心Holomen為[〈さくらみこ〉或〈星街すいせい〉]時，可以再使用自己手牌中的Holomen進行一次Bloom。",
-      "name": "ビジネスフレンド",
+      "effect": "若自己的生命值為3以下，則自己在這個回合Bloom的中位holomen的[〈櫻巫女〉或〈星街彗星〉]，可以使用自己手牌中的holomen再Bloom1次。",
+      "name": "商業朋友",
       "type": "コラボエフェクト",
       "type_code": "collab_effect"
     },
     "locale": "tc",
     "name": "miComet",
+    "original": {
+      "art_names": [
+        "ビジネスパートナー"
+      ],
+      "keyword_name": "ビジネスフレンド",
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#ベイビー",
+        "#歌"
+      ]
+    },
     "qa_items": [
       {
-        "answer": "代表此卡同時具有〈さくらみこ〉、〈星街すいせい〉和〈miComet〉三個卡名。",
-        "question": "hBP05-040〈miComet〉的額外能力「此Holomen同時視為〈さくらみこ〉與〈星街すいせい〉。」是什麼意思？",
+        "answer": "表示作為卡名同時擁有〈さくらみこ〉、〈星街すいせい〉與〈miComet〉。",
+        "question": "hBP05-040〈miComet〉的額外能力「此Holomen也視為〈さくらみこ〉與〈星街すいせい〉。」是什麼意思？",
         "related_cards": {
           "card_number": [
             "hBP05-040"
@@ -1736,8 +1969,8 @@
         "title": "Q618（2026.03.02）"
       },
       {
-        "answer": "是的，會被當作。",
-        "question": "hBP05-040〈miComet〉的額外能力「此Holomen同時視為〈さくらみこ〉與〈星街すいせい〉。」在不在舞台上的情況下，也會被當作〈さくらみこ〉與〈星街すいせい〉嗎？",
+        "answer": "是的，無論在哪裡都視為相同。",
+        "question": "hBP05-040〈miComet〉的額外效果「此Holomen同時視為〈さくらみこ〉與〈星街すいせい〉。」在不在舞台上時也會當作〈さくらみこ〉與〈星街すいせい〉嗎？",
         "related_cards": {
           "card_number": [
             "hBP05-040"
@@ -1751,17 +1984,18 @@
     "tags": [
       "#JP",
       "#0期生",
-      "#ベイビー",
-      "#歌"
+      "#嬰兒",
+      "#歌唱"
     ]
   },
   {
-    "ability_text": "必須將自己舞台區的1張應援卡存入檔案區域，才能使用此卡。\n\n將自己檔案區域中的1張粉絲卡附加到自己的Holomen身上。若已附加，則從自己的檔案區域將1張Holomen卡返回手牌。",
+    "ability_text": "這張卡必須將自己舞台上的1張應援Archive，才能使用。\n\n將自己Archive中的1張粉絲卡附給自己的Holomen。若有附上，則將自己Archive中的1張Holomen返回手牌。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」"
+      "ブースターパック「ディーヴァフィーバー」",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -1769,18 +2003,24 @@
     "illustrator": "海原カイロ",
     "image_key": "hBP07/hBP07-091_C",
     "locale": "tc",
-    "name": "ライブスタッフ",
+    "name": "直播工作人員",
+    "original": {
+      "art_names": [],
+      "name": "ライブスタッフ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
   },
   {
-    "ability_text": "要使用此卡，必須將自己舞台上的1張「應援」存入檔案區域。\n\n將自己檔案區域中的1張「粉絲」附加到自己的「成員」上。若已附加，則將自己檔案區域中的1張「成員」返回手牌。",
+    "ability_text": "這張卡必須將自己舞台上的1張應援Archive，才能使用。\n\n將自己Archive中的1張粉絲卡附給自己的Holomen。若有附上，則將自己Archive中的1張Holomen返回手牌。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」"
+      "ブースターパック「ディーヴァフィーバー」",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -1788,7 +2028,12 @@
     "illustrator": "海原カイロ",
     "image_key": "hBP07/hBP07-091_S",
     "locale": "tc",
-    "name": "Live Staff",
+    "name": "直播工作人員",
+    "original": {
+      "art_names": [],
+      "name": "ライブスタッフ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "S",
     "tags": []
@@ -1796,14 +2041,13 @@
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "blue",
           "null"
         ],
         "damage": 40,
-        "effect": "當你的應援成員是〈星街すいせい〉時，可以將此成員的1張藍色應援卡，改附加到你後場成員中的〈星街すいせい〉上。",
-        "name": "バーチャルゴースト"
+        "effect": "當自己的推しHolo成員為〈星街彗星〉時，可將這位Holo成員的1張藍色應援改附於自己的後台Holo成員〈星街彗星〉。",
+        "name": "虛擬幽靈"
       }
     ],
     "baton_touch_count": 1,
@@ -1824,40 +2068,50 @@
     "illustrator": "Mika Pikazo",
     "image_key": "hCO01/hBP03-044_SR",
     "keyword": {
-      "effect": "從自己的牌庫上方查看4張牌，公開其中1張〈星街すいせい〉並加入手牌。然後將剩下的牌以任意順序放回牌庫底。",
-      "name": "プラネットステージ",
+      "effect": "查看自己牌庫最上方4張。從中公開1張〈星街彗星〉，加入手牌。然後將剩餘的牌以任意順序放回牌庫底。",
+      "name": "Planet Stage",
       "type": "ブルームエフェクト",
       "type_code": "bloom_effect"
     },
     "locale": "tc",
-    "name": "星街すいせい",
+    "name": "星街彗星",
+    "original": {
+      "art_names": [
+        "バーチャルゴースト"
+      ],
+      "keyword_name": "プラネットステージ",
+      "name": "星街すいせい",
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
       "#0期生",
-      "#歌"
+      "#歌唱"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "purple"
         ],
         "damage": 40,
-        "name": "能和トワ來場在家的約會也沒問題"
+        "name": "和永遠在家約會也沒關係"
       },
       {
-        "cost_count": 2,
         "cost_types": [
           "purple",
           "null"
         ],
         "damage": 50,
-        "effect": "當自己的備援區有持有#歌的Holomen時，對對手的合作Holomen造成20點特殊傷害。",
-        "name": "てんQ"
+        "effect": "當自己有持有#歌唱的後台Holo成員時，給予對手的合作Holo成員特殊傷害20。",
+        "name": "天Q"
       }
     ],
     "baton_touch_count": 1,
@@ -1878,34 +2132,45 @@
     "illustrator": "花澤明",
     "image_key": "hCO01/hBP03-055_SR",
     "locale": "tc",
-    "name": "常闇トワ",
+    "name": "常闇永遠",
+    "original": {
+      "art_names": [
+        "トワとお家デートしたっていい",
+        "てんQ"
+      ],
+      "name": "常闇トワ",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#歌",
+        "#シューター"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
       "#4期生",
-      "#歌",
-      "#シューター"
+      "#歌唱",
+      "#射手"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "white"
         ],
         "damage": 40,
-        "name": "おつルーナ"
+        "name": "辛苦啦露娜～"
       },
       {
-        "cost_count": 2,
         "cost_types": [
           "white",
           "null"
         ],
         "damage": 60,
-        "name": "ぐっどないと～"
+        "name": "晚安～"
       }
     ],
     "baton_touch_count": 1,
@@ -1926,26 +2191,37 @@
     "illustrator": "葉桜ちこり",
     "image_key": "hWF01/hBP03-011_P",
     "locale": "tc",
-    "name": "姫森ルーナ",
+    "name": "姬森璐娜",
+    "original": {
+      "art_names": [
+        "おつルーナ",
+        "ぐっどないと～"
+      ],
+      "name": "姫森ルーナ",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#ベイビー"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "P",
     "tags": [
       "#JP",
       "#4期生",
-      "#ベイビー"
+      "#嬰兒"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 2,
         "cost_types": [
           "null",
           "null"
         ],
         "damage": 50,
-        "effect": "若自己的推しHolomen是藍色的〈FUWAMOCO〉，則將自己牌庫上方1張卡轉為Holo Power。",
-        "name": "いっしょういっしょ♡"
+        "effect": "若自己的推Holo成員是藍色的〈FUWAMOCO〉，將自己牌庫頂的1張卡作為Holo能量。",
+        "name": "一生都要在一起♡"
       }
     ],
     "baton_touch_count": 1,
@@ -1955,42 +2231,52 @@
     "bloom_level_code": "first",
     "card_number": "hBP08-060",
     "card_sets": [
-      "ブースターパック バウンサーバウンド"
+      "ブースターパック バウンサーバウンド",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
       "blue_red"
     ],
-    "extra": "此Holomen同時視為〈フワワ・アビスガード〉與〈モココ・アビスガード〉",
+    "extra": "此Holo成員也視為〈Fuwawa Abyssguard〉〈Mococo Abyssguard〉",
     "hp": 170,
     "id": "2263",
     "illustrator": "兎未枝",
     "image_key": "hBP08/hBP08-060_R",
     "keyword": {
-      "effect": "[僅限合作位置]將自己推し技能「モコちゃん！」的[Holo Power:-3]改為[Holo Power:-2]。",
+      "effect": "[Collab位置限定]將自己的推技能「モコちゃん！」的[Holo Power:-3]變更為[Holo Power:-2]。",
       "name": "“BAU” DOL♡",
       "type": "ギフト",
       "type_code": "gift"
     },
     "locale": "tc",
     "name": "FUWAMOCO",
+    "original": {
+      "art_names": [
+        "いっしょういっしょ♡"
+      ],
+      "tags": [
+        "#EN",
+        "#Advent",
+        "#ケモミミ"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "R",
     "tags": [
       "#EN",
       "#Advent",
-      "#ケモミミ"
+      "#獸耳"
     ]
   },
   {
     "arts": [
       {
-        "cost_count": 1,
         "cost_types": [
           "null"
         ],
         "damage": 30,
-        "name": "ハイRyS！"
+        "name": "HiRyS！"
       }
     ],
     "baton_touch_count": 1,
@@ -2000,25 +2286,85 @@
     "bloom_level_code": "debut",
     "card_number": "hBP01-028",
     "card_sets": [
-      "ブースターパック バウンサーバウンド"
+      "ブースターパック バウンサーバウンド",
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
       "white"
     ],
-    "extra": "此成員可在牌組中放入任意張數",
+    "extra": "此Holo成員可放入牌組任意張數",
     "hp": 100,
     "id": "2444",
     "illustrator": "がり",
     "image_key": "hBP08/hBP01-028_HR",
     "locale": "tc",
     "name": "IRyS",
+    "original": {
+      "art_names": [
+        "ハイRyS！"
+      ],
+      "tags": [
+        "#EN",
+        "#Promise",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "HR",
     "tags": [
       "#EN",
       "#Promise",
-      "#歌"
+      "#歌唱"
     ]
+  },
+  {
+    "arts": [
+      {
+        "cost_types": [
+          "red"
+        ],
+        "damage": 30,
+        "effect": "效果一",
+        "name": "技能一"
+      },
+      {
+        "cost_types": [
+          "red",
+          "null"
+        ],
+        "damage": 60,
+        "is_plus": true
+      }
+    ],
+    "baton_touch_count": 1,
+    "baton_touch_types": [
+      "null"
+    ],
+    "bloom_level_code": "debut",
+    "card_number": "hSYN-001",
+    "card_sets": [
+      "hSYN"
+    ],
+    "card_type_code": "character",
+    "color_codes": [
+      "red"
+    ],
+    "hp": 100,
+    "id": "9000001",
+    "image_key": "hSYN/hSYN-001_C",
+    "locale": "tc",
+    "name": "測試短技能",
+    "original": {
+      "art_names": [
+        "アーツ一",
+        "アーツ二"
+      ],
+      "name": "テスト・ショートアーツ",
+      "tags": []
+    },
+    "qa_items": [],
+    "rarity_code": "C",
+    "tags": []
   }
 ]

@@ -28,23 +28,27 @@
     },
     {
       "value": "うぱお",
-      "label": "うぱお"
+      "label": "우파오"
     },
     {
       "value": "ときのそら",
-      "label": "ときのそら"
+      "label": "토키노 소라"
     },
     {
       "value": "サブパソコン",
-      "label": "サブパソコン"
+      "label": "서브 PC"
     },
     {
       "value": "スゴイパソコン",
-      "label": "스고이파소콘"
+      "label": "대단한 PC"
+    },
+    {
+      "value": "テスト・ショートアーツ",
+      "label": "테스트"
     },
     {
       "value": "ホロリスの輪",
-      "label": "ホロリスの輪"
+      "label": "홀로리스의 고리"
     },
     {
       "value": "ライブスタッフ",
@@ -52,15 +56,15 @@
     },
     {
       "value": "ロゼ隊",
-      "label": "ロゼ隊"
+      "label": "로제대"
     },
     {
       "value": "七詩ムメイ",
-      "label": "七詩ムメイ"
+      "label": "나나시 무메이"
     },
     {
       "value": "天音かなた",
-      "label": "天音かなた"
+      "label": "아마네 카나타"
     },
     {
       "value": "姫森ルーナ",
@@ -68,223 +72,215 @@
     },
     {
       "value": "小鳥遊キアラ",
-      "label": "小鳥遊キアラ"
+      "label": "타카나시 키아라"
     },
     {
       "value": "常闇トワ",
-      "label": "常闇トワ"
+      "label": "토코야미 토와"
     },
     {
       "value": "星街すいせい",
-      "label": "星街すいせい"
+      "label": "호시마치 스이세이"
     },
     {
       "value": "星街すいせいのマイク",
-      "label": "星街すいせいのマイク"
+      "label": "호시마치 스이세이의 마이크"
     },
     {
       "value": "春先のどか",
-      "label": "春先のどか"
+      "label": "하루사키 노도카"
     },
     {
       "value": "猫又おかゆ",
-      "label": "猫又おかゆ"
+      "label": "네코마타 오카유"
     },
     {
       "value": "癒月ちょこ",
-      "label": "癒月ちょこ"
+      "label": "유즈키 초코"
     },
     {
       "value": "白エール",
-      "label": "白エール"
+      "label": "화이트 옐"
     },
     {
       "value": "音乃瀬奏",
-      "label": "音乃瀬奏"
+      "label": "오토노세 카나데"
     }
   ],
   "tags": [
     {
-      "value": "#0期生",
-      "label": "#0期生"
+      "value": "0期生",
+      "label": "#0기생"
     },
     {
-      "value": "#2期生",
-      "label": "#2期生"
+      "value": "2期生",
+      "label": "#2기생"
     },
     {
-      "value": "#4期生",
-      "label": "#4期生"
+      "value": "4期生",
+      "label": "#4기생"
     },
     {
-      "value": "#Advent",
+      "value": "Advent",
       "label": "#Advent"
     },
     {
-      "value": "#DEV_IS",
+      "value": "DEV_IS",
       "label": "#DEV_IS"
     },
     {
-      "value": "#EN",
+      "value": "EN",
       "label": "#EN"
     },
     {
-      "value": "#JP",
+      "value": "JP",
       "label": "#JP"
     },
     {
-      "value": "#Promise",
+      "value": "Promise",
       "label": "#Promise"
     },
     {
-      "value": "#ReGLOSS",
+      "value": "ReGLOSS",
       "label": "#ReGLOSS"
     },
     {
-      "value": "#ケモミミ",
-      "label": "#ケモミミ"
+      "value": "ケモミミ",
+      "label": "#수인귀"
     },
     {
-      "value": "#ゲーマーズ",
-      "label": "#ゲーマーズ"
+      "value": "ゲーマーズ",
+      "label": "#게이머즈"
     },
     {
-      "value": "#シューター",
-      "label": "#シューター"
+      "value": "シューター",
+      "label": "#슈터"
     },
     {
-      "value": "#トリ",
-      "label": "#トリ"
-    },
-    {
-      "value": "#ベイビー",
-      "label": "#ベイビー"
-    },
-    {
-      "value": "#料理",
-      "label": "#料理"
-    },
-    {
-      "value": "#歌",
-      "label": "#歌"
-    },
-    {
-      "value": "#絵",
-      "label": "#絵"
-    },
-    {
-      "value": "#베이비",
+      "value": "ベイビー",
       "label": "#베이비"
+    },
+    {
+      "value": "料理",
+      "label": "#요리"
+    },
+    {
+      "value": "歌",
+      "label": "#노래"
     }
   ],
   "sets": [
     {
-      "value": "PRカード",
-      "label": "PRカード"
+      "value": "hSYN",
+      "label": "hSYN"
     },
     {
       "value": "hololive OFFICIAL CARD GAME ツインウエハース",
-      "label": "hololive OFFICIAL CARD GAME ツインウエハース"
+      "label": "hololive OFFICIAL CARD GAME 트윈 웨하스"
+    },
+    {
+      "value": "【使用可能カード】セレクションカップ",
+      "label": "【사용 가능 카드】셀렉션 컵"
     },
     {
       "value": "オフィシャルホロカコレクション-2025ライブセット-",
-      "label": "オフィシャルホロカコレクション-2025ライブセット-"
+      "label": "오피셜 홀로카 컬렉션 -2025 라이브 세트-"
     },
     {
       "value": "スタートエールセット",
-      "label": "スタートエールセット"
+      "label": "스타트 옐 세트"
     },
     {
       "value": "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
-      "label": "スタートデッキ FLOW GLOW 推し 虎金妃笑虎"
+      "label": "스타트 덱 FLOW GLOW 오시 토카네 히사토라"
     },
     {
       "value": "スタートデッキ FLOW GLOW 推し 輪堂千速",
-      "label": "スタートデッキ FLOW GLOW 推し 輪堂千速"
+      "label": "스타트 덱 FLOW GLOW 오시 린도 치하야"
     },
     {
       "value": "スタートデッキ 推し Advent",
-      "label": "スタートデッキ 推し Advent"
+      "label": "스타트 덱 오시 Advent"
     },
     {
       "value": "スタートデッキ 推し Justice",
-      "label": "スタートデッキ 推し Justice"
+      "label": "스타트 덱 오시 Justice"
     },
     {
       "value": "スタートデッキ 白 天音かなた",
-      "label": "スタートデッキ 白 天音かなた"
+      "label": "스타트 덱 화이트 아마네 카나타"
     },
     {
       "value": "スタートデッキ 白 轟はじめ",
-      "label": "スタートデッキ 白 轟はじめ"
+      "label": "스타트 덱 화이트 토도로키 하지메"
     },
     {
       "value": "スタートデッキ 紫 癒月ちょこ",
-      "label": "スタートデッキ 紫 癒月ちょこ"
+      "label": "스타트 덱 퍼플 유즈키 초코"
     },
     {
       "value": "スタートデッキ 緑 風真いろは",
-      "label": "スタートデッキ 緑 風真いろは"
+      "label": "스타트 덱 그린 카자마 이로하"
     },
     {
       "value": "スタートデッキ 赤 百鬼あやめ",
-      "label": "スタートデッキ 赤 百鬼あやめ"
+      "label": "스타트 덱 레드 나키리 아야메"
     },
     {
       "value": "スタートデッキ 青 猫又おかゆ",
-      "label": "スタートデッキ 青 猫又おかゆ"
+      "label": "스타트 덱 블루 네코마타 오카유"
     },
     {
       "value": "スタートデッキ 黄 不知火フレア",
-      "label": "スタートデッキ 黄 不知火フレア"
+      "label": "스타트 덱 옐로우 시라누이 플레어"
     },
     {
       "value": "スタートデッキ「ときのそら＆AZKi」",
-      "label": "スタートデッキ「ときのそら＆AZKi」"
+      "label": "스타트 덱 \"토키노 소라 & AZKi\""
     },
     {
       "value": "ブースターパック バウンサーバウンド",
-      "label": "ブースターパック バウンサーバウンド"
+      "label": "부스터 팩 바운서 바운드"
     },
     {
       "value": "ブースターパック「エリートスパーク」",
-      "label": "ブースターパック「エリートスパーク」"
+      "label": "부스터 팩 \"Elite Spark\""
     },
     {
       "value": "ブースターパック「エンチャントレガリア」",
-      "label": "ブースターパック「エンチャントレガリア」"
+      "label": "부스터 팩 \"Enchant Regalia\""
     },
     {
       "value": "ブースターパック「クインテットスペクトラム」",
-      "label": "ブースターパック「クインテットスペクトラム」"
+      "label": "부스터 팩 \"Quintet Spectrum\""
     },
     {
       "value": "ブースターパック「ディーヴァフィーバー」",
-      "label": "ブースターパック「ディーヴァフィーバー」"
+      "label": "부스터 팩 \"Diva Fever\""
     },
     {
       "value": "ブースターパック「ブルーミングレディアンス」",
-      "label": "ブースターパック「ブルーミングレディアンス」"
+      "label": "부스터 팩 \"Blooming Radiance\""
     },
     {
       "value": "ライブスタートデッキ さくらみこ",
-      "label": "ライブスタートデッキ さくらみこ"
+      "label": "라이브 스타트 덱 사쿠라 미코"
     },
     {
       "value": "ライブスタートデッキ 儒烏風亭らでん",
-      "label": "ライブスタートデッキ 儒烏風亭らでん"
+      "label": "라이브 스타트 덱 주우후테이 라덴"
     },
     {
       "value": "ライブスタートデッキ 大空スバル",
-      "label": "ライブスタートデッキ 大空スバル"
+      "label": "라이브 스타트 덱 오오조라 스바루"
     },
     {
       "value": "ライブスタートデッキ 星街すいせい",
-      "label": "ライブスタートデッキ 星街すいせい"
+      "label": "라이브 스타트 덱 호시마치 스이세이"
     },
     {
       "value": "ライブスタートデッキ 白上フブキ",
-      "label": "ライブスタートデッキ 白上フブキ"
+      "label": "라이브 스타트 덱 시라카미 후부키"
     }
   ]
 }

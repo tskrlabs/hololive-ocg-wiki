@@ -33,7 +33,7 @@ const icon = useGameIcon();
             <UseClipboard v-slot="{ copy, copied }" :source="tag">
               <div class="relative">
                 <Button variant="link" class="p-0 h-auto" @click="copy()">
-                  #{{ getTranslatedText("tags", tag, tag) }}
+                  {{ getTranslatedText("tags", tag, tag) }}
                 </Button>
                 <!-- Copied indicator -->
                 <Transition name="copied">

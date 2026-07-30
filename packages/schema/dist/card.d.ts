@@ -29,8 +29,7 @@ export type CardTypeCode =
   | "supportMascot"
   | "supportStaff"
   | "supportStaffLimited"
-  | "supportTool"
-  | "unknown";
+  | "supportTool";
 export type RarityCode = "C" | "HR" | "OC" | "OSR" | "OUR" | "P" | "R" | "RR" | "S" | "SEC" | "SR" | "SY" | "U" | "UR";
 export type ColorCodes = (
   "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
@@ -47,7 +46,6 @@ export type BatonTouchTypes = (
 export type Illustrator = string;
 export type CardSets = string[];
 export type Tags = string[];
-export type CostCount = number;
 export type CostTypes = (
   "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
 )[];
@@ -67,7 +65,6 @@ export type AbilityText = string;
 export type Extra = string;
 export type Name1 = string;
 export type Effect = string;
-export type Value = string;
 export type Arts1 = TranslatedArt[];
 export type Name2 = string;
 export type Effect1 = string;
@@ -81,6 +78,7 @@ export type RawHtml = string;
 export type CardNumber1 = string[];
 export type QaItems = QaItem[];
 export type Cards = Card[];
+export type Dropped = string[];
 
 /**
  * The full published card set — the root shape of `cards.json`.
@@ -93,6 +91,7 @@ export interface CardCollection {
   generated_at: GeneratedAt;
   schema_version?: SchemaVersion;
   cards: Cards;
+  dropped?: Dropped;
 }
 /**
  * A single card, in every language.
@@ -135,7 +134,6 @@ export interface Card {
  * via the `definition` "Art".
  */
 export interface Art {
-  cost_count: CostCount;
   cost_types?: CostTypes;
   damage?: Damage;
   is_plus?: IsPlus;
@@ -196,10 +194,16 @@ export interface Translation {
 /**
  * The localised half of an art: what it is called and what it says.
  *
- * Paired with `Art` by list index. That pairing is fragile and the data proves it —
- * hSD03-009 and hSD04-009 each have 2 entries in `Card.arts` but 0 in their `en`
- * translation. `localize()` defines the merge rule and tolerates the short list; both
- * cards are golden-file fixtures so the behaviour stays pinned.
+ * Paired with `Art` by list index. That pairing is fragile: hSD03-009 and hSD04-009
+ * each had 2 entries in `Card.arts` but 0 in their `en` translation, so `localize()`
+ * defines the merge rule and tolerates the short list.
+ *
+ * **No real card exhibits this any more.** The field-level cache filled both cards in
+ * (F-004), and a census over all 2,463 cards finds zero arts-length mismatches in any
+ * locale. The rule still runs in production, in two languages, so a *synthetic*
+ * fixture carries the shape instead — card `9000001`, appended by
+ * `scripts/build_fixtures.py`. It is the only thing keeping the rule pinned in Python
+ * *and* TypeScript; see SYNTHETIC_CARD there, and issue #16.
  *
  * This interface was referenced by `CardCollection`'s JSON-Schema
  * via the `definition` "TranslatedArt".
@@ -207,7 +211,6 @@ export interface Translation {
 export interface TranslatedArt {
   name: Name1;
   effect?: Effect;
-  value?: Value;
 }
 /**
  * The localised half of a card's keyword ability.

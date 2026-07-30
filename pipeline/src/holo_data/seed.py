@@ -451,6 +451,28 @@ def check_gates(
             )
         )
 
+    # The build ran with `--allow-unknown-enums` and left cards out. Seeding it would
+    # publish a card set the official site disagrees with, and the missing cards would
+    # be announced by nothing — a build log one terminal scroll ago. That is F-001
+    # exactly: two cards sat wrong in v1's live data from the day they shipped, found by
+    # a census run by hand months later rather than by anything the pipeline said.
+    #
+    # No flag clears this. The fix is to add the mapping in `mappings.py` and re-run
+    # `build`, which is the work the dropped card is asking for.
+    if collection.dropped:
+        shown = ", ".join(collection.dropped[:5])
+        more = f" (+{len(collection.dropped) - 5} more)" if len(collection.dropped) > 5 else ""
+        refusals.append(
+            Refusal(
+                f"cards.json records {len(collection.dropped)} dropped card(s)",
+                f"card(s) {shown}{more} carry a value no mapping covers, and "
+                "`build --allow-unknown-enums` left them out. Seeding would ship a card "
+                "set missing them with nothing announcing it. Add the mapping in "
+                "`mappings.py` (the `transform` report names the source value) and "
+                "re-run `holo-data build`.",
+            )
+        )
+
     # The empty-scrape signature. Deleting is already gated behind --prune, but a
     # collapse this large means the *build* is wrong, so even writing the survivors
     # would publish a broken dataset.

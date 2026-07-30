@@ -19,6 +19,7 @@ import pytest
 from holo_schema import CardCollection
 from holo_schema.enums import LOCALE_VALUES, SOURCE_LOCALE
 from holo_data import build as build_module
+from holo_data.translate.cache import TranslationCache
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES_JSON = REPO_ROOT / "fixtures" / "cards.json"
@@ -83,17 +84,56 @@ class TestFilterOptions:
                 second, ensure_ascii=False
             )
 
-    def test_tags_and_sets_come_from_the_requested_locale(self, collection):
+    def test_sets_key_on_the_set_name(self, collection):
         options = build_module.filter_options(collection, "ja")
         expected_sets = {name for card in collection.cards for name in card.card_sets}
         assert {entry["value"] for entry in options["sets"]} == expected_sets
 
-        expected_tags = {
-            tag
-            for card in collection.cards
-            for tag in (card.translations["ja"].tags or [])
-        }
-        assert {entry["value"] for entry in options["tags"]} == expected_tags
+    def test_tags_key_on_the_identity_not_the_display_text(self, collection):
+        """`Card.tags` is what the junction holds; `Translation.tags` carries the `#`.
+
+        Emitting the display spelling as `value` sent `#0期生` to a `WHERE tag = ?`
+        matching `0期生`, so **the tag filter returned zero cards for every tag in every
+        locale** (#26). Measured against the deployed site: 0 rows for the prefixed
+        value, 165 for the unprefixed one.
+
+        Same shape as the name split in F-015 — the filter keys on the stable identity,
+        and the localised text is a label.
+        """
+        expected = {tag for card in collection.cards for tag in (card.tags or [])}
+
+        for locale in LOCALE_VALUES:
+            options = build_module.filter_options(collection, locale)
+            values = {entry["value"] for entry in options["tags"]}
+            assert values == expected
+            assert not any(value.startswith("#") for value in values), (
+                "a `#`-prefixed value is display text, and matches nothing in card_tags"
+            )
+
+    def test_a_tag_label_is_the_locale_display_text(self, collection):
+        """The prefix belongs on the label, where it is presentation rather than a key."""
+        options = build_module.filter_options(collection, "ja")
+        by_value = {entry["value"]: entry["label"] for entry in options["tags"]}
+
+        for card in collection.cards:
+            shown = card.translations["ja"].tags or []
+            for index, identity in enumerate(card.tags or []):
+                if index < len(shown):
+                    assert by_value[identity] == shown[index]
+
+    def test_every_tag_label_carries_the_prefix(self, collection):
+        """Uniformly — not "if someone curated this one".
+
+        All 5,481 tag occurrences carry `#` in every locale, but the glossary stores the
+        bare text (`"0th Gen"`). Taking the curated value verbatim gave `"#0期生"` in `ja`
+        and `"0th Gen"` in `en`, so a tag's prefix depended on whether it happened to be
+        curated. The prefix is normalised in one place instead.
+        """
+        for locale in LOCALE_VALUES:
+            labels = [e["label"] for e in build_module.filter_options(collection, locale)["tags"]]
+            assert labels, f"{locale} produced no tags"
+            assert all(label.startswith("#") for label in labels), locale
+            assert not any(label.startswith("##") for label in labels), locale
 
     def test_entries_are_sorted(self, collection):
         options = build_module.filter_options(collection, "tc")
@@ -124,3 +164,202 @@ class TestFilterOptions:
             parsed = json.loads(path.read_text(encoding="utf-8"))
             assert parsed["locale"] == locale
             assert parsed["names"] and parsed["sets"]
+
+
+def _buildable_card(card_id: str, **overrides) -> dict:
+    """The smallest dict that validates as a `Card`, for the escape-hatch tests."""
+    card = {
+        "id": card_id,
+        "card_number": f"hBP01-{card_id.zfill(3)}",
+        "card_type_code": "character",
+        "rarity_code": "C",
+        "image_key": f"hBP01/{card_id}",
+        "source_image_url": f"https://example.invalid/{card_id}.png",
+        "card_sets": ["hBP01"],
+        "bloom_level_code": "debut",
+        "translations": {"ja": {"name": f"card {card_id}"}},
+    }
+    card.update(overrides)
+    return card
+
+
+class TestUnknownEnumEscapeHatch:
+    """`--allow-unknown-enums` — what it does, and that it does anything at all.
+
+    It had never worked. `build()` computed a `blocking` flag that honoured the
+    argument, then discarded it: the very next condition was
+    `len(validated) != len(cards)`, which is true precisely when a card failed
+    validation — the case the flag exists for. So the collection came back `None`
+    whatever the caller passed, and no test covered it.
+
+    That mattered beyond the dead code path. F-008 settled `サポート・ロケーション`
+    partly on the ground that a blocked build is "recoverable in minutes and has
+    `--allow-unknown-enums` as an escape hatch", and issue #19 weighed blocking against
+    the same premise. Neither was true when written.
+    """
+
+    def test_an_unmapped_enum_value_blocks_by_default(self):
+        collection, _notices, report = build_module.build(
+            [_buildable_card("1"), _buildable_card("2", bloom_level_code="新形態")],
+            TranslationCache(),
+            [],
+        )
+        assert collection is None, "an unrecognised enum value must stop the build"
+        assert report.enum_violations
+        assert not report.errors, "an enum value is not a structural error"
+
+    def test_the_flag_ships_the_valid_cards_and_drops_the_rest(self):
+        """The regression test for the bug above: this returned `None` before.
+
+        Note what the flag cannot do. The contract's enums are closed `Literal`s, so a
+        card carrying an unmapped value cannot be constructed as a `Card` at all —
+        "publish anyway", which is what the docstring promised for four phases, was
+        never implementable. Dropping is the only coherent reading.
+        """
+        collection, _notices, report = build_module.build(
+            [_buildable_card("1"), _buildable_card("2", bloom_level_code="新形態")],
+            TranslationCache(),
+            [],
+            allow_unknown_enums=True,
+        )
+        assert collection is not None, "the flag must actually produce a collection"
+        assert [card.id for card in collection.cards] == ["1"]
+        assert collection.dropped == ["2"]
+        assert report.valid == 1
+
+    def test_a_structural_error_blocks_even_with_the_flag(self):
+        """The hatch is for unmapped enum values, not for malformed cards.
+
+        A missing required field means the scraper broke, and there is no mapping to
+        add that would fix it — so the flag must not become a way to ship past it.
+        """
+        broken = _buildable_card("2")
+        del broken["rarity_code"]
+
+        collection, _notices, report = build_module.build(
+            [_buildable_card("1"), broken],
+            TranslationCache(),
+            [],
+            allow_unknown_enums=True,
+        )
+        assert collection is None
+        assert report.errors
+
+    def test_an_ordinary_build_records_no_dropped_cards(self):
+        """`dropped` is empty on every normal build, which is what the gates key on."""
+        collection, _notices, _report = build_module.build(
+            [_buildable_card("1")], TranslationCache(), []
+        )
+        assert collection is not None
+        assert collection.dropped == []
+
+
+class TestDualReadTranslations:
+    """`build` reads the content-addressed cache first, the per-card cache second.
+
+    This is what carries #23's work into `cards.json`. Without it the rework's 1.49M
+    tokens sit in a cache no artifact reads — which was true for a whole phase, and is
+    the reason these tests exist rather than a manual check.
+    """
+
+    def _card(self, card_id="1", name="白上フブキ", effect="効果"):
+        return {
+            "id": card_id,
+            "translations": {
+                "ja": {
+                    "name": name,
+                    "tags": ["#EN", "#歌"],
+                    "arts": [{"name": "こんこん", "effect": effect}],
+                }
+            },
+        }
+
+    def test_v2_answers_when_it_has_the_unit(self):
+        from holo_data.translate import units
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v2 = TranslationCacheV2()
+        v2.put("en", units.Unit(kind="card_name", value="白上フブキ"), "Shirakami Fubuki")
+
+        merged = build_module.apply_translations(
+            self._card(), TranslationCache(), ["en"], v2
+        )
+
+        assert merged["translations"]["en"]["name"] == "Shirakami Fubuki"
+
+    def test_v1_fills_the_gap_so_a_half_migrated_locale_still_builds(self):
+        """D9's whole point — a locale ships when ready, not all six together."""
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v1 = TranslationCache()
+        v1.put("en", "1", "arts[0].effect", "効果", "Old effect")
+
+        merged = build_module.apply_translations(
+            self._card(), v1, ["en"], TranslationCacheV2()
+        )
+
+        assert merged["translations"]["en"]["arts"][0]["effect"] == "Old effect"
+
+    def test_v2_wins_over_v1_for_the_same_field(self):
+        from holo_data.translate import units
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v1 = TranslationCache()
+        v1.put("en", "1", "name", "白上フブキ", "Old Name")
+        v2 = TranslationCacheV2()
+        v2.put("en", units.Unit(kind="card_name", value="白上フブキ"), "Shirakami Fubuki")
+
+        merged = build_module.apply_translations(self._card(), v1, ["en"], v2)
+
+        assert merged["translations"]["en"]["name"] == "Shirakami Fubuki"
+
+    def test_two_cards_with_the_same_source_get_the_same_translation(self):
+        """The property the whole rework exists for, asserted at the artifact layer."""
+        from holo_data.translate import units
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v2 = TranslationCacheV2()
+        v2.put("en", units.Unit(kind="art_name", value="こんこん"), "Konkon")
+
+        first = build_module.apply_translations(
+            self._card("1"), TranslationCache(), ["en"], v2
+        )
+        second = build_module.apply_translations(
+            self._card("2"), TranslationCache(), ["en"], v2
+        )
+
+        assert (
+            first["translations"]["en"]["arts"][0]["name"]
+            == second["translations"]["en"]["arts"][0]["name"]
+            == "Konkon"
+        )
+
+    def test_tags_resolve_element_wise_or_not_at_all(self):
+        """v1 stores the list under one key, v2 stores each tag.
+
+        A partial answer would emit a list with some tags translated and some not, which
+        reads as corruption rather than as a missing translation.
+        """
+        from holo_data.translate import units
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        v1 = TranslationCache()
+        v1.put("en", "1", "tags", ["#EN", "#歌"], ["#EN", "#Song"])
+        v2 = TranslationCacheV2()
+        v2.put("en", units.Unit(kind="tag", value="#EN"), "#EN")
+        # `#歌` deliberately absent — v2 cannot answer the whole list.
+
+        merged = build_module.apply_translations(self._card(), v1, ["en"], v2)
+
+        assert merged["translations"]["en"]["tags"] == ["#EN", "#Song"], (
+            "an incomplete v2 tag list must fall back to v1 whole, not merge"
+        )
+
+    def test_no_v2_cache_at_all_behaves_exactly_as_before(self):
+        """The migration must not change behaviour for anyone who has not run it."""
+        v1 = TranslationCache()
+        v1.put("en", "1", "name", "白上フブキ", "Old Name")
+
+        with_none = build_module.apply_translations(self._card(), v1, ["en"], None)
+
+        assert with_none["translations"]["en"]["name"] == "Old Name"

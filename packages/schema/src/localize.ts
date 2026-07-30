@@ -25,6 +25,74 @@ import { SOURCE_LOCALE, type Locale } from "../dist/enums.ts";
  * @returns the card as the API serves it, with translation fields flattened.
  * @throws if the card has neither the requested locale nor the source locale.
  */
+/**
+ * The source-locale labels, where they differ from what this locale shows.
+ *
+ * Port of `_original_labels` in `localize.py`. Returns undefined when there is nothing
+ * to show — a `ja` response, or a locale that left every label untranslated — which is
+ * what keeps the payload cost a ceiling rather than a constant.
+ */
+function originalLabels(
+  card: Card,
+  resolved: Locale,
+): LocalizedCard["original"] | undefined {
+  if (resolved === SOURCE_LOCALE) return undefined;
+
+  const translations = card.translations as Record<string, Card["translations"][string]>;
+  const source = translations[SOURCE_LOCALE];
+  const shown = translations[resolved];
+  if (source === undefined || shown === undefined) return undefined;
+
+  const differing = (
+    sourceValue: string | undefined,
+    shownValue: string | undefined,
+  ): string | undefined =>
+    sourceValue && sourceValue !== shownValue ? sourceValue : undefined;
+
+  const sourceArts = source.arts ?? [];
+  const shownArts = shown.arts ?? [];
+  const artNames = sourceArts.map((art, index) =>
+    differing(art.name, shownArts[index]?.name) ?? null,
+  );
+
+  const sourceTags = source.tags ?? [];
+  const shownTags = shown.tags ?? [];
+  const tagsDiffer =
+    sourceTags.length !== shownTags.length ||
+    sourceTags.some((tag, index) => tag !== shownTags[index]);
+
+  const labels = {
+    ...(differing(source.name, shown.name) !== undefined && {
+      name: differing(source.name, shown.name)!,
+    }),
+    // Whole list or nothing: a partially-shown tag list reads as a data error.
+    tags: tagsDiffer ? [...sourceTags] : [],
+    art_names: artNames.some((name) => name !== null) ? artNames : [],
+    ...(differing(source.keyword?.name, shown.keyword?.name) !== undefined && {
+      keyword_name: differing(source.keyword?.name, shown.keyword?.name)!,
+    }),
+    ...(differing(source.oshi_skill?.name, shown.oshi_skill?.name) !== undefined && {
+      oshi_skill_name: differing(source.oshi_skill?.name, shown.oshi_skill?.name)!,
+    }),
+    ...(differing(source.sp_oshi_skill?.name, shown.sp_oshi_skill?.name) !== undefined && {
+      sp_oshi_skill_name: differing(
+        source.sp_oshi_skill?.name,
+        shown.sp_oshi_skill?.name,
+      )!,
+    }),
+  };
+
+  const hasContent =
+    labels.name !== undefined ||
+    labels.tags.length > 0 ||
+    labels.art_names.length > 0 ||
+    labels.keyword_name !== undefined ||
+    labels.oshi_skill_name !== undefined ||
+    labels.sp_oshi_skill_name !== undefined;
+
+  return hasContent ? (labels as LocalizedCard["original"]) : undefined;
+}
+
 export function localize(card: Card, locale: Locale): LocalizedCard {
   const translations = card.translations as Record<string, Card["translations"][string]>;
 
@@ -51,7 +119,6 @@ export function localize(card: Card, locale: Locale): LocalizedCard {
   const arts: LocalizedArt[] = baseArts.map((base, index) => {
     const translated = translatedArts[index];
     return {
-      cost_count: base.cost_count,
       cost_types: base.cost_types ?? [],
       ...(base.damage !== undefined && { damage: base.damage }),
       ...(base.is_plus !== undefined && { is_plus: base.is_plus }),
@@ -133,6 +200,9 @@ export function localize(card: Card, locale: Locale): LocalizedCard {
     ...(oshiSkill !== undefined && { oshi_skill: oshiSkill }),
     ...(spOshiSkill !== undefined && { sp_oshi_skill: spOshiSkill }),
     qa_items: translation.qa_items ?? [],
+    ...(originalLabels(card, resolved) !== undefined && {
+      original: originalLabels(card, resolved),
+    }),
   } as LocalizedCard;
 }
 

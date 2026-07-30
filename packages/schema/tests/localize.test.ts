@@ -86,17 +86,32 @@ for (const locale of LOCALES) {
   });
 }
 
-test("arts with no translation keep their costs (hSD03-009 in en)", () => {
-  const card = fixtures.cards.find((c: { id: string }) => c.id === "446");
-  assert.ok(card, "fixture 446 missing");
+// Merge rule 2 — arts pair by index, tolerating a short translated list.
+//
+// This used to key on card 446 (hSD03-009: 2 arts, 0 `en` translations). The
+// field-level translation cache has since filled it in (F-004), and a census over the
+// whole card set finds zero cards with an arts-length mismatch in any locale — so the
+// branch has no natural cover left in the data at all.
+//
+// The synthetic fixture is what covers it now, in both implementations. See
+// SYNTHETIC_CARD in packages/schema/scripts/build_fixtures.py and issue #16.
+test("arts with no translation keep their costs (synthetic short-arts card)", () => {
+  const card = fixtures.cards.find((c: { id: string }) => c.id === "9000001");
+  assert.ok(card, "synthetic short-arts fixture missing");
   assert.equal(card.arts.length, 2);
-  assert.equal(card.translations.en.arts, undefined);
+  assert.deepEqual(card.translations.en.arts, []);
 
   const result = localize(card, "en");
   const arts = result.arts ?? [];
-  assert.equal(arts.length, 2, "arts must survive an absent translation");
+  assert.equal(arts.length, 2, "arts must survive an empty translation list");
   assert.equal(arts[0]?.name, undefined);
-  assert.equal(arts[0]?.cost_count, card.arts[0].cost_count);
+  assert.deepEqual(arts[0]?.cost_types, card.arts[0].cost_types);
+
+  // A partially-translated list pairs by index: `tc` has 1 translation for 2 arts.
+  const partial = localize(card, "tc").arts ?? [];
+  assert.equal(partial.length, 2);
+  assert.equal(partial[0]?.name, "技能一");
+  assert.equal(partial[1]?.name, undefined, "the unpaired art keeps costs, loses name");
 });
 
 test("missing locale falls back to the source locale", () => {

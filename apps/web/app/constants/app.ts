@@ -8,8 +8,9 @@
  * `constants/card-data.ts` is **deleted**. It was the colour / card-type / rarity /
  * bloom-level enums written out a second time, and it had drifted from the data: no `HR`
  * rarity (24 cards unfilterable in the live UI), no `supportStaff` or `unknown` card
- * type, and `["debut","1st","2nd","spot"]` where the data says `first`/`second`. Import
- * from `@holo/schema/enums` instead — that is the point of generating the contract once.
+ * type (`unknown` has since been removed from the contract too — issue #19), and
+ * `["debut","1st","2nd","spot"]` where the data says `first`/`second`. Import from
+ * `@holo/schema/enums` instead — that is the point of generating the contract once.
  */
 
 /**

@@ -5,7 +5,7 @@ Every case here is behaviour the 2,464-card refresh actually exercised. Id 2459
 and the bare `サポート` card type. It failed `build` loudly on first contact, which is
 the contract working; these tests pin the resolution so it stays working.
 
-See `holo_schema.notice` for why a notice is not a `Card`, and docs/findings.md F-020.
+See `holo_schema.notice` for why a notice is not a `Card`, and docs/archive/findings.md F-020.
 """
 
 from __future__ import annotations

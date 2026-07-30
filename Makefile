@@ -28,9 +28,10 @@ generate: ## Regenerate JSON Schema, TypeScript, D1 DDL, fixtures.sql and the fi
 	uv run python packages/schema/scripts/generate.py
 	uv run python packages/schema/scripts/generate_ddl.py
 	uv run python packages/schema/scripts/generate_fixtures_sql.py
+	uv run python packages/schema/scripts/generate_i18n.py
 	uv run python fixtures/build_local_artifacts.py
 
-fixtures: ## Re-select the fixture card set (needs v1 data — see script docstring)
+fixtures: ## Re-select the fixture card set (needs `holo-data build` output)
 	uv run python packages/schema/scripts/build_fixtures.py
 
 golden: ## Regenerate the localize() golden files from the Python reference
@@ -66,6 +67,7 @@ check-schema: ## Fail if the committed generated files are stale
 	@uv run python packages/schema/scripts/generate.py --check
 	@uv run python packages/schema/scripts/generate_ddl.py --check
 	@uv run python packages/schema/scripts/generate_fixtures_sql.py --check
+	@uv run python packages/schema/scripts/generate_i18n.py --check
 	@uv run python fixtures/build_local_artifacts.py --check
 
 check-py: ## Run the Python tests (schema + pipeline)

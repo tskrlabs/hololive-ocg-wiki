@@ -60,7 +60,7 @@ Probing the v1 API:
 
 FTS5's default `unicode61` tokenizer treats an unbroken CJK run as a single token, so
 only a complete name matches. The site's default locale is `tc` and its source locale is
-`ja`. Logged as [F-013](../findings.md#f-013).
+`ja`. Logged as [F-013](../archive/findings.md#f-013).
 
 ### 4. Two plan figures were wrong
 

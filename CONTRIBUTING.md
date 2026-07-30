@@ -73,10 +73,10 @@ The honest reason it is not a PR: the translation cache lives in `pipeline/local
 which is **not in git**, so there is no file for you to edit. D14 originally promised a
 committed `corrections/` overlay, and ADR 0002 replaced that mechanism with cache entries
 without replacing the reviewable surface it provided. That gap is logged as
-[F-018](docs/findings.md#f-018) and is not yet closed.
+[F-018](docs/archive/findings.md#f-018) and is not yet closed.
 
 Bad *data* — as opposed to bad translation — is worth an issue too. Known anomalies are
-in [`docs/findings.md`](docs/findings.md); check there first, since several surprising
+in [`docs/archive/findings.md`](docs/archive/findings.md); check there first, since several surprising
 things are already known and deliberately not "fixed".
 
 ## If you touch the card contract
@@ -105,7 +105,7 @@ Working on the contract needs Python, which `make setup` installs via
 - Work branches off **`develop`**; `main` is what is deployed. A merge to `main`
   deploys the site, so open pull requests against `develop`.
 - Commit messages explain **why**, not what — the diff already says what.
-- Data anomalies go in [`docs/findings.md`](docs/findings.md) rather than being silently
+- Data anomalies go in [`docs/archive/findings.md`](docs/archive/findings.md) rather than being silently
   worked around. Something unambiguously broken with an obvious fix gets fixed *and*
   logged.
 - Decisions that shape the code get an ADR in `docs/adr/`.

@@ -1,0 +1,3487 @@
+{
+  "kind": "names",
+  "entries": {
+    "2人あわせてラムダック！": {
+      "translations": {
+        "en": "Together, the Two of Us Make Ramduck!",
+        "es": "¡Las dos juntas, Lambduck!",
+        "id": "Bersama berdua jadi Lamduck!",
+        "ko": "두 사람이 함께 람덕!",
+        "tc": "兩人合起來就是拉姆達克！",
+        "th": "รวมพลังสองคนเป็น Lambduck!"
+      }
+    },
+    "35P": {
+      "translations": {
+        "en": "35P",
+        "es": "35P",
+        "id": "35P",
+        "ko": "35P",
+        "tc": "35P",
+        "th": "35P"
+      }
+    },
+    "AIこより": {
+      "translations": {
+        "en": "AI Koyori",
+        "es": "AI Koyori",
+        "id": "AI Koyori",
+        "ko": "AI 코요리",
+        "tc": "AI小夜璃",
+        "th": "AI Koyori"
+      }
+    },
+    "ASMRマイク": {
+      "translations": {
+        "en": "ASMR Mic",
+        "es": "Micrófono ASMR",
+        "id": "Mikrofon ASMR",
+        "ko": "ASMR 마이크",
+        "tc": "ASMR麥克風",
+        "th": "ไมค์ ASMR"
+      }
+    },
+    "AZKi": {
+      "translations": {
+        "en": "AZKi",
+        "es": "AZKi",
+        "id": "AZKi",
+        "ko": "AZKi",
+        "tc": "AZKi",
+        "th": "AZKi"
+      }
+    },
+    "Advent": {
+      "translations": {
+        "en": "Advent",
+        "es": "Advent",
+        "id": "Advent",
+        "ko": "Advent",
+        "tc": "Advent",
+        "th": "Advent"
+      }
+    },
+    "BAZO": {
+      "translations": {
+        "en": "BAZO",
+        "es": "BAZO",
+        "id": "BAZO",
+        "ko": "BAZO",
+        "tc": "BAZO",
+        "th": "BAZO"
+      }
+    },
+    "Bloom＆Gloom": {
+      "translations": {
+        "en": "Bloom & Gloom",
+        "es": "Bloom＆Gloom",
+        "id": "Bloom＆Gloom",
+        "ko": "Bloom＆Gloom",
+        "tc": "Bloom＆Gloom",
+        "th": "Bloom＆Gloom"
+      }
+    },
+    "Boros": {
+      "translations": {
+        "en": "Boros",
+        "es": "Boros",
+        "id": "Boros",
+        "ko": "Boros",
+        "tc": "Boros",
+        "th": "Boros"
+      }
+    },
+    "Chattino": {
+      "translations": {
+        "en": "Chattino",
+        "es": "Chattino",
+        "id": "Chattino",
+        "ko": "Chattino",
+        "tc": "Chattino",
+        "th": "Chattino"
+      }
+    },
+    "Cilus": {
+      "translations": {
+        "en": "Cilus",
+        "es": "Cilus",
+        "id": "Cilus",
+        "ko": "Cilus",
+        "tc": "Cilus",
+        "th": "Cilus"
+      }
+    },
+    "Death-sensei": {
+      "translations": {
+        "en": "Death-sensei",
+        "es": "Death-sensei",
+        "id": "Death-sensei",
+        "ko": "Death-sensei",
+        "tc": "Death-sensei",
+        "th": "Death-sensei"
+      }
+    },
+    "FLOW GLOW": {
+      "translations": {
+        "en": "FLOW GLOW",
+        "es": "FLOW GLOW",
+        "id": "FLOW GLOW",
+        "ko": "FLOW GLOW",
+        "tc": "FLOW GLOW",
+        "th": "FLOW GLOW"
+      }
+    },
+    "FPS配信": {
+      "translations": {
+        "en": "FPS Stream",
+        "es": "FPS Stream",
+        "id": "FPS Stream",
+        "ko": "FPS 스트림",
+        "tc": "FPS實況",
+        "th": "FPS สตรีม"
+      }
+    },
+    "FUWAMOCO": {
+      "translations": {
+        "en": "FUWAMOCO",
+        "es": "FUWAMOCO",
+        "id": "FUWAMOCO",
+        "ko": "FUWAMOCO",
+        "tc": "FUWAMOCO",
+        "th": "FUWAMOCO"
+      }
+    },
+    "First Gravity": {
+      "translations": {
+        "en": "First Gravity",
+        "es": "First Gravity",
+        "id": "First Gravity",
+        "ko": "First Gravity",
+        "tc": "First Gravity",
+        "th": "First Gravity"
+      }
+    },
+    "GEOW": {
+      "translations": {
+        "en": "GEOW",
+        "es": "GEOW",
+        "id": "GEOW",
+        "ko": "GEOW",
+        "tc": "GEOW",
+        "th": "GEOW"
+      }
+    },
+    "GuyRyS": {
+      "translations": {
+        "en": "GuyRyS",
+        "es": "GuyRyS",
+        "id": "GuyRyS",
+        "ko": "GuyRyS",
+        "tc": "GuyRyS",
+        "th": "GuyRyS"
+      }
+    },
+    "HOLOLIVE FANTASY": {
+      "translations": {
+        "en": "HOLOLIVE FANTASY",
+        "es": "HOLOLIVE FANTASY",
+        "id": "HOLOLIVE FANTASY",
+        "ko": "HOLOLIVE FANTASY",
+        "tc": "HOLOLIVE FANTASY",
+        "th": "HOLOLIVE FANTASY"
+      }
+    },
+    "HOLOTORI": {
+      "translations": {
+        "en": "HOLOTORI",
+        "es": "HOLOTORI",
+        "id": "HOLOTORI",
+        "ko": "HOLOTORI",
+        "tc": "HOLOTORI",
+        "th": "HOLOTORI"
+      }
+    },
+    "IDENTIFY -AREA 15-": {
+      "translations": {
+        "en": "IDENTIFY -AREA 15-",
+        "es": "IDENTIFY -AREA 15-",
+        "id": "IDENTIFY -AREA 15-",
+        "ko": "IDENTIFY -AREA 15-",
+        "tc": "IDENTIFY -AREA 15-",
+        "th": "IDENTIFY -AREA 15-"
+      }
+    },
+    "IRyS": {
+      "translations": {
+        "en": "IRyS",
+        "es": "IRyS",
+        "id": "IRyS",
+        "ko": "IRyS",
+        "tc": "IRyS",
+        "th": "IRyS"
+      }
+    },
+    "JUSTICE, JUST LIKE THAT!!!!": {
+      "translations": {
+        "en": "JUSTICE, JUST LIKE THAT!!!!",
+        "es": "JUSTICE, JUST LIKE THAT!!!!",
+        "id": "JUSTICE, JUST LIKE THAT!!!!",
+        "ko": "JUSTICE, JUST LIKE THAT!!!!",
+        "tc": "JUSTICE, JUST LIKE THAT!!!!",
+        "th": "JUSTICE, JUST LIKE THAT!!!!"
+      }
+    },
+    "Jailbird": {
+      "translations": {
+        "en": "Jailbird",
+        "es": "Jailbird",
+        "id": "Jailbird",
+        "ko": "Jailbird",
+        "tc": "Jailbird",
+        "th": "Jailbird"
+      }
+    },
+    "Justice": {
+      "translations": {
+        "en": "Justice",
+        "es": "Justice",
+        "id": "Justice",
+        "ko": "Justice",
+        "tc": "Justice",
+        "th": "Justice"
+      }
+    },
+    "KFP": {
+      "translations": {
+        "en": "KFP",
+        "es": "KFP",
+        "id": "KFP",
+        "ko": "KFP",
+        "tc": "KFP",
+        "th": "KFP"
+      }
+    },
+    "Kotori": {
+      "translations": {
+        "en": "Kotori",
+        "es": "Kotori",
+        "id": "Kotori",
+        "ko": "Kotori",
+        "tc": "Kotori",
+        "th": "Kotori"
+      }
+    },
+    "Kronies": {
+      "translations": {
+        "en": "Kronies",
+        "es": "Kronies",
+        "id": "Kronies",
+        "ko": "Kronies",
+        "tc": "Kronies",
+        "th": "Kronies"
+      }
+    },
+    "Myth": {
+      "translations": {
+        "en": "Myth",
+        "es": "Myth",
+        "id": "Myth",
+        "ko": "Myth",
+        "tc": "Myth",
+        "th": "Myth"
+      }
+    },
+    "Otomo": {
+      "translations": {
+        "en": "Otomo",
+        "es": "Otomo",
+        "id": "Otomo",
+        "ko": "Otomo",
+        "tc": "Otomo",
+        "th": "Otomo"
+      }
+    },
+    "Popo": {
+      "translations": {
+        "en": "Popo",
+        "es": "Popo",
+        "id": "Popo",
+        "ko": "Popo",
+        "tc": "Popo",
+        "th": "Popo"
+      }
+    },
+    "Promise": {
+      "translations": {
+        "en": "Promise",
+        "es": "Promise",
+        "id": "Promise",
+        "ko": "Promise",
+        "tc": "Promise",
+        "th": "Promise"
+      }
+    },
+    "ReGLOSS": {
+      "translations": {
+        "en": "ReGLOSS",
+        "es": "ReGLOSS",
+        "id": "ReGLOSS",
+        "ko": "ReGLOSS",
+        "tc": "ReGLOSS",
+        "th": "ReGLOSS"
+      }
+    },
+    "Riscot": {
+      "translations": {
+        "en": "Riscot",
+        "es": "Riscot",
+        "id": "Riscot",
+        "ko": "Riscot",
+        "tc": "Riscot",
+        "th": "Riscot"
+      }
+    },
+    "Risuners": {
+      "translations": {
+        "en": "Risuners",
+        "es": "Risuners",
+        "id": "Risuners",
+        "ko": "Risuners",
+        "tc": "Risuners",
+        "th": "Risuners"
+      }
+    },
+    "Ruffians": {
+      "translations": {
+        "en": "Ruffians",
+        "es": "Ruffians",
+        "id": "Ruffians",
+        "ko": "Ruffians",
+        "tc": "Ruffians",
+        "th": "Ruffians"
+      }
+    },
+    "SSRB": {
+      "translations": {
+        "en": "SSRB",
+        "es": "SSRB",
+        "id": "SSRB",
+        "ko": "SSRB",
+        "tc": "SSRB",
+        "th": "SSRB"
+      }
+    },
+    "SorAZ": {
+      "translations": {
+        "en": "SorAZ",
+        "es": "SorAZ",
+        "id": "SorAZ",
+        "ko": "SorAZ",
+        "tc": "SorAZ",
+        "th": "SorAZ"
+      }
+    },
+    "SorAZセレブレーション": {
+      "translations": {
+        "en": "SorAZ Celebration",
+        "es": "SorAZ Celebration",
+        "id": "Perayaan SorAZ",
+        "ko": "SorAZ 셀레브레이션",
+        "tc": "SorAZ慶典",
+        "th": "SorAZ เซเลเบรชั่น"
+      }
+    },
+    "Takodachi": {
+      "translations": {
+        "en": "Takodachi",
+        "es": "Takodachi",
+        "id": "Takodachi",
+        "ko": "Takodachi",
+        "tc": "Takodachi",
+        "th": "Takodachi"
+      }
+    },
+    "Tatang": {
+      "translations": {
+        "en": "Tatang",
+        "es": "Tatang",
+        "id": "Tatang",
+        "ko": "Tatang",
+        "tc": "Tatang",
+        "th": "Tatang"
+      }
+    },
+    "Thorn": {
+      "translations": {
+        "en": "Thorn",
+        "es": "Thorn",
+        "id": "Thorn",
+        "ko": "Thorn",
+        "tc": "Thorn",
+        "th": "Thorn"
+      }
+    },
+    "UDIN": {
+      "translations": {
+        "en": "UDIN",
+        "es": "UDIN",
+        "id": "UDIN",
+        "ko": "UDIN",
+        "tc": "UDIN",
+        "th": "UDIN"
+      }
+    },
+    "WHAT'S UP!!!!! KEEEEEP GROWING!!!!!": {
+      "translations": {
+        "en": "WHAT'S UP!!!!! KEEEEEP GROWING!!!!!",
+        "es": "WHAT'S UP!!!!! KEEEEEP GROWING!!!!!",
+        "id": "WHAT'S UP!!!!! KEEEEEP GROWING!!!!!",
+        "ko": "WHAT'S UP!!!!! KEEEEEP GROWING!!!!!",
+        "tc": "WHAT'S UP!!!!! KEEEEEP GROWING!!!!!",
+        "th": "WHAT'S UP!!!!! KEEEEEP GROWING!!!!!"
+      }
+    },
+    "We are ReGLOSS": {
+      "translations": {
+        "en": "We are ReGLOSS",
+        "es": "We are ReGLOSS",
+        "id": "We are ReGLOSS",
+        "ko": "We are ReGLOSS",
+        "tc": "We are ReGLOSS",
+        "th": "We are ReGLOSS"
+      }
+    },
+    "Zecretary": {
+      "translations": {
+        "en": "Zecretary",
+        "es": "Zecretary",
+        "id": "Zecretary",
+        "ko": "Zecretary",
+        "tc": "Zecretary",
+        "th": "Zecretary"
+      }
+    },
+    "holoAN": {
+      "translations": {
+        "en": "holoAN",
+        "es": "holoAN",
+        "id": "holoAN",
+        "ko": "holoAN",
+        "tc": "holoAN",
+        "th": "holoAN"
+      }
+    },
+    "hololive Mythology": {
+      "translations": {
+        "en": "hololive Mythology",
+        "es": "hololive Mythology",
+        "id": "hololive Mythology",
+        "ko": "hololive Mythology",
+        "tc": "hololive Mythology",
+        "th": "hololive Mythology"
+      }
+    },
+    "miComet": {
+      "translations": {
+        "en": "miComet",
+        "es": "miComet",
+        "id": "miComet",
+        "ko": "miComet",
+        "tc": "miComet",
+        "th": "miComet"
+      }
+    },
+    "あとは任せた！": {
+      "translations": {
+        "en": "Leave the rest to me!",
+        "es": "Leave the rest to me!",
+        "id": "Serahkan sisanya padaku!",
+        "ko": "나머지는 맡겨줘!",
+        "tc": "剩下的交給你！",
+        "th": "เหลือให้ฉันจัดการ!"
+      }
+    },
+    "ありよりのアリゲーター": {
+      "translations": {
+        "en": "More Likely Than Not an Alligator",
+        "es": "Un caimán más que posible",
+        "id": "Aligator yang lebih dari mungkin",
+        "ko": "있을 법한 앨리게이터",
+        "tc": "比有還有的鱷魚",
+        "th": "จระเข้ที่มีอยู่ยิ่งกว่าแน่นอน"
+      }
+    },
+    "あん肝": {
+      "translations": {
+        "en": "Ankimo",
+        "es": "Ankimo",
+        "id": "Ankimo",
+        "ko": "안키모",
+        "tc": "鮟肝",
+        "th": "อันคิโมะ"
+      }
+    },
+    "いたずらなRuffians": {
+      "translations": {
+        "en": "Mischievous Ruffians",
+        "es": "Ruffians traviesos",
+        "id": "Ruffians yang usil",
+        "ko": "장난꾸러기 Ruffians",
+        "tc": "愛惡作劇的Ruffians",
+        "th": "Ruffians จอมซน"
+      }
+    },
+    "いろはにほへっと あやふぶみ": {
+      "translations": {
+        "en": "Iroha ni Hohetto Ayafubumi",
+        "es": "Iroha ni Hohetto Ayafubumi",
+        "id": "Iroha ni Hohetto Ayafubumi",
+        "ko": "이로하니호헤토 아야후부미",
+        "tc": "いろはにほへっと あやふぶみ",
+        "th": "อิโรฮานิโฮเฮตโต อายาฟุบุมิ"
+      }
+    },
+    "うぱお": {
+      "translations": {
+        "en": "Upao",
+        "es": "Upao",
+        "id": "Upao",
+        "ko": "우파오",
+        "tc": "うぱお",
+        "th": "อุปาโอะ"
+      }
+    },
+    "うまみー！": {
+      "translations": {
+        "en": "Yummy!",
+        "es": "¡Qué rico!",
+        "id": "Umamii!",
+        "ko": "맛있어~!",
+        "tc": "好吃咪！",
+        "th": "อร่อยยย!"
+      }
+    },
+    "えびふらいおん": {
+      "translations": {
+        "en": "Ebi Furai-on",
+        "es": "Ebilion",
+        "id": "Ebifryon",
+        "ko": "에비프라이온",
+        "tc": "炸蝦獅",
+        "th": "กุ้งทอดไลอ้อน"
+      }
+    },
+    "おかにゃん": {
+      "translations": {
+        "en": "Okanyan",
+        "es": "Okanyan",
+        "id": "Okanyan",
+        "ko": "오카냥",
+        "tc": "おかにゃん",
+        "th": "โอกะญัง"
+      }
+    },
+    "おにぎりゃー": {
+      "translations": {
+        "en": "Onigiryaa",
+        "es": "Onigiryaa",
+        "id": "Onigiryaa",
+        "ko": "오니기랴",
+        "tc": "飯糰民",
+        "th": "โอนิกิร่า"
+      }
+    },
+    "おるやんけ": {
+      "translations": {
+        "en": "Oru yan ke",
+        "es": "Oru yan ke",
+        "id": "Oru yan ke",
+        "ko": "오루얀케",
+        "tc": "おるやんけ",
+        "th": "โอรุยังเคะ"
+      }
+    },
+    "かなた建設": {
+      "translations": {
+        "en": "Kanata Construction",
+        "es": "Kanata Construction",
+        "id": "Konstruksi Kanata",
+        "ko": "카나타 건설",
+        "tc": "かなた建設",
+        "th": "คานาตะ ก่อสร้าง"
+      }
+    },
+    "がんも": {
+      "translations": {
+        "en": "Ganmo",
+        "es": "Ganmo",
+        "id": "Ganmo",
+        "ko": "간모",
+        "tc": "がんも",
+        "th": "กันโมะ"
+      }
+    },
+    "けはい": {
+      "translations": {
+        "en": "Presence",
+        "es": "Presencia",
+        "id": "Tanda kehadiran",
+        "ko": "기척",
+        "tc": "氣息",
+        "th": "เคะไฮ"
+      }
+    },
+    "こぼ・かなえる": {
+      "translations": {
+        "en": "Kobo Kanaeru",
+        "es": "Kobo Kanaeru",
+        "id": "Kobo Kanaeru",
+        "ko": "코보 카나에루",
+        "tc": "こぼ・かなえる",
+        "th": "โคโบะ คานาเอรุ"
+      },
+      "aliases": [
+        {
+          "text": "こぼ",
+          "translations": {
+            "en": "Kobo",
+            "es": "Kobo",
+            "id": "Kobo",
+            "ko": "코보",
+            "tc": "Kobo",
+            "th": "โคโบ"
+          }
+        }
+      ]
+    },
+    "こよりの助手くん": {
+      "translations": {
+        "en": "Koyori's Assistant",
+        "es": "Koyori's Assistant",
+        "id": "Asisten Koyori",
+        "ko": "코요리의 조수군",
+        "tc": "こより的助手君",
+        "th": "ผู้ช่วยของโคโยริ"
+      }
+    },
+    "ころねすきー": {
+      "translations": {
+        "en": "Koronesuki",
+        "es": "Koronesuki",
+        "id": "Koronesuki",
+        "ko": "코로네스키",
+        "tc": "Koronesuki",
+        "th": "โคโรเนะสุกิ"
+      }
+    },
+    "ごきげんカレー": {
+      "translations": {
+        "en": "Cheery Curry",
+        "es": "Curry de buen humor",
+        "id": "Kari Ceria",
+        "ko": "기분 좋은 카레",
+        "tc": "開心咖哩",
+        "th": "แกงกะหรี่แสนอารมณ์ดี"
+      }
+    },
+    "さくらみこ": {
+      "translations": {
+        "en": "Sakura Miko",
+        "es": "Sakura Miko",
+        "id": "Sakura Miko",
+        "ko": "사쿠라 미코",
+        "tc": "櫻巫女",
+        "th": "ซากุระ มิโกะ"
+      }
+    },
+    "しめじダンス": {
+      "translations": {
+        "en": "Shimeji Dance",
+        "es": "Danza de shimeji",
+        "id": "Tarian Shimeji",
+        "ko": "시메지 댄스",
+        "tc": "鴻喜菇舞蹈",
+        "th": "ระบำชิเมจิ"
+      }
+    },
+    "しょこら": {
+      "translations": {
+        "en": "Chocola",
+        "es": "Chocola",
+        "id": "Chocola",
+        "ko": "쇼콜라",
+        "tc": "巧克力",
+        "th": "โชโคลา"
+      }
+    },
+    "じゃあ敵だね": {
+      "translations": {
+        "en": "Then you're an enemy",
+        "es": "Then you're an enemy",
+        "id": "Kalau begitu kamu musuh",
+        "ko": "그럼 적이네",
+        "tc": "那就是敵人囉",
+        "th": "งั้นเป็นศัตรูสิ"
+      }
+    },
+    "すこん部": {
+      "translations": {
+        "en": "Sukon Club",
+        "es": "Sukon Club",
+        "id": "Klub Sukon",
+        "ko": "스콘부",
+        "tc": "すこん部",
+        "th": "ชมรมสุคง"
+      }
+    },
+    "だいふく": {
+      "translations": {
+        "en": "Daifuku",
+        "es": "Daifuku",
+        "id": "Daifuku",
+        "ko": "다이후쿠",
+        "tc": "大福",
+        "th": "ไดฟุกุ"
+      }
+    },
+    "ちゃま旅": {
+      "translations": {
+        "en": "Chama Journey",
+        "es": "Viaje de Chama",
+        "id": "Perjalanan Chama",
+        "ko": "챠마 여행",
+        "tc": "茶茶旅",
+        "th": "ทริปของ Chama"
+      }
+    },
+    "ちょこのなすユッケ": {
+      "translations": {
+        "en": "Choco's Eggplant Yukhoe",
+        "es": "Yukke de berenjena de Choco",
+        "id": "Yukke terong Choco",
+        "ko": "초코의 가지 육회",
+        "tc": "巧可茄子生拌肉",
+        "th": "ยุกเกะมะเขือม่วงของ Choco"
+      }
+    },
+    "ちょこのオムライス": {
+      "translations": {
+        "en": "Choco's Omurice",
+        "es": "Choco's Omurice",
+        "id": "Omurice Choco",
+        "ko": "초코의 오므라이스",
+        "tc": "Choco的蛋包飯",
+        "th": "โอมุไรซ์ของโชโคะ"
+      }
+    },
+    "ちょこのビーフストロガノフ": {
+      "translations": {
+        "en": "Choco's Beef Stroganoff",
+        "es": "Choco's Beef Stroganoff",
+        "id": "Beef Stroganoff Choco",
+        "ko": "초코의 비프 스트로가노프",
+        "tc": "Choco的牛肉斯特羅加諾夫",
+        "th": "บีฟสโตรกานอฟของโชโคะ"
+      }
+    },
+    "ときのそら": {
+      "translations": {
+        "en": "Tokino Sora",
+        "es": "Tokino Sora",
+        "id": "Tokino Sora",
+        "ko": "토키노 소라",
+        "tc": "時乃空",
+        "th": "โตกิโนะ โซระ"
+      }
+    },
+    "ねっ子": {
+      "translations": {
+        "en": "Nekko",
+        "es": "Nekko",
+        "id": "Nekko",
+        "ko": "넷코",
+        "tc": "根っ子",
+        "th": "Nekko"
+      }
+    },
+    "ねぽらぼ": {
+      "translations": {
+        "en": "NePoLaBo",
+        "es": "NePoLaBo",
+        "id": "NePoLaBo",
+        "ko": "네포라보",
+        "tc": "Nepolabo",
+        "th": "เนโปราโบะ"
+      }
+    },
+    "はあとん": {
+      "translations": {
+        "en": "Haaaton",
+        "es": "Haaaton",
+        "id": "Haaaton",
+        "ko": "하톤",
+        "tc": "哈桃民",
+        "th": "ฮาตง"
+      }
+    },
+    "ばんぺん": {
+      "translations": {
+        "en": "Bampen",
+        "es": "Bampen",
+        "id": "Bampen",
+        "ko": "반펜",
+        "tc": "ばんぺん",
+        "th": "บันเป็ง"
+      }
+    },
+    "ふぐ太郎": {
+      "translations": {
+        "en": "Fugu Taro",
+        "es": "Fugutarō",
+        "id": "Fugutaro",
+        "ko": "복어타로",
+        "tc": "河豚太郎",
+        "th": "Fugutarou"
+      }
+    },
+    "ふつうのパソコン": {
+      "translations": {
+        "en": "Regular PC",
+        "es": "Regular PC",
+        "id": "PC Biasa",
+        "ko": "평범한 PC",
+        "tc": "普通電腦",
+        "th": "พีซีธรรมดา"
+      }
+    },
+    "ぽこべぇ": {
+      "translations": {
+        "en": "Pokobe",
+        "es": "Pokobe",
+        "id": "Pokobe",
+        "ko": "포코베",
+        "tc": "Pekofy",
+        "th": "โปโกะเบะ"
+      }
+    },
+    "ぽよ余": {
+      "translations": {
+        "en": "Poyo-yo",
+        "es": "Poyo-yo",
+        "id": "Poyo-yo",
+        "ko": "포요요",
+        "tc": "余扇",
+        "th": "โปโยะโย"
+      }
+    },
+    "まいたけダンス": {
+      "translations": {
+        "en": "Maitake Dance",
+        "es": "Maitake Dance",
+        "id": "Tarian Maitake",
+        "ko": "마이타케 댄스",
+        "tc": "舞菇舞",
+        "th": "เต้นรำไมตะเกะ"
+      }
+    },
+    "まつたけダンス": {
+      "translations": {
+        "en": "Matsutake Dance",
+        "es": "Danza de matsutake",
+        "id": "Tarian Matsutake",
+        "ko": "송이버섯 댄스",
+        "tc": "松茸舞蹈",
+        "th": "ระบำมัตสึทาเกะ"
+      }
+    },
+    "まつりす": {
+      "translations": {
+        "en": "Matsurisu",
+        "es": "Matsurisu",
+        "id": "Matsurisu",
+        "ko": "마츠리스",
+        "tc": "祭絲",
+        "th": "Matsurisu"
+      }
+    },
+    "みこだにぇー": {
+      "translations": {
+        "en": "Mikodanye",
+        "es": "Mikodanye",
+        "id": "Mikodanye",
+        "ko": "미코다녜",
+        "tc": "Miko喵耶",
+        "th": "มิโกะดาเนีย"
+      }
+    },
+    "みっころね24": {
+      "translations": {
+        "en": "Mikkorone24",
+        "es": "Mikkorone24",
+        "id": "Mikkorone24",
+        "ko": "믹코로네24",
+        "tc": "Mikkorone24",
+        "th": "มิกโคโรเนะ24"
+      }
+    },
+    "み俺恥": {
+      "translations": {
+        "en": "Mi Ore Haji",
+        "es": "Mi Ore Haji",
+        "id": "Mi Ore Haji",
+        "ko": "미오레하지",
+        "tc": "我丟臉了",
+        "th": "มิโอเระฮาจิ"
+      }
+    },
+    "やめなー": {
+      "translations": {
+        "en": "Yamena",
+        "es": "Yamena",
+        "id": "Yamena",
+        "ko": "야메나",
+        "tc": "不要啦～",
+        "th": "ยาเมนา"
+      }
+    },
+    "ゆび": {
+      "translations": {
+        "en": "Finger",
+        "es": "Dedo",
+        "id": "Jari",
+        "ko": "손가락",
+        "tc": "手指",
+        "th": "นิ้ว"
+      }
+    },
+    "りっちしょこらのハンバーグ": {
+      "translations": {
+        "en": "Ricchishokora's Hamburg Steak",
+        "es": "Hamburguesa de Rich Chocolat",
+        "id": "Hamburg rich chocolat",
+        "ko": "릿치 쇼콜라의 햄버그",
+        "tc": "Rich巧克拉的漢堡排",
+        "th": "แฮมเบิร์กของ Rich Shocola"
+      }
+    },
+    "ろぼさー": {
+      "translations": {
+        "en": "Robosa",
+        "es": "Robosa",
+        "id": "Robosa",
+        "ko": "로보사",
+        "tc": "Robosa",
+        "th": "โรโบะซา"
+      }
+    },
+    "わくわくいたずらタイム": {
+      "translations": {
+        "en": "Exciting Prank Time",
+        "es": "Exciting Prank Time",
+        "id": "Waktu Jahil yang Menyenangkan",
+        "ko": "두근두근 장난 타임",
+        "tc": "令人興奮的惡作劇時間",
+        "th": "เวลาซนสนุกสนาน"
+      }
+    },
+    "わためいと": {
+      "translations": {
+        "en": "Watamate",
+        "es": "Watamate",
+        "id": "Watamate",
+        "ko": "와타메이트",
+        "tc": "WataMate",
+        "th": "วาตะเมะโตะ"
+      }
+    },
+    "アイドルサインペン": {
+      "translations": {
+        "en": "Idol Sign Pen",
+        "es": "Idol Sign Pen",
+        "id": "Pulpen Tanda Tangan Idol",
+        "ko": "아이돌 사인펜",
+        "tc": "偶像簽字筆",
+        "th": "ปากกาลายเซ็นไอดอล"
+      }
+    },
+    "アイドルマイク": {
+      "translations": {
+        "en": "Idol Microphone",
+        "es": "Idol Microphone",
+        "id": "Mikrofon Idol",
+        "ko": "아이돌 마이크",
+        "tc": "偶像麥克風",
+        "th": "ไมโครโฟนไอดอล"
+      }
+    },
+    "アイラニ・イオフィフティーン": {
+      "translations": {
+        "en": "Airani Iofifteen",
+        "es": "Airani Iofifteen",
+        "id": "Airani Iofifteen",
+        "ko": "아이라니 이오피피틴",
+        "tc": "艾拉妮・伊歐菲芙汀",
+        "th": "ไอราณี ไอโอฟิฟตีน"
+      }
+    },
+    "アキ・ローゼンタール": {
+      "translations": {
+        "en": "Aki Rosenthal",
+        "es": "Aki Rosenthal",
+        "id": "Aki Rosenthal",
+        "ko": "아키 로젠탈",
+        "tc": "亞綺・羅森塔爾",
+        "th": "อากิ โรเซนธาล"
+      },
+      "aliases": [
+        {
+          "text": "アキ",
+          "translations": {
+            "en": "Aki",
+            "es": "Aki",
+            "id": "Aki",
+            "ko": "아키",
+            "tc": "亞綺",
+            "th": "อากิ"
+          }
+        }
+      ]
+    },
+    "アキ・ローゼンタールの斧": {
+      "translations": {
+        "en": "Aki Rosenthal's Axe",
+        "es": "Aki Rosenthal's Axe",
+        "id": "Kapak Aki Rosenthal",
+        "ko": "아키 로젠탈의 도끼",
+        "tc": "亞綺・羅森塔爾的斧子",
+        "th": "ขวานของอากิ โรเซนธาล"
+      }
+    },
+    "アユンダ・リス": {
+      "translations": {
+        "en": "Ayunda Risu",
+        "es": "Ayunda Risu",
+        "id": "Ayunda Risu",
+        "ko": "아윤다 리스",
+        "tc": "阿悠妲・莉絲",
+        "th": "อายุนดา ริสุ"
+      },
+      "aliases": [
+        {
+          "text": "リス",
+          "translations": {
+            "en": "Risu",
+            "es": "Risu",
+            "id": "Risu",
+            "ko": "리스",
+            "tc": "莉絲",
+            "th": "ริสุ"
+          }
+        }
+      ]
+    },
+    "アンコール": {
+      "translations": {
+        "en": "Encore",
+        "es": "Encore",
+        "id": "Encore",
+        "ko": "앙코르",
+        "tc": "安可",
+        "th": "อังคอร์"
+      }
+    },
+    "アーカイブパソコン": {
+      "translations": {
+        "en": "Archive PC",
+        "es": "PC de archivos",
+        "id": "Komputer Arsip",
+        "ko": "아카이브 컴퓨터",
+        "tc": "存檔電腦",
+        "th": "คอมพิวเตอร์เก็บถาวร"
+      }
+    },
+    "アーニャ・メルフィッサ": {
+      "translations": {
+        "en": "Anya Melfissa",
+        "es": "Anya Melfissa",
+        "id": "Anya Melfissa",
+        "ko": "아냐 멜피사",
+        "tc": "阿妮亞・梅爾菲莎",
+        "th": "อันยา เมลฟิสซา"
+      }
+    },
+    "イヌ": {
+      "translations": {
+        "en": "Dog",
+        "es": "Dog",
+        "id": "Anjing",
+        "ko": "개",
+        "tc": "狗",
+        "th": "หมา"
+      }
+    },
+    "エリザベス・ローズ・ブラッドフレイム": {
+      "translations": {
+        "en": "Elizabeth Rose Bloodflame",
+        "es": "Elizabeth Rose Bloodflame",
+        "id": "Elizabeth Rose Bloodflame",
+        "ko": "엘리자베스 로즈 블러드플레임",
+        "tc": "伊莉莎白・蘿絲・布拉德弗雷姆",
+        "th": "เอลิซาเบธ โรส บลัดเฟลม"
+      },
+      "aliases": [
+        {
+          "text": "ローズ",
+          "translations": {
+            "en": "Rose",
+            "es": "Rose",
+            "id": "Rose",
+            "ko": "로즈",
+            "tc": "蘿絲",
+            "th": "โรส"
+          }
+        }
+      ]
+    },
+    "エルフレンド": {
+      "translations": {
+        "en": "Elf Friend",
+        "es": "Elf Friend",
+        "id": "Elf Friend",
+        "ko": "엘프 프렌드",
+        "tc": "Elf Friend",
+        "th": "เอลฟ์เฟรนด์"
+      }
+    },
+    "エレガントパソコン": {
+      "translations": {
+        "en": "Elegant PC",
+        "es": "PC elegante",
+        "id": "Komputer Elegan",
+        "ko": "엘레강트 컴퓨터",
+        "tc": "優雅電腦",
+        "th": "คอมพิวเตอร์สุดหรู"
+      }
+    },
+    "オーロ・クロニー": {
+      "translations": {
+        "en": "Ouro Kronii",
+        "es": "Ouro Kronii",
+        "id": "Ouro Kronii",
+        "ko": "오우로 크로니",
+        "tc": "歐羅・克羅妮",
+        "th": "โอโร่ โครนี"
+      }
+    },
+    "カエラ・コヴァルスキア": {
+      "translations": {
+        "en": "Kaela Kovalskia",
+        "es": "Kaela Kovalskia",
+        "id": "Kaela Kovalskia",
+        "ko": "카엘라 코발스키아",
+        "tc": "Kaela Kovalskia",
+        "th": "คาเอลา โควัลสเกีย"
+      }
+    },
+    "カスタムパソコン": {
+      "translations": {
+        "en": "Custom PC",
+        "es": "Custom PC",
+        "id": "PC Kustom",
+        "ko": "커스텀 PC",
+        "tc": "客製化電腦",
+        "th": "พีซีกัสตอม"
+      }
+    },
+    "カラス": {
+      "translations": {
+        "en": "Crow",
+        "es": "Crow",
+        "id": "Gagak",
+        "ko": "까마귀",
+        "tc": "烏鴉",
+        "th": "อีกา"
+      }
+    },
+    "カワイイスタジャン": {
+      "translations": {
+        "en": "Cute Stadium Jacket",
+        "es": "Chaqueta universitaria kawaii",
+        "id": "Jaket varsity imut",
+        "ko": "귀여운 스타디움 점퍼",
+        "tc": "可愛棒球外套",
+        "th": "แจ็กเก็ตสตเดียมน่ารัก"
+      }
+    },
+    "ギラファノコギリクワガタ": {
+      "translations": {
+        "en": "Giraffe Stag Beetle",
+        "es": "Escarabajo ciervo sierra jirafa",
+        "id": "Kumbang tanduk gergaji jerapah",
+        "ko": "기라파톱사슴벌레",
+        "tc": "長頸鹿鋸鍬形蟲",
+        "th": "ด้วงคีมเลื่อยกิราฟ"
+      }
+    },
+    "ギリわるロボ": {
+      "translations": {
+        "en": "Barely-Bad Robot",
+        "es": "Robot apenas malvado",
+        "id": "Robo nakal tipis",
+        "ko": "아슬아슬 나쁜 로봇",
+        "tc": "勉強算壞機器人",
+        "th": "หุ่นตัวร้ายแบบเฉียดๆ"
+      }
+    },
+    "クリエイターパソコン": {
+      "translations": {
+        "en": "Creator PC",
+        "es": "PC para creadores",
+        "id": "Komputer Kreator",
+        "ko": "크리에이터 컴퓨터",
+        "tc": "創作者電腦",
+        "th": "คอมพิวเตอร์สำหรับครีเอเตอร์"
+      }
+    },
+    "クレイジー・オリー": {
+      "translations": {
+        "en": "Kureiji Ollie",
+        "es": "Kureiji Ollie",
+        "id": "Kureiji Ollie",
+        "ko": "크레이지 올리",
+        "tc": "Kureiji Ollie",
+        "th": "เครซี่ โอลลี่"
+      },
+      "aliases": [
+        {
+          "text": "オリー",
+          "translations": {
+            "en": "Ollie",
+            "es": "Ollie",
+            "id": "Ollie",
+            "ko": "올리",
+            "tc": "Ollie",
+            "th": "ออลลี่"
+          }
+        },
+        {
+          "text": "クレイジー",
+          "translations": {
+            "en": "Kureiji",
+            "es": "Kureiji",
+            "id": "Kureiji",
+            "ko": "쿠레이지",
+            "tc": "Kureiji",
+            "th": "Kureiji"
+          }
+        }
+      ]
+    },
+    "クロスインパクト": {
+      "translations": {
+        "en": "Cross Impact",
+        "es": "Impacto cruzado",
+        "id": "Cross Impact",
+        "ko": "크로스 임팩트",
+        "tc": "十字衝擊",
+        "th": "ครอสอิมแพกต์"
+      }
+    },
+    "クールなパーカー": {
+      "translations": {
+        "en": "Cool Hoodie",
+        "es": "Sudadera con capucha genial",
+        "id": "Hoodie keren",
+        "ko": "쿨한 후드 파카",
+        "tc": "帥氣連帽衫",
+        "th": "ฮู้ดดี้สุดคูล"
+      }
+    },
+    "ゲーミングパソコン": {
+      "translations": {
+        "en": "Gaming PC",
+        "es": "Gaming PC",
+        "id": "PC Gaming",
+        "ko": "게이밍 PC",
+        "tc": "電競電腦",
+        "th": "เกมมิ่งพีซี"
+      }
+    },
+    "ココロ": {
+      "translations": {
+        "en": "Heart",
+        "es": "Heart",
+        "id": "Hati",
+        "ko": "마음",
+        "tc": "心",
+        "th": "ใจ"
+      }
+    },
+    "コールアンドレスポンス": {
+      "translations": {
+        "en": "Call and Response",
+        "es": "Call and Response",
+        "id": "Call and Response",
+        "ko": "콜 앤 리스폰스",
+        "tc": "呼喊與回應",
+        "th": "คอลแอนด์เรสปอนส์"
+      }
+    },
+    "ゴージャスパソコン": {
+      "translations": {
+        "en": "Gorgeous PC",
+        "es": "Gorgeous PC",
+        "id": "PC Mewah",
+        "ko": "고저스 PC",
+        "tc": "華麗電腦",
+        "th": "พีซีหรูหรา"
+      }
+    },
+    "サブパソコン": {
+      "translations": {
+        "en": "Sub PC",
+        "es": "Sub PC",
+        "id": "Sub PC",
+        "ko": "서브 PC",
+        "tc": "副電腦",
+        "th": "ซับพีซี"
+      }
+    },
+    "シオリ・ノヴェラ": {
+      "translations": {
+        "en": "Shiori Novella",
+        "es": "Shiori Novella",
+        "id": "Shiori Novella",
+        "ko": "시오리 노벨라",
+        "tc": "Shiori Novella",
+        "th": "ชิโอริ โนเวลลา"
+      }
+    },
+    "ジジ・ムリン": {
+      "translations": {
+        "en": "Gigi Murin",
+        "es": "Gigi Murin",
+        "id": "Gigi Murin",
+        "ko": "지지 무린",
+        "tc": "ジジ・ムリン",
+        "th": "จิจิ มุริน"
+      },
+      "aliases": [
+        {
+          "text": "ムリン",
+          "translations": {
+            "en": "Murin",
+            "es": "Murin",
+            "id": "Murin",
+            "ko": "무린",
+            "tc": "Murin",
+            "th": "มูริน"
+          }
+        }
+      ]
+    },
+    "ジョブズ": {
+      "translations": {
+        "en": "Jobs",
+        "es": "Jobs",
+        "id": "Jobs",
+        "ko": "잡스",
+        "tc": "賈伯斯",
+        "th": "จ็อบส์"
+      }
+    },
+    "スゴイパソコン": {
+      "translations": {
+        "en": "Amazing PC",
+        "es": "Amazing PC",
+        "id": "PC Luar Biasa",
+        "ko": "대단한 PC",
+        "tc": "厲害的電腦",
+        "th": "พีซีสุดยอด"
+      }
+    },
+    "ステラ": {
+      "translations": {
+        "en": "Stella",
+        "es": "Stella",
+        "id": "Stella",
+        "ko": "스텔라",
+        "tc": "Stella",
+        "th": "Stella"
+      }
+    },
+    "スバちょこルーナ": {
+      "translations": {
+        "en": "SubaChocoLuna",
+        "es": "SubaChocoLuna",
+        "id": "SubaChocoLuna",
+        "ko": "스바초코루나",
+        "tc": "SubaChocoLuna",
+        "th": "สุบาโชโคะลูนะ"
+      }
+    },
+    "スバルドダック": {
+      "translations": {
+        "en": "Subaru Duck",
+        "es": "Subaru Duck",
+        "id": "Bebek Subaru",
+        "ko": "스바루 덕",
+        "tc": "Suba鴨",
+        "th": "เป็ดสุบารุ"
+      }
+    },
+    "スバ友": {
+      "translations": {
+        "en": "Subatomo",
+        "es": "Subatomo",
+        "id": "Subatomo",
+        "ko": "스바토모",
+        "tc": "昴友",
+        "th": "Subatomo"
+      }
+    },
+    "スーパーパソコン": {
+      "translations": {
+        "en": "Super PC",
+        "es": "Super PC",
+        "id": "Super PC",
+        "ko": "슈퍼 PC",
+        "tc": "超強電腦",
+        "th": "ซุปเปอร์พีซี"
+      }
+    },
+    "セシリア・イマーグリーン": {
+      "translations": {
+        "en": "Cecilia Immergreen",
+        "es": "Cecilia Immergreen",
+        "id": "Cecilia Immergreen",
+        "ko": "세실리아 이머그린",
+        "tc": "Cecilia ImmarGreen",
+        "th": "เซซิเลีย อิมเมอร์กรีน"
+      }
+    },
+    "ツートンカラーパソコン": {
+      "translations": {
+        "en": "Two-tone PC",
+        "es": "Two-tone PC",
+        "id": "PC Dua Warna",
+        "ko": "투톤 컬러 PC",
+        "tc": "雙色電腦",
+        "th": "พีซีสองสี"
+      }
+    },
+    "デュアルモニターパソコン": {
+      "translations": {
+        "en": "Dual Monitor PC",
+        "es": "Dual Monitor PC",
+        "id": "PC Monitor Ganda",
+        "ko": "듀얼 모니터 PC",
+        "tc": "雙螢幕電腦",
+        "th": "พีซีจอคู่"
+      }
+    },
+    "ドクロくん": {
+      "translations": {
+        "en": "Skull-kun",
+        "es": "Skull-kun",
+        "id": "Skull-kun",
+        "ko": "해골군",
+        "tc": "骷髏君",
+        "th": "กะโหลกกุง"
+      }
+    },
+    "ドッキリうさぎ": {
+      "translations": {
+        "en": "Prank Rabbit",
+        "es": "Conejo de broma",
+        "id": "Kelinci prank",
+        "ko": "깜짝 토끼",
+        "tc": "整人兔子",
+        "th": "กระต่ายแกล้งคน"
+      }
+    },
+    "ドローイングストリーム": {
+      "translations": {
+        "en": "Drawing Stream",
+        "es": "Stream de dibujo",
+        "id": "Streaming Menggambar",
+        "ko": "드로잉 스트림",
+        "tc": "繪圖直播",
+        "th": "สตรีมวาดภาพ"
+      }
+    },
+    "ネジマキツネ": {
+      "translations": {
+        "en": "Clockwork Fox",
+        "es": "Clockwork Fox",
+        "id": "Rubah Mekanik",
+        "ko": "태엽 여우",
+        "tc": "發條狐",
+        "th": "จิ้งจอกไขลาน"
+      }
+    },
+    "ネリッサ・レイヴンクロフト": {
+      "translations": {
+        "en": "Nerissa Ravencroft",
+        "es": "Nerissa Ravencroft",
+        "id": "Nerissa Ravencroft",
+        "ko": "네리사 레이븐크로프트",
+        "tc": "Nerissa Ravencroft",
+        "th": "เนริสซา เรเวนครอฟต์"
+      },
+      "aliases": [
+        {
+          "text": "ネリッサ",
+          "translations": {
+            "en": "Nerissa",
+            "es": "Nerissa",
+            "id": "Nerissa",
+            "ko": "네리사",
+            "tc": "Nerissa",
+            "th": "เนริสสา"
+          }
+        }
+      ]
+    },
+    "ネリッサ・レイヴンクロフトの杖": {
+      "translations": {
+        "en": "Nerissa Ravencroft's Staff",
+        "es": "Nerissa Ravencroft's Staff",
+        "id": "Tongkat Nerissa Ravencroft",
+        "ko": "네리사 레이븐크로프트의 지팡이",
+        "tc": "Nerissa Ravencroft的杖",
+        "th": "ไม้เท้าของเนริสซา เรเวนครอฟต์"
+      }
+    },
+    "ハコス・ベールズ": {
+      "translations": {
+        "en": "Hakos Baelz",
+        "es": "Hakos Baelz",
+        "id": "Hakos Baelz",
+        "ko": "하코스 베일즈",
+        "tc": "哈克斯・貝爾茲",
+        "th": "ฮาโกส เบลส์"
+      }
+    },
+    "ハトタウロス": {
+      "translations": {
+        "en": "Hatotaurus",
+        "es": "Hatotauro",
+        "id": "Hatotaurus",
+        "ko": "하토타우로스",
+        "tc": "鴿牛獸",
+        "th": "Hato Taurus"
+      }
+    },
+    "バカタレサーカス": {
+      "translations": {
+        "en": "Bakatare Circus",
+        "es": "Bakatare Circus",
+        "id": "Sirkus Bakatare",
+        "ko": "바카타레 서커스",
+        "tc": "Bakatale Circus",
+        "th": "บาคาตาเระ เซอร์คัส"
+      }
+    },
+    "パパは仕事を辞める": {
+      "translations": {
+        "en": "Dad Quits His Job",
+        "es": "Papá deja el trabajo",
+        "id": "Papa berhenti kerja",
+        "ko": "아빠는 일을 그만둔다",
+        "tc": "爸爸要辭掉工作",
+        "th": "พ่อจะลาออกจากงาน"
+      }
+    },
+    "パヴォリア・レイネ": {
+      "translations": {
+        "en": "Pavolia Reine",
+        "es": "Pavolia Reine",
+        "id": "Pavolia Reine",
+        "ko": "파볼리아 레이네",
+        "tc": "Pavolia Reine",
+        "th": "ปาโวเลีย เรเน่"
+      }
+    },
+    "ビッグゴッドミオーンの占い": {
+      "translations": {
+        "en": "Big God Mio-n's Fortune-Telling",
+        "es": "Adivinación del gran dios Miohn",
+        "id": "Ramalan Big God Mion",
+        "ko": "빅 갓 미오온의 점술",
+        "tc": "大天神Mioーン占卜",
+        "th": "คำทำนายของ Big God Miohn"
+      }
+    },
+    "ビビ": {
+      "translations": {
+        "en": "Bibi",
+        "es": "Bibi",
+        "id": "Bibi",
+        "ko": "비비",
+        "tc": "ビビ",
+        "th": "บิบิ"
+      }
+    },
+    "ファンミーティング": {
+      "translations": {
+        "en": "Fan Meeting",
+        "es": "Fan Meeting",
+        "id": "Pertemuan Penggemar",
+        "ko": "팬 미팅",
+        "tc": "粉絲見面會",
+        "th": "แฟนมีตติ้ง"
+      }
+    },
+    "フェイバリットパソコン": {
+      "translations": {
+        "en": "Favorite PC",
+        "es": "PC favorita",
+        "id": "Komputer Favorit",
+        "ko": "페이버릿 컴퓨터",
+        "tc": "最愛電腦",
+        "th": "คอมพิวเตอร์ตัวโปรด"
+      }
+    },
+    "フトイヌ": {
+      "translations": {
+        "en": "Fat Dog",
+        "es": "Fat Dog",
+        "id": "Anjing Gemuk",
+        "ko": "뚱개",
+        "tc": "胖狗",
+        "th": "หมาอ้วน"
+      }
+    },
+    "フブチュン": {
+      "translations": {
+        "en": "FubuChan",
+        "es": "FubuChan",
+        "id": "FubuChan",
+        "ko": "후부춘",
+        "tc": "Fubuchun",
+        "th": "ฟุบุชัง"
+      }
+    },
+    "フブラ": {
+      "translations": {
+        "en": "Fubura",
+        "es": "Fubura",
+        "id": "Fubura",
+        "ko": "후부라",
+        "tc": "Fubura",
+        "th": "ฟุบุระ"
+      }
+    },
+    "フレンド": {
+      "translations": {
+        "en": "Friend",
+        "es": "Friend",
+        "id": "Teman",
+        "ko": "프렌드",
+        "tc": "朋友",
+        "th": "เฟรนด์"
+      }
+    },
+    "フレンドリーパソコン": {
+      "translations": {
+        "en": "Friendly PC",
+        "es": "Friendly PC",
+        "id": "PC Ramah",
+        "ko": "친화적인 PC",
+        "tc": "友善電腦",
+        "th": "พีซีเป็นมิตร"
+      }
+    },
+    "フロンティアスピリット": {
+      "translations": {
+        "en": "Frontier Spirit",
+        "es": "Espíritu fronterizo",
+        "id": "Semangat Perintis",
+        "ko": "프런티어 스피릿",
+        "tc": "開拓精神",
+        "th": "จิตวิญญาณแห่งพรมแดน"
+      }
+    },
+    "フワワ・アビスガード": {
+      "translations": {
+        "en": "Fuwawa Abyssgard",
+        "es": "Fuwawa Abyssgard",
+        "id": "Fuwawa Abyssgard",
+        "ko": "후와와 어비스가드",
+        "tc": "Fuwawa Abyssguard",
+        "th": "ฟุวาวา อะบิสการ์ด"
+      },
+      "aliases": [
+        {
+          "text": "フワワ",
+          "translations": {
+            "en": "Fuwawa",
+            "es": "Fuwawa",
+            "id": "Fuwawa",
+            "ko": "후와와",
+            "tc": "Fuwawa",
+            "th": "ฟุวาวะ"
+          }
+        }
+      ]
+    },
+    "ブヒー！": {
+      "translations": {
+        "en": "Oink!",
+        "es": "¡Buhí!",
+        "id": "Buhii!",
+        "ko": "부히ー!",
+        "tc": "噗嘻ー！",
+        "th": "บูฮี้!"
+      }
+    },
+    "ブルームステージ": {
+      "translations": {
+        "en": "Bloom Stage",
+        "es": "Escenario Bloom",
+        "id": "Bloom Stage",
+        "ko": "블룸 스테이지",
+        "tc": "Bloom舞台",
+        "th": "เวทีบลูม"
+      }
+    },
+    "ベスティア・ゼータ": {
+      "translations": {
+        "en": "Vestia Zeta",
+        "es": "Vestia Zeta",
+        "id": "Vestia Zeta",
+        "ko": "베스티아 제타",
+        "tc": "Vestia Zeta",
+        "th": "เวสเทีย เซตา"
+      }
+    },
+    "ペロ": {
+      "translations": {
+        "en": "Pero",
+        "es": "Pero",
+        "id": "Pero",
+        "ko": "페로",
+        "tc": "Pero",
+        "th": "เปโร่"
+      }
+    },
+    "ペンライト": {
+      "translations": {
+        "en": "Light Stick",
+        "es": "Light Stick",
+        "id": "Light Stick",
+        "ko": "펜라이트",
+        "tc": "螢光棒",
+        "th": "เพนไลต์"
+      }
+    },
+    "ホソイヌ": {
+      "translations": {
+        "en": "Thin Dog",
+        "es": "Thin Dog",
+        "id": "Anjing Kurus",
+        "ko": "말개",
+        "tc": "瘦狗",
+        "th": "หมาผอม"
+      }
+    },
+    "ホロキャップ": {
+      "translations": {
+        "en": "Holo Cap",
+        "es": "Holo Cap",
+        "id": "Topi Holo",
+        "ko": "홀로 캡",
+        "tc": "Holocap",
+        "th": "โฮโลแคป"
+      }
+    },
+    "ホロスパークリング": {
+      "translations": {
+        "en": "Holo Sparkling",
+        "es": "Holo Sparkling",
+        "id": "Holo Sparkling",
+        "ko": "홀로 스파클링",
+        "tc": "Holo氣泡酒",
+        "th": "โฮโลสปาร์คลิง"
+      }
+    },
+    "ホロマント": {
+      "translations": {
+        "en": "Holo Cloak",
+        "es": "Holomanto",
+        "id": "Holo Mantle",
+        "ko": "홀로망토",
+        "tc": "Holo披風",
+        "th": "Holo Mantle"
+      }
+    },
+    "ホロライブ インドネシア2期生": {
+      "translations": {
+        "en": "Hololive Indonesia 2nd Gen",
+        "es": "Hololive Indonesia 2nd Gen",
+        "id": "Hololive Indonesia Gen 2",
+        "ko": "홀로라이브 인도네시아 2기생",
+        "tc": "Hololive Indonesia 2期生",
+        "th": "โฮโลไลฟ์ อินโดนีเซีย รุ่น 2"
+      }
+    },
+    "ホロライブ0期生": {
+      "translations": {
+        "en": "Hololive 0th Gen",
+        "es": "Hololive 0th Gen",
+        "id": "Hololive Gen 0",
+        "ko": "홀로라이브 0기생",
+        "tc": "Hololive 0期生",
+        "th": "โฮโลไลฟ์ รุ่น 0"
+      }
+    },
+    "ホロライブ1期生": {
+      "translations": {
+        "en": "hololive 1st Generation",
+        "es": "1.ª Generación de hololive",
+        "id": "hololive Generasi 1",
+        "ko": "홀로라이브 1기생",
+        "tc": "hololive 1期生",
+        "th": "hololive รุ่นที่ 1"
+      }
+    },
+    "ホロライブ2期生": {
+      "translations": {
+        "en": "Hololive 2nd Gen",
+        "es": "Hololive 2nd Gen",
+        "id": "Hololive Gen 2",
+        "ko": "홀로라이브 2기생",
+        "tc": "Hololive 2期生",
+        "th": "โฮโลไลฟ์ รุ่น 2"
+      }
+    },
+    "ホロライブ4期生": {
+      "translations": {
+        "en": "Hololive 4th Gen",
+        "es": "Hololive 4th Gen",
+        "id": "Hololive Gen 4",
+        "ko": "홀로라이브 4기생",
+        "tc": "Hololive 4期生",
+        "th": "โฮโลไลฟ์ รุ่น 4"
+      }
+    },
+    "ホロライブインドネシア1期生": {
+      "translations": {
+        "en": "Hololive Indonesia 1st Gen",
+        "es": "Hololive Indonesia 1st Gen",
+        "id": "Hololive Indonesia Gen 1",
+        "ko": "홀로라이브 인도네시아 1기생",
+        "tc": "Hololive Indonesia 1期生",
+        "th": "โฮโลไลฟ์ อินโดนีเซีย รุ่น 1"
+      }
+    },
+    "ホロライブインドネシア3期生": {
+      "translations": {
+        "en": "Hololive Indonesia 3rd Gen",
+        "es": "Hololive Indonesia 3rd Gen",
+        "id": "Hololive Indonesia Gen 3",
+        "ko": "홀로라이브 인도네시아 3기생",
+        "tc": "Hololive Indonesia 3期生",
+        "th": "โฮโลไลฟ์ อินโดนีเซีย รุ่น 3"
+      }
+    },
+    "ホロライブゲーマーズ": {
+      "translations": {
+        "en": "Hololive Gamers",
+        "es": "Hololive Gamers",
+        "id": "Hololive Gamers",
+        "ko": "홀로라이브 게이머즈",
+        "tc": "Hololive Gamers",
+        "th": "โฮโลไลฟ์ เกมเมอร์ส"
+      }
+    },
+    "ホロライブ言えるかな？": {
+      "translations": {
+        "en": "Can You Say Hololive?",
+        "es": "Can You Say Hololive?",
+        "id": "Bisakah Kamu Menyebut Hololive?",
+        "ko": "홀로라이브 말할 수 있을까?",
+        "tc": "能不能說出Hololive？",
+        "th": "พูดโฮโลไลฟ์ได้ไหม?"
+      }
+    },
+    "ホロリスの輪": {
+      "translations": {
+        "en": "Hololist Circle",
+        "es": "Hololist Circle",
+        "id": "Lingkaran Hololist",
+        "ko": "홀로리스의 고리",
+        "tc": "Holo友的圈圈",
+        "th": "วงกลมโฮโลริส"
+      }
+    },
+    "マグチ": {
+      "translations": {
+        "en": "Maguchi",
+        "es": "Maguchi",
+        "id": "Maguchi",
+        "ko": "마구치",
+        "tc": "Maguchi",
+        "th": "มางุชิ"
+      }
+    },
+    "マスコットキャッチャー": {
+      "translations": {
+        "en": "Mascot Catcher",
+        "es": "Mascot Catcher",
+        "id": "Penangkap Maskot",
+        "ko": "마스코트 캐처",
+        "tc": "夾娃娃機",
+        "th": "ตู้คีบมาสคอต"
+      }
+    },
+    "マネちゃん": {
+      "translations": {
+        "en": "Manager-chan",
+        "es": "Manager-chan",
+        "id": "Manager-chan",
+        "ko": "매니저짱",
+        "tc": "經紀人醬",
+        "th": "แมเนจเจอร์จัง"
+      }
+    },
+    "マヨネーズちゅっちゅっ": {
+      "translations": {
+        "en": "Mayonnaise Smooch Smooch",
+        "es": "Chup chup de mayonesa",
+        "id": "Mayones chu chu",
+        "ko": "마요네즈 쪽쪽",
+        "tc": "美乃滋啾啾",
+        "th": "จุ๊บๆ มายองเนส"
+      }
+    },
+    "ミオファ": {
+      "translations": {
+        "en": "Miofa",
+        "es": "Miofa",
+        "id": "Miofa",
+        "ko": "미오파",
+        "tc": "Miofa",
+        "th": "มิโอฟา"
+      }
+    },
+    "ミテイル": {
+      "translations": {
+        "en": "Miteiru",
+        "es": "Miteiru",
+        "id": "Miteiru",
+        "ko": "미테이루",
+        "tc": "Miteiru",
+        "th": "มิเตอิรุ"
+      }
+    },
+    "ムーナびと": {
+      "translations": {
+        "en": "Moonafic",
+        "es": "Muunabito",
+        "id": "Muunabito",
+        "ko": "무나비토",
+        "tc": "Moona人",
+        "th": "ชาว Moona"
+      }
+    },
+    "ムーナ・ホシノヴァ": {
+      "translations": {
+        "en": "Moona Hoshinova",
+        "es": "Moona Hoshinova",
+        "id": "Moona Hoshinova",
+        "ko": "무나 호시노바",
+        "tc": "Moona Hoshinova",
+        "th": "มูนา โฮชิโนวา"
+      },
+      "aliases": [
+        {
+          "text": "ムーナ",
+          "translations": {
+            "en": "Moona",
+            "es": "Moona",
+            "id": "Moona",
+            "ko": "무나",
+            "tc": "Moona",
+            "th": "มูนา"
+          }
+        }
+      ]
+    },
+    "モココ・アビスガード": {
+      "translations": {
+        "en": "Mococo Abyssgard",
+        "es": "Mococo Abyssgard",
+        "id": "Mococo Abyssgard",
+        "ko": "모코코 어비스가드",
+        "tc": "Mococo Abyssguard",
+        "th": "โมโคโคะ อะบิสการ์ด"
+      },
+      "aliases": [
+        {
+          "text": "モココ",
+          "translations": {
+            "en": "Mococo",
+            "es": "Mococo",
+            "id": "Mococo",
+            "ko": "모코코",
+            "tc": "Mococo",
+            "th": "โมโคโคะ"
+          }
+        }
+      ]
+    },
+    "ライフル": {
+      "translations": {
+        "en": "Rifle",
+        "es": "Rifle",
+        "id": "Senapan",
+        "ko": "라이플",
+        "tc": "步槍",
+        "th": "ไรเฟิล"
+      }
+    },
+    "ライブスタッフ": {
+      "translations": {
+        "en": "Live Staff",
+        "es": "Personal del directo",
+        "id": "Staf Live",
+        "ko": "라이브 스태프",
+        "tc": "直播工作人員",
+        "th": "ทีมงานไลฟ์"
+      }
+    },
+    "ラオーラ・パンテーラ": {
+      "translations": {
+        "en": "Raora Pantera",
+        "es": "Raora Pantera",
+        "id": "Raora Pantera",
+        "ko": "라오라 판테라",
+        "tc": "Raora Pantera",
+        "th": "ราโอระ ปันเตรา"
+      }
+    },
+    "ラプラス・ダークネス": {
+      "translations": {
+        "en": "Laplus Darknesss",
+        "es": "Laplus Darknesss",
+        "id": "Laplus Darknesss",
+        "ko": "라플라스 다크니스",
+        "tc": "Laplus Darknesss",
+        "th": "ลาปลัส ดาร์กเนส"
+      }
+    },
+    "ラムダック": {
+      "translations": {
+        "en": "Ramduck",
+        "es": "Lambduck",
+        "id": "Lamduck",
+        "ko": "람덕",
+        "tc": "拉姆達克",
+        "th": "Lambduck"
+      }
+    },
+    "リコーダー": {
+      "translations": {
+        "en": "Recorder",
+        "es": "Recorder",
+        "id": "Rekorder",
+        "ko": "리코더",
+        "tc": "直笛",
+        "th": "รีคอร์เดอร์"
+      }
+    },
+    "ルイ友": {
+      "translations": {
+        "en": "Lui-tomo",
+        "es": "Ruitomo",
+        "id": "Lui-tomo",
+        "ko": "루이토모",
+        "tc": "路易友",
+        "th": "Luitomo"
+      }
+    },
+    "ルーナイト": {
+      "translations": {
+        "en": "Lunaito",
+        "es": "Lunaito",
+        "id": "Lunaito",
+        "ko": "루나이토",
+        "tc": "Lunaito",
+        "th": "ลูไนโต"
+      }
+    },
+    "レトロパソコン": {
+      "translations": {
+        "en": "Retro PC",
+        "es": "Retro PC",
+        "id": "PC Retro",
+        "ko": "레트로 PC",
+        "tc": "復古電腦",
+        "th": "เรโทรพีซี"
+      }
+    },
+    "ロゼ隊": {
+      "translations": {
+        "en": "Rose-tai",
+        "es": "Rose-tai",
+        "id": "Tim Rose",
+        "ko": "로제대",
+        "tc": "Rose-tai",
+        "th": "ทีมโรเซ่"
+      }
+    },
+    "ロボ子さん": {
+      "translations": {
+        "en": "Roboco-san",
+        "es": "Roboco-san",
+        "id": "Roboco-san",
+        "ko": "로보코상",
+        "tc": "Roboco桑",
+        "th": "โรโบะโกะซัง"
+      }
+    },
+    "ワトソン・アメリア": {
+      "translations": {
+        "en": "Watson Amelia",
+        "es": "Watson Amelia",
+        "id": "Watson Amelia",
+        "ko": "왓슨 아멜리아",
+        "tc": "Watson Amelia",
+        "th": "วัตสัน อเมเลีย"
+      }
+    },
+    "ワークアウト": {
+      "translations": {
+        "en": "Workout",
+        "es": "Entrenamiento",
+        "id": "Latihan",
+        "ko": "워크아웃",
+        "tc": "健身訓練",
+        "th": "ออกกำลังกาย"
+      }
+    },
+    "一伊那尓栖": {
+      "translations": {
+        "en": "Ninomae Ina'nis",
+        "es": "Ninomae Ina'nis",
+        "id": "Ninomae Ina'nis",
+        "ko": "니노마에 이나니스",
+        "tc": "一伊那尓栖",
+        "th": "นิโนมาเอะ อินาอนิส"
+      }
+    },
+    "一条莉々華": {
+      "translations": {
+        "en": "Ichijou Ririka",
+        "es": "Ichijou Ririka",
+        "id": "Ichijou Ririka",
+        "ko": "이치조 리리카",
+        "tc": "一条莉莉華",
+        "th": "อิชิโจ ริริกะ"
+      }
+    },
+    "七詩ムメイ": {
+      "translations": {
+        "en": "Nanashi Mumei",
+        "es": "Nanashi Mumei",
+        "id": "Nanashi Mumei",
+        "ko": "나나시 무메이",
+        "tc": "七詩ムメイ",
+        "th": "นานาชิ มุเมอิ"
+      }
+    },
+    "不知火フレア": {
+      "translations": {
+        "en": "Shiranui Flare",
+        "es": "Shiranui Flare",
+        "id": "Shiranui Flare",
+        "ko": "시라누이 플레어",
+        "tc": "不知火芙蕾雅",
+        "th": "ชิรานุย เฟลร์"
+      },
+      "aliases": [
+        {
+          "text": "フレア",
+          "translations": {
+            "en": "Flare",
+            "es": "Flare",
+            "id": "Flare",
+            "ko": "플레어",
+            "tc": "芙蕾雅",
+            "th": "เฟลร์"
+          }
+        },
+        {
+          "text": "不知火",
+          "translations": {
+            "en": "Shiranui",
+            "es": "Shiranui",
+            "id": "Shiranui",
+            "ko": "시라누이",
+            "tc": "不知火",
+            "th": "ชิรานุย"
+          }
+        }
+      ],
+      "note": "tc was 白上吹雪 (Shirakami Fubuki) in the hand-written i18n — a copy-paste slip, live on the site until 2026-07-30"
+    },
+    "不知火建設": {
+      "translations": {
+        "en": "Shiranui Construction",
+        "es": "Shiranui Construction",
+        "id": "Konstruksi Shiranui",
+        "ko": "시라누이 건설",
+        "tc": "不知火建設",
+        "th": "ชิรานุย ก่อสร้าง"
+      }
+    },
+    "作業用パソコン": {
+      "translations": {
+        "en": "Work PC",
+        "es": "Work PC",
+        "id": "PC Kerja",
+        "ko": "작업용 PC",
+        "tc": "作業用電腦",
+        "th": "พีซีทำงาน"
+      }
+    },
+    "儒烏風亭らでん": {
+      "translations": {
+        "en": "Juufuutei Raden",
+        "es": "Juufuutei Raden",
+        "id": "Juufuutei Raden",
+        "ko": "쥬우후우테이 라덴",
+        "tc": "儒烏風亭らでん",
+        "th": "จูอูฟุเทย ราเด็ง"
+      },
+      "aliases": [
+        {
+          "text": "儒烏風",
+          "translations": {
+            "en": "Juufuutei",
+            "es": "Juufuutei",
+            "id": "Juufuutei",
+            "ko": "주우후테이",
+            "tc": "儒烏風亭",
+            "th": "จูฟูเทย์"
+          }
+        }
+      ]
+    },
+    "優しいモンスター": {
+      "translations": {
+        "en": "Kind Monster",
+        "es": "Monstruo amable",
+        "id": "Monster yang baik hati",
+        "ko": "상냥한 몬스터",
+        "tc": "溫柔的怪物",
+        "th": "มอนสเตอร์ผู้อ่อนโยน"
+      }
+    },
+    "兎田ぺこら": {
+      "translations": {
+        "en": "Usada Pekora",
+        "es": "Usada Pekora",
+        "id": "Usada Pekora",
+        "ko": "우사다 페코라",
+        "tc": "兔田佩克拉",
+        "th": "อุซาดะ เปโคระ"
+      },
+      "aliases": [
+        {
+          "text": "兎田",
+          "translations": {
+            "en": "Usada",
+            "es": "Usada",
+            "id": "Usada",
+            "ko": "우사다",
+            "tc": "兔田",
+            "th": "อุซาดะ"
+          }
+        }
+      ]
+    },
+    "凸待ち": {
+      "translations": {
+        "en": "Waiting for Calls",
+        "es": "Waiting for Calls",
+        "id": "Menunggu Panggilan",
+        "ko": "연락 대기",
+        "tc": "等凸",
+        "th": "รอการโทร"
+      }
+    },
+    "博衣こより": {
+      "translations": {
+        "en": "Hakui Koyori",
+        "es": "Hakui Koyori",
+        "id": "Hakui Koyori",
+        "ko": "하쿠이 코요리",
+        "tc": "博衣こより",
+        "th": "ฮากุย โคโยริ"
+      }
+    },
+    "古代武器": {
+      "translations": {
+        "en": "Ancient Weapon",
+        "es": "Ancient Weapon",
+        "id": "Senjata Kuno",
+        "ko": "고대 무기",
+        "tc": "古代武器",
+        "th": "อาวุธโบราณ"
+      }
+    },
+    "古石ビジュー": {
+      "translations": {
+        "en": "Koseki Bijou",
+        "es": "Koseki Bijou",
+        "id": "Koseki Bijou",
+        "ko": "코세키 비쥬",
+        "tc": "古石Bijou",
+        "th": "โคเซกิ บิจู"
+      },
+      "aliases": [
+        {
+          "text": "ビジュー",
+          "translations": {
+            "en": "Bijou",
+            "es": "Bijou",
+            "id": "Bijou",
+            "ko": "비쥬",
+            "tc": "Bijou",
+            "th": "บิชู"
+          }
+        }
+      ]
+    },
+    "塩っ子": {
+      "translations": {
+        "en": "Shiokko",
+        "es": "Shiokko",
+        "id": "Shiokko",
+        "ko": "시옷코",
+        "tc": "鹽民",
+        "th": "ชิโอกโกะ"
+      }
+    },
+    "夏色まつり": {
+      "translations": {
+        "en": "Natsuiro Matsuri",
+        "es": "Natsuiro Matsuri",
+        "id": "Natsuiro Matsuri",
+        "ko": "나츠이로 마츠리",
+        "tc": "夏色祭",
+        "th": "นัตสึอิโระ มัตสึริ"
+      },
+      "aliases": [
+        {
+          "text": "夏色",
+          "translations": {
+            "en": "Natsuiro",
+            "es": "Natsuiro",
+            "id": "Natsuiro",
+            "ko": "나츠이로",
+            "tc": "夏色",
+            "th": "นัตสึอิโระ"
+          }
+        }
+      ]
+    },
+    "大神ミオ": {
+      "translations": {
+        "en": "Ookami Mio",
+        "es": "Ookami Mio",
+        "id": "Ookami Mio",
+        "ko": "오오카미 미오",
+        "tc": "大神澪",
+        "th": "โอกามิ มิโอ"
+      },
+      "aliases": [
+        {
+          "text": "ミオ",
+          "translations": {
+            "en": "Mio",
+            "es": "Mio",
+            "id": "Mio",
+            "ko": "미오",
+            "tc": "澪",
+            "th": "มิโอะ"
+          }
+        },
+        {
+          "text": "大神",
+          "translations": {
+            "en": "Ookami",
+            "es": "Ookami",
+            "id": "Ookami",
+            "ko": "오오카미",
+            "tc": "大神",
+            "th": "โอคามิ"
+          }
+        }
+      ]
+    },
+    "大空スバル": {
+      "translations": {
+        "en": "Oozora Subaru",
+        "es": "Oozora Subaru",
+        "id": "Oozora Subaru",
+        "ko": "오오조라 스바루",
+        "tc": "大空昴",
+        "th": "โอโซระ สุบารุ"
+      },
+      "aliases": [
+        {
+          "text": "スバル",
+          "translations": {
+            "en": "Subaru",
+            "es": "Subaru",
+            "id": "Subaru",
+            "ko": "스바루",
+            "tc": "昴",
+            "th": "ซุบารุ"
+          }
+        },
+        {
+          "text": "大空",
+          "translations": {
+            "en": "Oozora",
+            "es": "Oozora",
+            "id": "Oozora",
+            "ko": "오오조라",
+            "tc": "大空",
+            "th": "โอโซระ"
+          }
+        }
+      ]
+    },
+    "天音かなた": {
+      "translations": {
+        "en": "Amane Kanata",
+        "es": "Amane Kanata",
+        "id": "Amane Kanata",
+        "ko": "아마네 카나타",
+        "tc": "天音彼方",
+        "th": "อามาเนะ คานาตะ"
+      }
+    },
+    "姫森ルーナ": {
+      "translations": {
+        "en": "Himemori Luna",
+        "es": "Himemori Luna",
+        "id": "Himemori Luna",
+        "ko": "히메모리 루나",
+        "tc": "姬森璐娜",
+        "th": "ฮิเมโมริ ลูนะ"
+      }
+    },
+    "宝鐘マリン": {
+      "translations": {
+        "en": "Houshou Marine",
+        "es": "Houshou Marine",
+        "id": "Houshou Marine",
+        "ko": "호쇼 마린",
+        "tc": "寶鐘瑪琳",
+        "th": "โฮโช มารีน"
+      },
+      "aliases": [
+        {
+          "text": "宝鐘",
+          "translations": {
+            "en": "Houshou",
+            "es": "Houshou",
+            "id": "Houshou",
+            "ko": "호쇼",
+            "tc": "寶鐘",
+            "th": "โฮโช"
+          }
+        }
+      ]
+    },
+    "小鳥遊キアラ": {
+      "translations": {
+        "en": "Takanashi Kiara",
+        "es": "Takanashi Kiara",
+        "id": "Takanashi Kiara",
+        "ko": "타카나시 키아라",
+        "tc": "小鳥遊琪亞拉",
+        "th": "ทาคานาชิ คิอาระ"
+      }
+    },
+    "尾丸ポルカ": {
+      "translations": {
+        "en": "Omaru Polka",
+        "es": "Omaru Polka",
+        "id": "Omaru Polka",
+        "ko": "오마루 폴카",
+        "tc": "尾丸Polka",
+        "th": "โอมารุ โปลกะ"
+      },
+      "aliases": [
+        {
+          "text": "ポルカ",
+          "translations": {
+            "en": "Polka",
+            "es": "Polka",
+            "id": "Polka",
+            "ko": "폴카",
+            "tc": "Polka",
+            "th": "โพลก้า"
+          }
+        }
+      ]
+    },
+    "山田ルイ54世": {
+      "translations": {
+        "en": "Yamada Louis 54th",
+        "es": "Yamada Louis 54º",
+        "id": "Yamada Louis ke-54",
+        "ko": "야마다 루이 54세",
+        "tc": "山田路易54世",
+        "th": "Yamada Louis 54th"
+      }
+    },
+    "常闇トワ": {
+      "translations": {
+        "en": "Tokoyami Towa",
+        "es": "Tokoyami Towa",
+        "id": "Tokoyami Towa",
+        "ko": "토코야미 토와",
+        "tc": "常闇永遠",
+        "th": "โทโคยามิ โทวะ"
+      },
+      "aliases": [
+        {
+          "text": "トワ",
+          "translations": {
+            "en": "Towa",
+            "es": "Towa",
+            "id": "Towa",
+            "ko": "토와",
+            "tc": "永遠",
+            "th": "โทวะ"
+          }
+        }
+      ]
+    },
+    "座員": {
+      "translations": {
+        "en": "Crew Member",
+        "es": "Crew Member",
+        "id": "Anggota Kru",
+        "ko": "좌원",
+        "tc": "座員",
+        "th": "สมาชิกลูกเรือ"
+      }
+    },
+    "思い出のドーナツショップ": {
+      "translations": {
+        "en": "Memories of the Donut Shop",
+        "es": "La tienda de donuts de los recuerdos",
+        "id": "Toko donat kenangan",
+        "ko": "추억의 도넛 가게",
+        "tc": "回憶中的甜甜圈店",
+        "th": "ร้านโดนัทแห่งความทรงจำ"
+      }
+    },
+    "愛情いっぱい召し上がれ♪": {
+      "translations": {
+        "en": "Made with Lots of Love, Please Enjoy♪",
+        "es": "¡Disfrútalo con mucho amor♪",
+        "id": "Silakan nikmati dengan penuh kasih sayang♪",
+        "ko": "사랑 듬뿍 드세요♪",
+        "tc": "滿滿愛意請享用♪",
+        "th": "เชิญทานด้วยความรักล้นเหลือ♪"
+      }
+    },
+    "戌神ころね": {
+      "translations": {
+        "en": "Inugami Korone",
+        "es": "Inugami Korone",
+        "id": "Inugami Korone",
+        "ko": "이누가미 코로네",
+        "tc": "戌神沁音",
+        "th": "อินุกามิ โคโรเนะ"
+      },
+      "aliases": [
+        {
+          "text": "戌神",
+          "translations": {
+            "en": "Inugami",
+            "es": "Inugami",
+            "id": "Inugami",
+            "ko": "이누가미",
+            "tc": "戌神",
+            "th": "อินุงามิ"
+          }
+        }
+      ]
+    },
+    "星街すいせい": {
+      "translations": {
+        "en": "Hoshimachi Suisei",
+        "es": "Hoshimachi Suisei",
+        "id": "Hoshimachi Suisei",
+        "ko": "호시마치 스이세이",
+        "tc": "星街彗星",
+        "th": "โฮชิมาชิ สุยเซย"
+      },
+      "aliases": [
+        {
+          "text": "星街",
+          "translations": {
+            "en": "Hoshimachi",
+            "es": "Hoshimachi",
+            "id": "Hoshimachi",
+            "ko": "호시마치",
+            "tc": "星街",
+            "th": "โฮชิมาจิ"
+          }
+        }
+      ]
+    },
+    "星街すいせいのマイク": {
+      "translations": {
+        "en": "Hoshimachi Suisei's Microphone",
+        "es": "Hoshimachi Suisei's Microphone",
+        "id": "Mikrofon Hoshimachi Suisei",
+        "ko": "호시마치 스이세이의 마이크",
+        "tc": "星街彗星的麥克風",
+        "th": "ไมโครโฟนของโฮชิมาชิ สุยเซย"
+      }
+    },
+    "春先のどか": {
+      "translations": {
+        "en": "Harukawa Nodoka",
+        "es": "Harukawa Nodoka",
+        "id": "Harukawa Nodoka",
+        "ko": "하루사키 노도카",
+        "tc": "春先野花",
+        "th": "ฮารุซากิ โนโดกะ"
+      }
+    },
+    "時の支配者 -Promise-": {
+      "translations": {
+        "en": "Ruler of Time -Promise-",
+        "es": "Gobernante del Tiempo -Promise-",
+        "id": "Penguasa Waktu -Promise-",
+        "ko": "시간의 지배자 -Promise-",
+        "tc": "時間的支配者 -Promise-",
+        "th": "ผู้ปกครองแห่งกาลเวลา -Promise-"
+      }
+    },
+    "晩酌配信": {
+      "translations": {
+        "en": "Evening Drink Stream",
+        "es": "Evening Drink Stream",
+        "id": "Stream Minum Malam",
+        "ko": "만작 배신",
+        "tc": "邊喝邊聊實況",
+        "th": "สตรีมดื่มตอนเย็น"
+      }
+    },
+    "月と兎の物語": {
+      "translations": {
+        "en": "Tale of Moon and Rabbit",
+        "es": "Tale of Moon and Rabbit",
+        "id": "Kisah Bulan dan Kelinci",
+        "ko": "달과 토끼의 이야기",
+        "tc": "月與兔的物語",
+        "th": "เรื่องราวของจันทราและกระต่าย"
+      }
+    },
+    "桃鈴ねね": {
+      "translations": {
+        "en": "Momosuzu Nene",
+        "es": "Momosuzu Nene",
+        "id": "Momosuzu Nene",
+        "ko": "모모스즈 네네",
+        "tc": "桃鈴音音",
+        "th": "โมโมสุซุ เนเนะ"
+      },
+      "aliases": [
+        {
+          "text": "桃鈴",
+          "translations": {
+            "en": "Momosuzu",
+            "es": "Momosuzu",
+            "id": "Momosuzu",
+            "ko": "모모스즈",
+            "tc": "桃鈴",
+            "th": "โมโมสึซุ"
+          }
+        }
+      ]
+    },
+    "森カリオペ": {
+      "translations": {
+        "en": "Mori Calliope",
+        "es": "Mori Calliope",
+        "id": "Mori Calliope",
+        "ko": "모리 칼리오페",
+        "tc": "森美聲",
+        "th": "โมริ คาลลิโอเป"
+      },
+      "aliases": [
+        {
+          "text": "カリオペ",
+          "translations": {
+            "en": "Calliope",
+            "es": "Calliope",
+            "id": "Calliope",
+            "ko": "칼리오페",
+            "tc": "美聲",
+            "th": "คัลลิโอเป"
+          }
+        }
+      ]
+    },
+    "森カリオペの鎌": {
+      "translations": {
+        "en": "Mori Calliope's Scythe",
+        "es": "Mori Calliope's Scythe",
+        "id": "Sabit Mori Calliope",
+        "ko": "모리 칼리오페의 낫",
+        "tc": "森美聲的鎌刀",
+        "th": "เคียวของโมริ คาลลิโอเป"
+      }
+    },
+    "水宮枢": {
+      "translations": {
+        "en": "Mizumiya Su",
+        "es": "Su Mizumiya",
+        "id": "Mizumiya Su",
+        "ko": "미즈미야 스우",
+        "tc": "水宮樞",
+        "th": "Mizumiya Su"
+      }
+    },
+    "沙花叉クロヱ": {
+      "translations": {
+        "en": "Sakamata Chloe",
+        "es": "Sakamata Chloe",
+        "id": "Sakamata Chloe",
+        "ko": "사카마타 클로에",
+        "tc": "沙花叉克蘿耶",
+        "th": "ซากามาตะ โคลเอ"
+      },
+      "aliases": [
+        {
+          "text": "沙花叉",
+          "translations": {
+            "en": "Sakamata",
+            "es": "Sakamata",
+            "id": "Sakamata",
+            "ko": "사카마타",
+            "tc": "沙花叉",
+            "th": "ซาคามาตะ"
+          }
+        }
+      ]
+    },
+    "泥棒建設": {
+      "translations": {
+        "en": "Thief Construction",
+        "es": "Thief Construction",
+        "id": "Konstruksi Pencuri",
+        "ko": "도둑 건설",
+        "tc": "泥棒建設",
+        "th": "โจรก่อสร้าง"
+      }
+    },
+    "火威青": {
+      "translations": {
+        "en": "Kasei",
+        "es": "Kasei",
+        "id": "Kasei",
+        "ko": "카세이",
+        "tc": "火威青",
+        "th": "คาเซย"
+      }
+    },
+    "爆発の魔法": {
+      "translations": {
+        "en": "Explosion Magic",
+        "es": "Explosion Magic",
+        "id": "Sihir Ledakan",
+        "ko": "폭발 마법",
+        "tc": "爆炸魔法",
+        "th": "เวทมนตร์ระเบิด"
+      }
+    },
+    "牛丼": {
+      "translations": {
+        "en": "Beef Bowl",
+        "es": "Beef Bowl",
+        "id": "Gyudon",
+        "ko": "규동",
+        "tc": "牛丼",
+        "th": "กิวด่ง"
+      }
+    },
+    "猫又おかゆ": {
+      "translations": {
+        "en": "Nekomata Okayu",
+        "es": "Nekomata Okayu",
+        "id": "Nekomata Okayu",
+        "ko": "네코마타 오카유",
+        "tc": "貓又小粥",
+        "th": "เนโกะมาตะ โอกายุ"
+      },
+      "aliases": [
+        {
+          "text": "猫又",
+          "translations": {
+            "en": "Nekomata",
+            "es": "Nekomata",
+            "id": "Nekomata",
+            "ko": "네코마타",
+            "tc": "貓又",
+            "th": "เนโคมาตะ"
+          }
+        }
+      ]
+    },
+    "獅白ぼたん": {
+      "translations": {
+        "en": "Shishiro Botan",
+        "es": "Shishiro Botan",
+        "id": "Shishiro Botan",
+        "ko": "시시로 보탄",
+        "tc": "獅白牡丹",
+        "th": "ชิชิโระ โบตัง"
+      },
+      "aliases": [
+        {
+          "text": "獅白",
+          "translations": {
+            "en": "Shishiro",
+            "es": "Shishiro",
+            "id": "Shishiro",
+            "ko": "시시로",
+            "tc": "獅白",
+            "th": "ชิชิโระ"
+          }
+        }
+      ]
+    },
+    "癒月ちょこ": {
+      "translations": {
+        "en": "Yuzuki Choco",
+        "es": "Yuzuki Choco",
+        "id": "Yuzuki Choco",
+        "ko": "유즈키 초코",
+        "tc": "癒月巧可",
+        "th": "ยุซุกิ โชโคะ"
+      }
+    },
+    "白エール": {
+      "translations": {
+        "en": "White Cheer",
+        "es": "White Cheer",
+        "id": "Yell Putih",
+        "ko": "화이트 옐",
+        "tc": "白色應援",
+        "th": "เยลสีขาว"
+      }
+    },
+    "白上フブキ": {
+      "translations": {
+        "en": "Shirakami Fubuki",
+        "es": "Shirakami Fubuki",
+        "id": "Shirakami Fubuki",
+        "ko": "시라카미 후부키",
+        "tc": "白上吹雪",
+        "th": "ชิรากามิ ฟุบุกิ"
+      },
+      "aliases": [
+        {
+          "text": "フブキ",
+          "translations": {
+            "en": "Fubuki",
+            "es": "Fubuki",
+            "id": "Fubuki",
+            "ko": "후부키",
+            "tc": "吹雪",
+            "th": "ฟุบุกิ"
+          }
+        },
+        {
+          "text": "白上",
+          "translations": {
+            "en": "Shirakami",
+            "es": "Shirakami",
+            "id": "Shirakami",
+            "ko": "시라카미",
+            "tc": "白上",
+            "th": "ชิรากามิ"
+          }
+        }
+      ]
+    },
+    "白銀ノエル": {
+      "translations": {
+        "en": "Shirogane Noel",
+        "es": "Shirogane Noel",
+        "id": "Shirogane Noel",
+        "ko": "시로가네 노엘",
+        "tc": "白銀諾艾爾",
+        "th": "ชิโรกาเนะ โนเอล"
+      },
+      "aliases": [
+        {
+          "text": "ノエル",
+          "translations": {
+            "en": "Noel",
+            "es": "Noel",
+            "id": "Noel",
+            "ko": "노엘",
+            "tc": "諾艾爾",
+            "th": "โนเอล"
+          }
+        },
+        {
+          "text": "白銀",
+          "translations": {
+            "en": "Shirogane",
+            "es": "Shirogane",
+            "id": "Shirogane",
+            "ko": "시로가네",
+            "tc": "白銀",
+            "th": "ชิโรกาเนะ"
+          }
+        }
+      ]
+    },
+    "白銀ノエルのメイス": {
+      "translations": {
+        "en": "Shirogane Noel's Mace",
+        "es": "Shirogane Noel's Mace",
+        "id": "Gada Shirogane Noel",
+        "ko": "시로가네 노엘의 메이스",
+        "tc": "白銀諾艾爾的鎚矛",
+        "th": "คทาของชิโรกาเนะ โนเอล"
+      }
+    },
+    "白銀聖騎士団": {
+      "translations": {
+        "en": "Shirogane Holy Knight Order",
+        "es": "Shirogane Holy Knight Order",
+        "id": "Ordo Ksatria Suci Shirogane",
+        "ko": "시로가네 성기사단",
+        "tc": "白銀聖騎士團",
+        "th": "กองอัศวินศักดิ์สิทธิ์ชิโรกาเนะ"
+      }
+    },
+    "百鬼あやめ": {
+      "translations": {
+        "en": "Nakiri Ayame",
+        "es": "Nakiri Ayame",
+        "id": "Nakiri Ayame",
+        "ko": "나키리 아야메",
+        "tc": "百鬼綾目",
+        "th": "นากิริ อายาเมะ"
+      },
+      "aliases": [
+        {
+          "text": "百鬼",
+          "translations": {
+            "en": "Nakiri",
+            "es": "Nakiri",
+            "id": "Nakiri",
+            "ko": "나키리",
+            "tc": "百鬼",
+            "th": "นาคิริ"
+          }
+        }
+      ]
+    },
+    "石の斧": {
+      "translations": {
+        "en": "Stone Axe",
+        "es": "Stone Axe",
+        "id": "Kapak Batu",
+        "ko": "돌 도끼",
+        "tc": "石斧",
+        "th": "ขวานหิน"
+      }
+    },
+    "破滅の呪文": {
+      "translations": {
+        "en": "Spell of Ruin",
+        "es": "Hechizo de la ruina",
+        "id": "Mantra Kehancuran",
+        "ko": "파멸의 주문",
+        "tc": "毀滅咒文",
+        "th": "คาถาแห่งหายนะ"
+      }
+    },
+    "秘密結社holoX": {
+      "translations": {
+        "en": "Secret Society holoX",
+        "es": "Secret Society holoX",
+        "id": "Organisasi Rahasia holoX",
+        "ko": "비밀결사 holoX",
+        "tc": "秘密結社holoX",
+        "th": "องค์กรลับ holoX"
+      }
+    },
+    "紫エール": {
+      "translations": {
+        "en": "Purple Cheer",
+        "es": "Purple Cheer",
+        "id": "Yell Ungu",
+        "ko": "퍼플 옐",
+        "tc": "紫色應援",
+        "th": "เยลสีม่วง"
+      }
+    },
+    "紫咲シオン": {
+      "translations": {
+        "en": "Murasaki Shion",
+        "es": "Murasaki Shion",
+        "id": "Murasaki Shion",
+        "ko": "무라사키 시온",
+        "tc": "紫咲詩音",
+        "th": "มุราซากิ ชิออง"
+      }
+    },
+    "紫咲シオンの魔法のステッキ": {
+      "translations": {
+        "en": "Murasaki Shion's Magic Wand",
+        "es": "Murasaki Shion's Magic Wand",
+        "id": "Tongkat Sihir Murasaki Shion",
+        "ko": "무라사키 시온의 마법 지팡이",
+        "tc": "紫咲詩音的魔法棒",
+        "th": "ไม้กายสิทธิ์ของมุราซากิ ชิออง"
+      }
+    },
+    "綺々羅々ヴィヴィ": {
+      "translations": {
+        "en": "Kikirara Vivi",
+        "es": "Kikirara Vivi",
+        "id": "Kikirara Vivi",
+        "ko": "키키라라 비비",
+        "tc": "綺綺羅羅薇薇",
+        "th": "Kikirara Vivi"
+      },
+      "aliases": [
+        {
+          "text": "ヴィヴィ",
+          "translations": {
+            "en": "Vivi",
+            "es": "Vivi",
+            "id": "Vivi",
+            "ko": "비비",
+            "tc": "Vivi",
+            "th": "วีวี่"
+          }
+        }
+      ]
+    },
+    "緑の試験管": {
+      "translations": {
+        "en": "Green Test Tube",
+        "es": "Green Test Tube",
+        "id": "Tabung Reaksi Hijau",
+        "ko": "녹색 시험관",
+        "tc": "綠色試管",
+        "th": "หลอดทดลองสีเขียว"
+      }
+    },
+    "緑エール": {
+      "translations": {
+        "en": "Green Cheer",
+        "es": "Green Cheer",
+        "id": "Yell Hijau",
+        "ko": "그린 옐",
+        "tc": "綠色應援",
+        "th": "เยลสีเขียว"
+      }
+    },
+    "脱獄を果たした共犯者たち": {
+      "translations": {
+        "en": "Accomplices Who Pulled Off a Prison Break",
+        "es": "Cómplices que lograron escapar de prisión",
+        "id": "Para kaki tangan yang berhasil kabur dari penjara",
+        "ko": "탈옥에 성공한 공범자들",
+        "tc": "成功越獄的共犯們",
+        "th": "เหล่าผู้สมรู้ร่วมคิดที่แหกคุกสำเร็จ"
+      }
+    },
+    "虎金妃笑虎": {
+      "translations": {
+        "en": "Koganei Niko",
+        "es": "Koganei Niko",
+        "id": "Koganei Niko",
+        "ko": "코가네이 니코",
+        "tc": "虎金妃笑虎",
+        "th": "Koganei Niko"
+      }
+    },
+    "角巻わため": {
+      "translations": {
+        "en": "Tsunomaki Watame",
+        "es": "Tsunomaki Watame",
+        "id": "Tsunomaki Watame",
+        "ko": "츠노마키 와타메",
+        "tc": "角卷綿芽",
+        "th": "ซึโนมากิ วาตาเมะ"
+      }
+    },
+    "角巻わためのハンマー": {
+      "translations": {
+        "en": "Tsunomaki Watame's Hammer",
+        "es": "Martillo de Tsunomaki Watame",
+        "id": "Palu Tsunomaki Watame",
+        "ko": "츠노마키 와타메의 망치",
+        "tc": "角卷綿芽的鐵鎚",
+        "th": "ค้อนของ Tsunomaki Watame"
+      }
+    },
+    "角巻わためのハープ": {
+      "translations": {
+        "en": "Tsunomaki Watame's Harp",
+        "es": "Tsunomaki Watame's Harp",
+        "id": "Harpa Tsunomaki Watame",
+        "ko": "츠노마키 와타메의 하프",
+        "tc": "角卷綿芽的豎琴",
+        "th": "ฮาร์ปของซึโนมากิ วาตาเมะ"
+      }
+    },
+    "赤エール": {
+      "translations": {
+        "en": "Red Cheer",
+        "es": "Red Cheer",
+        "id": "Yell Merah",
+        "ko": "레드 옐",
+        "tc": "紅色應援",
+        "th": "เยลสีแดง"
+      }
+    },
+    "赤井はあと": {
+      "translations": {
+        "en": "Akai Haato",
+        "es": "Akai Haato",
+        "id": "Akai Haato",
+        "ko": "아카이 하토",
+        "tc": "赤井心",
+        "th": "อากาย ฮาโต"
+      }
+    },
+    "輪堂千速": {
+      "translations": {
+        "en": "Rindo Chihaya",
+        "es": "Rindō Chihaya",
+        "id": "Rindo Chihaya",
+        "ko": "린도 치하야",
+        "tc": "輪堂千速",
+        "th": "Rindo Chihaya"
+      }
+    },
+    "轟はじめ": {
+      "translations": {
+        "en": "Todoroki Hajime",
+        "es": "Todoroki Hajime",
+        "id": "Todoroki Hajime",
+        "ko": "토도로키 하지메",
+        "tc": "轟初芽",
+        "th": "โทโดโรกิ ฮาจิเมะ"
+      }
+    },
+    "野うさぎ同盟": {
+      "translations": {
+        "en": "Wild Rabbit Alliance",
+        "es": "Wild Rabbit Alliance",
+        "id": "Aliansi Kelinci Liar",
+        "ko": "야생 토끼 동맹",
+        "tc": "野兔同盟",
+        "th": "พันธมิตรกระต่ายป่า"
+      }
+    },
+    "金時": {
+      "translations": {
+        "en": "Kintoki",
+        "es": "Kintoki",
+        "id": "Kintoki",
+        "ko": "킨토키",
+        "tc": "金時",
+        "th": "กินโทกิ"
+      }
+    },
+    "鈍器でぶっ叩くわよ！": {
+      "translations": {
+        "en": "I'll smash you with a blunt weapon!",
+        "es": "I'll smash you with a blunt weapon!",
+        "id": "Aku akan memukulmu dengan senjata tumpul!",
+        "ko": "둔기로 때려 부술 거야!",
+        "tc": "我要用鈍器敲爆你！",
+        "th": "จะทุบด้วยอาวุธทื่อ!"
+      }
+    },
+    "鍛冶ハンマー": {
+      "translations": {
+        "en": "Forging Hammer",
+        "es": "Forging Hammer",
+        "id": "Palu Tempa",
+        "ko": "대장 망치",
+        "tc": "鍛造之鎚",
+        "th": "ค้อนเหล็ก"
+      }
+    },
+    "開拓者": {
+      "translations": {
+        "en": "Pioneer",
+        "es": "Pioneer",
+        "id": "Perintis",
+        "ko": "개척자",
+        "tc": "開拓者",
+        "th": "ผู้บุกเบิก"
+      }
+    },
+    "阿修羅＆羅刹": {
+      "translations": {
+        "en": "Asura & Rakshasa",
+        "es": "Asura & Rakshasa",
+        "id": "Asura & Rakshasa",
+        "ko": "아수라 & 라찰",
+        "tc": "阿修羅＆羅刹",
+        "th": "อะสุระ & ราคชะ"
+      }
+    },
+    "限界飯": {
+      "translations": {
+        "en": "Extreme Meal",
+        "es": "Extreme Meal",
+        "id": "Makanan Ekstrem",
+        "ko": "한계 밥",
+        "tc": "極限餐",
+        "th": "อาหารสุดขีด"
+      }
+    },
+    "雪民": {
+      "translations": {
+        "en": "Yukimin",
+        "es": "Yukimin",
+        "id": "Yukimin",
+        "ko": "유키민",
+        "tc": "雪民",
+        "th": "ยุกิมิง"
+      }
+    },
+    "雪花ラミィ": {
+      "translations": {
+        "en": "Yukihana Lamy",
+        "es": "Yukihana Lamy",
+        "id": "Yukihana Lamy",
+        "ko": "유키하나 라미",
+        "tc": "雪花菈米",
+        "th": "ยุกิฮานะ ลามี"
+      },
+      "aliases": [
+        {
+          "text": "ラミィ",
+          "translations": {
+            "en": "Lamy",
+            "es": "Lamy",
+            "id": "Lamy",
+            "ko": "라미",
+            "tc": "菈米",
+            "th": "ลามี่"
+          }
+        }
+      ]
+    },
+    "青エール": {
+      "translations": {
+        "en": "Blue Cheer",
+        "es": "Blue Cheer",
+        "id": "Yell Biru",
+        "ko": "블루 옐",
+        "tc": "藍色應援",
+        "th": "เยลสีน้ำเงิน"
+      }
+    },
+    "音乃瀬奏": {
+      "translations": {
+        "en": "Otonose Kanade",
+        "es": "Otonose Kanade",
+        "id": "Otonose Kanade",
+        "ko": "오토노세 카나데",
+        "tc": "音乃瀨奏",
+        "th": "โอโตโนเซะ คานาเดะ"
+      },
+      "aliases": [
+        {
+          "text": "音乃瀬",
+          "translations": {
+            "en": "Otonose",
+            "es": "Otonose",
+            "id": "Otonose",
+            "ko": "오토노세",
+            "tc": "音乃瀨",
+            "th": "โอโตโนเสะ"
+          }
+        }
+      ]
+    },
+    "響咲リオナ": {
+      "translations": {
+        "en": "Isaki Riona",
+        "es": "Isaki Riona",
+        "id": "Isaki Riona",
+        "ko": "히비사키 리오나",
+        "tc": "響咲莉歐娜",
+        "th": "Isaki Riona"
+      }
+    },
+    "風真いろは": {
+      "translations": {
+        "en": "Kazama Iroha",
+        "es": "Kazama Iroha",
+        "id": "Kazama Iroha",
+        "ko": "카자마 이로하",
+        "tc": "風真伊呂波",
+        "th": "คาซามะ อิโรฮะ"
+      },
+      "aliases": [
+        {
+          "text": "風真",
+          "translations": {
+            "en": "Kazama",
+            "es": "Kazama",
+            "id": "Kazama",
+            "ko": "카자마",
+            "tc": "風真",
+            "th": "คาซามะ"
+          }
+        }
+      ]
+    },
+    "鬼神刀「阿修羅」": {
+      "translations": {
+        "en": "Kishin Blade \"Ashura\"",
+        "es": "Espada demoníaca divina «Asura»",
+        "id": "Pedang Dewa Iblis \"Ashura\"",
+        "ko": "귀신도 「아수라」",
+        "tc": "鬼神刀「阿修羅」",
+        "th": "ดาบอสูรเทพ \"อาชูร่า\""
+      }
+    },
+    "魔法のタンス": {
+      "translations": {
+        "en": "Magic Wardrobe",
+        "es": "Magic Wardrobe",
+        "id": "Lemari Sihir",
+        "ko": "마법의 옷장",
+        "tc": "魔法衣櫃",
+        "th": "ตู้เสื้อผ้าวิเศษ"
+      }
+    },
+    "魔法少女かなた": {
+      "translations": {
+        "en": "Magical Girl Kanata",
+        "es": "Magical Girl Kanata",
+        "id": "Gadis Sihir Kanata",
+        "ko": "마법소녀 카나타",
+        "tc": "魔法少女彼方",
+        "th": "เมจิคัลเกิร์ล คานาตะ"
+      }
+    },
+    "魔法少女みこ": {
+      "translations": {
+        "en": "Magical Girl Miko",
+        "es": "Magical Girl Miko",
+        "id": "Gadis Sihir Miko",
+        "ko": "마법소녀 미코",
+        "tc": "魔法少女Miko",
+        "th": "เมจิคัลเกิร์ล มิโกะ"
+      }
+    },
+    "魔法少女クロヱ": {
+      "translations": {
+        "en": "Magical Girl Chloe",
+        "es": "Magical Girl Chloe",
+        "id": "Gadis Sihir Chloe",
+        "ko": "마법소녀 클로에",
+        "tc": "魔法少女克蘿耶",
+        "th": "เมจิคัลเกิร์ล โคลเอ"
+      }
+    },
+    "魔法少女シオン": {
+      "translations": {
+        "en": "Magical Girl Shion",
+        "es": "Magical Girl Shion",
+        "id": "Gadis Sihir Shion",
+        "ko": "마법소녀 시온",
+        "tc": "魔法少女詩音",
+        "th": "เมจิคัลเกิร์ล ชิออง"
+      }
+    },
+    "魔法少女マリン": {
+      "translations": {
+        "en": "Magical Girl Marine",
+        "es": "Magical Girl Marine",
+        "id": "Gadis Sihir Marine",
+        "ko": "마법소녀 마린",
+        "tc": "魔法少女瑪琳",
+        "th": "เมจิคัลเกิร์ล มารีน"
+      }
+    },
+    "魔法少女ルーナ": {
+      "translations": {
+        "en": "Magical Girl Luna",
+        "es": "Magical Girl Luna",
+        "id": "Gadis Sihir Luna",
+        "ko": "마법소녀 루나",
+        "tc": "魔法少女璐娜",
+        "th": "เมจิคัลเกิร์ล ลูนะ"
+      }
+    },
+    "鷹嶺ルイ": {
+      "translations": {
+        "en": "Takane Lui",
+        "es": "Takane Lui",
+        "id": "Takane Lui",
+        "ko": "타카네 루이",
+        "tc": "鷹嶺露依",
+        "th": "ทาคาเนะ รุย"
+      },
+      "aliases": [
+        {
+          "text": "ルイ",
+          "translations": {
+            "en": "Lui",
+            "es": "Lui",
+            "id": "Lui",
+            "ko": "루이",
+            "tc": "露依",
+            "th": "ลูอี้"
+          }
+        }
+      ]
+    },
+    "黄エール": {
+      "translations": {
+        "en": "Yellow Cheer",
+        "es": "Yellow Cheer",
+        "id": "Yell Kuning",
+        "ko": "옐로우 옐",
+        "tc": "黃色應援",
+        "th": "เยลสีเหลือง"
+      }
+    },
+    "ﾁｬｷ丸": {
+      "translations": {
+        "en": "Chaki-maru",
+        "es": "Chaki-maru",
+        "id": "Chaki-maru",
+        "ko": "차키마루",
+        "tc": "恰奇丸",
+        "th": "ชากิมารุ"
+      }
+    }
+  }
+}

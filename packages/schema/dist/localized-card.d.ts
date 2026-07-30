@@ -28,8 +28,7 @@ export type CardTypeCode =
   | "supportMascot"
   | "supportStaff"
   | "supportStaffLimited"
-  | "supportTool"
-  | "unknown";
+  | "supportTool";
 export type RarityCode = "C" | "HR" | "OC" | "OSR" | "OUR" | "P" | "R" | "RR" | "S" | "SEC" | "SR" | "SY" | "U" | "UR";
 export type ColorCodes = (
   "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
@@ -48,7 +47,6 @@ export type Name = string;
 export type Tags = string[];
 export type AbilityText = string;
 export type Extra = string;
-export type CostCount = number;
 export type CostTypes = (
   "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
 )[];
@@ -75,6 +73,12 @@ export type Answer = string;
 export type RawHtml = string;
 export type CardNumber1 = string[];
 export type QaItems = QaItem[];
+export type Name4 = string;
+export type Tags1 = string[];
+export type ArtNames = string[];
+export type KeywordName = string;
+export type OshiSkillName = string;
+export type SpOshiSkillName = string;
 
 /**
  * A card as the API returns it: one locale, translations flattened to the top.
@@ -114,6 +118,7 @@ export interface LocalizedCard {
   oshi_skill?: LocalizedOshiSkill;
   sp_oshi_skill?: LocalizedOshiSkill;
   qa_items?: QaItems;
+  original?: OriginalLabels;
 }
 /**
  * An art with its costs and its translated text merged into one object.
@@ -125,7 +130,6 @@ export interface LocalizedCard {
  * via the `definition` "LocalizedArt".
  */
 export interface LocalizedArt {
-  cost_count: CostCount;
   cost_types?: CostTypes;
   damage?: Damage;
   is_plus?: IsPlus;
@@ -187,4 +191,33 @@ export interface QaItem {
 export interface RelatedCards {
   raw_html: RawHtml;
   card_number?: CardNumber1;
+}
+/**
+ * The source-locale text for the labels a card shows.
+ *
+ * Powers the show-original toggle: a reader who knows the Japanese name can check what
+ * a card is without a round-trip, which matters most in a list of 50 tiles where they
+ * are scanning for a name they already know.
+ *
+ * **Labels only, not prose.** Returning every source field costs +69% on a response;
+ * the labels cost +14% (~4.7 KB on a 33 KB page of 50 cards). Rules text is the part a
+ * reader wants *translated* — the names are the part they may want to verify.
+ *
+ * **Emitted only where the two differ.** On a `ja` request this is absent entirely, and
+ * on any locale a field that was never translated contributes nothing. So the +14% is
+ * the ceiling, not the typical case.
+ *
+ * Absent rather than empty when there is nothing to say: `Optional` here means the
+ * frontend's `v-if="card.original"` is the whole check.
+ *
+ * This interface was referenced by `LocalizedCard`'s JSON-Schema
+ * via the `definition` "OriginalLabels".
+ */
+export interface OriginalLabels {
+  name?: Name4;
+  tags?: Tags1;
+  art_names?: ArtNames;
+  keyword_name?: KeywordName;
+  oshi_skill_name?: OshiSkillName;
+  sp_oshi_skill_name?: SpOshiSkillName;
 }

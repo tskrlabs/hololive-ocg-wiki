@@ -17,6 +17,10 @@ holo-data build           # merge + validate -> cards.json       (local, free)
 holo-data verify          # diff against v1's data               (local, free)
 holo-data verify-images   # coverage; --remote re-checks bytes   (local / ~2.4k reqs)
 holo-data status          # what is on disk right now
+holo-data glossary        # proper-noun coverage, per locale     (local, free)
+holo-data cache-status    # migration progress, per locale       (local, free)
+holo-data report-masks    # rehearse masking over every string   (local, free)
+holo-data backup-cache    # snapshot the translation cache       (--remote adds R2)
 
 holo-data publish         # images + artifacts -> R2   (needs CF credentials)
 holo-data seed            # -> D1      (Phase 3)
@@ -46,6 +50,34 @@ uv sync --extra publish         # adds boto3 — only needed for `publish`
 `scrape`, `images`, `build`, `verify` and `verify-images` need no credentials.
 `publish` needs R2 credentials and `boto3`; see [`docs/infra.md`](../docs/infra.md).
 
+## A translation belongs to a string, not to a card
+
+`locales/translation-cache-v2.json` keys on `(locale, kind, sha256(source))`. The old
+cache keyed on `(locale, card_id, field_path)`, so the same Japanese printed on five cards
+was translated five times — and came back five different ways. Measured: 362 of 926
+distinct art names have two or more `en` translations.
+
+One string, one slot. Two cards cannot disagree, because there is nowhere for a second
+answer to live.
+
+It is also smaller. 2,463 cards hold **17,377 translatable field occurrences but only
+3,893 distinct units** — 284 KB against 1.42 MB of whole-card text.
+
+```bash
+holo-data cache-status    # units per kind, and how far each locale has migrated
+```
+
+**Q&A is migrated; everything else is re-translated cold.** Re-keying the old cache by
+content puts conflicting values in one slot — 59% of `en`'s fillable slots hold two or
+more different translations, and 2,006 of those have no principled winner. Q&A is the
+exception because it is 62% of the corpus by character count, the least read, and the
+Japanese is authoritative anyway. Migrated entries are marked `source: "legacy"` so a
+later pass can find exactly them.
+
+**Dual-read during the migration.** A unit missing from v2 falls back to the per-card
+cache, so a build is always complete and a locale ships when it is ready rather than all
+six landing together.
+
 ## Translation is incremental
 
 The translation cache hashes **each field separately**, so a changed Q&A entry
@@ -70,14 +102,102 @@ Nothing overwrites it. As long as the JP source has not changed, that field is n
 stale, so `translate` skips it even when the rest of the card is re-sent. This is what
 replaces D14's corrections overlay.
 
+## `glossary/` is source, and it is committed
+
+`pipeline/glossary/{names,sets,tags}.json` holds the curated translations of proper nouns
+— 296 card names, 35 sets, 41 tags — keyed on the **source-language string**.
+
+Everything else the pipeline translates is prose, and prose can be machine-translated per
+string. Proper nouns cannot: `一伊那尓栖` is "Ninomae Ina'nis", and no model produces that
+reliably. They also have to be *identical everywhere they appear*, which is the defect
+[#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20) and
+[#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21) record.
+
+Three consumers read this one file, which is why it is one file:
+
+- **`translate`** masks these strings out before text goes to the model and restores them
+  after, so the model never sees a character name and cannot spell it two ways.
+- **`build`** labels the filter dropdowns from it.
+- **The site** displays from it — `apps/web/i18n/locales/*.json`'s `names`, `sets` and
+  `tags` maps are **generated** by `make generate` and `make check` fails if they drift.
+  Edit the glossary, not the locale files.
+
+```bash
+holo-data glossary              # coverage per locale
+holo-data glossary --missing    # which keys still have no decision
+```
+
+**Identity is the source string; display is per-locale.** The same rule `Card.tags` and
+`name_ja` already follow. Tag entries key on `Card.tags` (`"0期生"`), not the prefixed
+display text (`"#0期生"`) — keying on the prefix is what made the tag filter match nothing
+([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)).
+
+**Aliases** cover the short forms characters are referred to by — `おつルーナ`, `おつムーナ`.
+They are masked longest-first, and an alias claimed by two characters is rejected outright
+rather than silently resolving to whichever was matched first.
+
+## Masking: names are removed, not asked about
+
+`translate` does not ask the model to leave names alone — it takes them out first:
+
+```
+白上フブキのこんこん  ->  [[N0]]のこんこん  ->  [[N0]]'s Konkon  ->  Shirakami Fubuki's Konkon
+```
+
+The name comes back from the glossary, so every occurrence on every card gets the same
+spelling **by construction**. The old prompt asked politely and was obeyed 47–81% of the
+time, which is what #20 and #21 measure.
+
+Three rules, each forced by the real data:
+
+- **Longest first.** 75 pairs in the table nest — `森カリオペ` inside `森カリオペの鎌`,
+  `Promise` inside `時の支配者 -Promise-`. Masking the short one strands a fragment.
+- **Katakana word boundaries.** `トワ` is Tokoyami Towa *and* the first two syllables of
+  `トワイライト`. Adjacency decides, per occurrence: `トワとトワイライト` masks the first
+  only.
+- **One pass.** A token like `[[N0]]` is ASCII and so is a name like `35P`, so a second
+  pass could match inside a token it just wrote. The masker never re-reads its own output.
+
+**Failure is loud.** If the model drops, mangles or invents a placeholder, `unmask` raises
+and the unit is not cached. A half-restored string would be plausible, published, and
+found by a reader months later.
+
+```bash
+holo-data report-masks     # every string masked and restored, offline
+```
+
+Verified over the full corpus: **21,205 strings, 7,023 (33%) carrying a name, zero
+round-trip failures.** `make check` runs the same sweep.
+
+## The cache is the one thing you cannot re-run
+
+`locales/translation-cache.json` is **not** reproducible working state, despite living
+among files that are. It is the accumulated output of a year of paid Poe calls — 82,098
+entries across 6 locales — and re-creating it means paying for it again. It is also
+gitignored, and `publish` does not upload it.
+
+So back it up before anything touches it:
+
+```bash
+holo-data backup-cache --remote
+```
+
+That writes a dated snapshot to `~/.holo-data/cache-backups/` (outside the repo, so
+`git clean -fdx` cannot take it) and a copy to `backups/` in the artifacts bucket. Both
+are verified by loading the copy back and comparing entry counts per locale — a truncated
+write fails at backup time rather than at the restore nobody rehearsed.
+
+To restore, put a snapshot back at `locales/translation-cache.json`. `holo-data status`
+will then report the entry counts, which is the check that it worked.
+
 ## Working state
 
-Everything under `pipeline/` except `corrections/` is gitignored working state,
-reproducible by re-running:
+Everything else under `pipeline/` except `corrections/` is gitignored working state,
+genuinely reproducible by re-running:
 
 ```
 data/default/         card ids, raw HTML, structured extraction, contract shape
-locales/              translations + the field-level cache
+locales/              translations + the field-level cache (⚠ see above — back this up)
 images/png/{set}/     downloaded originals (local intermediate — never uploaded)
 images/webp/{set}/    what `publish` uploads (D9)
 build/                cards.json
@@ -89,7 +209,7 @@ Per D1 the published artifacts live in R2, not git.
 its R2 object key, which is what lets `publish` sync without consulting `cards.json`. It
 is also load-bearing for correctness: `hBP03-044_SR.png` exists under both `hBP03` and
 `hCO01` as **different artwork**, and a flat directory can only hold one of them — see
-[F-006](../docs/findings.md#f-006), which is exactly how v1 shipped one card's art for
+[F-006](../docs/archive/findings.md#f-006), which is exactly how v1 shipped one card's art for
 two cards.
 
 ## Gotchas
@@ -101,9 +221,11 @@ two cards.
   must *not* be translated (proper nouns, anything in 〈〉, rarity/set/cardType). They are
   data, not code, so they can be edited without touching Python — but edits change
   translation quality.
-- **The 特攻 icon appears in `cost_icons`.** It is a bonus-damage marker, not a cost. It
-  is filtered out of `cost_types` but still counted in `cost_count`, because that is what
-  v1 shipped.
+- **The 特攻 icon appears in `cost_icons`.** It is a bonus-damage marker, not a cost, so
+  it is filtered out of `cost_types` by its `tokkou_` filename. v1 also emitted a
+  `cost_count` taken from the *unfiltered* list, so it read one high on the 482 arts with
+  a 特攻 icon; v2 does not emit that field at all — `len(cost_types)` is the count
+  (F-002).
 - **A keyword's type is its icon's `alt`,** not its `name` — `name` is the ability's own
   title.
 - **The cache starts empty.** A first `translate` on a fresh clone would be a full run.

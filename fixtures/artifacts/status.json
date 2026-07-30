@@ -121,12 +121,6 @@
       "name": "七詩ムメイ"
     },
     {
-      "id": "176",
-      "card_number": "hBP01-015",
-      "image_key": "hPR/hBP01-015_P",
-      "name": "七詩ムメイ"
-    },
-    {
       "id": "446",
       "card_number": "hSD03-009",
       "image_key": "hBP02/hSD03-009_SR",
@@ -215,6 +209,12 @@
       "card_number": "hBP01-028",
       "image_key": "hBP08/hBP01-028_HR",
       "name": "IRyS"
+    },
+    {
+      "id": "9000001",
+      "card_number": "hSYN-001",
+      "image_key": "hSYN/hSYN-001_C",
+      "name": "テスト・ショートアーツ"
     }
   ],
   "changed": [],

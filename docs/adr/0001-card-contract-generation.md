@@ -15,7 +15,7 @@ starting Phase 0, by census over all 2,448 cards in v1's `data/cards.json`:
 | Drift | Consequence |
 |---|---|
 | `rarity_code` "HR" missing from the TS union and from `constants/card-data.ts` | 24 cards were **unfilterable in the live UI** |
-| `card_type_code` "unknown" missing from the TS union | 2 cards untyped |
+| `card_type_code` "unknown" missing from the TS union | 2 cards untyped (both were really `サポート・スタッフ` — F-001; the value itself was later removed, [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) |
 | `oshi_skill.cost` declared in `types/card.ts`, `worker.ts` **and** `schema.sql` | field has never existed in the data |
 | `special_values` typed `string[]` in `worker.ts` | actually `number[]` |
 | `CARD_BLOOM_LEVELS = ["debut","1st","2nd","spot"]` | data says `first`/`second` — the bloom filter was built from the wrong spelling |
@@ -74,16 +74,36 @@ committed copy is stale.
 
 Every enum is a `Literal` union, complete against today's data. Unknown values are
 **collected and reported** rather than raising on the first one, and the run exits
-non-zero. `--allow-unknown-enums` publishes anyway and prints what it let through.
+non-zero.
 
 The data comes from scraping a site we do not control, and Hololive ships new sets
 regularly. A hard failure on the first unrecognised value would block a set launch; no
 validation at all lets a new rarity reach production silently. The escape hatch is
 deliberately ugly so it does not become the default path.
 
-`"unknown"` is a **legitimate, documented** `card_type_code` — it is what the scraper
-writes when it cannot classify a card, and 2 cards carry it. Modelling it means the
-build does not fail on cards we already ship.
+> **Amended by [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)
+> (2026-07-30), on two counts.**
+>
+> **The escape hatch did not work.** This section said `--allow-unknown-enums`
+> "publishes anyway and prints what it let through". It never once did: `build()`
+> honoured the flag and then discarded the result on a `len(validated) != len(cards)`
+> check that is true precisely when a card fails validation. No test covered it.
+>
+> The promise was also unimplementable as worded. These enums are closed `Literal`s, so
+> a card carrying an unmapped value cannot become a `Card` at all — there is nothing to
+> publish. The flag now **drops** those cards, ships the rest, and records the dropped
+> ids in `CardCollection.dropped`; `publish` and `seed` refuse a non-empty list, with no
+> override flag. So it unblocks `build` alone and never reaches the site.
+>
+> **`"unknown"` is no longer a `card_type_code`.** It was described here as legitimate
+> and documented — the scraper's fallback, modelled so the build does not fail on cards
+> we already ship. But it was the fallback in four enums and a member of only this one,
+> so an unmapped value stopped the build in three fields and shipped silently in the
+> fourth, into no deck section, counted by nothing. Those 2 cards were `サポート・スタッフ`
+> all along (F-001), found by a hand-run census months later. Graceful degradation is now
+> the operator's explicit choice via the flag above, and `holo-data transform` names the
+> source value the site printed — which nothing could do before, since the sentinel
+> discards it.
 
 ### 5. Colours are modelled exactly as the data has them
 
@@ -132,8 +152,10 @@ artifact surfaces at the next build even if the hook was skipped.
 
 **Good**
 
-- All five drift sites above are now impossible: the enums have one definition, and
-  `HR` / `unknown` are present.
+- All five drift sites above are now impossible: the enums have one definition, and `HR`
+  is present. (`unknown` was too, until [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)
+  removed it deliberately — see the amendment under §4. The drift it fixed was real; the
+  fix is now "such a card stops the build" rather than "such a card has a name".)
 - `CardCollection` validates `image_key` uniqueness, so the R2 collision cannot ship.
   It fired on first run against real data, exactly as intended.
 - All 2,448 v1 cards validate against the contract, so it describes reality rather than
@@ -161,9 +183,12 @@ artifact surfaces at the next build even if the hook was skipped.
 
 ## Notes for later phases
 
-- **Phase 1** — `scripts/v1_adapter.py` is a migration aid, not contract code. Delete it
-  once `holo-data build` emits v2 shapes natively. It documents every transformation
-  applied to v1 data.
+- ~~**Phase 1** — `scripts/v1_adapter.py` is a migration aid, not contract code. Delete
+  it once `holo-data build` emits v2 shapes natively.~~ **Done**, though two phases late
+  than intended: `build_fixtures.py` kept reading v1's data through it until issue #16.
+  Selecting the fixture corpus from a schema the contract had moved on from is what let
+  the corpus and its generator disagree. The generator now reads `holo-data build`
+  output and the adapter is deleted.
 - **Phase 2** — adopt the `{set}/{filename}` image key scheme the adapter uses; it is
   what resolves the reprint collisions.
 - **Phase 3** — the DDL emitter reads `annotations.py`.

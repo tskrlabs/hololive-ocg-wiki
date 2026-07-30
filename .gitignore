@@ -31,8 +31,9 @@ apps/*/dist
 .dev.vars
 
 # Pipeline working state (D1: generated data lives in R2, not git).
-# `pipeline/corrections/` is deliberately NOT ignored — manual translation fixes are
-# source, and reviewing them as a PR diff is the point (ADR 0002).
+# `pipeline/glossary/` and `pipeline/corrections/` are deliberately NOT ignored —
+# curated proper nouns and manual translation fixes are source, and reviewing them as a
+# PR diff is the point (ADR 0002, #18).
 pipeline/data/
 pipeline/locales/
 pipeline/images/
@@ -43,6 +44,13 @@ pipeline/logs/
 .env
 .env.*
 !.env.example
+
+# Agent tooling. `.claude/skills/` and `.claude/settings.json` ARE committed — they are the
+# repo's shared agent config, and a contributor should get them from a clone. What is
+# ignored is per-machine state: scratch worktrees (each carries its own `node_modules` and
+# `.venv`, ~900MB apiece) and personal setting overrides.
+.claude/worktrees/
+.claude/settings.local.json
 
 # OS / editor
 .DS_Store

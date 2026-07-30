@@ -1,6 +1,16 @@
 # ADR 0002 — Field-level translation caching
 
-**Status:** accepted
+**Status:** accepted; the cache **key** is superseded by
+[ADR 0008](0008-content-addressed-translations.md)
+
+> **The granularity decision here still stands.** Hashing each translatable field rather
+> than the whole card is correct and survives unchanged. What ADR 0008 replaces is the
+> *identity* half — keying on `(locale, card_id, field_path)` meant the same Japanese
+> string on five cards was translated five times and came back five different ways
+> (measured: 362 of 926 distinct art names had ≥2 `en` translations). The key is now
+> `(locale, kind, sha256(source))`. Everything below about staleness, `manual`
+> durability, and reading back only stale fields applies at unit granularity instead.
+
 **Date:** 2026-07-26
 **Phase:** 1
 **Amends:** D14 (corrections overlay), D11 (`status.json` ownership)
@@ -119,6 +129,11 @@ v1 counted every icon including 特攻, so `cost_count` can exceed `len(cost_typ
 A bonus-damage marker is not a cost, so this looks like a v1 bug — but it is the number
 the live site has shipped for a year, and Phase 1's criterion is data equivalence, not
 correction. Flagged for a separate decision.
+
+> **Decided in Phase 6 — the field was dropped, not corrected.** A census found no reader
+> anywhere in the codebase, and `len(cost_types)` already carries the same fact. See
+> [F-002](../archive/findings.md#f-002). This paragraph records what Phase 1 decided and stands as
+> written.
 
 ### WebP conversion is its own command
 

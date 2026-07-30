@@ -73,7 +73,10 @@ class Art(BaseModel):
 
     model_config = _STRICT
 
-    cost_count: int
+    # No `cost_count`. v1 shipped one, but it was `len(cost_icons)` — the *unfiltered*
+    # icon list, which includes the 特攻 bonus-damage marker, so it read one high on the
+    # 482 arts that have one. `len(cost_types)` is the real count, and it is the only
+    # count now (F-002).
     cost_types: list[ColorCode] = Field(default_factory=list)
     damage: Optional[int] = None
     is_plus: Optional[bool] = None
@@ -106,21 +109,27 @@ class Art(BaseModel):
 class TranslatedArt(BaseModel):
     """The localised half of an art: what it is called and what it says.
 
-    Paired with `Art` by list index. That pairing is fragile and the data proves it —
-    hSD03-009 and hSD04-009 each have 2 entries in `Card.arts` but 0 in their `en`
-    translation. `localize()` defines the merge rule and tolerates the short list; both
-    cards are golden-file fixtures so the behaviour stays pinned.
+    Paired with `Art` by list index. That pairing is fragile: hSD03-009 and hSD04-009
+    each had 2 entries in `Card.arts` but 0 in their `en` translation, so `localize()`
+    defines the merge rule and tolerates the short list.
+
+    **No real card exhibits this any more.** The field-level cache filled both cards in
+    (F-004), and a census over all 2,463 cards finds zero arts-length mismatches in any
+    locale. The rule still runs in production, in two languages, so a *synthetic*
+    fixture carries the shape instead — card `9000001`, appended by
+    `scripts/build_fixtures.py`. It is the only thing keeping the rule pinned in Python
+    *and* TypeScript; see SYNTHETIC_CARD there, and issue #16.
     """
 
     model_config = _STRICT
 
+    # There is no `value` field. v1 carried one on exactly 4 `tc` arts, holding a
+    # translation of `name` that sat beside an untranslated `name` — an artefact of the
+    # translation prompt's own 「只翻譯 value」 instruction, not of the scraper. v2 never
+    # emits it: `transform._arts()` writes `name`/`effect` only and the cache keys on
+    # `arts[i].name`/`.effect`, so a fresh build produces none (F-003).
     name: Annotated[str, FullText(weight=2.0)]
     effect: Annotated[Optional[str], FullText()] = None
-    # Present on exactly 4 arts, all `tc`, all holding what looks like a translation of
-    # `name` (e.g. name "おつルーナ" / value "辛苦啦露娜～"). Modelled so those 4 cards
-    # validate; `localize()` ignores it. Phase 1 should decide whether the scraper
-    # should be writing it at all.
-    value: Optional[str] = None
 
 
 class Keyword(BaseModel):
@@ -215,7 +224,7 @@ class Card(BaseModel):
     # than a `cards` row. Widening these two to Optional was tried and reverted: it
     # would have required dropping `NOT NULL` from a populated production table, which
     # SQLite can only do by rebuilding it, in order to weaken an invariant that
-    # correctly protects every one of the 2,463 real cards. See docs/findings.md F-020.
+    # correctly protects every one of the 2,463 real cards. See docs/archive/findings.md F-020.
     id: Annotated[str, Column(primary_key=True)]
     card_number: Annotated[str, Column(indexed=True), FullText(weight=2.0)]
 
@@ -365,6 +374,18 @@ class CardCollection(BaseModel):
     # break a consumer, so the seeder can refuse an artifact it does not understand.
     schema_version: int = 1
     cards: list[Card]
+    # Ids `build --allow-unknown-enums` refused and left out of `cards`.
+    #
+    # Empty on every ordinary build. A non-empty list means the artifact describes fewer
+    # cards than the site prints, which `publish` and `seed` refuse on: shipping it would
+    # make a real card absent from the site with nothing announcing it, which is the
+    # F-001 failure mode this whole escape hatch has to avoid reintroducing. There is no
+    # flag to override that refusal — clearing the list means adding the missing mapping
+    # and rebuilding, which is the actual fix (D4: gates are facts, not ceremony).
+    #
+    # Not bumped to schema_version 2: it defaults to empty, so every artifact built
+    # before it existed still validates, and no consumer reads it but the two gates.
+    dropped: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _keys_unique(self) -> "CardCollection":

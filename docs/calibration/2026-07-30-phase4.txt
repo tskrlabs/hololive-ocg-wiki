@@ -1,0 +1,1255 @@
+mask table: 378 entries (296 names + 41 tags)
+
+==============================================================================
+tc (繁體中文) — 62 units in 11 call(s)
+==============================================================================
+
+--- ability_text ---
+  '自分のデッキを2枚引き、サイコロを1回振る:3か5か6の時、自分のデッキから、Debutホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。2か4の時、自分のデッキを1枚引く。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  '抽 2 張自己的牌庫，擲 1 次骰子：若為 3、5 或 6，從自己的牌庫公開 1 張 Debut holomem，加入手牌。然後將牌庫洗牌。若為 2 或 4，抽 1 張自己的牌庫。\n\nLIMITED：每回合只能使用 1 張。'
+    OLD  (5 different) ['抽自己牌庫2張牌，並擲1次骰子：若為3、5或6，從自己的牌庫公開1張Debutホロメン，加入手牌。然後將牌庫洗牌。若為2或4，則再抽自己牌庫1張牌。\n\nLIMITED：每回合只能使用1張。', '從自己的牌庫抽2張，擲1次骰子：若為3、5或6，則從自己的牌庫公開1張Debutホロメン，加入手牌。然後將牌庫洗牌。若為2或4，則從自己的牌庫抽1張。\n\nLIMITED：每回合只能使用1張。', '抽2張自己的牌庫，並擲1次骰子：若為3、5或6，則從自己的牌庫公開1張Debutホロメン，加入手牌。然後將牌庫洗牌。若為2或4，則抽1張自己的牌庫。\n\nLIMITED：每回合只能使用1張。']
+  'このカードは、自分の手札がこのカードを含まずに6枚以下でなければ使えない。\n\n自分のデッキの上から4枚を見る。その中から、#4期生を持つホロメンを好きな枚数公開し、公開したホロメンを手札に加える。そして残ったカードを好きな順でデッキの下に戻す。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  '這張卡只有在自己的手牌數量不包含這張卡為 6 張以下時才能使用。\n\n查看自己牌庫上方 4 張牌。從中可公開任意張帶有#4期生的 holomem，將公開的 holomem 加入手牌。然後將剩下的牌以任意順序放回牌庫下方。\n\nLIMITED：每回合只能使用 1 張。'  [masked: ['#4期生']]
+    OLD  (4 different) ['必須在不包含此卡的情況下，自己的手牌必須為6張以下才能使用此卡。\n\n查看自己牌庫頂的4張卡，從中可公開任意張具有#4期生的ホロメン，將公開的ホロメン加入手牌。將剩下的卡以任意順序放回牌庫底。\n\nLIMITED：每回合只能使用1張。', '必須在不包含此卡的情況下，手牌數量為6張以下才能使用此卡。\n\n查看自己牌庫上方4張牌，從中公開任意數量持有#4期生的ホロメン，將公開的ホロメン加入手牌。然後將剩餘的牌以任意順序放回牌庫底。\n\nLIMITED：每回合只能使用1張。', '必須在自己的手牌（不含此卡）為6張以下時才能使用此卡。\n\n查看自己牌庫頂的4張牌，從中可公開任意數量具有#4期生的ホロメン，將公開的ホロメン加入手牌。其餘卡牌以任意順序放回牌庫底。\n\nLIMITED：每回合只能使用1張。']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\r\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■當 holomem 要離開舞台時，將該 holomem 的所有 Cheer 放置到 Archive。\r\n■當 holomem 進行 Baton Touch 時，將該 holomem 指定數量的 Cheer 放置到 Archive。'
+    OLD  (10 different) ['■當Holomen離開舞台時，將該Holomen的所有應援存入檔案區域。\n■當Holomen進行接力時，將該Holomen指定數量的應援存入檔案區域。', '■當一位Holomen要離開舞台時，將該Holomen的所有應援卡存入檔案區域。\n■當一位Holomen進行接力時，將該Holomen指定數量的應援卡存入檔案區域。', '■當Holomen要離開舞台時，將該Holomen的所有應援存入檔案區域。\n■當Holomen進行接力時，將該Holomen的應援依指定的張數存入檔案區域。']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■當 holomem 要離開舞台時，將該 holomem 的所有 Cheer 放置到 Archive。\n■當 holomem 進行 Baton Touch 時，將該 holomem 指定數量的 Cheer 放置到 Archive。'
+    OLD  (49 different) ['■當Holomen從舞台離開時，將該Holomen的所有應援存入檔案區域。\n■當Holomen進行接力時，將該Holomen指定數量的應援存入檔案區域。', '■當Holomen從舞台離開時，將該Holomen的所有應援存檔。\n■當Holomen進行接力時，將該Holomen指定數量的應援存檔。', '■當Holomen離開舞台時，將該Holomen的所有應援存檔。\n■當Holomen進行接力時，將該Holomen指定數量的應援存檔。']
+  '自分のデッキから、Debutホロメン１枚を公開し、ステージに出す。そしてデッキをシャッフルする。'
+    NEW  '從自己的牌庫公開 1 張 Debut holomem，出到舞台上。然後將牌庫洗牌。'
+    OLD  (6 different) ['從自己的牌庫中公開1張Debut的Holomen，並將其放到舞台上。然後將牌庫洗牌。', '從自己的牌庫中公開1張Debut的Holomen，放到舞台上。之後，將牌庫洗牌。', '從自己的牌庫中公開1張Debut的Holomen，放到舞台上。然後洗牌。']
+  'このカードは、自分のライフが相手より少ない時にしか使えない。\n\n相手のコラボホロメンがいない時、相手は、自身のバックホロメン1人をコラボポジションに移動させる（移動はコラボとしては扱わない）。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  '這張卡只有在自己的 Life 比對手少時才能使用。\n\n當對手沒有合作 holomem 時，對手將自己的 1 位後台 holomem 移動到合作位置（此移動不視為合作）。\n\nLIMITED：每回合只能使用 1 張。'
+    OLD  (5 different) ['只有當自己的生命比對手少時才能使用此卡。\n\n當對手場上沒有合作Holomen時，對手需將自己的一名後排Holomen移動到合作位置（此移動不視為合作）。\n\nLIMITED：每回合只能使用1張。', '此卡只能在自己生命比對手少的時候使用。\n\n若對手沒有合作Holomen，則對手將自己的一位後排Holomen移動到合作位置（此移動不視為合作）。\n\nLIMITED：每回合只能使用1張。', '只能在自己的生命值比對手少時才能使用此卡。\n\n當對手場上沒有合作Holomen時，對手將自己的一名後排Holomen移動到合作位置（此移動不視為合作）。\n\nLIMITED：每回合只能使用1張。']
+
+--- art_effect ---
+  'このホロメンに付いている〈35P〉1枚につき、このアーツ+20。'
+    NEW  '此藝能的傷害值，每有1張附於這名Holomen的〈35P〉就+20。'  [masked: ['35P']]
+    OLD  (5 different) ['這個Holomen每有1張裝備的〈35P〉，此藝術+20。', '這個Holomen每有1張裝備的〈35P〉，此Arts+20。', '此Holomen每有1張附著的〈35P〉，此Arts便+20。']
+  '相手のホロメン1人に特殊ダメージ10を与える。'
+    NEW  '對對手的1名Holomen造成特殊傷害10。'
+    OLD  (5 different) ['給對手的一位Holomen造成10點特殊傷害。', '對對手的1名Holomen造成10點特殊傷害。', '對對手的一位Holomen造成10點特殊傷害。']
+  '自分のデッキの上から3枚を公開できる:公開したホロメン1枚につき、このアーツ+20。そして公開したカードをアーカイブする。'
+    NEW  '可以公開自己牌庫頂的3張牌：此藝能的傷害值，每有1張公開的Holomen就+20。然後將公開的牌存檔。'
+    OLD  (5 different) ['可以公開自己牌庫頂的3張牌：每公開1張ホロメン，此藝術卡+20。然後將公開的卡放進檔案區域。', '可以公開自己牌庫頂的3張牌：每公開1張Holomen，此技能+20。然後將公開的卡放進檔案區域。', '可以公開自己牌庫上方3張牌：每公開1張ホロメン，此アーツ+20。然後將公開的牌放進檔案區域。']
+  '自分のデッキの上から1枚をアーカイブする。'
+    NEW  '將自己牌庫頂的1張牌存檔。'
+    OLD  (7 different) ['將自己牌庫上方1張牌存入檔案區域。', '將自己牌庫上方1張卡牌存入檔案區域。', '從自己的牌庫上方將1張牌存入檔案區域。']
+  '相手のバックホロメン1人に特殊ダメージ10を与える。'
+    NEW  '對對手的1名後場Holomen造成特殊傷害10。'
+    OLD  (5 different) ['對對手的後排holo成員1人造成10點特殊傷害。', '對對手的後排Holomen 1人造成10點特殊傷害。', '對對手的後排Holomem 1人造成10點特殊傷害。']
+  'このホロメンのエール1枚につき、このアーツ+20。'
+    NEW  '此藝能的傷害值，每有1張這名Holomen的Eru就+20。'
+    OLD  (6 different) ['每有1張這位Holomen的應援，此藝術+20。', '每有1張這位Holo成員的應援，此藝術卡+20。', '這個Holomen每有1張應援，這個Arts就+20。']
+
+--- art_name ---
+  '今日も祝福がありますように'
+    NEW  '願今日也有祝福相伴'
+    OLD  (3 different) ['今日も祝福がありますように', '今日也願有祝福降臨', '願今日也有祝福降臨']
+  '皆殿、風真いろはでござる～'
+    NEW  '各位殿下，風真伊呂波是也～'  [masked: ['風真いろは']]
+    OLD  (3 different) ['各位殿下，我是風真いろは～', '各位殿下，風真いろは在此～', '各位殿下，風真いろは到此一遊～']
+  'ちわーす！ ホロライブ2期生 大空スバルっス!!'
+    NEW  '嗨──！Hololive 2期生 大空昴來啦!!'  [masked: ['ホロライブ2期生', '大空スバル']]
+    OLD  (3 different) ['ちわーす！ ホロライブ2期生 大空スバルっス!!', '嗨嗨～！Hololive二期生 大空ス巴露登場!!', '嗨～大家好！我是hololive二期生的大空スバル!!']
+  'ドレミファソラシド～！'
+    NEW  '哆來咪發唆拉西哆～！'
+    OLD  (3 different) ['ドレミファソラシド～！', 'Do Re Mi Fa So La Si Do～！', 'Do Re Mi Fa So La Ti Do～！']
+  '貴様ら、刮目せよ！！'
+    NEW  '你們這群傢伙，給我看仔細了！！'
+    OLD  (3 different) ['貴様ら、刮目せよ！！', '你們這些傢伙，給我睜大眼睛看！！', '汝等，睜大眼睛看清楚！！']
+  '皆さん、待っ鷹ね？'
+    NEW  '各位，久等鷹了吧？'
+    OLD  (4 different) ['大家，等鷹了嗎？', '大家，讓你們久等鷹？', '大家，等鷹了吧？']
+
+--- card_name ---
+  'セシリア・イマーグリーン'
+    NEW  'Cecilia ImmarGreen'  [masked: ['セシリア・イマーグリーン']]
+    OLD  (2 different) ['セシリア・イマーグリーン', '塞西莉亞・伊瑪格林']
+  'アーニャ・メルフィッサ'
+    NEW  '阿妮亞・梅爾菲莎'  [masked: ['アーニャ・メルフィッサ']]
+    OLD  (2 different) ['アーニャ・メルフィッサ', '安雅・梅爾菲莎']
+  '尾丸ポルカ'
+    NEW  '尾丸Polka'  [masked: ['尾丸ポルカ']]
+    OLD  (2 different) ['尾丸ポルカ', '尾丸ポル卡']
+  'ラプラス・ダークネス'
+    NEW  'Laplus Darknesss'  [masked: ['ラプラス・ダークネス']]
+    OLD  (3 different) ['ラプラス・ダークネス', '拉普拉斯・達克尼斯', '拉普拉斯・闇']
+  'ハコス・ベールズ'
+    NEW  '哈克斯・貝爾茲'  [masked: ['ハコス・ベールズ']]
+    OLD  (3 different) ['ハコス・ベールズ', '哈克斯・貝爾茲', '哈柯斯・貝爾茲']
+  'クレイジー・オリー'
+    NEW  'Kureiji Ollie'  [masked: ['クレイジー・オリー']]
+    OLD  (2 different) ['クレイジー・オリー', '瘋狂・Ollie']
+
+--- extra ---
+  'このホロメンは〈ときのそら〉〈AZKi〉としても扱う'
+    NEW  '這名Holomen也視為〈時乃空〉〈AZKi〉'  [masked: ['ときのそら', 'AZKi']]
+    OLD  (2 different) ['此Holomen也視為〈ときのそら〉與〈AZKi〉。', '此ホロ成員同時視為〈ときのそら〉與〈AZKi〉']
+  'このホロメンはBloomできない'
+    NEW  '這名Holomen不能Bloom'
+    OLD  (14 different) ['這位Holomen不能進行Bloom', '這位Holomen無法進行Bloom', '這位Holo成員不能進行Bloom']
+  'このホロメンは〈さくらみこ〉〈星街すいせい〉としても扱う'
+    NEW  '這名Holomen也視為〈櫻巫女〉〈星街彗星〉'  [masked: ['さくらみこ', '星街すいせい']]
+    OLD  (2 different) ['此Holomen同時視為〈さくらみこ〉與〈星街すいせい〉。', '此Holomen也視為〈さくらみこ〉與〈星街すいせい〉。']
+  'このホロメンはデッキに何枚でも入れられる'
+    NEW  '這名Holomen可放入牌組任意張'
+    OLD  (72 different) ['這位Holomen在牌組中可放入任意張數', '這張Holomen可以在牌組中放入任意張數', '這張Holomen在牌組中可放入任意張數']
+  'このホロメンがダウンした時、自分のライフ-2'
+    NEW  '這名Holomen倒下時，自己的生命值-2'
+    OLD  (62 different) ['當這位Holomen被擊倒時，我方生命-2', '當這位Holomen被擊倒時，自身生命值-2', '當此Holomen被擊倒時，自身生命-2']
+  'このホロメンは〈フワワ・アビスガード〉〈モココ・アビスガード〉としても扱う'
+    NEW  '這名Holomen也視為〈Fuwawa Abyssguard〉〈Mococo Abyssguard〉'  [masked: ['フワワ・アビスガード', 'モココ・アビスガード']]
+    OLD  (5 different) ['此Holomen同時視為〈フワワ・アビスガード〉與〈モココ・アビスガード〉。', '此Holomen同時視為〈フワワ・アビスガード〉與〈モココ・アビスガード〉', '此Holomen同時視為〈フワワ・アビスガード〉及〈モココ・アビスガード〉']
+
+--- keyword_effect ---
+  '自分のエールデッキから、黄エール1枚を公開し、このホロメンに送る。そしてエールデッキをシャッフルする。'
+    NEW  '從自己的應援牌組公開1張黃色應援，送給這名holomen。然後將應援牌組洗牌。'  [masked: ['黄エール']]
+    OLD  (5 different) ['從自己的應援牌庫公開1張黃應援，送給這位Holomen。然後將應援牌庫洗牌。', '從自己的應援牌庫公開1張黃色應援，送給這位Holomen。然後將應援牌庫洗牌。', '從自己的應援牌庫中公開1張黃應援，送給這位Holomen。然後將應援牌庫洗牌。']
+  '自分のデッキを1枚引く。'
+    NEW  '抽1張自己的牌組。'
+    OLD  (4 different) ['抽一張自己的牌庫卡牌。', '從自己的牌庫抽1張牌。', '抽1張牌。']
+  '自分のアーカイブのエール1枚をこのホロメンに送れる。'
+    NEW  '可以將自己存檔區的1張應援送給這名holomen。'
+    OLD  (5 different) ['可以將自己檔案區域中的1張應援卡送給這位Holomen。', '可以將自己檔案區域中的1張應援牌送給此Holomen。', '可以從自己的檔案區域將1張應援卡送給這位Holomen。']
+  'このホロメンが相手のホロメンをダウンさせた時、自分のデッキの上から1枚をホロパワーにする。その後、自分のホロパワーを見る。その中から1枚を公開し、手札に加える。そしてホロパワーをシャッフルする。'
+    NEW  '當這名holomen使對手的holomen倒下時，將自己牌組最上方1張卡作為Holopower。之後，查看自己的Holopower。從中公開1張，加入手牌。然後將Holopower洗牌。'
+    OLD  (5 different) ['當此ホロメン擊倒對手的ホロメン時，將自己牌庫頂的1張牌放入ホロパワー。之後查看自己的ホロパワー，從中公開1張並加入手牌。然後將ホロパワー洗牌。', '當這位Holomen讓對手的Holomen倒下時，將自己牌庫頂的1張卡放入HoloPower。之後查看自己的HoloPower，從中公開1張卡並將其加入手牌。然後將HoloPower洗牌。', '當此Holomen讓對手的Holomen倒下時，將自己牌庫頂的1張牌放入Holo Power。之後查看自己的Holo Power，從中公開1張加入手牌，然後將Holo Power洗牌。']
+  '[センターポジション限定][ターンに1回]自分のメインステップで、このホロメンに〈35P〉が付いている時、サイコロを1回振れる:3か5の時、このターンの間、このホロメンのアーツ+50。'
+    NEW  '[僅限Center Position][每回合1次]在自己的主要步驟中，當這名holomen附有〈35P〉時，可以擲1次骰子：若為3或5，則這個回合中，這名holomen的藝術+50。'  [masked: ['35P']]
+    OLD  (5 different) ['[僅限中心位置][每回合1次]在自己的主要階段，若此Holomen已裝備〈35P〉，可以擲1次骰子：擲出3或5時，這回合此Holomen的藝術+50。', '[僅限Center位置][每回合1次]在自己的主要階段，當這個Holomen裝備有〈35P〉時，可以擲骰子1次：如果骰出3或5，則本回合內，這個Holomen的Arts+50。', '[僅限中央位置][每回合1次]在自己的主要步驟中，當此Holomen有附著〈35P〉時，可以擲骰子1次：若結果為3或5，則此Holomen本回合內的Arts+50。']
+  '相手のターンで、このホロメンがダウンした時、自分のデッキを1枚引く。'
+    NEW  '在對手的回合中，當這名holomen倒下時，抽1張自己的牌組。'
+    OLD  (5 different) ['在對手的回合中，當這位Holomen被擊倒時，從自己的牌庫抽1張牌。', '在對手的回合中，當此成員被擊倒時，抽1張牌。', '在對手的回合中，當這位Holomen被擊倒時，從自己的牌庫抽1張卡。']
+
+--- keyword_name ---
+  '大好きな君に届くように'
+    NEW  '願這份心意傳達給最喜歡的你'
+    OLD  (3 different) ['傳達給最喜歡的你', '將這份心意傳達給最喜歡的你', '為了讓喜歡的你聽見']
+  '用心棒'
+    NEW  '保鏢'
+    OLD  (3 different) ['用心棒', '保鑣', '保鏢']
+  'いやっほー！ みんな元気？'
+    NEW  '呀呼—！大家有精神嗎？'
+    OLD  (3 different) ['呀吼～！大家好嗎？', '呀呼—！大家好嗎？', '耶～！大家好嗎？']
+  '仮想世界の伴走する歌姫'
+    NEW  '在虛擬世界相伴同行的歌姬'
+    OLD  (3 different) ['伴隨虛擬世界同行的歌姬', '伴行於虛擬世界的歌姬', '虛擬世界中並肩前行的歌姬']
+  '夏深し'
+    NEW  '夏意正濃'
+    OLD  (3 different) ['夏深し', '盛夏時分', '盛夏時節']
+  '白上から目をそらしちゃ'
+    NEW  '別把視線從白上身上移開'  [masked: ['白上']]
+    OLD  (4 different) ['不要移開看白上', '白上から目をそらしちゃ', '別把視線從白上移開']
+
+--- skill_effect ---
+  '[ターンに1回]このターンの間、自分の青ホロメン1人のアーツ+20。'
+    NEW  '[每回合1次]在這個回合期間，自己的1名藍色Holomen的藝術+20。'
+    OLD  (11 different) ['[每回合1次]本回合中，讓自己的一位藍色Holomen的藝能值+20。', '[每回合1次]本回合中，使我方1名藍色Holomem的Arts+20。', '[每回合1次]這回合中，讓我方1位藍色Holomen的Arts+20。']
+  '[ターンに1回]このターンの間、自分の紫ホロメン1人のアーツ+20。'
+    NEW  '[每回合1次]在這個回合期間，自己的1名紫色Holomen的藝術+20。'
+    OLD  (11 different) ['[每回合1次]這個回合中，讓自己的一位紫色Holomen的藝能值+20。', '[每回合1次]直到回合結束為止，讓我方1位紫色Holo成員的藝能+20。', '[每回合1次]此回合中，讓自己的1位紫色Holomen的Arts+20。']
+  '[ゲームに1回]自分のデッキから、赤ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[每場遊戲1次]從自己的牌庫公開1張紅色Holomen，加入手牌。然後將牌庫洗牌。'
+    OLD  (11 different) ['[每場遊戲1次]從自己的牌庫中公開1張紅色Holomen，加入手牌。然後將牌庫洗牌。', '[每場遊戲1次]從自己的牌庫中公開1張紅色ホロメン，加入手牌。然後洗牌。', '[每局遊戲1次]從自己的牌庫中公開1張紅色Holomen，加入手牌。然後將牌庫洗牌。']
+  '[ターンに1回]このターンの間、自分の赤ホロメン1人のアーツ+20。'
+    NEW  '[每回合1次]在這個回合期間，自己的1名紅色Holomen的藝術+20。'
+    OLD  (12 different) ['[每回合1次]本回合中，讓自己的一位紅色ホロメン的アーツ+20。', '[每回合1次]本回合中，我方1位紅色Holomen的Arts+20。', '[每回合1次]本回合中，讓我方1名紅色Holomen的藝術值+20。']
+  '[ターンに1回]このターンの間、自分の緑ホロメン1人のアーツ+20。'
+    NEW  '[每回合1次]在這個回合期間，自己的1名綠色Holomen的藝術+20。'
+    OLD  (11 different) ['[每回合1次] 本回合中，讓自己的1位綠色Holomen的Arts+20。', '[每回合1次]這回合中，我方1名綠色Holomen的藝術值+20。', '[每回合1次]直到回合結束為止，讓我方1名綠色Holomen的Arts+20。']
+  '[ゲームに1回]自分のデッキから、白ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[每場遊戲1次]從自己的牌庫公開1張白色Holomen，加入手牌。然後將牌庫洗牌。'
+    OLD  (11 different) ['[每場遊戲1次]從自己的牌庫中公開1張白色Holo成員，將其加入手牌。然後將牌庫洗牌。', '[每場遊戲1次] 從自己的牌庫中公開1張白色Holomen，加入手牌。然後將牌庫洗牌。', '[每場遊戲1次]從自己的牌庫中公開1張白屬性Holomen，將其加入手牌。然後將牌庫洗牌。']
+
+--- skill_name ---
+  'ぱちぱちありがとう！'
+    NEW  '啪嘰啪嘰謝謝！'
+    OLD  (3 different) ['啪啪謝謝你！', '拍拍手謝謝你！', '啪啪感謝你！']
+  'ホワイトエンハンス'
+    NEW  '白色強化'
+    OLD  (7 different) ['白色強化', 'White強化', 'White 強化']
+  'パープルエンハンス'
+    NEW  '紫色強化'
+    OLD  (4 different) ['紫之強化', '紫色強化', 'パープルエンハンス']
+  'イエローエンハンス'
+    NEW  '黃色強化'
+    OLD  (5 different) ['黃色強化', 'Yellow Enhance', 'イエローエンハンス']
+  'グリーンエンハンス'
+    NEW  '綠色強化'
+    OLD  (4 different) ['綠色強化', '綠色增幅', '綠之強化']
+  'レッドエンハンス'
+    NEW  '紅色強化'
+    OLD  (6 different) ['紅色強化', 'レッドエンハンス', 'Red強化']
+
+--- skill_timing ---
+  'ターンに1回'
+    NEW  '每回合1次'
+  'ゲームに1回'
+    NEW  '每場遊戲1次'
+
+--- tag ---
+  '#絵'
+    NEW  '#繪畫'  [masked: ['#絵']]
+  '#JP'
+    NEW  '#JP'  [masked: ['#JP']]
+  '#ケモミミ'
+    NEW  '#獸耳'  [masked: ['#ケモミミ']]
+  '#EN'
+    NEW  '#EN'  [masked: ['#EN']]
+  '#歌'
+    NEW  '#歌唱'  [masked: ['#歌']]
+  '#ID'
+    NEW  '#ID'  [masked: ['#ID']]
+
+  tc: 62/62 translated, 0 rejected, 0 left Japanese, 54 replaced multiple old variants
+  tokens: 5,871 in / 1,447 out
+
+==============================================================================
+en (英文) — 62 units in 11 call(s)
+==============================================================================
+
+--- ability_text ---
+  '自分のデッキを2枚引き、サイコロを1回振る:3か5か6の時、自分のデッキから、Debutホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。2か4の時、自分のデッキを1枚引く。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'Draw 2 cards from your deck, then roll one die: If the result is 3, 5, or 6, reveal 1 Debut holomem from your deck and add it to your hand. Then shuffle your deck. If the result is 2 or 4, draw 1 card from your deck.\n\nLIMITED: You may use only 1 card per turn.'
+    OLD  (5 different) ['Draw 2 cards from your deck, then roll one die: if the result is 3, 5, or 6, reveal 1 Debut holomem from your deck and add it to your hand. Then shuffle your deck. If the result is 2 or 4, draw 1 card from your deck.\n\nLIMITED: You can use only 1 per turn.', 'Draw 2 cards from your deck, then roll a die once: if the result is 3, 5, or 6, reveal 1 Debut holomem from your deck and add it to your hand. Then shuffle your deck. If the result is 2 or 4, draw 1 card from your deck.\n\nLIMITED: You can use only 1 per turn.', 'Draw 2 cards from your deck, then roll a die once: if the result is 3, 5, or 6, reveal 1 Debut holomem from your deck and add it to your hand. Then shuffle your deck. If the result is 2 or 4, draw 1 card from your deck.\n\nLIMITED: You may use only 1 per turn.']
+  'このカードは、自分の手札がこのカードを含まずに6枚以下でなければ使えない。\n\n自分のデッキの上から4枚を見る。その中から、#4期生を持つホロメンを好きな枚数公開し、公開したホロメンを手札に加える。そして残ったカードを好きな順でデッキの下に戻す。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'You may use this card only if your hand has 6 or fewer cards, not including this card.\n\nLook at the top 4 cards of your deck. From among them, reveal any number of holomems with #4th Gen, and add the revealed holomems to your hand. Then put the remaining cards on the bottom of your deck in any order.\n\nLIMITED: You may use only 1 card per turn.'  [masked: ['#4期生']]
+    OLD  (4 different) ['You can use this card only if you have 6 or fewer cards in your hand, not counting this one.\n\nLook at the top 4 cards of your deck. Reveal any number of Holomen that have #4期生 among them, add the revealed Holomen to your hand, then place the remaining cards on the bottom of your deck in any order.\n\nLIMITED: You can only use one per turn.', 'You can only use this card if you have 6 or fewer cards in your hand, excluding this card.\n\nLook at the top 4 cards of your deck. Reveal any number of Holomen with #4期生 among them and add the revealed Holomen to your hand. Then, place the remaining cards on the bottom of your deck in any order.\n\nLIMITED: You can only use one of this card per turn.', 'You can only play this card if you have 6 or fewer cards in your hand, excluding this card.\n\nLook at the top 4 cards of your deck. Reveal any number of Holomen that have #4期生 among them, add the revealed Holomen to your hand, then put the remaining cards on the bottom of your deck in any order.\n\nLIMITED: You can only use 1 of this card per turn.']
+  '自分のデッキを2枚引く。その後、直前の相手のターンに自分のホロメンがダウンしていて、自分のライフが相手のライフより少ないなら、アーカイブのエール1枚を自分のホロメン1人に送る。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  "Draw 2 cards from your deck. Then, if one of your holomems was Downed during your opponent's previous turn, and you have fewer Life than your opponent, send 1 Cheer from your Archive to 1 of your holomems.\n\nLIMITED: You may use only 1 card per turn."
+    OLD  (4 different) ['Draw 2 cards from your deck. Then, if during your opponent’s previous turn one of your Holomen was knocked down and your Life is lower than your opponent’s, send 1 Cheer from your Archive to one of your Holomen.\n\nLIMITED: You can only use one per turn.', 'Draw 2 cards from your deck. Then, if one of your Holomen was knocked down during your opponent’s last turn and your Life is lower than your opponent’s, send 1 Cheer from your Archive to one of your Holomen.\n\nLIMITED: You can only use one per turn.', 'Draw 2 cards from your deck. Then, if one of your Holomen was downed during your opponent’s previous turn and your Life is less than your opponent’s Life, send 1 Cheer from your Archive to one of your Holomen.\n\nLIMITED: You can only use 1 per turn.']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■ When a holomem leaves the Stage, Archive all Cheer attached to that holomem.\n■ When a holomem Baton Touches, Archive the specified number of Cheer attached to that holomem.'
+    OLD  (41 different) ['■ When a Holomen leaves the stage, archive all Cheers from that Holomen.\n■ When a Holomen performs a Baton Touch, archive the specified number of Cheers from that Holomen.', "■ When a Holomen leaves the stage, archive all of that Holomen's Yell.\n■ When a Holomen performs a Baton Touch, archive the specified number of that Holomen's Yell.", '■ When a Holomem leaves the stage, archive all of that Holomem’s Cheers.\n■ When a Holomem performs a Baton Touch, archive the specified number of that Holomem’s Cheers.']
+  '自分のデッキから、Debutホロメン１枚を公開し、ステージに出す。そしてデッキをシャッフルする。'
+    NEW  'Reveal 1 Debut holomem from your deck and put it onto the Stage. Then shuffle your deck.'
+    OLD  (5 different) ['Reveal 1 Debut Holomen from your deck and put it onto your Stage. Then shuffle your deck.', 'Reveal 1 Debut Holo Member from your deck and put it onto your Stage. Then, shuffle your deck.', 'Reveal 1 Debut HoloMember from your deck and put it onto your Stage. Then shuffle your deck.']
+  'このカードは、自分のライフが相手より少ない時にしか使えない。\n\n相手のコラボホロメンがいない時、相手は、自身のバックホロメン1人をコラボポジションに移動させる（移動はコラボとしては扱わない）。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'You may use this card only if you have fewer Life than your opponent.\n\nIf your opponent has no Collab holomem, your opponent moves 1 of their Back holomems to the Collab position (this movement is not treated as collabing).\n\nLIMITED: You may use only 1 card per turn.'
+    OLD  (5 different) ['You can only use this card when your Life is lower than your opponent’s.\n\nIf your opponent has no collab Holomen, they must move one of their back Holomen to the collab position (this movement does not count as a Collab).\n\nLIMITED: You can only use 1 per turn.', 'You can only use this card when your Life is lower than your opponent’s.\n\nIf your opponent has no Collab Holomen, they move one of their Back Holomen to the Collab Position (this movement is not treated as a Collab).\n\nLIMITED: You can only use one per turn.', 'You can only use this card when your Life is less than your opponent’s.\n\nIf your opponent has no Collab Holomen, they move one of their Back Holomen to the Collab Position (this move is not treated as a Collab).\n\nLIMITED: You can only use 1 per turn.']
+
+--- art_effect ---
+  '自分のステージの異なるカード名の#3期生を持つホロメン1人につき、このアーツ+10。'
+    NEW  'This Art gets +10 for each of your holomem on the Stage with #3rd Gen in their name and a different card name.'  [masked: ['#3期生']]
+    OLD  (5 different) ['For each Holomem on your Stage with a different card name that has #3期生, this Arts gets +10.', 'For each Holomen on your stage with a different card name that has #3期生, this Arts gains +10.', 'For each Holomem on your stage with a different card name that has #3期生, this Art gets +10.']
+  '自分の手札1枚をアーカイブできる:相手のセンターホロメンかコラボホロメンに特殊ダメージ20を与える。'
+    NEW  "You may archive 1 card from your hand: Deal 20 special damage to your opponent's Center holomem or Collab holomem."
+    OLD  (5 different) ['You may archive 1 card from your hand: deal 20 special damage to an opponent’s Center Holomem or Collab Holomem.', "You may archive 1 card from your hand: Deal 20 special damage to an opponent's Center Holomem or Collab Holomem.", "You may archive 1 card from your hand: deal 20 special damage to an opponent's Center Holomen or Collab Holomen."]
+  '相手のバックホロメン1人に特殊ダメージ10を与える。'
+    NEW  "Deal 10 special damage to 1 of your opponent's Back holomem."
+    OLD  (5 different) ['Deal 10 special damage to 1 of your opponent’s back Holomen.', 'Deal 10 special damage to 1 of your opponent’s back holomem.', 'Deal 10 special damage to 1 of your opponent’s back Holomembers.']
+  'このホロメンのエール1枚につき、このアーツ+20。'
+    NEW  'This Art gets +20 for each Cheer on this holomem.'
+    OLD  (5 different) ['For each Cheer this Holomem has, this Arts gets +20.', 'For each Cheer card this Holomen has, this Arts gets +20.', 'For each Cheer of this Holomem, this Arts gets +20.']
+  'このホロメンに#こよラボを持つサポートカードが付いている時、自分のデッキから、#こよラボを持つサポートカード1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  'While this holomem has a Support card with #KoyoLabo in its name attached to it, reveal 1 Support card with #KoyoLabo in its name from your deck and put it into your hand. Then shuffle your deck.'  [masked: ['#こよラボ']]
+    OLD  (5 different) ['When this Holomember has a Support Card with #こよラボ attached, reveal 1 Support Card with #こよラボ from your deck, add it to your hand, then shuffle your deck.', 'When this Holomem has a Support Card with #こよラボ attached, reveal 1 Support Card with #こよラボ from your deck, add it to your hand, then shuffle your deck.', 'When this Holomem has a Support card with #こよラボ attached, reveal 1 Support card with #こよラボ from your deck, add it to your hand, then shuffle your deck.']
+  '相手のバックホロメン1人に特殊ダメージ10を与える（ダウンしても相手のライフは減らない）。'
+    NEW  "Deal 10 special damage to 1 of your opponent's Back holomem (even if it is knocked out, your opponent's Life does not decrease)."
+    OLD  (5 different) ['Deal 10 special damage to 1 of your opponent’s back-row Holomems (this does not reduce your opponent’s Life even if they are downed).', 'Deal 10 special damage to 1 of your opponent’s back-row Holomem. (Even if they go down, your opponent’s Life does not decrease.)', "Deal 10 Special Damage to 1 of your opponent's back holomem. However, your opponent's Life does not reduce even if downed."]
+
+--- art_name ---
+  '今日も祝福がありますように'
+    NEW  'May Today Be Blessed Too'
+    OLD  (3 different) ['May There Be Blessings Today As Well', 'May there be blessings again today', 'May There Be Blessings Again Today']
+  '皆殿、風真いろはでござる～'
+    NEW  "Hey, everyone—it's Kazama Iroha de gozaru~"  [masked: ['風真いろは']]
+    OLD  (3 different) ["Everyone, it's 風真いろは~", '皆殿、風真いろはでござる～', 'Hear ye, it is I, Kazama Iroha!']
+  'ちわーす！ ホロライブ2期生 大空スバルっス!!'
+    NEW  "'Sup! Hololive 2nd Gen Oozora Subaru in the house!!"  [masked: ['ホロライブ2期生', '大空スバル']]
+    OLD  (4 different) ['Yo! HoloLive 2nd Gen, 大空スバル here!!', 'Hey there! Hololive 2nd Gen, Oozora Subaru!!', 'Chiwa—s! Hololive 2nd Gen, Oozora Subaru!!']
+  '音楽家の卵！ 音乃瀬～奏で～～～す！'
+    NEW  'Budding Musician! Otonose~ Kanade~~~su!'  [masked: ['音乃瀬']]
+    OLD  (4 different) ['Budding Musician! 音乃瀬～奏で～～～す！', 'Musician-in-training! 音乃瀬～奏で～～～す！', 'Aspiring Musician! 音乃瀬～奏で～～～す！']
+  '元気を全力でお届けします！'
+    NEW  'Delivering Energy at Full Blast!'
+    OLD  (4 different) ['Sending You Energy at Full Power!', 'Delivering Energy with Full Power!', 'Delivering Energy with All My Might!']
+  'こんばんドドド～！'
+    NEW  "Good Evenin' D-d-dodo~!"
+    OLD  (4 different) ['Good evening, Dododo~!', 'Good evening, dododo~!', 'Good evening, Dododo～!']
+
+--- card_name ---
+  '星街すいせい'
+    NEW  'Hoshimachi Suisei'  [masked: ['星街すいせい']]
+    OLD  (2 different) ['星街すいせい', 'Hoshimachi Suisei']
+  '白上フブキ'
+    NEW  'Shirakami Fubuki'  [masked: ['白上フブキ']]
+    OLD  (2 different) ['白上フブキ', 'Shirakami Fubuki']
+  '風真いろは'
+    NEW  'Kazama Iroha'  [masked: ['風真いろは']]
+    OLD  (2 different) ['風真いろは', 'Kazama Iroha']
+  '森カリオペ'
+    NEW  'Mori Calliope'  [masked: ['森カリオペ']]
+    OLD  (2 different) ['森カリオペ', 'Mori Calliope']
+  'ふつうのパソコン'
+    NEW  'Regular PC'  [masked: ['ふつうのパソコン']]
+    OLD  (6 different) ['ふつうのパソコン', 'Futsuu no Pasokon', 'Ordinary Computer']
+  '不知火フレア'
+    NEW  'Shiranui Flare'  [masked: ['不知火フレア']]
+    OLD  (2 different) ['不知火フレア', 'Shiranui Flare']
+
+--- extra ---
+  'このホロメンは〈ときのそら〉〈AZKi〉としても扱う'
+    NEW  'This holomem is also treated as 〈Tokino Sora〉 and 〈AZKi〉.'  [masked: ['ときのそら', 'AZKi']]
+    OLD  ['This Holomen is also treated as 〈ときのそら〉 and 〈AZKi〉.']
+  'このホロメンはBloomできない'
+    NEW  'This holomem cannot Bloom.'
+    OLD  (4 different) ['This Holomen cannot Bloom.', 'This holomem cannot bloom', 'This holomem cannot Bloom']
+  'このホロメンは〈さくらみこ〉〈星街すいせい〉としても扱う'
+    NEW  'This holomem is also treated as 〈Sakura Miko〉 and 〈Hoshimachi Suisei〉.'  [masked: ['さくらみこ', '星街すいせい']]
+    OLD  (2 different) ['This Holomen is also treated as 〈さくらみこ〉 and 〈星街すいせい〉.', 'Treat this Holomem also as 〈さくらみこ〉 and 〈星街すいせい〉.']
+  'このホロメンはデッキに何枚でも入れられる'
+    NEW  'You may include any number of this holomem in your deck.'
+    OLD  (18 different) ['You can include any number of this Holomem in your deck.', 'You can include any number of this Holomen in your deck.', 'You may include any number of this holomem in the deck']
+  'このホロメンがダウンした時、自分のライフ-2'
+    NEW  'When this holomem is Downed, your Life -2.'
+    OLD  (14 different) ['When this Holomem is downed, your Life -2.', 'When this Holomen is downed, your Life -2.', 'If this holomem is downed, you get life-2']
+  'このホロメンは〈フワワ・アビスガード〉〈モココ・アビスガード〉としても扱う'
+    NEW  'This holomem is also treated as 〈Fuwawa Abyssgard〉 and 〈Mococo Abyssgard〉.'  [masked: ['フワワ・アビスガード', 'モココ・アビスガード']]
+    OLD  (5 different) ['This Holomen is also treated as <フワワ・アビスガード> and <モココ・アビスガード>.', 'This holomem is also treated as 〈Fuwawa Abyssgard〉 and 〈Mococo Abyssgard〉.', 'This Holomem is also treated as <Fuwawa Abyssgard> and <Mococo Abyssgard>.']
+
+--- keyword_effect ---
+  '自分のエールデッキから、黄エール1枚を公開し、このホロメンに送る。そしてエールデッキをシャッフルする。'
+    NEW  'Reveal 1 Yellow Cheer from your Cheer Deck and send it to this holomem. Then shuffle your Cheer Deck.'  [masked: ['黄エール']]
+    OLD  (4 different) ['Reveal 1 yellow Cheer from your Cheer Deck and send it to this Holomem, then shuffle your Cheer Deck.', 'Reveal 1 yellow Cheer from your Cheer Deck and send it to this Holomem. Then shuffle your Cheer Deck.', 'Reveal 1 Yellow Cheer from your Cheer Deck and send it to this Holomen. Then shuffle your Cheer Deck.']
+  '相手のコラボホロメンに特殊ダメージ20を与える。'
+    NEW  "Deal 20 special damage to your opponent's Collab holomem."
+    OLD  (6 different) ['Deal 20 special damage to an opponent’s Collab Holomem.', 'Deal 20 special damage to an opponent’s collab Holomem.', "Deal 20 special damage to your opponent's collab holomem."]
+  '自分のアーカイブのエール1枚をこのホロメンに送れる。'
+    NEW  'You may send 1 Cheer from your Archive to this holomem.'
+    OLD  (4 different) ['You can send 1 Cheer from your Archive to this Holomen.', 'You can send 1 Cheer from your Archive to this Holomem.', 'You may send 1 Cheer from your Archive to this Holomen.']
+  'このホロメンが相手のホロメンをダウンさせた時、自分のデッキの上から1枚をホロパワーにする。その後、自分のホロパワーを見る。その中から1枚を公開し、手札に加える。そしてホロパワーをシャッフルする。'
+    NEW  "When this holomem downs your opponent's holomem, put the top card of your deck into your holoPOWER. Then look at your holoPOWER. Reveal 1 card from it and add it to your hand. Then shuffle your holoPOWER."
+    OLD  (5 different) ['When this Holomember downs an opponent’s Holomember, place the top card of your deck into Holopower. Then look at your Holopower, choose 1 card from among them, reveal it, add it to your hand, and shuffle your Holopower.', 'When this Holomem knocks down an opponent’s Holomem, place the top card of your deck into your HoloPower. Then, look at your HoloPower. Choose 1 card from among them, reveal it, add it to your hand, then shuffle your HoloPower.', 'When this Holomem downs an opponent’s Holomem, put the top card of your deck into Holo Power. Then look at your Holo Power, reveal 1 card from it, add it to your hand, then shuffle your Holo Power.']
+  '[センターポジション限定][ターンに1回]自分のメインステップで、このホロメンに〈35P〉が付いている時、サイコロを1回振れる:3か5の時、このターンの間、このホロメンのアーツ+50。'
+    NEW  '[Center Position Only] [Once per turn] During your Main Step, if this holomem has <35P>, you may roll a die once: If you roll a 3 or 5, this holomem gets Arts +50 for this turn.'  [masked: ['35P']]
+    OLD  (5 different) ['[Center Position Only][Once per Turn] During your Main Step, if this Holomen has〈35P〉attached, you may roll a die: On a 3 or 5, this Holomen’s Arts gets +50 until the end of this turn.', "[Center Position only][Once per turn] During your Main Step, if this Holomem has〈35P〉attached, you may roll one die: On a 3 or 5, this Holomem's Arts gets +50 until the end of this turn.", '[Center Position Only][Once per turn] During your Main Step, if this Holomem has a 〈35P〉 attached, you may roll a die once: on a 3 or 5, this Holomem’s Arts gets +50 for this turn.']
+  '相手のターンで、このホロメンがダウンした時、自分のデッキを1枚引く。'
+    NEW  "When this holomem is downed during your opponent's turn, draw 1 card."
+    OLD  (4 different) ['During your opponent’s turn, when this Holomen is knocked down, draw 1 card from your deck.', 'During your opponent’s turn, when this Holomem is knocked down, draw 1 card from your deck.', 'During your opponent’s turn, when this HoloMember is downed, draw 1 card from your deck.']
+
+--- keyword_name ---
+  'ルーナについてくるのら～'
+    NEW  'Stick with Luna, nanora~'
+    OLD  (4 different) ['Following Luna~', 'Following Luna, nora~', 'Follow Luna, nora~']
+  '大好きな君に届くように'
+    NEW  'So It Reaches the One I Love'
+    OLD  (3 different) ['So it reaches the one I love', 'May it reach the one I love', 'So my feelings can reach the one I love']
+  '幼馴染のドキドキ膝枕'
+    NEW  'Heart-Pounding Lap Pillow from a Childhood Friend'
+    OLD  (3 different) ["Childhood Friend's Heart-Pounding Lap Pillow", 'Exciting Lap Pillow of a Childhood Friend', '幼馴染のドキドキ膝枕']
+  'ホロライブの狂犬'
+    NEW  "hololive's Mad Dog"
+    OLD  (3 different) ["Hololive's Mad Dog", 'Hololive’s Mad Dog', 'ホロライブの狂犬']
+  'ユニーリアの令嬢'
+    NEW  'The Noble Lady of Unirea'
+    OLD  (4 different) ['Lady of Unirea', 'Lady of Unyliya', 'Daughter of Uniria']
+  '白上から目をそらしちゃ'
+    NEW  "Don't Look Away from Shirakami"  [masked: ['白上']]
+    OLD  (3 different) ["Don't look away from 白上", 'Don’t look away from 白上', "You Can't Look Away from Shirakami"]
+
+--- skill_effect ---
+  '[ターンに1回]このターンの間、自分の紫ホロメン1人のアーツ+20。'
+    NEW  '[Once per turn] During this turn, one of your Purple holomem gets +20 Arts.'
+    OLD  (8 different) ['[Once per turn] During this turn, one of your purple Holomen gets +20 Arts.', '[Once per turn] One of your purple Holomen gets +20 Arts until the end of this turn.', '[Once per turn] During this turn, one of your purple Holomen gets +20 to their Arts.']
+  '[ゲームに1回]自分のデッキから、黄ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Once per game] Reveal 1 Yellow holomem from your deck and add it to your hand. Then shuffle your deck.'
+    OLD  (7 different) ['[Once per game] Reveal 1 Yellow Holomen from your deck, add it to your hand, then shuffle your deck.', '[Once per game] Reveal 1 yellow Holomen from your deck, add it to your hand, then shuffle your deck.', '[Once per game] Reveal one Yellow Holomen from your deck, add it to your hand, then shuffle your deck.']
+  '[ゲームに1回]自分の青ホロメンが相手のセンターホロメンかコラボホロメンにダメージを与えた時に使える:相手のバックホロメン1人にそれと同じ数値の特殊ダメージを与える。'
+    NEW  "[Once per game] Can be used when your Blue holomem deals damage to the opponent's Center holomem or Collab holomem: Deal special damage equal to that amount to 1 of the opponent's Back holomem."
+    OLD  (7 different) ['[Once per game] You can use this when one of your blue holomems deals damage to an opponent’s center holomem or collab holomem: Deal special damage equal to that damage to one of the opponent’s back holomems.', "[Once per game] You may use this when one of your blue Holomen deals damage to the opponent's center Holomen or collab Holomen: Deal special damage to one of the opponent's back Holomen equal to that amount of damage.", '[Once per game] You can use this when one of your Blue Holomen deals damage to your opponent’s Center Holomen or Collab Holomen: Deal special damage equal to that amount to one of your opponent’s Back Holomen.']
+  '[ゲームに1回]自分のデッキから、白ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Once per game] Reveal 1 White holomem from your deck and add it to your hand. Then shuffle your deck.'
+    OLD  (11 different) ['[Once per game] Reveal one white Holomen from your deck and add it to your hand. Then shuffle your deck.', '[Once per game] Reveal one White Holomem from your deck, add it to your hand, then shuffle your deck.', '[Once per game] Reveal one white Holomen from your deck, add it to your hand, then shuffle your deck.']
+  '[ターンに1回]このターンの間、自分の白ホロメン1人のアーツ+20。'
+    NEW  '[Once per turn] During this turn, one of your White holomem gets +20 Arts.'
+    OLD  (9 different) ['[Once per turn] During this turn, one of your white Holomems gets +20 Arts.', '[Once per turn] During this turn, one of your White Holomen gets +20 to Arts.', '[Once per turn] During this turn, one of your white Holomen gets Arts +20.']
+  '[ターンに1回]この推しホロメンか自分の青ホロメンが相手のバックホロメンにダメージを与えた時に使える:その相手のバックホロメン1人に特殊ダメージ50を与える。'
+    NEW  "[Once per turn] Can be used when this Oshi holomem or your Blue holomem deals damage to the opponent's Back holomem: Deal 50 special damage to 1 of that opponent's Back holomem."
+    OLD  (7 different) ['[Once per turn] You can use this when this oshi holomem or one of your blue holomems deals damage to an opponent’s back holomem: Deal 50 special damage to one of that opponent’s back holomems.', "[Once per turn] You may use this when this Oshi Holomen or one of your blue Holomen deals damage to the opponent's back Holomen: Deal 50 special damage to one of that opponent's back Holomen.", '[Once per turn] You can use this when this Oshi Holomen or one of your Blue Holomen deals damage to your opponent’s Back Holomen: Deal 50 special damage to one of your opponent’s Back Holomen.']
+
+--- skill_name ---
+  'ぶーん、バリバリバリバリ'
+    NEW  'VROOOOM, CRACKLE CRACKLE CRACKLE CRACKLE'
+    OLD  (3 different) ['Vroom, Brrrrr-Brrrrr', 'Vroom, crackle crackle crackle', 'Vroom, brrrrr']
+  'ちょこまみれになっちゃえっ！'
+    NEW  'Get Covered in Choco!'
+    OLD  (3 different) ['Get completely covered in Choco!', 'Get All Covered in Choco!', 'Get Covered in Choco!']
+  'いけいけどんどん！'
+    NEW  'Go! Go! Full Speed Ahead!'
+    OLD  (3 different) ['Go Go Go!', 'Go, go, keep it up!', 'Go go go!']
+  '野兎たち～'
+    NEW  'My Rabbits~'
+    OLD  (3 different) ['野兎たち～', 'Little Wild Rabbits~', 'Wild Rabbits~']
+  '絶対勝ちたい！！！！！！！'
+    NEW  'I ABSOLUTELY WANT TO WIN!!!!!!!!!!!'
+    OLD  (3 different) ['I absolutely want to win!!!!!!!', 'I Absolutely Want to Win!!!!!!!', 'I Really Want to Win!!!!!!!']
+  'フブキングダム'
+    NEW  'Fubu Kingdom'
+    OLD  (3 different) ['Fubu Kingdom', 'Fubuki Kingdom', 'Fubukingdom']
+
+--- skill_timing ---
+  'ターンに1回'
+    NEW  'Once per turn'
+  'ゲームに1回'
+    NEW  'Once per game'
+
+--- tag ---
+  '#絵'
+    NEW  '#Art'  [masked: ['#絵']]
+  '#JP'
+    NEW  '#JP'  [masked: ['#JP']]
+  '#ケモミミ'
+    NEW  '#Animal Ears'  [masked: ['#ケモミミ']]
+  '#EN'
+    NEW  '#EN'  [masked: ['#EN']]
+  '#歌'
+    NEW  '#Singing'  [masked: ['#歌']]
+  '#ID'
+    NEW  '#ID'  [masked: ['#ID']]
+
+  en: 62/62 translated, 0 rejected, 0 left Japanese, 53 replaced multiple old variants
+  tokens: 6,046 in / 1,458 out
+
+==============================================================================
+ko (韓文) — 62 units in 11 call(s)
+==============================================================================
+
+--- ability_text ---
+  '自分のデッキを2枚引き、サイコロを1回振る:3か5か6の時、自分のデッキから、Debutホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。2か4の時、自分のデッキを1枚引く。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  '자신의 덱을 2장 뽑고, 주사위를 1회 던진다: 3, 5 또는 6이 나오면, 자신의 덱에서 Debut 홀로멘 1장을 공개하여 패에 넣는다. 그리고 덱을 셔플한다. 2 또는 4가 나오면, 자신의 덱을 1장 뽑는다.\n\nLIMITED: 턴에 1장만 사용할 수 있다.'
+    OLD  (5 different) ['자신의 덱에서 카드를 2장 뽑고, 주사위를 1회 굴린다: 3, 5 또는 6이 나오면, 자신의 덱에서 Debutホロメン 1장을 공개하여 패에 넣는다. 그리고 덱을 셔플한다. 2 또는 4가 나오면, 자신의 덱에서 카드를 1장 뽑는다.\n\nLIMITED: 턴에 1장밖에 사용할 수 없다.', '자신의 덱에서 2장 뽑고, 주사위를 1번 던진다: 3, 5, 6이 나오면 자신의 덱에서 Debutホロメン 1장을 공개하여 패에 넣는다. 그 후 덱을 셔플한다. 2, 4가 나오면 자신의 덱에서 1장 뽑는다.\n\nLIMITED: 턴에 1장만 사용할 수 있다.', '자신의 덱에서 2장 뽑고, 주사위를 1번 굴린다: 3, 5 또는 6이 나오면, 자신의 덱에서 Debutホロメン 1장을 공개해 패에 넣는다. 그리고 덱을 셔플한다. 2 또는 4가 나오면, 자신의 덱에서 1장 뽑는다.\n\nLIMITED: 턴에 1장만 사용할 수 있다.']
+  'このカードは、自分の手札がこのカードを含まずに6枚以下でなければ使えない。\n\n自分のデッキの上から4枚を見る。その中から、#4期生を持つホロメンを好きな枚数公開し、公開したホロメンを手札に加える。そして残ったカードを好きな順でデッキの下に戻す。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  '이 카드는, 이 카드를 제외한 자신의 패가 6장 이하여야만 사용할 수 있다.\n\n자신의 덱 위에서부터 4장을 본다. 그중에서, #4기생를 가진 홀로멘을 원하는 수만큼 공개하고, 공개한 홀로멘을 패에 넣는다. 그리고 남은 카드를 원하는 순서로 덱 맨 아래에 되돌린다.\n\nLIMITED: 턴에 1장만 사용할 수 있다.'  [masked: ['#4期生']]
+    OLD  (4 different) ['이 카드는, 자신의 패에 이 카드를 포함하지 않고 6장 이하일 때만 사용할 수 있다.\n\n자신의 덱 맨 위에서 4장을 본다. 그중에서 #4期生을 가진 홀로멘을 원하는 만큼 공개하고, 공개한 홀로멘을 패에 넣는다. 그리고 남은 카드는 원하는 순서로 덱 맨 아래로 보낸다.\n\nLIMITED: 턴에 1장만 사용할 수 있다.', '이 카드는, 이 카드를 포함하지 않고 손패가 6장 이하일 때만 사용할 수 있다.\n\n자신의 덱 위에서 카드 4장을 본다. 그중에서 #4期生을 가진 홀로멘을 원하는 만큼 공개하고, 공개한 홀로멘을 손패에 넣는다. 그리고 남은 카드는 원하는 순서로 덱 아래로 되돌린다.\n\nLIMITED: 턴당 1장만 사용할 수 있다.', '이 카드는, 자신의 패에 이 카드를 포함하지 않고 6장 이하일 때만 사용할 수 있다.\n\n자신의 덱 위에서 4장을 본다. 그중에서 #4期生을 가진 홀로멘을 원하는 만큼 공개하고, 공개한 홀로멘을 패에 넣는다. 그리고 남은 카드는 원하는 순서로 덱 아래로 되돌린다.\n\nLIMITED: 턴당 1장만 사용할 수 있다.']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\r\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■홀로멘이 스테이지를 떠날 때, 그 홀로멘의 모든 Cheer를 Archive한다.\r\n■홀로멘이 Baton Touch할 때, 그 홀로멘의 Cheer를 지정된 장수만큼 Archive한다.'
+    OLD  (9 different) ['■ 홀로멘이 스테이지에서 떠날 때, 그 홀로멘의 모든 응원을 아카이브한다.\n■ 홀로멘이 바통터치를 할 때, 그 홀로멘의 응원을 지정된 장수만큼 아카이브한다.', '■홀로멘이 스테이지에서 떠날 때, 그 홀로멘의 모든 응원을 아카이브한다.\n■홀로멘이 바통터치할 때, 그 홀로멘의 응원을 지정된 장수만큼 아카이브한다.', '■ 홀로멘이 스테이지에서 떠날 때, 그 홀로멘의 모든 응원을 아카이브한다.\n■ 홀로멘이 바통터치할 때, 그 홀로멘의 응원을 지정된 장수만큼 아카이브한다.']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■홀로멘이 스테이지를 떠날 때, 그 홀로멘의 모든 Cheer를 Archive한다.\n■홀로멘이 Baton Touch할 때, 그 홀로멘의 Cheer를 지정된 장수만큼 Archive한다.'
+    OLD  (33 different) ['■ 홀로멘이 스테이지에서 떠날 때, 그 홀로멘의 모든 에일을 아카이브한다.\n■ 홀로멘이 바통터치할 때, 그 홀로멘의 에일을 지정된 매수만큼 아카이브한다.', '■ 홀로멘이 스테이지에서 떠날 때, 그 홀로멘의 모든 에일을 아카이브한다.\n■ 홀로멘이 바통터치할 때, 그 홀로멘의 에일을 지정된 장수만큼 아카이브한다.', '■ 홀로멘이 스테이지에서 떠날 때, 그 홀로멘의 모든 응원을 아카이브한다.\n■ 홀로멘이 바통터치할 때, 그 홀로멘의 응원을 지정된 장수만큼 아카이브한다.']
+  '自分のデッキから、Debutホロメン１枚を公開し、ステージに出す。そしてデッキをシャッフルする。'
+    NEW  '자신의 덱에서 Debut 홀로멘 1장을 공개하여 스테이지에 내보낸다. 그리고 덱을 셔플한다.'
+    OLD  (4 different) ['자신의 덱에서 Debut 홀로멘 1장을 공개하고, 스테이지에 낸다. 그런 다음 덱을 셔플한다.', '자신의 덱에서 Debut 홀로멘 1장을 공개하고, 스테이지에 낸다. 그 후 덱을 셔플한다.', '자신의 덱에서 Debut 홀로맨 한 장을 공개하고 스테이지에 낸다. 그 후 덱을 셔플한다.']
+  'このカードは、自分のライフが相手より少ない時にしか使えない。\n\n相手のコラボホロメンがいない時、相手は、自身のバックホロメン1人をコラボポジションに移動させる（移動はコラボとしては扱わない）。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  '이 카드는, 자신의 라이프가 상대보다 적을 때에만 사용할 수 있다.\n\n상대의 콜라보 홀로멘이 없을 때, 상대는 자신의 백 홀로멘 1명을 콜라보 포지션으로 이동시킨다(이동은 콜라보로 취급하지 않는다).\n\nLIMITED: 턴에 1장만 사용할 수 있다.'
+    OLD  (4 different) ['이 카드는 자신의 라이프가 상대보다 적을 때만 사용할 수 있다.\n\n상대 필드에 콜라보 홀로멘이 없을 경우, 상대는 자신의 백 홀로멘 1명을 콜라보 포지션으로 이동시킨다(이 이동은 콜라보로 취급하지 않는다).\n\nLIMITED: 턴당 1장만 사용할 수 있다.', '이 카드는 자신의 라이프가 상대보다 적을 때만 사용할 수 있다.\n\n상대의 콜라보 홀로멘이 없을 경우, 상대는 자신의 백 홀로멘 1명을 콜라보 포지션으로 이동시킨다(이 이동은 콜라보로 취급하지 않는다).\n\nLIMITED: 턴당 1장만 사용할 수 있다.', '이 카드는 내 라이프가 상대보다 적을 때만 사용할 수 있다.\n\n상대 콜라보 홀로멘이 없을 경우, 상대는 자신의 백 홀로멘 1명을 콜라보 포지션으로 이동시킨다(이 이동은 콜라보로 취급하지 않는다).\n\nLIMITED: 턴당 1장만 사용할 수 있다.']
+
+--- art_effect ---
+  'このホロメンに付いている〈35P〉1枚につき、このアーツ+20。'
+    NEW  '이 홀로멤에 붙어 있는 〈35P〉 1장당, 이 아츠 +20.'  [masked: ['35P']]
+    OLD  (5 different) ['이 홀로맨에 부착된 〈35P〉 1장당, 이 아츠의 파워가 +20.', '이 홀로멘에 붙어있는 〈35P〉 1장당, 이 아츠의 파워가 +20.', '이 홀로멘에 부착된 〈35P〉 1장마다, 이 아츠의 파워를 +20 한다.']
+  '自分のデッキの上から3枚を公開できる:公開したホロメン1枚につき、このアーツ+20。そして公開したカードをアーカイブする。'
+    NEW  '자신의 덱 위에서부터 3장을 공개할 수 있다: 공개한 홀로멤 1장당, 이 아츠 +20. 그리고 공개한 카드를 아카이브한다.'
+    OLD  (5 different) ['자신의 덱 위에서 3장을 공개할 수 있다: 공개한 홀로멘 1장당 이 아츠의 파워를 +20 한다. 그리고 공개한 카드를 아카이브한다.', '자신의 덱 위에서 카드 3장을 공개할 수 있다: 공개한 홀로멘 1장당 이 아츠의 파워를 +20 한다. 그리고 공개한 카드를 아카이브한다.', '자신의 덱 위에서 카드 3장을 공개할 수 있다: 공개한 홀로멘 1장당, 이 아츠에 +20. 그리고 공개한 카드를 아카이브한다.']
+  '自分のデッキの上から1枚をアーカイブする。'
+    NEW  '자신의 덱 위에서부터 1장을 아카이브한다.'
+    OLD  (4 different) ['자신의 덱 맨 위에서 카드 1장을 아카이브한다.', '자신의 덱 맨 위에서 1장을 아카이브한다.', '자신의 덱 위에서 카드 1장을 아카이브한다.']
+  '自分のステージの異なるカード名の#3期生を持つホロメン1人につき、このアーツ+10。'
+    NEW  '자신의 스테이지의 서로 다른 카드명의 #3기생를 가진 홀로멤 1명당, 이 아츠 +10.'  [masked: ['#3期生']]
+    OLD  (5 different) ['자신의 스테이지에 있는 카드 이름이 다른 #3期生을 가진 홀로멘 1명마다, 이 아츠의 파워를 +10 한다.', '자신의 스테이지에 서로 다른 카드명을 가진 #3기생 홀로멘이 1명 있을 때마다, 이 아츠의 수치가 +10이 된다.', '내 스테이지에 있는 카드 이름이 서로 다른 #3期生을 가진 홀로멘 1명당, 이 아츠의 파워를 +10.']
+  '自分の手札1枚をアーカイブできる:相手のセンターホロメンかコラボホロメンに特殊ダメージ20を与える。'
+    NEW  '자신의 패 1장을 아카이브할 수 있다: 상대의 센터 홀로멤 또는 콜라보 홀로멤에게 특수 대미지 20을 준다.'
+    OLD  (5 different) ['자신의 패 1장을 아카이브할 수 있다: 상대의 센터 홀로멘 또는 콜라보 홀로멘에게 특수 데미지 20을 준다.', '자신의 패 1장을 아카이브할 수 있다: 상대의 센터 홀로멘 또는 콜라보 홀로멘에게 특수 대미지 20을 준다.', '내 패에서 카드 1장을 아카이브할 수 있다: 상대의 센터 홀로멘이나 콜라보 홀로멘에게 특수 데미지 20을 준다.']
+  'このホロメンに重なっているホロメン1枚につき、このアーツ+20。'
+    NEW  '이 홀로멤에 겹쳐져 있는 홀로멤 1장당, 이 아츠 +20.'
+    OLD  (5 different) ['이 홀로멘 위에 겹쳐져 있는 홀로멘 1장당, 이 아츠의 파워를 +20 한다.', '이 홀로멤에 겹쳐져 있는 홀로멤 1장당, 이 아츠의 파워를 +20 한다.', '이 홀로멘 위에 겹쳐져 있는 홀로멘 1장당, 이 아츠에 +20.']
+
+--- art_name ---
+  '皆殿、風真いろはでござる～'
+    NEW  '여러분, 카자마 이로하이옵니다~'  [masked: ['風真いろは']]
+    OLD  (3 different) ['여러분, 風真いろは입니다~', '모두들, 風真いろは인 거다～', '皆殿、風真いろはでござる～']
+  'ちわーす！ ホロライブ2期生 大空スバルっス!!'
+    NEW  '안녕하심까! 홀로라이브 2기생 오오조라 스바루임다!!'  [masked: ['ホロライブ2期生', '大空スバル']]
+    OLD  (3 different) ['ちわーす！ ホロライブ2期生 大空スバルっス!!', '치와~스! 홀로라이브 2기생 오오조라 스바루っス!!', '치와-스! 홀로라이브 2기생 오오조라 스바루입니다!!']
+  'ダメですよっ！'
+    NEW  '안 된다구요!'
+    OLD  (3 different) ['그러면 안 돼요!', '안 돼요!', '안돼요!']
+  '音楽家の卵！ 音乃瀬～奏で～～～す！'
+    NEW  '예비 음악가! 오토노세~ 연주합니데이~~~!'  [masked: ['音乃瀬']]
+    OLD  (3 different) ['音楽家の卵！ 音乃瀬～奏で～～～す！', '음악가의 알! 音乃瀬～奏です～～～!', '음악가의 알！ 音乃瀬～연주합니다～～～！']
+  '貴様ら、刮目せよ！！'
+    NEW  '너희들, 똑똑히 보아라!!'
+    OLD  (5 different) ['그대들, 두 눈 부릅떠라!!', '너희들, 눈을 부릅떠라!!', '그대들, 눈 똑바로 뜨고 보거라!!']
+  '元気を全力でお届けします！'
+    NEW  '기운을 전력으로 전해드리겠습니다!'
+    OLD  (4 different) ['전력을 다해 활기를 전해드릴게요!', '힘차게 응원을 전해드릴게요!', '기운을 전력으로 전해드리겠습니다!']
+
+--- card_name ---
+  'アイラニ・イオフィフティーン'
+    NEW  '아이라니 이오피피틴'  [masked: ['アイラニ・イオフィフティーン']]
+    OLD  (3 different) ['アイラニ・イオフィフティーン', '아이라니・이오피프틴', '아이ラ니・イオフィフティーン']
+  'ラオーラ・パンテーラ'
+    NEW  '라오라 판테라'  [masked: ['ラオーラ・パンテーラ']]
+    OLD  (3 different) ['ラオーラ・パンテーラ', '라오라·판테라', '라오라・판테라']
+  'ロボ子さん'
+    NEW  '로보코상'  [masked: ['ロボ子さん']]
+    OLD  (3 different) ['ロボ子さん', '로보코 씨', '로보코상']
+  '大空スバル'
+    NEW  '오오조라 스바루'  [masked: ['大空スバル']]
+    OLD  (3 different) ['大空スバル', '대공 스바루', '오오조라 스바루']
+  'パヴォリア・レイネ'
+    NEW  '파볼리아 레이네'  [masked: ['パヴォリア・レイネ']]
+    OLD  (3 different) ['パヴォリア・レイネ', '파보리아 레이네', '파보리아・레이네']
+  'オーロ・クロニー'
+    NEW  '오우로 크로니'  [masked: ['オーロ・クロニー']]
+    OLD  (4 different) ['オーロ・クロニー', '오로・크로니', '오로 크로니']
+
+--- extra ---
+  'このホロメンは〈ときのそら〉〈AZKi〉としても扱う'
+    NEW  '이 홀로멤은 〈토키노 소라〉〈AZKi〉으로도 취급한다'  [masked: ['ときのそら', 'AZKi']]
+    OLD  (2 different) ['이 홀로멘은 〈ときのそら〉〈AZKi〉로도 취급된다', '이 홀로멘은 〈ときのそら〉〈AZKi〉로도 취급한다']
+  'このホロメンはBloomできない'
+    NEW  '이 홀로멤은 Bloom할 수 없다'
+    OLD  (7 different) ['이 홀로멘은 Bloom 할 수 없다', '이 홀로멘은 Bloom할 수 없다', '이 홀로멤은 Bloom할 수 없다']
+  'このホロメンは〈さくらみこ〉〈星街すいせい〉としても扱う'
+    NEW  '이 홀로멤은 〈사쿠라 미코〉〈호시마치 스이세이〉으로도 취급한다'  [masked: ['さくらみこ', '星街すいせい']]
+    OLD  (2 different) ['이 홀로멘은 〈さくらみこ〉, 〈星街すいせい〉로도 취급한다.', '이 홀로맨은 〈さくらみこ〉와 〈星街すいせい〉로서도 취급한다']
+  'このホロメンはデッキに何枚でも入れられる'
+    NEW  '이 홀로멤은 덱에 몇 장이든 넣을 수 있다'
+    OLD  (12 different) ['이 홀로멤은 덱에 몇 장이든 넣을 수 있다', '이 홀로멘은 덱에 몇 장이든 넣을 수 있다', '이 홀로맨은 덱에 몇 장이든 넣을 수 있다']
+  'このホロメンがダウンした時、自分のライフ-2'
+    NEW  '이 홀로멤이 다운되었을 때, 자신의 라이프 -2'
+    OLD  (14 different) ['이 홀로멘이 다운될 때, 자신의 라이프 -2', '이 홀로멘이 다운되었을 때, 자신의 라이프 -2', '이 홀로멤버가 다운될 때, 자신의 라이프 -2']
+  'このホロメンは〈フワワ・アビスガード〉〈モココ・アビスガード〉としても扱う'
+    NEW  '이 홀로멤은 〈후와와 어비스가드〉〈모코코 어비스가드〉으로도 취급한다'  [masked: ['フワワ・アビスガード', 'モココ・アビスガード']]
+    OLD  (4 different) ['이 홀로멘은 〈フワワ・アビスガード〉와 〈モココ・アビスガード〉로도 취급한다.', '이 홀로멘은 〈フワワ・アビスガード〉〈モココ・アビスガード〉로도 취급한다', '이 홀로멘은 〈フワワ・アビスガード〉와 〈モココ・アビスガード〉로도 취급된다.']
+
+--- keyword_effect ---
+  '自分のエールデッキから、黄エール1枚を公開し、このホロメンに送る。そしてエールデッキをシャッフルする。'
+    NEW  '자신의 엘르 덱에서 옐로우 옐 1장을 공개하여, 이 홀로멘에게 보낸다. 그리고 엘르 덱을 셔플한다.'  [masked: ['黄エール']]
+    OLD  (6 different) ['자신의 응원 덱에서 노란색 응원 1장을 공개하고, 이 홀로멘에게 보낸다. 그리고 응원 덱을 셔플한다.', '자신의 에일 덱에서 노란색 에일 1장을 공개하고, 이 홀로맨에게 보낸다. 그 후 에일 덱을 셔플한다.', '자신의 응원 덱에서 노란색 응원 1장을 공개하고, 이 홀로맨에게 보낸다. 그런 다음 응원 덱을 셔플한다.']
+  'このホロメンがアーツを使った時、そのアーツでサイコロを振って出た目の合計数が奇数なら、自分のデッキを1枚引く。偶数なら、自分のデッキを2枚引く。'
+    NEW  '이 홀로멘이 아츠를 사용했을 때, 그 아츠로 주사위를 굴려 나온 눈의 합계가 홀수라면, 자신의 덱을 1장 뽑는다. 짝수라면, 자신의 덱을 2장 뽑는다.'
+    OLD  (4 different) ['이 홀로멤버가 아츠를 사용했을 때, 그 아츠로 주사위를 굴려 나온 눈의 합이 홀수라면 자신의 덱에서 카드 1장을 뽑는다. 짝수라면 자신의 덱에서 카드 2장을 뽑는다.', '이 홀로멘이 아츠를 사용할 때, 그 아츠에서 주사위를 굴려 나온 눈의 총합이 홀수라면 자신의 덱에서 카드 1장을 드로우하고, 짝수라면 카드 2장을 드로우한다.', '이 홀로멘이 아츠를 사용했을 때, 그 아츠로 주사위를 굴려 나온 눈의 합이 홀수라면 자신의 덱에서 카드 1장을 뽑는다. 짝수라면 덱에서 카드 2장을 뽑는다.']
+  '相手のコラボホロメンに特殊ダメージ20を与える。'
+    NEW  '상대의 콜라보 홀로멘에게 특수 대미지 20을 준다.'
+    OLD  (5 different) ['상대 콜라보 홀로멘에게 특수 데미지 20을 준다.', '상대의 콜라보 홀로멘에게 특수 데미지 20을 준다.', '상대 콜라보 홀로맨에게 특수 데미지 20을 준다.']
+  '自分のアーカイブのエール1枚をこのホロメンに送れる。'
+    NEW  '자신의 아카이브의 엘르 1장을 이 홀로멘에게 보낼 수 있다.'
+    OLD  (6 different) ['자신의 아카이브에 있는 에얼 1장을 이 홀로멘에게 보낼 수 있다.', '내 아카이브에 있는 응원 1장을 이 홀로멘에게 보낼 수 있다.', '자신의 아카이브에 있는 에ール 1장을 이 홀로멤버에게 보낼 수 있다.']
+  'このホロメンが相手のホロメンをダウンさせた時、自分のデッキの上から1枚をホロパワーにする。その後、自分のホロパワーを見る。その中から1枚を公開し、手札に加える。そしてホロパワーをシャッフルする。'
+    NEW  '이 홀로멘이 상대의 홀로멘을 다운시켰을 때, 자신의 덱 위에서 1장을 홀로파워로 한다. 그 후, 자신의 홀로파워를 본다. 그 중에서 1장을 공개하여, 패에 넣는다. 그리고 홀로파워를 셔플한다.'
+    OLD  (4 different) ['이 홀로멘이 상대 홀로멘을 다운시켰을 때, 자신의 덱 맨 위에서 1장을 홀로파워로 한다. 그 후 자신의 홀로파워를 확인하고, 그 중에서 1장을 공개하여 패에 넣는다. 그리고 홀로파워를 셔플한다.', '이 홀로멘이 상대 홀로멘을 다운시켰을 때, 자신의 덱 맨 위에서 1장을 홀로파워로 놓는다. 그 후, 자신의 홀로파워를 확인한다. 그중에서 1장을 공개하고 패에 넣는다. 그런 다음 홀로파워를 셔플한다.', '이 홀로멘이 상대 홀로멘을 다운시켰을 때, 자신의 덱 맨 위에서 카드 1장을 홀로파워로 한다. 그 후 자신의 홀로파워를 확인하고, 그 중에서 카드 1장을 공개해 패에 넣는다. 그리고 홀로파워를 셔플한다.']
+  '[センターポジション限定][ターンに1回]自分のメインステップで、このホロメンに〈35P〉が付いている時、サイコロを1回振れる:3か5の時、このターンの間、このホロメンのアーツ+50。'
+    NEW  '[센터 포지션 한정][턴에 1회] 자신의 메인 스텝에, 이 홀로멘에게 〈35P〉가 붙어 있을 때, 주사위를 1번 굴릴 수 있다: 3 또는 5가 나오면, 이 턴 동안 이 홀로멘의 아츠 +50.'  [masked: ['35P']]
+    OLD  (5 different) ['[센터 포지션 한정][턴에 1번] 자신의 메인 스텝에서, 이 홀로맨에 〈35P〉가 부착되어 있을 때 주사위를 1번 굴릴 수 있다: 3 또는 5가 나오면, 이번 턴 동안 이 홀로맨의 아츠가 +50.', '[센터 포지션 한정][턴당 1회] 자신의 메인 스텝에, 이 홀로멘에 〈35P〉가 붙어있을 때 주사위를 1번 굴릴 수 있다: 3이나 5가 나오면, 이번 턴 동안 이 홀로멘의 아츠 파워가 +50.', '[센터 포지션 한정][턴당 1번] 자신의 메인 스텝에, 이 홀로멘에 〈35P〉가 부착되어 있을 때 주사위를 1번 굴릴 수 있다: 3 또는 5가 나오면, 이번 턴 동안 이 홀로멘의 아츠 파워를 +50 한다.']
+
+--- keyword_name ---
+  '大好きな君に届くように'
+    NEW  '사랑하는 너에게 닿기를'
+    OLD  (3 different) ['사랑하는 너에게 닿도록', '사랑하는 너에게 닿기를', '너에게 닿기를, 내가 가장 좋아하는 너에게']
+  '出動！ ドタバタ大空警察!!'
+    NEW  '출동! 우당탕 오오조라 경찰!!'  [masked: ['大空']]
+    OLD  (3 different) ['출동! 와르와르 대공경찰!!', '출동! 소동스러운 오오조라 경찰!!', '출동! 도타바타 대공경찰!!']
+  '深淵からの信頼'
+    NEW  '심연에서 온 신뢰'
+    OLD  (3 different) ['심연으로부터의 신뢰', '深淵からの信頼', '깊은 심연의 신뢰']
+  'そこに跪け！'
+    NEW  '거기서 무릎 꿇어!'
+    OLD  (3 different) ['거기 무릎 꿇어!', '그곳에 무릎 꿇어라!', 'そこに跪け！']
+  'みんなと一緒！'
+    NEW  '모두와 함께!'
+    OLD  (3 different) ['みんなと一緒！', '모두와 함께!', '다 같이 함께!']
+  '白上から目をそらしちゃ'
+    NEW  '시라카미에게서 눈을 돌리면 안 돼'  [masked: ['白上']]
+    OLD  (3 different) ['白上를 외면하면', '白上에게서 눈을 돌리면', '白上에게서 시선을 돌리면']
+
+--- skill_effect ---
+  '[ターンに1回]このターンの間、自分の紫ホロメン1人のアーツ+20。'
+    NEW  '[턴에 1번] 이번 턴 동안, 자신의 보라 홀로멘 1명의 아츠+20.'
+    OLD  (9 different) ['[턴에 1번] 이번 턴 동안, 자신의 보라색 홀로맨 1명의 아츠 +20.', '[턴에 1번] 이번 턴 동안 자신의 보라색 홀로멘 1명의 아츠를 +20 한다.', '[턴에 1번] 이번 턴 동안, 내 보라색 홀로멤버 1명의 아츠 +20.']
+  '[ゲームに1回]自分のデッキから、赤ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[게임에 1번] 자신의 덱에서 빨강 홀로멘 1장을 공개하고, 패에 넣는다. 그리고 덱을 셔플한다.'
+    OLD  (9 different) ['[게임에 1번] 자신의 덱에서 빨간 홀로멘 1장을 공개하고, 패에 넣는다. 그 후 덱을 셔플한다.', '[게임에 1번] 자신의 덱에서 빨간 홀로맨 1장을 공개하고 패에 넣는다. 그 후 덱을 셔플한다.', '[게임에 1번] 자신의 덱에서 빨간 홀로멘 1장을 공개하고 패에 넣는다. 그 후 덱을 셔플한다.']
+  '[ゲームに1回]自分のデッキから、黄ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[게임에 1번] 자신의 덱에서 노랑 홀로멘 1장을 공개하고, 패에 넣는다. 그리고 덱을 셔플한다.'
+    OLD  (10 different) ['[게임에 1번] 자신의 덱에서 노란 홀로멘 카드 1장을 공개하고 패에 넣는다. 그 후 덱을 셔플한다.', '[게임에 1번] 내 덱에서 노란색 홀로멤 1장을 공개하고 패에 넣는다. 그리고 덱을 셔플한다.', '[게임에 1번] 내 덱에서 노란 홀로멘 1장을 공개하고, 패에 넣는다. 그 후 덱을 셔플한다.']
+  '[ターンに1回]このターンの間、自分の緑ホロメン1人のアーツ+20。'
+    NEW  '[턴에 1번] 이번 턴 동안, 자신의 초록 홀로멘 1명의 아츠+20.'
+    OLD  (9 different) ['[턴에 1번] 이번 턴 동안 내 녹색 홀로멘 1명의 아츠를 +20 한다.', '[턴에 1번] 이번 턴 동안, 자신의 녹색 홀로멘 1명의 아츠를 +20 한다.', '[턴에 1번] 이번 턴 동안, 내 녹색 홀로멤버 1명의 아츠 +20.']
+  '[ゲームに1回]自分のデッキから、白ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[게임에 1번] 자신의 덱에서 하양 홀로멘 1장을 공개하고, 패에 넣는다. 그리고 덱을 셔플한다.'
+    OLD  (10 different) ['[게임에 1번] 내 덱에서 흰색 홀로맨 1장을 공개하고 패에 넣는다. 그리고 덱을 셔플한다.', '[게임에 1번] 내 덱에서 흰색 홀로 멤버 카드 1장을 공개하고 패에 넣는다. 그런 다음 덱을 셔플한다.', '[게임에 1번] 내 덱에서 흰색 홀로맨 카드 1장을 공개하고 패에 넣는다. 그런 다음 덱을 셔플한다.']
+  '[ゲームに1回]自分のデッキから、紫ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[게임에 1번] 자신의 덱에서 보라 홀로멘 1장을 공개하고, 패에 넣는다. 그리고 덱을 셔플한다.'
+    OLD  (10 different) ['[게임에 1번] 자신의 덱에서 보라색 홀로멘 카드 1장을 공개하고 패에 넣는다. 그 후 덱을 셔플한다.', '[게임에 1번] 내 덱에서 보라색 홀로멤버 카드 1장을 공개하고 패에 넣는다. 그런 다음 덱을 셔플한다.', '[게임에 1번] 내 덱에서 보라색 홀로멘 1장을 공개하고 패에 넣는다. 그런 다음 덱을 셔플한다.']
+
+--- skill_name ---
+  '我ら秘密結社holoX！'
+    NEW  '우리들은 비밀결사 holoX!'  [masked: ['秘密結社holoX']]
+    OLD  (3 different) ['우리들은 비밀결사holoX!', '우리 비밀결사holoX！', '우리 비밀결사holoX!']
+  'アルティメットつよつよござる'
+    NEW  '얼티밋 최강 고자루'
+    OLD  (3 different) ['알티메이트 최강 고자루', '얼티밋 츠요츠요ござ루', '얼티밋 최강 고자루']
+  'わためは悪くないよねぇ？'
+    NEW  '와타메는 잘못 없지이~?'
+    OLD  (3 different) ['와타메는 잘못 없지~?', 'わため는 잘못 없어, 그렇지?', '와타메는 잘못 없어, 그렇지?']
+  '絶対勝ちたい！！！！！！！'
+    NEW  '절대 이기고 싶어!!!!!!!!!!'
+    OLD  (3 different) ['절대 이기고 싶어!!!!!!!!!!!', '절대로 이기고 싶어！！！！！！！', '절대 이기고 싶어!!!!!!!!!']
+  'イエローエンハンス'
+    NEW  '옐로우 인핸스'
+    OLD  (4 different) ['옐로 인핸스', 'イエローエンハンス', '옐로우 인핸스']
+  'レッドエンハンス'
+    NEW  '레드 인핸스'
+    OLD  (3 different) ['레드 인핸스', '레드 인헨스', '레드 엔핸스']
+
+--- skill_timing ---
+  'ターンに1回'
+    NEW  '턴에 1번'
+  'ゲームに1回'
+    NEW  '게임에 1번'
+
+--- tag ---
+  '#絵'
+    NEW  '#그림'  [masked: ['#絵']]
+  '#JP'
+    NEW  '#JP'  [masked: ['#JP']]
+  '#ケモミミ'
+    NEW  '#수인귀'  [masked: ['#ケモミミ']]
+  '#EN'
+    NEW  '#EN'  [masked: ['#EN']]
+  '#歌'
+    NEW  '#노래'  [masked: ['#歌']]
+  '#ID'
+    NEW  '#ID'  [masked: ['#ID']]
+
+  ko: 62/62 translated, 0 rejected, 0 left Japanese, 54 replaced multiple old variants
+  tokens: 5,974 in / 1,693 out
+
+==============================================================================
+id (印尼文) — 62 units in 11 call(s)
+==============================================================================
+
+--- ability_text ---
+  '自分のデッキを2枚引き、サイコロを1回振る:3か5か6の時、自分のデッキから、Debutホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。2か4の時、自分のデッキを1枚引く。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'Tarik 2 kartu dari Dek kamu, lalu lempar dadu 1 kali: jika hasilnya 3, 5, atau 6, ungkapkan 1 Debut holomem dari Dek kamu dan tambahkan ke Tangan. Lalu, kocok Dek. Jika hasilnya 2 atau 4, tarik 1 kartu dari Dek kamu.\n\nLIMITED: Hanya dapat digunakan 1 kartu per giliran.'
+    OLD  (5 different) ['Tarik 2 kartu dari dekmu, lalu lempar 1 kali dadu: jika hasilnya 3, 5, atau 6, buka 1 Debutホロメン dari dekmu dan tambahkan ke kartu tanganmu. Lalu, kocok dekmu. Jika hasilnya 2 atau 4, tarik 1 kartu dari dekmu.\n\nLIMITED: Hanya bisa digunakan 1 kartu per giliran.', 'Tarik 2 kartu dari dek kamu, lalu lempar dadu 1 kali: jika hasilnya 3, 5, atau 6, ungkapkan 1 Debutホロメン dari dek kamu dan tambahkan ke kartu tanganmu. Lalu, kocok dekmu. Jika hasilnya 2 atau 4, tarik 1 kartu dari dek kamu.\n\nLIMITED: Hanya bisa digunakan 1 kartu per giliran.', 'Tarik 2 kartu dari dekmu, lalu lempar dadu 1 kali: jika hasilnya 3, 5, atau 6, buka 1 Debutホロメン dari dekmu dan tambahkan ke tangan. Lalu kocok dekmu. Jika hasilnya 2 atau 4, tarik 1 kartu dari dekmu.\n\nLIMITED: Hanya bisa digunakan 1 kartu per giliran.']
+  'このカードは、自分の手札がこのカードを含まずに6枚以下でなければ使えない。\n\n自分のデッキの上から4枚を見る。その中から、#4期生を持つホロメンを好きな枚数公開し、公開したホロメンを手札に加える。そして残ったカードを好きな順でデッキの下に戻す。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'Kartu ini hanya dapat digunakan jika Tangan kamu, tanpa menghitung kartu ini, berjumlah 6 kartu atau kurang.\n\nLihat 4 kartu teratas dari Dek kamu. Dari antara kartu-kartu itu, ungkapkan sebanyak yang kamu mau holomem yang memiliki #Gen 4, lalu tambahkan holomem yang diungkapkan itu ke Tangan kamu. Kemudian, kembalikan sisa kartunya ke bagian bawah Dek dengan urutan sesukamu.\n\nLIMITED: Hanya dapat digunakan 1 kartu per giliran.'  [masked: ['#4期生']]
+    OLD  (4 different) ['Kartu ini hanya dapat dimainkan jika jumlah kartu di tangan Anda, tidak termasuk kartu ini, adalah 6 kartu atau kurang.\n\nLihat 4 kartu teratas dari dek Anda. Dari kartu-kartu tersebut, Anda boleh membuka sebanyak yang Anda suka dari Holomen yang memiliki tag #4期生, tambahkan Holomen yang dibuka tersebut ke tangan Anda. Kemudian kembalikan sisa kartu ke bawah dek dalam urutan yang Anda inginkan.\n\nLIMITED：Hanya bisa digunakan 1 kali per giliran.', 'Kartu ini hanya bisa digunakan jika jumlah kartu di tanganmu, tidak termasuk kartu ini, adalah 6 atau kurang.\n\nLihat 4 kartu teratas dari dekmu. Dari sana, kamu boleh membuka sebanyak yang kamu mau kartu Holomen yang memiliki #4期生, tambahkan Holomen yang dibuka tadi ke tanganmu. Kemudian kembalikan sisa kartu ke dasar dek dalam urutan yang kamu inginkan.\n\nLIMITED：Hanya bisa digunakan 1 kali per giliran.', 'Kartu ini hanya bisa digunakan jika jumlah kartu di tanganmu, tidak termasuk kartu ini, adalah 6 atau kurang.\n\nLihat 4 kartu teratas dari dekmu. Dari kartu-kartu tersebut, kamu boleh memilih sejumlah berapa pun Holomen yang memiliki tag #4期生, tunjukkan mereka, lalu masukkan Holomen yang ditunjukkan itu ke tanganmu. Taruh sisa kartu dalam urutan apa pun di bawah dek.\n\nLIMITED：hanya bisa digunakan 1 kali per giliran.']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\r\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■Saat holomem meninggalkan Stage, Archive semua Cheer milik holomem itu.\r\n■Saat holomem melakukan Baton Touch, Archive sejumlah Cheer milik holomem itu sesuai jumlah yang ditentukan.'
+    OLD  (11 different) ['■Ketika Holomen meninggalkan panggung, arsipkan semua Aile milik Holomen tersebut.\n■Ketika Holomen melakukan baton touch, arsipkan jumlah Aile yang ditentukan milik Holomen tersebut.', '■Saat Holomen meninggalkan area panggung, arsipkan semua Yell milik Holomen tersebut.\n■Saat Holomen melakukan baton touch, arsipkan jumlah Yell yang ditentukan milik Holomen tersebut.', '■Saat Holomen meninggalkan stage, arsipkan semua Aile milik Holomen tersebut.\n■Saat Holomen melakukan baton touch, arsipkan sejumlah Aile milik Holomen tersebut sesuai jumlah yang ditentukan.']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■Saat holomem meninggalkan Stage, Archive semua Cheer milik holomem itu.\n■Saat holomem melakukan Baton Touch, Archive sejumlah Cheer milik holomem itu sesuai jumlah yang ditentukan.'
+    OLD  (52 different) ['■Saat Holomen meninggalkan panggung, arsipkan semua Ael milik Holomen tersebut.\n■Saat Holomen melakukan baton touch, arsipkan jumlah Ael yang ditentukan milik Holomen tersebut.', '■当 holomen meninggalkan panggung, arsipkan semua Eール milik holomen tersebut.\n■Ketika holomen melakukan baton-tatch, arsipkan jumlah Eール yang ditentukan milik holomen tersebut.', '■ Saat seorang Holomen meninggalkan stage, arsipkan semua <エール> miliknya.\n■ Saat seorang Holomen melakukan baton touch, arsipkan jumlah <エール> miliknya sesuai yang ditentukan.']
+  '自分のデッキから、Debutホロメン１枚を公開し、ステージに出す。そしてデッキをシャッフルする。'
+    NEW  'Ungkapkan 1 Debut holomem dari Dek kamu, lalu taruh ke Stage. Kemudian, kocok Dek.'
+    OLD  (6 different) ['Dari deck-mu, buka 1 kartu Debut Holomen, lalu panggil ke Stage. Kemudian kocok deck-mu.', 'Perlihatkan 1 kartu Debut Holomen dari deck kamu, lalu panggilnya ke stage. Setelah itu, kocok deck kamu.', 'Perlihatkan 1 kartu Debut HoloMen dari deck sendiri, lalu panggil ke Stage. Setelah itu, kocok deck.']
+  'このカードは、自分のライフが相手より少ない時にしか使えない。\n\n相手のコラボホロメンがいない時、相手は、自身のバックホロメン1人をコラボポジションに移動させる（移動はコラボとしては扱わない）。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'Kartu ini hanya dapat digunakan saat Life kamu lebih sedikit daripada lawan.\n\nSaat lawan tidak memiliki holomem di Collab, lawan memindahkan 1 Back holomem miliknya ke posisi Collab (perpindahan ini tidak dianggap sebagai Collab).\n\nLIMITED: Hanya dapat digunakan 1 kartu per giliran.'
+    OLD  (5 different) ['Kartu ini hanya dapat digunakan ketika Life Anda lebih sedikit daripada lawan.\n\nJika tidak ada holoimen kolaborasi milik lawan, lawan memindahkan 1 back holoimen miliknya ke posisi kolaborasi (pemindahan ini tidak dihitung sebagai kolaborasi).\n\nLIMITED：hanya dapat digunakan 1 kali per giliran.', 'Kartu ini hanya dapat digunakan ketika nyawamu lebih sedikit dari lawan.\n\nJika lawan tidak memiliki Holomen kolaborasi, lawan memilih 1 Holomen belakang miliknya untuk dipindahkan ke posisi kolaborasi (pemindahan ini tidak dihitung sebagai kolaborasi).\n\nLIMITED：Hanya bisa digunakan 1 kali per giliran.', 'Kartu ini hanya bisa digunakan ketika nyawamu lebih sedikit dari lawan.\n\nJika lawan tidak memiliki Holomen kolaborasi, lawan memindahkan 1 Holomen belakang miliknya ke posisi kolaborasi (pemindahan ini tidak dihitung sebagai kolaborasi).\n\nLIMITED：Hanya bisa digunakan 1 kali per giliran.']
+
+--- art_effect ---
+  '相手のホロメン1人に特殊ダメージ10を与える。'
+    NEW  'Berikan 10 damage spesial kepada 1 holomen lawan.'
+    OLD  (5 different) ['Berikan 10 damage khusus kepada 1 Holomen lawan.', 'Berikan 10 damage spesial kepada 1 Holomen milik lawan.', 'Berikan 10 damage khusus ke 1 Holomen lawan.']
+  '自分のデッキの上から3枚を公開できる:公開したホロメン1枚につき、このアーツ+20。そして公開したカードをアーカイブする。'
+    NEW  'Kamu boleh buka 3 kartu teratas dari deck-mu: Untuk setiap 1 holomen yang dibuka, Arts ini +20. Lalu, arsipkan kartu-kartu yang dibuka.'
+    OLD  (5 different) ['Kamu dapat membuka 3 kartu teratas dari dekmu: untuk setiap 1 Holomen yang dibuka, Arts ini +20. Lalu arsipkan kartu-kartu yang dibuka.', 'Kamu dapat membuka 3 kartu teratas dari dekmu: untuk setiap 1 kartu Holomen yang dibuka, Arts ini +20. Lalu arsipkan kartu-kartu yang dibuka.', 'Bisa membuka 3 kartu teratas dari dek Anda: untuk setiap 1 Holomen yang dibuka, Arts ini +20. Lalu arsipkan kartu-kartu yang dibuka.']
+  '自分のデッキの上から1枚をアーカイブする。'
+    NEW  'Arsipkan 1 kartu teratas dari deck-mu.'
+    OLD  (6 different) ['Arsipkan 1 kartu teratas dari deck-mu.', 'Arsipkan 1 kartu dari atas deck-mu.', 'Arsipkan 1 kartu dari atas dek sendiri.']
+  '自分のステージの異なるカード名の#3期生を持つホロメン1人につき、このアーツ+10。'
+    NEW  'Arts ini +10 untuk setiap 1 holomen di Stage-mu yang memiliki #Gen 3 dengan nama kartu yang berbeda.'  [masked: ['#3期生']]
+    OLD  (5 different) ['Untuk setiap 1 Holomen berbeda dengan nama kartu dari #3期生 yang Anda miliki di stage Anda, Arts ini mendapatkan +10.', 'Untuk setiap satu Holomen dengan nama kartu #3期生 yang berbeda di stage-mu, Arts ini mendapatkan +10.', 'Untuk setiap 1 Holomen yang kamu miliki di panggung dengan nama kartu berbeda yang memiliki tag #3期生, Arts ini +10.']
+  '相手のバックホロメン1人に特殊ダメージ10を与える。'
+    NEW  'Berikan 10 damage spesial kepada 1 Back holomen lawan.'
+    OLD  (6 different) ['Berikan 10 damage khusus kepada 1 anggota holomen pendukung lawan.', 'Berikan 10 damage khusus ke 1 Backホロメン lawan.', 'Berikan 10 kerusakan spesial kepada 1 anggota holo cadangan lawan.']
+  'このホロメンのエール1枚につき、このアーツ+20。'
+    NEW  'Arts ini +20 untuk setiap 1 Cheer pada holomen ini.'
+    OLD  (6 different) ['Untuk setiap 1 kartu Yell dari member Hololive ini, Arts ini +20.', 'Untuk setiap 1 kartu Pujian yang dimiliki Holomen ini, Arts ini mendapatkan +20.', 'Untuk setiap 1 kartu Yell milik Holomen ini, Arts ini +20.']
+
+--- art_name ---
+  'ちわーす！ ホロライブ2期生 大空スバルっス!!'
+    NEW  'Halooo! Hololive Gen 2 Oozora Subaru nih!!'  [masked: ['ホロライブ2期生', '大空スバル']]
+    OLD  (3 different) ['ちわーす！ ホロライブ2期生 大空スバルっス!!', 'Halo! Aku Oozora Subaru dari Hololive generasi ke-2!!', 'Halo! Aku Oozora Subaru dari generasi ke-2 Hololive!!']
+  '音楽家の卵！ 音乃瀬～奏で～～～す！'
+    NEW  'Calon Musisi! Otonose～bermain～～～nih!'  [masked: ['音乃瀬']]
+    OLD  (3 different) ['音楽家の卵！ 音乃瀬～奏で～～～す！', 'Calon musisi! Otonose~ Kanade～～～su!', 'Calon musisi! 音乃瀬～奏で～～～す!']
+  '貴様ら、刮目せよ！！'
+    NEW  'Kalian semua, saksikan baik-baik!!'
+    OLD  (3 different) ['貴様ら、刮目せよ！！', 'Perhatikan baik-baik, kalian semua!!', 'Kalian semua, buka matamu lebar-lebar!!']
+  '元気を全力でお届けします！'
+    NEW  'Semangat penuh, kami antar sepenuh hati!'
+    OLD  (4 different) ['Akan aku kirimkan semangatku sepenuhnya!', 'Memberikan semangat dengan sepenuh hati!', 'Aku akan menyampaikan semangat dengan sepenuh hati!']
+  '皆さん、待っ鷹ね？'
+    NEW  'Kalian semua, udah nungguTaka kan?'
+    OLD  (3 different) ['皆さん、待っ鷹ね？', 'Semua, sudah menunggu, kan?', 'Semua orang, sudah lama menunggakanku, ya?']
+  'こんあずき～'
+    NEW  'Konazuki～'
+    OLD  (3 different) ['こんあずき～', 'Konna azuki~', 'Konazuki~']
+
+--- card_name ---
+  '星街すいせい'
+    NEW  'Hoshimachi Suisei'  [masked: ['星街すいせい']]
+    OLD  (2 different) ['星街すいせい', 'Hoshimachi Suisei']
+  '一条莉々華'
+    NEW  'Ichijou Ririka'  [masked: ['一条莉々華']]
+    OLD  (3 different) ['一条莉々華', 'Ichijō Ririka', 'Ichijo Ririka']
+  '音乃瀬奏'
+    NEW  'Otonose Kanade'  [masked: ['音乃瀬奏']]
+    OLD  (2 different) ['音乃瀬奏', 'Otonase Kanade']
+  '風真いろは'
+    NEW  'Kazama Iroha'  [masked: ['風真いろは']]
+    OLD  (2 different) ['風真いろは', 'Fūma Iroha']
+  '不知火フレア'
+    NEW  'Shiranui Flare'  [masked: ['不知火フレア']]
+    OLD  (2 different) ['不知火フレア', 'Tidak diketahui api Flare']
+  'フワワ・アビスガード'
+    NEW  'Fuwawa Abyssgard'  [masked: ['フワワ・アビスガード']]
+    OLD  (3 different) ['フワワ・アビスガード', 'Fuwawa Abisugādo', 'Fuwawa・Abyssguard']
+
+--- extra ---
+  'このホロメンは〈ときのそら〉〈AZKi〉としても扱う'
+    NEW  'Holomen ini juga diperlakukan sebagai 〈Tokino Sora〉〈AZKi〉'  [masked: ['ときのそら', 'AZKi']]
+    OLD  (2 different) ['Holomen ini juga dianggap sebagai〈ときのそら〉dan〈AZKi〉', 'Holomen ini juga dianggap sebagai〈ときのそら〉dan〈AZKi〉.']
+  'このホロメンはBloomできない'
+    NEW  'Holomen ini tidak dapat melakukan Bloom'
+    OLD  (7 different) ['このホロメンはBloomできない', 'ホロメン ini tidak bisa Bloom', 'Holomen ini tidak bisa melakukan Bloom']
+  'このホロメンは〈さくらみこ〉〈星街すいせい〉としても扱う'
+    NEW  'Holomen ini juga diperlakukan sebagai 〈Sakura Miko〉〈Hoshimachi Suisei〉'  [masked: ['さくらみこ', '星街すいせい']]
+    OLD  (2 different) ['Holomen ini juga dianggap sebagai 〈さくらみこ〉 dan 〈星街すいせい〉.', 'Holomen ini juga dianggap sebagai〈さくらみこ〉dan〈星街すいせい〉.']
+  'このホロメンはデッキに何枚でも入れられる'
+    NEW  'Holomen ini dapat dimasukkan ke dek dalam jumlah berapa pun'
+    OLD  (107 different) ['Holomen ini bisa dimasukkan ke dalam deck sebanyak yang diinginkan', 'このホロメンはデッキに何枚でも入れられる', 'Holomen ini bisa dimasukkan ke dalam dek sebanyak yang diinginkan']
+  'このホロメンがダウンした時、自分のライフ-2'
+    NEW  'Saat Holomen ini down, Life kamu -2'
+    OLD  (80 different) ['Ketika holomen ini down, nyawamu -2', 'Ketika Holomen ini turun, nyawamu -2', 'Ketika holomen ini turun, nyawamu -2']
+  'このホロメンは〈フワワ・アビスガード〉〈モココ・アビスガード〉としても扱う'
+    NEW  'Holomen ini juga diperlakukan sebagai 〈Fuwawa Abyssgard〉〈Mococo Abyssgard〉'  [masked: ['フワワ・アビスガード', 'モココ・アビスガード']]
+    OLD  (4 different) ['Holomen ini juga dianggap sebagai 〈フワワ・アビスガード〉 dan 〈モココ・アビスガード〉.', 'Holomen ini juga dianggap sebagai〈フワワ・アビスガード〉dan〈モココ・アビスガード〉.', 'Holomem ini juga dianggap sebagai 〈フワワ・アビスガード〉 dan 〈モココ・アビスガード〉']
+
+--- keyword_effect ---
+  '自分のエールデッキから、黄エール1枚を公開し、このホロメンに送る。そしてエールデッキをシャッフルする。'
+    NEW  'Perlihatkan 1 kartu Yell Kuning dari Dekat Sorakmu, kirimkan ke holomen ini. Lalu, kocok Dekat Sorakmu.'  [masked: ['黄エール']]
+    OLD  (6 different) ['公開kan dari dek Ailmu milikmu 1 kartu Ail kuning, lalu kirimkan ke Holomen ini. Kemudian kocok kembali dek Ailmu.', 'Buka 1 Eール kuning dari deck Eール-mu, kirimkan ke Holomen ini. Lalu kocok deck Eール.', 'Ungkapkan 1 kartu Yellow dari deck Aimu-mu, kirimkan ke anggota Holomen ini, lalu acak kembali deck Aimu.']
+  '相手のコラボホロメンに特殊ダメージ20を与える。'
+    NEW  'Berikan 20 Damage Khusus kepada holomen Kolab lawan.'
+    OLD  (8 different) ['Berikan 20 damage khusus ke Kolabo Holomen lawan.', 'Beri 20 damage khusus ke Holomen kolaborasi lawan.', 'Berikan 20 kerusakan khusus kepada Holomen kolaborasi lawan.']
+  '自分のアーカイブのエール1枚をこのホロメンに送れる。'
+    NEW  'Kamu boleh mengirim 1 Sorak dari Arsipmu ke holomen ini.'
+    OLD  (6 different) ['Kamu dapat mengirim 1 kartu Cheer dari area Arsipmu ke holomen ini.', 'Kamu boleh mengirim 1 kartu Yell dari arsipmu ke Holomen ini.', 'Kamu bisa mengirim 1 Energi Sorakan dari arsipmu ke Holomen ini.']
+  'このホロメンが相手のホロメンをダウンさせた時、自分のデッキの上から1枚をホロパワーにする。その後、自分のホロパワーを見る。その中から1枚を公開し、手札に加える。そしてホロパワーをシャッフルする。'
+    NEW  'Saat holomen ini membuat holomen lawan Down, taruh 1 kartu teratas dari Dekmu ke Holo Power. Lalu, lihat Holo Powermu. Perlihatkan 1 kartu dari antaranya, tambahkan ke tanganmu. Lalu, kocok Holo Powermu.'
+    OLD  (5 different) ['Ketika Holomen ini men-down Holomen lawan, ubah 1 kartu teratas dari dekmu menjadi Holo Power. Lalu lihat Holo Power-mu. Dari situ buka 1 kartu dan tambahkan ke tangan. Kemudian kocok Holo Power.', 'Ketika Holomen ini membuat Holomen lawan down, jadikan 1 kartu teratas dari dekmu sebagai Holopower. Lalu lihat Holopower-mu. Dari situ, buka 1 kartu dan tambahkan ke tanganmu. Setelah itu kocok Holopower.', 'Ketika Holomen ini men-down Holomen lawan, jadikan 1 kartu teratas dari dekmu sebagai Holo Power. Setelah itu lihat Holo Power-mu, buka 1 kartu dari situ dan tambahkan ke tangan. Lalu kocok Holo Power.']
+  '[センターポジション限定][ターンに1回]自分のメインステップで、このホロメンに〈35P〉が付いている時、サイコロを1回振れる:3か5の時、このターンの間、このホロメンのアーツ+50。'
+    NEW  '[Hanya Posisi Tengah][Sekali per giliran] Pada Main Step-mu, saat holomen ini memiliki 〈35P〉, kamu boleh melempar dadu 1 kali: jika hasilnya 3 atau 5, selama giliran ini, Arts holomen ini +50.'  [masked: ['35P']]
+    OLD  (5 different) ['[Hanya Posisi Center][1 kali per giliran] Pada Main Step milikmu, jika Holomen ini memiliki 〈35P〉 terpasang, kamu boleh melempar dadu 1 kali：jika hasilnya 3 atau 5, selama giliran ini Arts Holomen ini +50.', '[Terbatas posisi Center][1 kali per giliran] Di Main Step Anda, ketika Holomen ini memiliki 〈35P〉 terpasang, Anda boleh melempar 1 dadu: jika keluar 3 atau 5, selama giliran ini arts Holomen ini +50.', '[Terbatas Posisi Center][1 kali per giliran] Pada Main Step Anda, jika Holomen ini memiliki 〈35P〉 terpasang, Anda boleh melempar 1 dadu: jika keluar 3 atau 5, untuk giliran ini arts Holomen ini +50.']
+  '相手のターンで、このホロメンがダウンした時、自分のデッキを1枚引く。'
+    NEW  'Pada giliran lawan, saat holomen ini menjadi Down, ambil 1 kartu dari Dekmu.'
+    OLD  (5 different) ['Saat giliran lawan dan Holomen ini tumbang, tarik 1 kartu dari dek sendiri.', 'Saat giliran lawan, ketika Holomen ini menjadi down, ambil 1 kartu dari deckmu.', 'Saat Holomen ini dikalahkan pada giliran lawan, ambil 1 kartu dari deck-mu.']
+
+--- keyword_name ---
+  '用心棒'
+    NEW  'Pengawal Pribadi'
+    OLD  (3 different) ['Yōjinbō', 'Pengawal Pribadi', 'Bodyguard']
+  'ホロライブの狂犬'
+    NEW  'Anjing Gila hololive'
+    OLD  (3 different) ['Anjing gila Hololive', 'Anjing Gila dari hololive', 'Anjing Gila dari Hololive']
+  '仮想世界の伴走する歌姫'
+    NEW  'Diva yang Menemani di Dunia Virtual'
+    OLD  (3 different) ['Diva dunia virtual yang berlari bersama', 'Diva yang berlari bersama dunia virtual', 'Diva yang berlari bersama di dunia virtual']
+  '深淵からの愛情'
+    NEW  'Kasih Sayang dari Jurang'
+    OLD  (3 different) ['Cinta dari Kedalaman', 'Kasih dari Kedalaman', '深淵からの愛情']
+  '金瞳の綺羅星'
+    NEW  'Bintang Gemerlap Bermata Emas'
+    OLD  (3 different) ['Bintang Cemerlang Bermata Emas', 'Bintang Gemerlap Bermata Emas', 'Bintang Bersinar Bermata Emas']
+  '任務手伝ってくれる？'
+    NEW  'Mau Bantu Misi?'
+    OLD  (3 different) ['Mau bantu misi ini?', 'Mau bantu aku dengan misi ini?', 'Bisa bantu misi ini?']
+
+--- skill_effect ---
+  '[ゲームに1回]自分のデッキから、青ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Sekali per permainan] Tunjukkan 1 holomem Biru dari dek Anda, lalu tambahkan ke tangan Anda. Kemudian, kocok dek Anda.'
+    OLD  (11 different) ['[1 kali per permainan] Buka 1 kartu Holomen biru dari dekmu, tambahkan ke tanganmu. Lalu kocok dek.', '[1 kali per game] Perlihatkan 1 kartu anggota biru dari dek milikmu, masukkan ke tangan. Kemudian kocok dek.', '[ゲームに1回]Buka 1 kartu Holomen berwarna biru dari dekmu, tunjukkan, lalu tambahkan ke tanganmu. Setelah itu, kocok dek.']
+  '[ターンに1回]このターンの間、自分の紫ホロメン1人のアーツ+20。'
+    NEW  '[Sekali per giliran] Hingga akhir giliran ini, Arts 1 holomem Ungu milik Anda +20.'
+    OLD  (11 different) ['[1 kali per giliran] Untuk giliran ini, +20 pada Arts salah satu ホロメン berwarna ungu milikmu.', '[1 kali per giliran] Untuk giliran ini, 1 karakter holo warna ungu milikmu mendapatkan +20 pada Arts.', '[1 kali per giliran] Untuk giliran ini, salah satu ホロメン ungu milikmu mendapatkan +20 pada Arts.']
+  '[ゲームに1回]自分のデッキから、赤ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Sekali per permainan] Tunjukkan 1 holomem Merah dari dek Anda, lalu tambahkan ke tangan Anda. Kemudian, kocok dek Anda.'
+    OLD  (12 different) ['[1 kali per game] Buka 1 kartu holo merah dari dek milikmu, tambahkan ke tangan, lalu kocok dek.', '[1 kali per permainan] Ungkap 1 kartu Holomen merah dari deck-mu, tambahkan ke tangan, lalu kocok deck.', '[ sekali per permainan ] Buka 1 kartu ホロメン merah dari dekmu, tambahkan kartu itu ke tanganmu, lalu kocok dek.']
+  '[ゲームに1回]自分のデッキから、黄ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Sekali per permainan] Tunjukkan 1 holomem Kuning dari dek Anda, lalu tambahkan ke tangan Anda. Kemudian, kocok dek Anda.'
+    OLD  (11 different) ['[1 kali per permainan] Ungkap 1 kartu Holomen kuning dari dekmu, tambahkan ke tanganmu. Kemudian kocok dek.', '[1 kali per permainan] Ungkap 1 kartu Holomen kuning dari dekmu dan masukkan ke tangan. Kemudian kocok dek.', '[ゲームに1回]公開 satu kartu Holomen kuning dari dekmu, tambahkan ke tanganmu. Lalu kocok dek.']
+  '[ゲームに1回]自分のデッキから、白ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Sekali per permainan] Tunjukkan 1 holomem Putih dari dek Anda, lalu tambahkan ke tangan Anda. Kemudian, kocok dek Anda.'
+    OLD  (11 different) ['[Sekali per permainan] Buka 1 kartu ホロメン putih dari dekmu, tambahkan ke tanganmu. Kemudian kocok dek.', '[1 kali per permainan] Ungkap 1 kartu putih dari dek Anda dan masukkan ke tangan. Kemudian kocok dek.', '[1 kali per permainan] Buka 1 kartu ホロメン putih dari dekmu dan masukkan ke tangan. Kemudian kocok dek.']
+  '[ターンに1回]このターンの間、自分の白ホロメン1人のアーツ+20。'
+    NEW  '[Sekali per giliran] Hingga akhir giliran ini, Arts 1 holomem Putih milik Anda +20.'
+    OLD  (11 different) ['[Sekali per giliran] Untuk giliran ini, pilih 1 ホロメン putih milikmu, Artsnya +20.', '[1 kali per giliran] Untuk giliran ini, +20 pada Arts 1 anggota putih milik Anda.', '[1 kali per giliran] Untuk giliran ini, pilih 1 ホロメン putih milikmu: Arts-nya +20.']
+
+--- skill_name ---
+  'ウォウウォウウォウウォウ'
+    NEW  'Wow Wow Wow Wow'
+    OLD  (3 different) ['Wow Wow Wow Wow Wow', 'Wou Wou Wou Wou Wou', 'Wow Wow Wow Wow']
+  'スーパーねぽらぼエナジー'
+    NEW  'Energi Super NePoLaBo'  [masked: ['ねぽらぼ']]
+    OLD  (3 different) ['Super Napolabo Energy', 'Super Nepolabo Energy', 'Super Npolabo Energy']
+  'パープルエンハンス'
+    NEW  'Peningkatan Ungu'
+    OLD  (3 different) ['パープルエンハンス', 'Purple Enhance', 'Peningkatan Ungu']
+  '絶対勝ちたい！！！！！！！'
+    NEW  'AKU PASTI MAU MENANG!!!!!!!'
+    OLD  (3 different) ['Aku Pasti Menang!!!!!!!!!', '絶対勝ちたい！！！！！！！', 'Aku Pasti Menang！！！！！！！']
+  '角ドリルしたろか？'
+    NEW  'Mau kutanduk bor, ya?'
+    OLD  (3 different) ['Mau aku bor pakai tanduk?', 'Mau aku bor pake tanduk?', 'Mau pakai bor tanduk?']
+  '迷ったらまず実行！'
+    NEW  'Kalau ragu, lakukan dulu!'
+    OLD  (3 different) ['Kalau bingung, coba dulu!', 'Kalau ragu, lakukan dulu!', 'Kalau ragu, lakukan saja dulu!']
+
+--- skill_timing ---
+  'ターンに1回'
+    NEW  '1 kali per giliran'
+  'ゲームに1回'
+    NEW  '1 kali per permainan'
+
+--- tag ---
+  '#絵'
+    NEW  '#Seni'  [masked: ['#絵']]
+  '#JP'
+    NEW  '#JP'  [masked: ['#JP']]
+  '#ケモミミ'
+    NEW  '#Telinga Hewan'  [masked: ['#ケモミミ']]
+  '#EN'
+    NEW  '#EN'  [masked: ['#EN']]
+  '#歌'
+    NEW  '#Menyanyi'  [masked: ['#歌']]
+  '#ID'
+    NEW  '#ID'  [masked: ['#ID']]
+
+  id: 62/62 translated, 0 rejected, 0 left Japanese, 54 replaced multiple old variants
+  tokens: 5,905 in / 1,469 out
+
+==============================================================================
+th (泰文) — 62 units in 11 call(s)
+==============================================================================
+
+--- ability_text ---
+  '自分のデッキを2枚引き、サイコロを1回振る:3か5か6の時、自分のデッキから、Debutホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。2か4の時、自分のデッキを1枚引く。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'จั่วการ์ดจากเด็คของคุณ 2 ใบ แล้วทอยลูกเต๋า 1 ครั้ง: ถ้าออก 3, 5 หรือ 6 ให้เปิดเผย Debut โฮโลเมน 1 ใบจากเด็คของคุณแล้วนำขึ้นมือ จากนั้นสับเด็ค ถ้าออก 2 หรือ 4 ให้จั่วการ์ดจากเด็คของคุณ 1 ใบ\n\nLIMITED: ใช้ได้เพียง 1 ใบต่อเทิร์น'
+    OLD  (5 different) ['จั่วการ์ดจากเด็คของคุณ 2 ใบ แล้วทอยลูกเต๋า 1 ครั้ง: เมื่อออก 3, 5 หรือ 6 ให้เปิดเผย Debutホロメン 1 ใบจากเด็คของคุณ แล้วนำขึ้นมือ จากนั้นสับเด็ค เมื่อออก 2 หรือ 4 ให้จั่วการ์ดจากเด็คของคุณ 1 ใบ\n\nLIMITED: ใช้ได้เพียง 1 ใบต่อเทิร์นเท่านั้น', 'จั่วการ์ดจากเด็คของคุณ 2 ใบ แล้วทอยลูกเต๋า 1 ครั้ง: เมื่อออก 3, 5 หรือ 6 ให้เปิดเผย Debutホロメン 1 ใบจากเด็คของคุณ และนำขึ้นมือ จากนั้นสับเด็คของคุณ เมื่อออก 2 หรือ 4 ให้จั่วการ์ดจากเด็คของคุณ 1 ใบ\n\nLIMITED: ใช้ได้เพียง 1 ใบต่อเทิร์น', 'จั่วการ์ดจากเด็คของคุณ 2 ใบ แล้วทอยลูกเต๋า 1 ครั้ง: ถ้าออก 3, 5 หรือ 6 ให้เปิดเผย Debutホロメン 1 ใบจากเด็คของคุณ แล้วนำขึ้นมือ จากนั้นสับเด็ค ถ้าออก 2 หรือ 4 ให้จั่วการ์ดจากเด็คของคุณ 1 ใบ\n\nLIMITED: ใช้ได้เพียง 1 ใบต่อเทิร์น']
+  'このカードは、自分の手札がこのカードを含まずに6枚以下でなければ使えない。\n\n自分のデッキの上から4枚を見る。その中から、#4期生を持つホロメンを好きな枚数公開し、公開したホロメンを手札に加える。そして残ったカードを好きな順でデッキの下に戻す。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'การ์ดใบนี้จะใช้ได้ก็ต่อเมื่อการ์ดบนมือของคุณมี 6 ใบหรือน้อยกว่า โดยไม่นับการ์ดใบนี้\n\nดูการ์ด 4 ใบบนสุดของเด็คของคุณ จากนั้นเปิดเผยโฮโลเมนที่มี #รุ่น 4 จากในนั้นได้ตามจำนวนที่ต้องการ และนำโฮโลเมนที่เปิดเผยขึ้นมือ แล้วนำการ์ดที่เหลือวางกลับไปใต้เด็คตามลำดับใดก็ได้\n\nLIMITED: ใช้ได้เพียง 1 ใบต่อเทิร์น'  [masked: ['#4期生']]
+    OLD  (4 different) ['การเล่นการ์ดใบนี้ทำได้ก็ต่อเมื่อในมือของตนมีไพ่ไม่เกิน 6 ใบ โดยนับโดยไม่รวมการ์ดนี้อยู่ด้วย\n\nดูไพ่ 4 ใบจากบนสุดของเด็คของตน เลือกไพ่โฮโลเมนที่มี #4期生 จำนวนเท่าใดก็ได้จากไพ่ที่ดูแล้ว เปิดเผยไพ่เหล่านั้นและนำไพ่ที่เปิดเผยเข้ามือ จากนั้นนำไพ่ที่เหลือกลับวางไว้ใต้เด็คตามลำดับที่ต้องการ\n\nLIMITED：ใช้ได้แค่ 1 ใบต่อเทิร์น', 'การเล่นการ์ดใบนี้ ต้องเป็นกรณีที่ในมือของคุณมีไพ่ไม่เกิน 6 ใบและยังไม่รวมการ์ดใบนี้อยู่\n\nดูไพ่จากบนสุดของสำรับของคุณ 4 ใบ จากนั้นจากไพ่เหล่านั้น เปิดเผยจำนวนเท่าใดก็ได้ของ ホロメン ที่มี #4期生 แล้วนำ ホロメン ที่เปิดเผยเข้ามือ จากนั้นนำไพ่ที่เหลือใส่กลับไว้ใต้สำรับตามลำดับที่ต้องการ\n\nLIMITED：ต่อเทิร์นใช้ได้เพียง 1 ใบเท่านั้น。', 'การ์ดใบนี้ ใช้ได้ก็ต่อเมื่อไพ่ในมือของตัวเอง รวมทั้งไม่รวมการ์ดใบนี้ มีจำนวนไม่เกิน 6 ใบ\n\nดูไพ่บนสุดของเด็คตัวเอง 4 ใบ จากไพ่เหล่านั้น เผยไพ่ホロメンที่มี #4期生 จำนวนเท่าใดก็ได้ แล้วเอาホロメンที่เผยเข้ามาไว้ในมือ จากนั้นเอาไพ่อื่นๆ ที่เหลือกลับไว้ใต้เด็คตามลำดับที่ต้องการ\n\nLIMITED：ในหนึ่งเทิร์นใช้ได้เพียง 1 ใบเท่านั้น。']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\r\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■เมื่อโฮโลเมนออกจากสเตจ ให้นำ Cheer ทั้งหมดของโฮโลเมนนั้นไป Archive\r\n■เมื่อโฮโลเมนทำ Baton Touch ให้นำ Cheer ของโฮโลเมนนั้นไป Archive ตามจำนวนที่กำหนด'
+    OLD  (11 different) ['■เมื่อโฮโลเมนออกจากสเตจ ให้ย้ายเอールทั้งหมดของโฮโลเมนนั้นไปยังอาร์ไคฟ์\n■เมื่อโฮโลเมนส่งไม้ต่อ ให้ย้ายเอールจำนวนที่ระบุของโฮโลเมนนั้นไปยังอาร์ไคฟ์', '■เมื่อホロメン ออกจากเวที ให้ย้ายเอลล์ทั้งหมดของホロメン นั้นไปยังพื้นที่อาร์ไคฟ์\n■เมื่อホロメン ทำการส่งไม้ต่อ ให้ย้ายจำนวนเอลล์ที่ระบุของホロメン นั้นไปยังพื้นที่อาร์ไคฟ์', '■เมื่อホロメン ออกจากสเตจ ให้ย้ายเอールทั้งหมดของホロメン นั้นไปยังอาร์ไคฟ์\n■เมื่อホロメン เปลี่ยนผู้เล่น ให้ย้ายเอールตามจำนวนที่ระบุจากホロメン นั้นไปยังอาร์ไคฟ์']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■เมื่อโฮโลเมนออกจากสเตจ ให้นำ Cheer ทั้งหมดของโฮโลเมนนั้นไป Archive\n■เมื่อโฮโลเมนทำ Baton Touch ให้นำ Cheer ของโฮโลเมนนั้นไป Archive ตามจำนวนที่กำหนด'
+    OLD  (51 different) ['■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。', '■เมื่อホロメン ออกจากสเตจ ให้ย้ายエール ทุกใบของホロメン นั้นไปยังพื้นที่อาร์ไคฟ์\n■เมื่อホロメン ทำการバトンタッチ ให้ย้ายจำนวน指定ของエール ของホロメン นั้นไปยังพื้นที่อาร์ไคฟ์', '■เมื่อโฮโลเมนออกจากสนาม ให้เก็บ〈เอール〉ทั้งหมดของโฮโลเมนนั้นไว้ในพื้นที่อาร์ไคฟ์\n■เมื่อโฮโลเมนทำการบาตงทัช ให้เก็บ〈เอール〉ของโฮโลเมนนั้นตามจำนวนที่กำหนดไว้ในพื้นที่อาร์ไคฟ์']
+  '自分のデッキから、Debutホロメン１枚を公開し、ステージに出す。そしてデッキをシャッフルする。'
+    NEW  'เปิดเผย Debut โฮโลเมน 1 ใบจากเด็คของคุณ แล้วนำออกสู่สเตจ จากนั้นสับเด็ค'
+    OLD  (6 different) ['เปิดเผยการ์ด Debut Holomen 1 ใบจากเด็คของตนเองและนำขึ้นสเตจ จากนั้นสับเด็คของตนเอง', 'เปิดเผยการ์ด Debut โฮโลเม็ม 1 ใบจากเด็คของคุณ แล้วนำขึ้นสนาม จากนั้นสับเด็คของคุณ', 'เปิดเผยการ์ด Debut โฮโลเมน 1 ใบจากเด็คของตัวเอง แล้วนำลงสเตจ จากนั้นสับเด็คของคุณ']
+  'このカードは、自分のライフが相手より少ない時にしか使えない。\n\n相手のコラボホロメンがいない時、相手は、自身のバックホロメン1人をコラボポジションに移動させる（移動はコラボとしては扱わない）。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'การ์ดใบนี้จะใช้ได้เฉพาะเมื่อ Life ของคุณน้อยกว่าคู่แข่ง\n\nเมื่อคู่แข่งไม่มีโฮโลเมนในตำแหน่ง Collab คู่แข่งจะย้ายแบ็คโฮโลเมนของตน 1 คนไปยังตำแหน่ง Collab (การย้ายนี้ไม่ถือเป็นการทำ Collab)\n\nLIMITED: ใช้ได้เพียง 1 ใบต่อเทิร์น'
+    OLD  (5 different) ['การ์ดใบนีใช้ได้ก็ต่อเมื่อชีวิตของคุณน้อยกว่าฝ่ายตรงข้ามเท่านั้น\n\nเมื่อฝ่ายตรงข้ามไม่มี Holomen ที่อยู่ในตำแหน่งคอลแลบ ฝ่ายตรงข้ามต้องย้าย Holomen 1 คนจากตำแหน่งแบ็กของตนไปยังตำแหน่งคอลแลบ (การย้ายนั้นจะไม่ถือเป็นการ “คอลแลบ”)。\n\nLIMITED：แต่ละเทิร์นใช้ได้แค่ 1 ใบเท่านั้น。', 'การ์ดนี้ใช้ได้ก็ต่อเมื่อชีวิตของคุณน้อยกว่าฝ่ายตรงข้ามเท่านั้น\n\nถ้าไม่มีโฮโลเมนฝ่ายตรงข้ามในตำแหน่งคอลลาโบ ฝ่ายตรงข้ามต้องย้ายโฮโลเมนในแบ็กของตน 1 คนไปยังตำแหน่งคอลลาโบ (การย้ายนั้นจะไม่ถูกนับเป็นการคอลลาโบ)\n\nLIMITED：ต่อเทิร์นใช้ได้แค่ 1 ใบเท่านั้น。', 'การ์ดใบนี้สามารถใช้ได้เฉพาะเมื่อชีวิตของตนเองน้อยกว่าฝ่ายตรงข้ามเท่านั้น。\n\nเมื่อฝ่ายตรงข้ามไม่มีโคลาบโฮโลเมนในตำแหน่งโคลาบ ฝ่ายตรงข้ามเลือกโฮโลเมนจากตำแหน่งแบ็คของตนเอง 1 ตัวแล้วย้ายไปยังตำแหน่งโคลาบ (การย้ายนั้นจะไม่ถูกนับเป็นการโคลาบ)。\n\nLIMITED：ในหนึ่งเทิร์นใช้ได้เพียง 1 ใบเท่านั้น。']
+
+--- art_effect ---
+  'このホロメンに付いている〈35P〉1枚につき、このアーツ+20。'
+    NEW  'ศิลป์นี้ +20 ต่อ 〈35P〉ทุก 1 ใบที่ติดอยู่กับโฮโลเมนนี้'  [masked: ['35P']]
+    OLD  (5 different) ['ติดอยู่ที่โฮโลเมนนี้ 〈35P〉 แต่ละใบ ทำให้อาร์ตชิ้นนี้ +20', 'สำหรับแต่ละ〈35P〉ที่ติดอยู่กับโฮโลเมนนี้ อาตส์นี้+20', 'สำหรับแต่ละ〈35P〉ที่ติดอยู่กับฮอโลเมนนี้ อาร์ทชิ้นนี้จะได้รับค่าพลังเพิ่ม +20']
+  '相手のホロメン1人に特殊ダメージ10を与える。'
+    NEW  'สร้างความเสียหายพิเศษ 10 ให้โฮโลเมนของฝ่ายตรงข้าม 1 คน'
+    OLD  (5 different) ['對對手的1名ホロメン造成10點特殊傷害。', 'สร้างความเสียหายพิเศษ 10 แก่ฮาโลเม็มของฝ่ายตรงข้าม 1 คน', '對對手的1名ホロメン造成特殊傷害10。']
+  '自分のデッキの上から3枚を公開できる:公開したホロメン1枚につき、このアーツ+20。そして公開したカードをアーカイブする。'
+    NEW  'คุณอาจเปิดเผยการ์ด 3 ใบจากบนสุดของเด็คของคุณ: ศิลป์นี้ +20 ต่อโฮโลเมนทุก 1 ใบที่เปิดเผย จากนั้นนำการ์ดที่เปิดเผยไปไว้ในอาร์ไคฟ์'
+    OLD  (5 different) ['เปิดไพ่จากบนสุดของเด็คของตัวเอง 3 ใบ: สำหรับทุกๆ 1 ใบホロメンที่เปิดได้ อาร์ตชิ้นนี้ +20 แล้วทำการย้ายไพ่ที่เปิดได้ไปยังบริเวณอาร์ไคฟ์ (อัปโหลดการ์ด)', 'สามารถเปิดเผยจากบนสุดของเด็คของตน 3 ใบ: สำหรับแต่ละホロメンที่เปิดเผยได้ การ์ดอาร์ตนี้+20 แล้วนำการ์ดที่เปิดเผยไปใส่อาร์ไคฟ์', 'สามารถเปิดเผย 3 ใบจากบนสุดของเด็คของตน: สำหรับทุกๆ 1 ใบ ホロメン ที่เปิดเผย ให้ค่าสเตตัสอาร์ตชิ้นนี้ +20 แล้วนำการ์ดที่เปิดเผยไปใส่ในอาร์ไคฟ์']
+  '自分のデッキの上から1枚をアーカイブする。'
+    NEW  'นำการ์ด 1 ใบจากบนสุดของเด็คของคุณไปไว้ในอาร์ไคฟ์'
+    OLD  (8 different) ['นำการ์ด 1 ใบจากด้านบนสุดของเด็คของตัวเองไปไว้ในเขตเก็บถาวร', 'เก็บการ์ด 1 ใบจากด้านบนของเด็คของตัวเองไว้ในพื้นที่เก็บข้อมูล (Archive).', 'นำการ์ด 1 ใบจากด้านบนสุดของเด็คของตนไปยังพื้นที่เก็บข้อมูล (อาร์ไคฟ์)']
+  '相手のバックホロメン1人に特殊ダメージ10を与える。'
+    NEW  'สร้างความเสียหายพิเศษ 10 ให้แบ็กโฮโลเมนของฝ่ายตรงข้าม 1 คน'
+    OLD  (6 different) ['สร้างความเสียหายพิเศษ 10 แก่แบ็คโฮโลเมนของฝ่ายตรงข้าม 1 คน', 'มอบความเสียหายพิเศษ 10 แก่สมาชิกแบ็คโฮโลเมนฝ่ายตรงข้าม 1 คน', 'สร้างความเสียหายพิเศษ 10 แต้ม แก่แบ็คโฮโลเมン 1 คนของคู่ต่อสู้']
+  'このホロメンのエール1枚につき、このアーツ+20。'
+    NEW  'ศิลป์นี้ +20 ต่อเอールทุก 1 ใบของโฮโลเมนนี้'
+    OLD  (6 different) ['สำหรับแต่ละใบของเอールของホロメンคนนี้ ให้บวก +20 ให้การ์ดอーツนี้', 'สำหรับการ์ดเอールแต่ละใบของโฮโลเมมอนตัวนี้ การ์ดอาร์ตนี้จะได้รับ +20', 'สำหรับแต่ละใบของเอールของโฮโลเมนคนนี้ อาร์ตนี้เพิ่มค่า +20']
+
+--- art_name ---
+  '絶対、ドキドキさせるから'
+    NEW  'ฉันจะทำให้ใจเต้นแรงให้ได้แน่นอน'
+    OLD  (3 different) ['ฉันจะทำให้เธอใจเต้นแน่นอน', 'ยังไงก็จะทำให้ใจเต้นแน่ๆ เลย', 'ฉันจะทำให้ใจเต้นแรงแน่นอน']
+  'まじかる☆ござるの元気の出る魔法'
+    NEW  'เวทมนตร์เติมพลังของ Magical☆Gozaru'
+    OLD  (3 different) ['คาถาเพิ่มพลังสดใส☆ござる', 'เวทมนตร์เพิ่มพลังของ <まじかる☆ござる>', 'เวทมนตร์เติมพลังของ <まじかる☆ござる>']
+  '輝いた余を見逃さないでね～～！！'
+    NEW  'อย่าพลาดยามที่ข้าเปล่งประกายนะ～～！！'
+    OLD  (3 different) ['อย่าปล่อยให้ฉันที่เปล่งประกายหลุดรอดไปนะ～～！！', '輝いた余を見逃さないでね～～！！', 'อย่าพลาดชม〈百鬼あやめ〉ที่เปล่งประกายอยู่นะ～～！！']
+  '元気を全力でお届けします！'
+    NEW  'จะส่งมอบพลังเต็มที่ให้ทุกคนเอง！'
+    OLD  (4 different) ['จะส่งพลังสดใสไปให้เต็มที่เลยค่ะ！', 'จะส่งพลังสดใสให้เต็มที่เลยนะ!', 'ส่งพลังสดใสอย่างเต็มที่!']
+  'ポルカおるよ！'
+    NEW  'โพลก้าอยู่นะ！'  [masked: ['ポルカ']]
+    OLD  (3 different) ['ポルカおるよ！', 'ポルカอุรุโย！', 'ポルカอยู่ตรงนี้นะ!']
+  '皆さん、待っ鷹ね？'
+    NEW  'ทุกคน รอกันนานเหยี่ยวเลยใช่ไหม？'
+    OLD  (3 different) ['皆さん、待っ鷹ね？', 'ทุกคน รออยู่นกเหยี่ยวใช่ไหม?', 'ทุกคน รออยู่เหรอ?']
+
+--- card_name ---
+  'セシリア・イマーグリーン'
+    NEW  'เซซิเลีย อิมเมอร์กรีน'  [masked: ['セシリア・イマーグリーン']]
+    OLD  (8 different) ['セシリア・イマーグリーン', 'เซซิเรีย・อิมารียีน', 'เซซีเรีย・อิมาโกริน']
+  'アーニャ・メルフィッサ'
+    NEW  'อันยา เมลฟิสซา'  [masked: ['アーニャ・メルフィッサ']]
+    OLD  (6 different) ['アーニャ・メルフィッサ', 'อานยา เมลฟิสซา', 'อーニャ・メルフィッサ']
+  '風真いろは'
+    NEW  'คาซามะ อิโรฮะ'  [masked: ['風真いろは']]
+    OLD  (5 different) ['風真いろは', 'ฟูซามะอิโระฮะ', 'ฟูซามะอิโรฮะ']
+  'アユンダ・リス'
+    NEW  'อายุนดา ริสุ'  [masked: ['アユンダ・リス']]
+    OLD  (8 different) ['アユンダ・リス', 'อายุนดะ・ริส', 'อายุนด้า・ริส']
+  'モココ・アビスガード'
+    NEW  'โมโคโคะ อะบิสการ์ด'  [masked: ['モココ・アビスガード']]
+    OLD  (7 different) ['モココ・アビスガード', 'โมโคโค・อะบิสการ์ด', 'โมโคโค・เอวิสการ์ด']
+  '不知火フレア'
+    NEW  'ชิรานุย เฟลร์'  [masked: ['不知火フレア']]
+    OLD  (6 different) ['不知火フレア', 'ไม่ชิระคาเซะ ฟุเระอา', 'ไม่ชิรุฟุเระอา (不知火フレア)']
+
+--- extra ---
+  'このホロメンは〈ときのそら〉〈AZKi〉としても扱う'
+    NEW  'โฮโลเมนนี้ให้นับเป็น〈โตกิโนะ โซระ〉〈AZKi〉ได้ด้วย'  [masked: ['ときのそら', 'AZKi']]
+    OLD  (2 different) ['โฮโลเมมนี้นับว่าเป็น〈ときのそら〉และ〈AZKi〉ด้วย', 'โฮโลเมมนี้จะถูกนับว่าเป็น〈ときのそら〉และ〈AZKi〉ด้วย']
+  'このホロメンはBloomできない'
+    NEW  'โฮโลเมนนี้ไม่สามารถ Bloom ได้'
+    OLD  (11 different) ['ホロメンนี้ไม่สามารถ Bloom ได้', 'このホロメンはBloomできない', 'โฮโลเมนนี้ไม่สามารถ Bloom ได้']
+  'このホロメンは〈さくらみこ〉〈星街すいせい〉としても扱う'
+    NEW  'โฮโลเมนนี้ให้นับเป็น〈ซากุระ มิโกะ〉〈โฮชิมาชิ สุยเซย〉ได้ด้วย'  [masked: ['さくらみこ', '星街すいせい']]
+    OLD  (3 different) ['โฮโลเม็นนี้ถือว่าเป็น〈さくらみこ〉และ〈星街すいせい〉ด้วย', 'โฮโลเมมเบอร์นี้จะถือว่าเป็น〈さくらみこ〉และ〈星街すいせい〉ด้วย', 'โฮโลเม็มนี้ยังถือว่าเป็น〈さくらみこ〉และ〈星街すいせい〉ด้วย']
+  'このホロメンはデッキに何枚でも入れられる'
+    NEW  'ใส่โฮโลเมนนี้ในเด็คได้กี่ใบก็ได้'
+    OLD  (129 different) ['การ์ดโฮโลเมนนี้สามารถใส่ลงในเด็คได้ไม่จำกัดจำนวน', 'โฮโลเมมเบอร์นี้สามารถใส่กี่ใบก็ได้ในเด็ค', 'โฮโลเมมเบอร์นี้สามารถใส่กี่ใบก็ได้ในเด็คของคุณ']
+  'このホロメンがダウンした時、自分のライフ-2'
+    NEW  'เมื่อโฮโลเมนนี้ดาวน์ ให้ไลฟ์ของคุณ -2'
+    OLD  (103 different) ['เมื่อโฮโลเมนนี้ล้มลง ชีวิตของคุณ -2', 'เมื่อโฮโลเมมเบอร์นี้ล้มลง ลดไลฟ์ของตัวเองลง 2', 'このホロメンがダウンした時、自分のライフ-2']
+  'このホロメンは〈フワワ・アビスガード〉〈モココ・アビスガード〉としても扱う'
+    NEW  'โฮโลเมนนี้ให้นับเป็น〈ฟุวาวา อะบิสการ์ด〉〈โมโคโคะ อะบิสการ์ด〉ได้ด้วย'  [masked: ['フワワ・アビスガード', 'モココ・アビスガード']]
+    OLD  (5 different) ['โฮโลเมมเบอร์นี้ถือว่าเป็น〈フワワ・アビスガード〉และ〈モココ・アビスガード〉ด้วย', 'โฮโลเมมเบอร์นี้ยังถือว่าเป็น〈フワワ・アビスガード〉และ〈モココ・アビスガード〉ด้วย', 'โฮโลเมมเบอร์นี้จะถูกนับว่าเป็น〈フワワ・アビスガード〉และ〈モココ・アビスガード〉ด้วย']
+
+--- keyword_effect ---
+  '自分のエールデッキから、黄エール1枚を公開し、このホロメンに送る。そしてエールデッキをシャッフルする。'
+    NEW  'เปิดเผย เยลสีเหลือง 1 ใบจากเด็คเอールของคุณ แล้วส่งให้โฮโลเมนนี้ จากนั้นสับเด็คเอール'  [masked: ['黄エール']]
+    OLD  (6 different) ['เปิดเผยแยร์สีเหลือง 1 ใบ จากเด็คเอลของคุณ แล้วส่งไปให้ホロメンนี้ จากนั้นสับเด็คเอล', 'เปิดเผยเอールสีเหลือง 1 ใบจากเด็คเอールของตน ส่งมันเข้าหาโฮโลเมนนี้ แล้วสับเด็คเอール', '從自己的援護牌組公開1張黃色援護，送到此Holomen。然後將援護牌組洗牌。']
+  '自分のデッキを1枚引く。'
+    NEW  'จั่วการ์ด 1 ใบจากเด็คของคุณ'
+    OLD  (6 different) ['จั่ว 1 ใบจากเด็คของตัวเอง', 'จั่วไพ่จากเด็คของตัวเอง 1 ใบ', 'จูงไพ่จากเด็คของตัวเอง 1 ใบ']
+  '相手のコラボホロメンに特殊ダメージ20を与える。'
+    NEW  'สร้างความเสียหายพิเศษ 20 ให้โฮโลเมนคอลแลบของคู่ต่อสู้'
+    OLD  (9 different) ['對對手的合作ホロメン造成特殊傷害20。', 'สร้างดาเมจพิเศษ 20 แก่โคลาโบโฮโรมเมนของฝ่ายตรงข้าม', '對手的合作ホロメン受到20點特殊傷害。']
+  '自分のアーカイブのエール1枚をこのホロメンに送れる。'
+    NEW  'คุณอาจส่งเอール 1 ใบจากอาร์ไคฟ์ของคุณให้โฮโลเมนนี้'
+    OLD  (6 different) ['สามารถส่งการ์ด Cheer 1 ใบจากพื้นที่ Archive ของตนไปยังโฮโลเมมเบอร์นี้ได้', 'สามารถส่ง 1 ใบ «エール» จากอาร์ไคฟ์ของตัวเองไปยังโฮโลเมนนี้ได้', 'สามารถส่งเอล 1 ใบจากพื้นที่อาร์ไคฟ์ของตัวเองไปยังโฮโลเมมเบอร์นี้ได้']
+  'このホロメンが相手のホロメンをダウンさせた時、自分のデッキの上から1枚をホロパワーにする。その後、自分のホロパワーを見る。その中から1枚を公開し、手札に加える。そしてホロパワーをシャッフルする。'
+    NEW  'เมื่อโฮโลเมนนี้ทำให้โฮโลเมนของคู่ต่อสู้ดาวน์ ให้นำการ์ดใบบนสุด 1 ใบจากเด็คของคุณไปเป็นโฮโลพาวเวอร์ หลังจากนั้น ดูโฮโลพาวเวอร์ของคุณ เปิดเผยการ์ด 1 ใบจากนั้น และเพิ่มเข้ามือ แล้วสับโฮโลพาวเวอร์'
+    OLD  (5 different) ['เมื่อโฮโลเมนนี้ทำให้โฮโลเมนฝ่ายตรงข้ามดาวน์ เลือกไพ่จากบนสุดของเด็คของตน 1 ใบแล้วใส่เป็นโฮโลพาวเวอร์ หลังจากนั้นดูโฮโลพาวเวอร์ของตน เปิดเผยไพ่ 1 ใบจากในนั้นแล้วเพิ่มเข้ามือ จากนั้นสับโฮโลพาวเวอร์', 'เมื่อโฮโลเมนการ์ดนี้ทำให้โฮโลเมนฝ่ายตรงข้ามดาวน์ ให้เปลี่ยนไพ่จากบนสุดของเด็คตัวเองหนึ่งใบเป็นโฮโลพาวเวอร์ แล้วดูโฮโลพาวเวอร์นั้น จากไพ่ในนั้นเปิดเผยหนึ่งใบแล้วนำเข้ามือ จากนั้นสับโฮโลพาวเวอร์', 'เมื่อโฮโลเมนนี้ทำให้อีกฝ่ายโฮโลเมนล้มลง: เปลี่ยนไพ่บนสุดของเด็คของตน 1 ใบเป็นโฮโลพาวเวอร์ จากนั้นดูโฮโลพาวเวอร์ของตน เผย 1 ใบจากนั้นเพิ่มเข้ามือ แล้วสับโฮโลพาวเวอร์']
+  '[センターポジション限定][ターンに1回]自分のメインステップで、このホロメンに〈35P〉が付いている時、サイコロを1回振れる:3か5の時、このターンの間、このホロメンのアーツ+50。'
+    NEW  '[จำกัดเซ็นเตอร์โพซิชัน][เทิร์นละครั้ง]ในเมนสเต็ปของคุณ เมื่อโฮโลเมนนี้ติด〈35P〉อยู่ คุณอาจทอยลูกเต๋า 1 ครั้ง: ถ้าออก 3 หรือ 5 อาร์ตของโฮโลเมนนี้ +50 จนจบเทิร์นนี้'  [masked: ['35P']]
+    OLD  (5 different) ['[จำกัดตำแหน่งเซ็นเตอร์][1 ครั้งต่อเทิร์น] ในมิร์นสเต็ปของตัวเอง เมื่อโฮโลเมนนี้มี 〈35P〉 ติดอยู่ ให้ทอยลูกเต๋า 1 ครั้ง：ถ้าออก 3 หรือ 5 ในเทิร์นนี้ อาร์ตของโฮโลเมนนี้ +50', '[จำกัดตำแหน่งเซ็นเตอร์][1 ครั้งต่อเทิร์น] ในมินสเต็ปของตัวเอง เมื่อโฮโลเมนนี้มี〈35P〉ติดอยู่ คุณสามารถทอยลูกเต๋า 1 ครั้ง: ถ้าออก 3 หรือ 5 ในช่วงเทิร์นนี้ อาตส์ของโฮโลเมนนี้+50', '[จำกัดตำแหน่ง: ศูนย์กลาง][1 ครั้งต่อเทิร์น] ในช่วงเมนสเต็ปของตัวเอง เมื่อฮอโลเมนนี้มี〈35P〉ติดอยู่ ให้ทอยลูกเต๋า 1 ครั้ง: หากได้ 3 หรือ 5 ในช่วงเทิร์นนี้ อาร์ทของฮอโลเมนนี้จะได้รับ +50']
+
+--- keyword_name ---
+  '用心棒'
+    NEW  'บอดี้การ์ด'
+    OLD  (4 different) ['ผู้คุ้มกัน', 'ยามคุ้มกัน', 'องครักษ์']
+  'ホロライブの狂犬'
+    NEW  'หมาบ้าแห่งโฮโลไลฟ์'
+    OLD  (3 different) ['หมาบ้าของโฮโละไลฟ์', 'สุนัขบ้าของโฮโลไลฟ์', 'สุนัขบ้าของโฮโListenersライブ']
+  '楽しむ準備はできてる！？'
+    NEW  'พร้อมจะสนุกกันหรือยัง!?'
+    OLD  (3 different) ['พร้อมสนุกแล้วหรือยัง!?', '楽しむ準備はできてる！？', 'พร้อมจะสนุกกันรึยัง！？']
+  '仮想世界の伴走する歌姫'
+    NEW  'นักร้องสาวผู้วิ่งเคียงข้างในโลกเสมือน'
+    OLD  (3 different) ['นักร้องแห่งโลกเสมือนที่วิ่งเคียงข้างไปด้วยกัน', 'นักร้องสาวผู้ร่วมเดินทางในโลกเสมือน', 'นักร้องสาวผู้ร่วมเดินทางในโลกเสมือนจริง']
+  '時界を統べし者'
+    NEW  'ผู้ปกครองแห่งกาลมิติ'
+    OLD  (3 different) ['時界を統べし者', 'ผู้ปกครองแห่งห้วงเวลา', 'ผู้ปกครองแห่งขอบเขตแห่งเวลา']
+  '貴様の運命試してみるか？'
+    NEW  'จะลองทดสอบชะตาของเจ้าดูไหม?'
+    OLD  (3 different) ['貴様の運命試してみるか？', 'อยากลองทดสอบชะตากรรมของเจ้าไหม?', 'อยากลองทดสอบชะตาของเจ้าไหม?']
+
+--- skill_effect ---
+  '[ターンに1回]このターンの間、自分の青ホロメン1人のアーツ+20。'
+    NEW  '[หนึ่งครั้งต่อเทิร์น]ในระหว่างเทิร์นนี้ ศิลปะของโฮโลเมนสีน้ำเงินของคุณ 1 คน +20'
+    OLD  (11 different) ['[1 เทิร์นครั้ง] ในช่วงเทิร์นนี้ อาร์ตของホロメンสีน้ำเงินคนหนึ่งของตนเพิ่มขึ้น 20。', '[1 รอบต่อเกม] ในช่วงนี้ อาร์ตของโฮโลเมนสีน้ำเงิน 1 คนของตน +20.', '[1 ครั้งต่อเทิร์น] ในช่วงเทิร์นนี้ อーツของโฮโลเมนสีน้ำเงิน 1 คนของตน +20。']
+  '[ゲームに1回]自分のデッキから、青ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[หนึ่งครั้งต่อเกม]เปิดเผยโฮโลเมนสีน้ำเงิน 1 ใบจากเด็คของคุณ แล้วนำขึ้นมือ จากนั้นสับเด็ค'
+    OLD  (11 different) ['[1 เกมครั้ง] เปิดเผยการ์ดホロメンสีฟ้าหนึ่งใบจากเด็คของตนแล้วนำเข้ามือ จากนั้นสับเด็ค。', '[1 ครั้งต่อเกม] เปิดเผยไพ่โฮโลเมนสีฟ้า 1 ใบจากเด็คของตน แล้วนำใส่ในมือ จากนั้นสับเด็ค.', '[1 ครั้งต่อเกม] เปิดเผยโฮโลเมนสีน้ำเงิน 1 ใบจากเด็คของตนแล้วนำเข้ามือ จากนั้นสับเด็ค。']
+  '[ターンに1回]このターンの間、自分の紫ホロメン1人のアーツ+20。'
+    NEW  '[หนึ่งครั้งต่อเทิร์น]ในระหว่างเทิร์นนี้ ศิลปะของโฮโลเมนสีม่วงของคุณ 1 คน +20'
+    OLD  (11 different) ['[1 เทิร์นครั้งเดียว] ในช่วงเทิร์นนี้ アーツ ของ ホロメン สีม่วง 1 ใบของตัวเอง +20。', '[1 เทิร์นครั้งเดียว]ในช่วงเทิร์นนี้ อาร์ตของホロメンสีม่วง 1 คนของตน +20。', '[1 回ต่อเทิร์น] ระหว่างเทิร์นนี้ อาร์ตของホロメンสีม่วง 1 คนของตัวคุณ +20。']
+  '[ゲームに1回]自分のデッキから、赤ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[หนึ่งครั้งต่อเกม]เปิดเผยโฮโลเมนสีแดง 1 ใบจากเด็คของคุณ แล้วนำขึ้นมือ จากนั้นสับเด็ค'
+    OLD  (12 different) ['[1 ครั้งต่อเกม] เผยไพ่จากเด็คของตัวเอง 1 ใบที่เป็นโฮโลเมนสีแดง แล้วนำเข้ามือ จากนั้นทำการสับเด็ค', '[1 ครั้งต่อเกม] เปิดโชว์การ์ดホロメンสีแดง 1 ใบจากเด็คของตน แล้วนำใส่มือ จากนั้นสับเด็ค。', '[1 ครั้งต่อเกม] เผชิญหน้าการ์ดโฮโลเมนสีแดง 1 ใบจากเด็คของตน เปิดเผยและใส่ลงในมือ แล้วสับเด็ค。']
+  '[ゲームに1回]自分のデッキから、黄ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[หนึ่งครั้งต่อเกม]เปิดเผยโฮโลเมนสีเหลือง 1 ใบจากเด็คของคุณ แล้วนำขึ้นมือ จากนั้นสับเด็ค'
+    OLD  (11 different) ['[1 ครั้งต่อเกม]เปิดเผยโฮโลเมนสีเหลือง 1 ใบจากเด็คของตน แล้วเพิ่มเข้ามือ จากนั้นสับเด็ค。', '[1 เกม 1 ครั้ง] เปิดเผยไพ่โฮโลเมนสีเหลือง 1 ใบจากเด็คของตน แล้วใส่เข้ามือ จากนั้นสับเด็ค。', '[1 ครั้งต่อเกม]เปิดเผย 1 ใบจากเด็คของตัวเองที่เป็นโฮโลเมนสีเหลือง แล้วนำใบนั้นเข้ามาเป็นไพ่ในมือ จากนั้นทำการสับเด็ค.']
+  '[ターンに1回]このターンの間、自分の赤ホロメン1人のアーツ+20。'
+    NEW  '[หนึ่งครั้งต่อเทิร์น]ในระหว่างเทิร์นนี้ ศิลปะของโฮโลเมนสีแดงของคุณ 1 คน +20'
+    OLD  (12 different) ['[1 ครั้งต่อเทิร์น] ในเทิร์นนี้ อาร์ทของโฮโลเมนสีแดงของตัวเอง 1 คน +20', '[1 ครั้งต่อเทิร์น] ในช่วงเทิร์นนี้ อาร์ตของホロメンสีแดง 1 คนของตน +20。', '[1 ครั้งต่อเทิร์น] ในช่วงเทิร์นนี้ อาร์ตของโฮโลเมนสีแดงของตน 1 คน +20。']
+
+--- skill_name ---
+  'ホワイトエンハンス'
+    NEW  'เสริมพลังสีขาว'
+    OLD  (4 different) ['ホワイトエンハンス', 'White Enhance', 'ไวท์เอนแฮนซ์']
+  'パープルエンハンス'
+    NEW  'เสริมพลังสีม่วง'
+    OLD  (5 different) ['パープルエンハンス', 'พเพอร์เอ็นแฮนซ์', 'พープルเอนแฮนซ์']
+  'イエローエンハンス'
+    NEW  'เสริมพลังสีเหลือง'
+    OLD  (5 different) ['イエローエンハンス', 'Yellow Enhance', 'อิลโลว์ เอนแฮนซ์']
+  'シューティングスター'
+    NEW  'ดาวตกพุ่งทะยาน'
+    OLD  (4 different) ['Shooting Star', 'ดาวตก', 'ชูตติ้งสตาร์']
+  'グリーンエンハンス'
+    NEW  'เสริมพลังสีเขียว'
+    OLD  (4 different) ['グリーンエンハンス', 'กรีนเอนแฮนซ์', 'กรีนเอนฮานซ์']
+  'レッドエンハンス'
+    NEW  'เสริมพลังสีแดง'
+    OLD  (4 different) ['レッドエンハンス', 'เรดเอนแฮนซ์', 'เรดเอ็นฮานซ์']
+
+--- skill_timing ---
+  'ターンに1回'
+    NEW  'เทิร์นละ 1 ครั้ง'
+  'ゲームに1回'
+    NEW  'เกมละ 1 ครั้ง'
+
+--- tag ---
+  '#絵'
+    NEW  '#ศิลปะ'  [masked: ['#絵']]
+  '#JP'
+    NEW  '#JP'  [masked: ['#JP']]
+  '#ケモミミ'
+    NEW  '#หูสัตว์'  [masked: ['#ケモミミ']]
+  '#EN'
+    NEW  '#EN'  [masked: ['#EN']]
+  '#歌'
+    NEW  '#เพลง'  [masked: ['#歌']]
+  '#ID'
+    NEW  '#ID'  [masked: ['#ID']]
+
+  th: 62/62 translated, 0 rejected, 3 left Japanese, 54 replaced multiple old variants
+  tokens: 5,857 in / 1,754 out
+
+==============================================================================
+es (西班牙文) — 62 units in 11 call(s)
+==============================================================================
+
+--- ability_text ---
+  '自分のデッキを2枚引き、サイコロを1回振る:3か5か6の時、自分のデッキから、Debutホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。2か4の時、自分のデッキを1枚引く。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'Roba 2 cartas de tu mazo y lanza un dado 1 vez: si sale 3, 5 o 6, revela 1 holomen Debut de tu mazo y añádelo a tu mano. Después, baraja tu mazo. Si sale 2 o 4, roba 1 carta de tu mazo.\n\nLIMITED: solo puedes usar 1 carta por turno.'
+    OLD  (5 different) ['Roba 2 cartas de tu mazo y lanza un dado 1 vez: si sale 3, 5 o 6, revela 1 Debut holomem de tu mazo y añádelo a tu mano. Luego, baraja tu mazo. Si sale 2 o 4, roba 1 carta de tu mazo.\n\nLIMITED: Solo puedes usar 1 por turno.', 'Roba 2 cartas de tu mazo y lanza 1 dado: si sale 3, 5 o 6, revela 1 Debutホロメン de tu mazo y añádelo a tu mano. Luego, baraja el mazo. Si sale 2 o 4, roba 1 carta de tu mazo.\n\nLIMITED: Solo puedes usar 1 por turno.', 'Roba 2 cartas de tu mazo y lanza un dado 1 vez: si sale 3, 5 o 6, revela 1 Debut holomem de tu mazo y añádelo a tu mano. Después, baraja tu mazo. Si sale 2 o 4, roba 1 carta de tu mazo.\n\nLIMITED: Solo puedes usar 1 carta por turno.']
+  'このカードは、自分の手札がこのカードを含まずに6枚以下でなければ使えない。\n\n自分のデッキの上から4枚を見る。その中から、#4期生を持つホロメンを好きな枚数公開し、公開したホロメンを手札に加える。そして残ったカードを好きな順でデッキの下に戻す。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'Esta carta solo se puede usar si tu mano, sin contar esta carta, tiene 6 cartas o menos.\n\nMira las 4 cartas superiores de tu mazo. De entre ellas, revela cualquier cantidad de holomen con #4th Gen y añade a tu mano los holomen revelados. Después, devuelve las cartas restantes al fondo del mazo en el orden que prefieras.\n\nLIMITED: solo puedes usar 1 carta por turno.'  [masked: ['#4期生']]
+    OLD  (4 different) ['No puedes usar esta carta a menos que tengas 6 o menos cartas en tu mano, sin contar esta.\n\nMira las 4 cartas superiores de tu mazo. De entre ellas, puedes revelar cualquier número de holomem que tengan #4期生 y añadir las cartas reveladas a tu mano. Coloca las cartas restantes en la parte inferior de tu mazo en el orden que prefieras.\n\nLIMITED: Solo puedes usar 1 por turno.', 'Solo puedes usar esta carta si tienes 6 o menos cartas en tu mano, sin contar esta.\n\nMira las 4 cartas superiores de tu mazo. De ellas, revela las cartas de Holomen que tengan #4期生 tantas como quieras y añádelas a tu mano. Coloca las demás en la parte inferior de tu mazo en el orden que prefieras.\n\nLIMITED: Solo puedes usar una por turno.', 'Solo puedes usar esta carta si tienes 6 o menos cartas en tu mano, sin contar esta.\n\nMira las 4 cartas superiores de tu mazo. De entre ellas, revela cualquier número de cartas de Holomen que tengan #4期生 y agrégalas a tu mano. Luego coloca las cartas restantes en la parte inferior de tu mazo en el orden que prefieras.\n\nLIMITED: Solo puedes usar 1 de estas cartas por turno.']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\r\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■Cuando un holomen deja el escenario, Archiva todos sus Cheer.\r\n■Cuando un holomen hace Baton Touch, Archiva la cantidad especificada de Cheer de ese holomen.'
+    OLD  (10 different) ['■Cuando una Holomen deja el escenario, archiva todos los Ales de esa Holomen.\n■Cuando una Holomen hace un relevo, archiva la cantidad indicada de sus Ales.', '■Cuando un Holomen abandona el escenario, archiva todos los Ailes de ese Holomen.\n■Cuando un Holomen hace un relevo, archiva la cantidad designada de Ailes de ese Holomen.', '■Cuando una Holomen abandona el escenario, archiva todos los apoyos de esa Holomen.\n■Cuando una Holomen hace un relevo, archiva la cantidad indicada de apoyos de esa Holomen.']
+  '自分のデッキを2枚引く。その後、直前の相手のターンに自分のホロメンがダウンしていて、自分のライフが相手のライフより少ないなら、アーカイブのエール1枚を自分のホロメン1人に送る。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'Roba 2 cartas de tu mazo. Después, si en el turno anterior de tu oponente uno de tus holomen quedó Down y tu Vida es menor que la de tu oponente, envía 1 Cheer de tu Archive a 1 de tus holomen.\n\nLIMITED: solo puedes usar 1 carta por turno.'
+    OLD  (4 different) ['Roba 2 cartas de tu mazo. Luego, si durante el turno anterior del oponente uno de tus Holomen fue derribado y tu vida es menor que la del oponente, envía 1 Cheers desde tu archivo a uno de tus Holomen.\n\nLIMITADO: solo puedes usar 1 por turno.', 'Roba 2 cartas de tu mazo. Luego, si durante el turno anterior del oponente alguno de tus Holomen fue derrotado y tu vida es menor que la del oponente, envía 1 Cheer del archivo a uno de tus Holomen.\n\nLIMITADO: Solo puedes usar 1 por turno.', 'Roba 2 cartas de tu mazo. Luego, si durante el turno anterior del oponente una de tus Holomen fue derribada y tu vida es menor que la de tu oponente, envía 1 Cheer del Archivo a uno de tus Holomen.\n\nLIMITADO: Solo puedes usar 1 por turno.']
+  '■ホロメンがステージから離れる時、そのホロメンのエールすべてをアーカイブする。\n■ホロメンがバトンタッチする時、そのホロメンのエールを指定された枚数アーカイブする。'
+    NEW  '■Cuando un holomen deja el escenario, Archiva todos sus Cheer.\n■Cuando un holomen hace Baton Touch, Archiva la cantidad especificada de Cheer de ese holomen.'
+    OLD  (50 different) ['■Cuando una Holomen deja el escenario, archiva todos los Eales de esa Holomen.\n■Cuando una Holomen hace un relevo, archiva la cantidad indicada de Eales de esa Holomen.', '■ Cuando una Holomen abandone el escenario, archiva todos sus Ales.\n■ Cuando una Holomen haga un relevo, archiva la cantidad indicada de sus Ales.', '■ Cuando una Holomen deja el escenario, archiva todos sus Ales.\n■ Cuando una Holomen hace un relevo, archiva la cantidad indicada de sus Ales.']
+  'このカードは、自分のライフが相手より少ない時にしか使えない。\n\n相手のコラボホロメンがいない時、相手は、自身のバックホロメン1人をコラボポジションに移動させる（移動はコラボとしては扱わない）。\n\nLIMITED:ターンに1枚しか使えない。'
+    NEW  'Esta carta solo se puede usar si tu Vida es menor que la de tu oponente.\n\nSi tu oponente no tiene holomen en la posición de Colaboración, tu oponente mueve 1 de sus holomen de apoyo a la posición de Colaboración (ese movimiento no se considera una Colaboración).\n\nLIMITED: solo puedes usar 1 carta por turno.'
+    OLD  (5 different) ['Solo puedes usar esta carta cuando tu vida sea menor que la de tu oponente.\n\nSi tu oponente no tiene ningún Holomem colaborador, ese jugador mueve a uno de sus Holomem de respaldo a la posición de colaboración (este movimiento no cuenta como una colaboración).\n\nLIMITED: Solo puedes usar una carta con este nombre por turno.', 'Solo puedes usar esta carta cuando tu vida sea menor que la de tu oponente.\n\nSi tu oponente no tiene ningún holomen en colaboración, ese jugador mueve a uno de sus holomen de respaldo a la posición de colaboración (este movimiento no cuenta como una colaboración).\n\nLIMITADO: Solo puedes usar 1 por turno.', 'Solo puedes usar esta carta cuando tus Puntos de Vida sean menores que los de tu oponente.\n\nSi tu oponente no tiene ningún Holomen de Colaboración, tu oponente mueve a uno de sus Holomen en la posición de Apoyo a la Posición de Colaboración (este movimiento no cuenta como una colaboración).\n\nLIMITADO: Solo puedes usar una por turno.']
+
+--- art_effect ---
+  'このホロメンに付いている〈35P〉1枚につき、このアーツ+20。'
+    NEW  'Por cada 1 carta 〈35P〉 unida a este holomen, este arte +20.'  [masked: ['35P']]
+    OLD  (5 different) ['Por cada carta de〈35P〉unida a este Holomen, este Arts obtiene +20.', 'Por cada 1 carta de〈35P〉unida a esta Holomen, este Arts obtiene +20.', 'Por cada 1 carta de〈35P〉unida a este Holomen, este Arts obtiene +20.']
+  '自分のステージの異なるカード名の#3期生を持つホロメン1人につき、このアーツ+10。'
+    NEW  'Este arte +10 por cada 1 holomen en tu escenario que tenga #3rd Gen con un nombre de carta diferente.'  [masked: ['#3期生']]
+    OLD  (5 different) ['Por cada Holomen en tu escenario con un nombre de carta diferente que tenga #3期生, este Arte gana +10.', 'Por cada miembro Holomen con #3期生 y con un nombre de carta diferente en tu escenario, este Arts obtiene +10.', 'Por cada 1 miembro de Holomen en tu escenario con un nombre de carta diferente que tenga #3期生, esta carta gana +10.']
+  '自分の手札1枚をアーカイブできる:相手のセンターホロメンかコラボホロメンに特殊ダメージ20を与える。'
+    NEW  'Puedes archivar 1 carta de tu mano: inflige 20 de daño especial al holomen del centro o al holomen de colaboración de tu oponente.'
+    OLD  (5 different) ['Puedes archivar 1 carta de tu mano: inflige 20 de daño especial a un Holomen central o un Holomen de colaboración del oponente.', 'Puedes archivar 1 carta de tu mano: inflige 20 de daño especial a un Holomem central o Holomem de colaboración del oponente.', 'Puedes archivar 1 carta de tu mano: inflige 20 de daño especial al Holomen central o Holomen colaborativo del oponente.']
+  'このホロメンに重なっているホロメン1枚につき、このアーツ+20。'
+    NEW  'Este arte +20 por cada 1 holomen superpuesto sobre este holomen.'
+    OLD  (5 different) ['Por cada holomen que esté superpuesta a este holomen, este arte obtiene +20.', 'Por cada Holomen apilado sobre este Holomen, este Arts obtiene +20.', 'Por cada una de las Holomen superpuestas a esta Holomen, este Arts obtiene +20.']
+  'このホロメンのエール1枚につき、このアーツ+20。'
+    NEW  'Este arte +20 por cada 1 Cheer de este holomen.'
+    OLD  (6 different) ['Por cada carta de Ánimo de este Holomen, este Arts gana +20.', '+20 a esta Arte por cada carta de Ánimo de esta holomen.', 'Por cada carta de ánimo que tenga este Holomen, este Arts obtiene +20.']
+  'このホロメンに#こよラボを持つサポートカードが付いている時、自分のデッキから、#こよラボを持つサポートカード1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  'Cuando este holomen tenga un soporte con #KoyoLabo unido, revela 1 carta de soporte con #KoyoLabo de tu mazo y añádela a tu mano. Después, baraja el mazo.'  [masked: ['#こよラボ']]
+    OLD  (5 different) ['Cuando esta Holomen tiene una carta de apoyo con #こよラボ unida, revela 1 carta de apoyo con #こよラボ de tu mazo, añádela a tu mano y luego baraja tu mazo.', 'Cuando esta Holomem tiene equipada una carta de apoyo con #こよラボ, puedes revelar desde tu mazo 1 carta de apoyo con #こよラボ y añadirla a tu mano. Luego baraja tu mazo.', 'Cuando esta Holomem tiene una carta de soporte con #こよラボ unida a ella, revela 1 carta de soporte con #こよラボ de tu mazo, agrégala a tu mano y luego baraja tu mazo.']
+
+--- art_name ---
+  'マスコットたちの饗宴'
+    NEW  'Banquete de las mascotas'
+    OLD  (3 different) ['Banquete de las Mascotas', 'Fiesta de las mascotas', 'Banquete de los Mascotas']
+  'ちわーす！ ホロライブ2期生 大空スバルっス!!'
+    NEW  '¡Bueeenas! Hololive 2nd Gen Oozora Subaru al habla!!'  [masked: ['ホロライブ2期生', '大空スバル']]
+    OLD  (4 different) ['¡Hola! ¡Soy la idol de la segunda generación de Hololive, 大空スバル!!', '¡Hola! ¡Soy la 2ª generación de Hololive, Oozora Subaru!!', '¡Hola~! ¡Soy la 2ª generación de Hololive, <大空スバル>!!']
+  'ダメですよっ！'
+    NEW  '¡Eso no se hace!'
+    OLD  (3 different) ['¡No está bien!', '¡No puedes hacer eso!', '¡No lo hagas!']
+  '音楽家の卵！ 音乃瀬～奏で～～～す！'
+    NEW  '¡Músico en ciernes! Otonose～ ¡a tocaaar～～～!'  [masked: ['音乃瀬']]
+    OLD  (4 different) ['音楽家の卵！ 音乃瀬～奏で～～～す！', '¡El aprendiz de músico! ¡音乃瀬～奏で～～～す！', '¡Un aprendiz de músico! ¡音乃瀬～奏で～～～です！']
+  '貴様ら、刮目せよ！！'
+    NEW  '¡Vosotros, abrid bien los ojos!!'
+    OLD  (4 different) ['¡Ustedes, abran bien los ojos!', '¡Prestad atención, escoria!!', '¡Presten atención, ustedes!']
+  '元気を全力でお届けします！'
+    NEW  '¡Les llevo energía al máximo!'
+    OLD  (3 different) ['¡Te entregaré toda mi energía!', '¡Te entregaré todo mi ánimo con energía!', '¡Entregaré toda mi energía con entusiasmo!']
+
+--- card_name ---
+  'アイラニ・イオフィフティーン'
+    NEW  'Airani Iofifteen'  [masked: ['アイラニ・イオフィフティーン']]
+    OLD  (2 different) ['アイラニ・イオフィフティーン', 'Airan・Ioffifteen']
+  'ビッグゴッドミオーンの占い'
+    NEW  'ビッグゴッドミオーンの占い'  [masked: ['ビッグゴッドミオーンの占い']]
+    OLD  (2 different) ['Adivinación de Big God Mioon', 'ビッグゴッドミオーンの占い']
+  'まいたけダンス'
+    NEW  'Maitake Dance'  [masked: ['まいたけダンス']]
+    OLD  (2 different) ['Baile de Maitake', 'まいたけダンス']
+  'じゃあ敵だね'
+    NEW  "Then you're an enemy"  [masked: ['じゃあ敵だね']]
+    OLD  (2 different) ['Entonces, eres el enemigo', 'じゃあ敵だね']
+  'パヴォリア・レイネ'
+    NEW  'Pavolia Reine'  [masked: ['パヴォリア・レイネ']]
+    OLD  (2 different) ['パヴォリア・レイネ', 'Pavolia Reine']
+  'カエラ・コヴァルスキア'
+    NEW  'Kaela Kovalskia'  [masked: ['カエラ・コヴァルスキア']]
+    OLD  (2 different) ['カエラ・コヴァルスキア', 'Kaela Kovalskia']
+
+--- extra ---
+  'このホロメンは〈ときのそら〉〈AZKi〉としても扱う'
+    NEW  'Este holomen también se considera como 〈Tokino Sora〉 y 〈AZKi〉'  [masked: ['ときのそら', 'AZKi']]
+    OLD  (2 different) ['Este Holomen también se considera como 〈ときのそら〉 y 〈AZKi〉.', 'Este Holomen también se considera como〈ときのそら〉y〈AZKi〉.']
+  'このホロメンはBloomできない'
+    NEW  'Este holomen no puede Bloom'
+    OLD  (13 different) ['Esta Holomen no puede hacer Bloom.', 'Este Holomen no puede hacer Bloom.', 'Este holomen no puede hacer Bloom.']
+  'このホロメンはデッキに何枚でも入れられる'
+    NEW  'Se pueden incluir en el mazo tantas copias de este holomen como se quiera'
+    OLD  (59 different) ['Puedes incluir cualquier número de copias de este Holomen en tu mazo.', 'Puedes incluir cualquier número de esta Holomen en tu mazo.', 'Puedes incluir cualquier número de esta Holomem en tu mazo.']
+  'このホロメンがダウンした時、自分のライフ-2'
+    NEW  'Cuando este holomen quede down, tu vida -2'
+    OLD  (66 different) ['Cuando este Holomen sea derribado, tu vida disminuye en 2.', 'Cuando este Holomen quede fuera de combate, tu vida disminuye en 2.', 'Cuando este Holomen sea derrotado, tu vida disminuye en 2.']
+  'このホロメンは〈フワワ・アビスガード〉〈モココ・アビスガード〉としても扱う'
+    NEW  'Este holomen también se considera como 〈Fuwawa Abyssgard〉 y 〈Mococo Abyssgard〉'  [masked: ['フワワ・アビスガード', 'モココ・アビスガード']]
+    OLD  (4 different) ['Este holomen también se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉.', 'Este Holomen también se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉.', 'Este holomen también se considera como〈フワワ・アビスガード〉y〈モココ・アビスガード〉.']
+  'このホロメンは〈角巻わため〉〈大空スバル〉としても扱う'
+    NEW  'Este holomen también se considera como 〈Tsunomaki Watame〉 y 〈Oozora Subaru〉'  [masked: ['角巻わため', '大空スバル']]
+    OLD  (2 different) ['Este Holomen también se considera como〈角巻わため〉y〈大空スバル〉.', 'Este Holomen también se considera como 〈角巻わため〉 y 〈大空スバル〉.']
+
+--- keyword_effect ---
+  'サイコロを1回振れる:4以上の時、相手のステージのエール1枚を、相手のホロメンに付け替える。'
+    NEW  'Puedes lanzar un dado 1 vez: si sacas 4 o más, cambia 1 carta de Cheer del Escenario de tu oponente para unirla a uno de los HoloMiembros de tu oponente.'
+    OLD  (4 different) ['Puedes lanzar un dado una vez: si sale 4 o más, mueve una carta de Apoyo del escenario del oponente y asígnala a uno de sus Holomen.', 'Puedes lanzar un dado una vez: si obtienes 4 o más, elige 1 carta de Apoyo en el escenario del oponente y cámbiala para que se adjunte a uno de sus holomembers.', 'Puedes lanzar un dado una vez: si sacas 4 o más, cambia una carta de apoyo del escenario del oponente y asígnala a uno de sus Holomen.']
+  '自分のエールデッキから、黄エール1枚を公開し、このホロメンに送る。そしてエールデッキをシャッフルする。'
+    NEW  'Revela 1 Yellow Cheer de tu Mazo de Cheer y únela a este HoloMiembro. Después, baraja el Mazo de Cheer.'  [masked: ['黄エール']]
+    OLD  (6 different) ['Revela 1 carta de Cheer amarilla de tu mazo de Cheers y envíala a esta Holomen. Luego baraja tu mazo de Cheers.', 'Revela 1 carta de cheer amarilla de tu mazo de cheer y envíala a esta Holomen. Luego baraja tu mazo de cheer.', 'Revela 1 carta de Cheer amarilla de tu mazo de Cheer y envíala a esta Holomen. Luego baraja tu mazo de Cheer.']
+  '相手のコラボホロメンに特殊ダメージ20を与える。'
+    NEW  'Inflige 20 de daño especial al HoloMiembro de Colaboración de tu oponente.'
+    OLD  (8 different) ['Inflige 20 de daño especial al Holomen de colaboración del oponente.', 'Inflige 20 de daño especial al Holomem colaborativo del oponente.', 'Inflige 20 de daño especial al miembro colaborador del oponente.']
+  '自分のアーカイブのエール1枚をこのホロメンに送れる。'
+    NEW  'Puedes unir a este HoloMiembro 1 carta de Cheer de tu Archivo.'
+    OLD  (6 different) ['Puedes enviar 1 carta de Aile de tu archivo a esta holomen.', 'Puedes enviar 1 carta de Apoyo de tu archivo a este holomem.', 'Puedes enviar 1 carta de Aplauso desde tu archivo a este Holomen.']
+  'このホロメンが相手のホロメンをダウンさせた時、自分のデッキの上から1枚をホロパワーにする。その後、自分のホロパワーを見る。その中から1枚を公開し、手札に加える。そしてホロパワーをシャッフルする。'
+    NEW  'Cuando este HoloMiembro deja Fuera de combate a un HoloMiembro de tu oponente, pon la carta superior de tu mazo en tu HoloPower. Después, mira tu HoloPower. Revela 1 carta de entre ellas y añádela a tu mano. Luego, baraja tu HoloPower.'
+    OLD  (5 different) ['Cuando esta Holomen hace que la Holomen de tu oponente quede fuera, convierte la carta superior de tu mazo en Holopoder. Luego mira tu Holopoder. Elige 1 carta entre ellas, muéstrala y añádela a tu mano, y después baraja tu Holopoder.', 'Cuando esta Holomem derriba a una Holomem del oponente, convierte la carta superior de tu mazo en Holo Power. Después, mira tus Holo Power. Elige 1 de ellas, revélala y añádela a tu mano. Luego baraja tus Holo Power.', 'Cuando esta Holomem derribe a la Holomem del oponente, convierte la carta superior de tu mazo en Holo Power. Luego mira tu Holo Power, revela 1 de ellas, agrégala a tu mano y finalmente baraja tu Holo Power.']
+  '[センターポジション限定][ターンに1回]自分のメインステップで、このホロメンに〈35P〉が付いている時、サイコロを1回振れる:3か5の時、このターンの間、このホロメンのアーツ+50。'
+    NEW  '[Solo Posición Central][1 vez por turno] Durante tu Paso Principal, si este HoloMiembro tiene unido 〈35P〉, puedes lanzar un dado 1 vez: si sacas 3 o 5, durante este turno, las Arts de este HoloMiembro +50.'  [masked: ['35P']]
+    OLD  (5 different) ['[Solo en la posición central][Una vez por turno] Durante tu paso principal, si este Holomen tiene una〈35P〉asociada, puedes lanzar un dado una vez: si sale 3 o 5, este turno los Arts de este Holomen obtienen +50.', '[Solo en Posición Central][Una vez por turno] Durante tu Paso Principal, si esta Holomen tiene un〈35P〉unido, puedes lanzar un dado una vez: si sale 3 o 5, durante este turno, el Arts de esta Holomen obtiene +50.', '[Solo en posición central][Una vez por turno] Durante tu paso principal, si este Holomen tiene una〈35P〉unida, puedes lanzar un dado una vez: si sale 3 o 5, este Holomen gana +50 a sus Arts hasta el final del turno.']
+
+--- keyword_name ---
+  '大好きな君に届くように'
+    NEW  'Para que llegue hasta ti, a quien tanto quiero'
+    OLD  (3 different) ['Para que mis sentimientos lleguen a ti, que tanto quiero', 'Para que llegue a ti, mi persona favorita', 'Para que mi amor llegue a ti']
+  '出動！ ドタバタ大空警察!!'
+    NEW  '¡En acción! ¡¡La alocada policía Oozora!!'  [masked: ['大空']]
+    OLD  (3 different) ['出動！ ドタバタ大空警察!!', '¡Despliegue! ¡Caótica Policía de Ōzora!!', '¡En acción! ¡La Caótica Policía Oozora!!']
+  'まだまだいくよー！'
+    NEW  '¡Aún falta mucho, vamos!'
+    OLD  (3 different) ['¡Todavía puedo seguir!', '¡Aún podemos seguir!', 'まだまだいくよー！']
+  'ホロライブの狂犬'
+    NEW  'La perra rabiosa de hololive'
+    OLD  (3 different) ['Perro loco de hololive', 'Perra loca de hololive', 'Perra loca de Hololive']
+  'いやっほー！ みんな元気？'
+    NEW  '¡Yujuu! ¿Todos con ánimos?'
+    OLD  (3 different) ['¡Yahoj! ¿Todos bien?', '¡Yahhoo! ¿Todos con energía?', '¡Yahhoo! ¿Todos bien?']
+  'みんなと一緒！'
+    NEW  '¡Junto a todos!'
+    OLD  (3 different) ['¡Juntos con todos!', '¡Con todos!', '¡Junto a todos!']
+
+--- skill_effect ---
+  '[ターンに1回]このターンの間、自分の青ホロメン1人のアーツ+20。'
+    NEW  '[Una vez por turno] Durante este turno, las Arts de 1 de tus HoloMen azules +20.'
+    OLD  (11 different) ['[Una vez por turno] Durante este turno, un miembro azul Holomen que controles obtiene +20 de Artes.', '[Una vez por turno] Durante este turno, un Holomem azul propio obtiene +20 de Arts.', '[Una vez por turno] Durante este turno, el Arts de uno de tus holomen azules gana +20.']
+  '[ゲームに1回]自分のデッキから、青ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Una vez por partida] Revela 1 HoloMen azul de tu mazo y añádelo a tu mano. Después, baraja tu mazo.'
+    OLD  (11 different) ['[Una vez por partida] Revela 1 carta de miembro azul Holomen de tu mazo, añádela a tu mano y luego baraja tu mazo.', '[Una vez por partida] Revela 1 Holomem azul de tu mazo, añádelo a tu mano y luego baraja el mazo.', '[Una vez por partida] Revela 1 carta de holomen azul de tu mazo, añádela a tu mano y luego baraja tu mazo.']
+  '[ターンに1回]このターンの間、自分の紫ホロメン1人のアーツ+20。'
+    NEW  '[Una vez por turno] Durante este turno, las Arts de 1 de tus HoloMen morados +20.'
+    OLD  (11 different) ['[Una vez por turno] Durante este turno, uno de tus Holomen púrpura obtiene +20 de Artes.', '[Una vez por turno] Durante este turno, un miembro Holo púrpura propio obtiene +20 de Arts.', '[Una vez por turno] Durante este turno, un miembro holo de color púrpura de tu lado gana +20 de Artes.']
+  '[ゲームに1回]自分のデッキから、赤ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Una vez por partida] Revela 1 HoloMen rojo de tu mazo y añádelo a tu mano. Después, baraja tu mazo.'
+    OLD  (12 different) ['[Una vez por partida] Revela 1 carta de Holomen roja de tu mazo, añádela a tu mano y luego baraja tu mazo.', '[Una vez por partida] Muestra 1 carta de Holomen roja de tu mazo y añádela a tu mano. Luego baraja tu mazo.', '[Una vez por partida] Revela una carta de Holomen rojo de tu mazo y agrégala a tu mano. Luego baraja tu mazo.']
+  '[ゲームに1回]自分のデッキから、黄ホロメン1枚を公開し、手札に加える。そしてデッキをシャッフルする。'
+    NEW  '[Una vez por partida] Revela 1 HoloMen amarillo de tu mazo y añádelo a tu mano. Después, baraja tu mazo.'
+    OLD  (11 different) ['[Una vez por partida] Revela una carta de Holomen amarilla de tu mazo y añádela a tu mano. Luego baraja tu mazo.', '[Una vez por partida] Revela 1 Holomen amarillo de tu mazo, agrégalo a tu mano y luego baraja tu mazo.', '[Una vez por partida] Muestra una carta de Holomem amarilla de tu mazo, añádela a tu mano y luego baraja tu mazo.']
+  '[ターンに1回]このターンの間、自分の緑ホロメン1人のアーツ+20。'
+    NEW  '[Una vez por turno] Durante este turno, las Arts de 1 de tus HoloMen verdes +20.'
+    OLD  (11 different) ['[Una vez por turno] Durante este turno, un miembro verde de Holomen que controles obtiene +20 a sus Artes.', '[Una vez por turno] Durante este turno, uno de tus Holomen verdes obtiene +20 de Artes.', '[Una vez por turno] Durante este turno, un Holomen verde tuyo obtiene +20 a Artes.']
+
+--- skill_name ---
+  'ぶーん、バリバリバリバリ'
+    NEW  'BZZZ, CRACK CRACK CRACK CRACK'
+    OLD  (3 different) ['Buun, baribari baribari', 'Buun, Baribaribaribari', 'Buun, baribaribaribari']
+  'ホワイトエンハンス'
+    NEW  'Potenciación Blanca'
+    OLD  (3 different) ['White Enhance', 'Mejora Blanca', 'ホワイトエンハンス']
+  'ブルーエンハンス'
+    NEW  'Potenciación Azul'
+    OLD  (4 different) ['Blue Enhance', 'ブルーエンハンス', 'Mejora Azul']
+  'パープルエンハンス'
+    NEW  'Potenciación Púrpura'
+    OLD  (4 different) ['Mejora Púrpura', 'Purple Enhance', 'パープルエンハンス']
+  'イエローエンハンス'
+    NEW  'Potenciación Amarilla'
+    OLD  (3 different) ['Mejora Amarilla', 'Yellow Enhance', 'イエローエンハンス']
+  'レッドエンハンス'
+    NEW  'Potenciación Roja'
+    OLD  (3 different) ['Red Enhance', 'レッドエンハンス', 'Mejora Roja']
+
+--- skill_timing ---
+  'ターンに1回'
+    NEW  'Una vez por turno'
+  'ゲームに1回'
+    NEW  'Una vez por partida'
+
+--- tag ---
+  '#絵'
+    NEW  '#Art'  [masked: ['#絵']]
+  '#JP'
+    NEW  '#JP'  [masked: ['#JP']]
+  '#ケモミミ'
+    NEW  '#Animal Ears'  [masked: ['#ケモミミ']]
+  '#EN'
+    NEW  '#EN'  [masked: ['#EN']]
+  '#歌'
+    NEW  '#Singing'  [masked: ['#歌']]
+  '#ID'
+    NEW  '#ID'  [masked: ['#ID']]
+
+  es: 62/62 translated, 0 rejected, 1 left Japanese, 54 replaced multiple old variants
+  tokens: 6,029 in / 1,530 out
+
+==============================================================================
+SUMMARY
+==============================================================================
+  tc: 62/62 ok, 0 rejected, 0 left Japanese, 54 consolidated, 7,318 tokens
+  en: 62/62 ok, 0 rejected, 0 left Japanese, 53 consolidated, 7,504 tokens
+  ko: 62/62 ok, 0 rejected, 0 left Japanese, 54 consolidated, 7,667 tokens
+  id: 62/62 ok, 0 rejected, 0 left Japanese, 54 consolidated, 7,374 tokens
+  th: 62/62 ok, 0 rejected, 3 left Japanese, 54 consolidated, 7,611 tokens
+  es: 62/62 ok, 0 rejected, 1 left Japanese, 54 consolidated, 7,559 tokens
+
+  total: 45,033 tokens

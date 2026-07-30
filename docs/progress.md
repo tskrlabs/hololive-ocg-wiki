@@ -16,18 +16,42 @@ fixed it. The reason it survived a whole phase is the part worth keeping: all 44
 targeted pure functions, so a prop that was never passed was invisible to `make check`,
 and `make dev`'s 34-card fixture set is too small to ever produce a second page. Web tests
 now include a mounted component; local QA of pagination still requires pointing the dev
-server at the deployed Worker. See [F-019](./findings.md#f-019).
+server at the deployed Worker. See [F-019](./archive/findings.md#f-019).
 
 ℹ️ **`noindex` is the sole indexing guard until Phase 7**, by decision. Cloudflare's
 zone-level managed `robots.txt` prepends `Allow: /` above ours; the maintainer accepted
 that rather than change a zone setting mid-phase. It resolves itself at Phase 7 when our
-rule flips to `Allow` too. See [F-017](./findings.md#f-017).
+rule flips to `Allow` too. See [F-017](./archive/findings.md#f-017).
 
 **Phase 5's design is recorded.** Sixteen decisions, in
-[ADR 0006](adr/0006-website.md) with the full interview in
-[`phase-5-grilling.md`](./phase-5-grilling.md). **Phase 6's** is fifteen decisions, in
-[ADR 0007](adr/0007-push-to-deploy.md) and
-[`phase-6-grilling.md`](./phase-6-grilling.md).
+[ADR 0006](adr/0006-website.md). **Phase 6's** is fifteen decisions, in
+[ADR 0007](adr/0007-push-to-deploy.md).
+
+## ✅ The translation rework is done — not yet deployed
+
+All six locales are re-translated through a content-addressed cache. **Divergence is
+zero** on every name field in every locale — not reduced, but *unrepresentable*: one
+source string has one cache slot, so two cards printing the same Japanese cannot
+disagree. That closes [#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20) and
+[#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21).
+
+Twelve decisions, in [ADR 0008](adr/0008-content-addressed-translations.md), which
+supersedes ADR 0002's cache key. Execution tracked in
+[#23](https://github.com/tskrlabs/hololive-ocg-wiki/issues/23); the design is in
+[`translation-rework-plan.md`](./translation-rework-plan.md).
+
+Cost: 1,493,321 tokens, ~356k points, **0 failures**. 204 API calls for a full cold run
+against 14,778 under the old per-card scheme.
+
+⚠️ **Nothing is published or seeded.** `cards.json` carries the new translations; R2 and
+D1 still serve the old ones. The live site is unchanged until `holo-data publish` and
+`holo-data seed --confirm` run.
+
+⚠️ **The tag filter is broken in production and fixed only locally.** `filter-options`
+shipped `#`-prefixed values against a junction table holding unprefixed ones, so **every
+tag returned zero cards, in every locale**
+([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)). The corrected artifact
+reaches production on the next publish.
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -62,8 +86,47 @@ copy and is authoritative if they disagree.
 - Free Cloudflare tiers only. A paid service is a decision, not an assumption.
 - Each phase is grilled before it is built. The decisions in `v2-plan.md` §4 are settled;
   if implementing one shows it was wrong, say so and propose the change.
-- Data anomalies that need a human eye go in [`findings.md`](./findings.md), not into a
-  fix. Anything unambiguously broken with an obvious fix gets fixed and logged.
+- **Surprises go to the issue tracker, not into a file.** Needs a maintainer judgement →
+  a GitHub issue (`needs-triage`). Broke while fixing something else → an issue
+  (`ready-for-agent`). Now *understood* → the code comment, test docstring, or ADR it
+  explains. Anything unambiguously broken with an obvious fix still gets fixed on the
+  spot. [`docs/archive/findings.md`](./archive/findings.md) is the closed phases-0–6
+  record; 80 code comments cite its IDs, so it stays, but nothing is appended.
+
+## Open questions
+
+Tracked as **GitHub issues**, not in this repo. `gh issue list --state open` is the live
+view; this table is the offline copy.
+
+| # | what | label |
+|---|---|---|
+| [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) | Cloudflare's managed `robots.txt` inverts our `Disallow` | `ready-for-human` `phase-7` |
+| [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface — *proper nouns now have one; arbitrary fields do not* | `ready-for-human` `phase-7` |
+| [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
+| [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
+| [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
+| [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29) | The card list has no names, so the show-original toggle has nothing to act on | `ready-for-human` |
+
+✅ **#20 and #21 are closed** by the translation rework — see
+[ADR 0008](adr/0008-content-addressed-translations.md). ✅ **#26 is closed** (the tag
+filter returned zero cards for every tag), fixed locally and awaiting a publish.
+
+✅ **#16 is closed** — it was the only urgent one. `holo-data build` produces 2,463 cards
+with zero failures again, so a card-set refresh is possible. See
+[the pipeline section](#phase-1--the-pipeline) for the new `transform` command.
+
+✅ **#19 is closed** — the `unknown` card-type valve now blocks like the other three
+enums. Grilling it found two premises of the issue were false: `--allow-unknown-enums`
+had **never worked** (`build` discarded the flag on a length check that is true exactly
+when a card fails validation, untested since Phase 0), and no report could name the
+offending value, because the sentinel replaces the site's string and throws it away. Both
+were fixed first — the escape hatch now drops the bad cards and ships the rest, and
+`holo-data transform` prints the source value — which is what made blocking cheap enough
+to choose. See [the pipeline section](#phase-1--the-pipeline).
+
+The remaining five are judgement calls with no deadline; two resolve at launch. Everything
+settled during phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which
+is closed.
 
 ## What exists now
 
@@ -78,7 +141,7 @@ content/           info.json — editorial site copy, uploaded by publish
 fixtures/          34 cards + fixtures.sql + artifacts/ — credential-free local dev (D12)
 docs/adr/          decisions made during execution
 docs/infra.md      the Cloudflare runbook — what exists and which command made it
-docs/findings.md   data anomalies awaiting maintainer review
+docs/archive/findings.md   data anomalies awaiting maintainer review
 CONTRIBUTING.md    what needs credentials and what does not (Phase 6)
 Makefile           `make check` — the single verification entry point
 ```
@@ -111,9 +174,14 @@ Key decisions — full reasoning in [ADR 0001](adr/0001-card-contract-generation
   test asserts byte identity across 34 cards × 7 locales
 - Generated output is **committed**, so a frontend contributor needs no Python toolchain.
   `make check` fails if it is stale
-- Closed enums, collect-and-report validation, `--allow-unknown-enums` escape hatch
+- Closed enums, collect-and-report validation, `--allow-unknown-enums` escape hatch —
+  which **had never worked** and was repaired by
+  [#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19); it now drops the
+  offending cards and ships the rest, and `publish`/`seed` refuse the short artifact
 - snake_case everywhere
-- Colours modelled **as-is** — see [F-007](./findings.md#f-007)
+- Colours modelled **as-is** — the source's two encodings kept, not normalised. F-007 has
+  since confirmed the cards are printed identically, so normalising is now open rather
+  than ruled out; see [F-007](./archive/findings.md#f-007)
 - Storage annotations (`Column`/`Blob`/`FullText`) recorded now, DDL emitted in Phase 3
 
 Drift this removed: `HR` rarity missing from the TS union (24 cards unfilterable in the
@@ -121,15 +189,60 @@ live UI), `unknown` card type missing, `oshi_skill.cost` declared in three files
 present in data, `special_values` typed `string[]` when it is `number[]`, and
 `CARD_BLOOM_LEVELS` using `1st`/`2nd` against the data's `first`/`second`.
 
+The `unknown` card type has **since been removed from the contract**
+([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) — not a reversal of the
+drift fix, but a stronger answer to it: an unclassifiable card now stops the build rather
+than shipping with a name for its own unclassifiability.
+
 ## Phase 1 — the pipeline
 
 v1's 9 numbered scripts are now a `pipeline/` module with one `holo-data` CLI.
 
 ```
-holo-data scrape / images / translate / build / verify / status   ← working
+holo-data scrape / transform / images / translate / build / verify / status  ← working
 holo-data publish / verify-images / migrate-images                 ← Phase 2
 holo-data seed                                                     ← Phase 3 stub
 ```
+
+**`transform` re-runs `cards_structured.json` → `cards_i18n.json` without re-scraping**
+([#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16)). `scrape` always ran the
+transform as its final step, so before this the only supported repair after a contract
+change was re-fetching 2,464 pages from a small operator's site. That is not
+hypothetical — dropping `cost_count` from the contract left a stale `cards_i18n.json`
+that failed `build` on 1,991 arts, against scraped data that was perfectly fine.
+
+### What happens when the site prints something new (#19)
+
+The three commands now answer this together, which is
+[#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)'s whole subject. Before
+it, an unrecognised **card type** was absorbed: the card validated, shipped, was excluded
+from every deck section, and nothing counted or printed it. The other three enums blocked.
+
+```
+holo-data transform   ⚠ 1 card(s) carry a value no mapping covers:
+                          card_type   サポート・新種別
+                                        1 card(s): 2480
+holo-data build       ✗ build failed — nothing written
+                        (add the mapping, or:)
+holo-data build --allow-unknown-enums
+                      ✓ wrote cards.json — 2462 cards, 1 dropped
+                      ⚠ publish and seed will refuse it
+```
+
+Three things had to be true for blocking to be the right answer, and only one was:
+
+- **`--allow-unknown-enums` had never worked.** `build()` honoured the flag and then
+  discarded the result on a length check true exactly when a card fails validation. It
+  had no test, and F-008 had reasoned that blocking was cheap *because this existed*.
+- **Nothing could name the offending value.** The sentinel replaces what the site printed
+  and discards it, so `build` reports the values we accept — never `サポート・新種別`.
+- The absorption itself was deliberate, and stayed deliberate; what was missing was the
+  census.
+
+So the fix runs in that order: repair the hatch, make `transform` name the value, then
+narrow the enum. A dropped card is recorded in `cards.json` and refused by both `publish`
+and `seed` with no override flag — the escape hatch unblocks `build` alone and never
+reaches the site (D4: gates are facts, not ceremony).
 
 Key decisions — full reasoning in
 [ADR 0002](adr/0002-field-level-translation-cache.md):
@@ -185,7 +298,14 @@ Recorded in the ADRs; listed here so they are not missed.
 | **Phase 5 status page** | v2's `status.json` dropped `skipped[]` and `source.valid` and is snake_case throughout, so `/status` **cannot be ported unchanged**. Ported adapted; the Skipped tab has no data source in v2 and is dropped |
 | **v2-plan §7** | The SEO decision stays deferred — which means Phase 5 must **actively block indexing** to keep it deferrable |
 | **Phase 6 done-when** | "fresh clone runs with zero CF creds" was already true and **still failed the intent**: `make dev` needed a *Python toolchain* to generate the R2 artifacts. Met by **committing** them (`fixtures/artifacts/`, 64 KB), extending ADR 0001's rule from the contract to the fixtures ([ADR 0007](adr/0007-push-to-deploy.md)) |
-| **D14** | "a `corrections/` overlay makes a translation fix a reviewable PR" — ADR 0002 replaced the mechanism with cache entries but the cache is **gitignored**, so no reviewable surface exists. A fix goes through an issue. Logged as [F-018](./findings.md#f-018), not closed |
+| **D14** | "a `corrections/` overlay makes a translation fix a reviewable PR" — ADR 0002 replaced the mechanism with cache entries but the cache is **gitignored**, so no reviewable surface exists. A fix goes through an issue. Logged as [F-018](./archive/findings.md#f-018), not closed |
+| **Phase 0 contract** | `TranslatedArt.value` is **dropped**. v2 has no path that writes it — a stray key on 4 `tc` arts in v1's data, caused by the translation prompt's own 「只翻譯 value」 wording. `localize()` never emitted it, so the golden files are byte-identical across the removal ([F-003](./archive/findings.md#f-003)) |
+| **Fixture corpus** | ~~`fixtures/cards.json` is generated but **both its generators fail today**~~ — **fixed**, [#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16). F-002 dropped `cost_count` and hand-edited the corpus rather than regenerating, leaving `make fixtures` broken on 1,715 cards and `holo-data build` on 1,991 arts, with `make check` running neither. New `holo-data transform` repairs derived data without re-scraping; the corpus now selects from `holo-data build` output; `v1_adapter.py` is deleted |
+| **Phase 1 pipeline** | `scrape → images → translate → build` gains a **`transform`** rung. `scrape` always ran the transform as its last step, so the only supported repair after a contract change was re-fetching 2,464 pages from a small operator's site ([#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16)) |
+| **Fixture corpus** | Merge rule 2 (arts pair by index, tolerating a short list) is covered by a **synthetic fixture**, card `9000001`. F-004 warned repointing the generator would lose the coverage; the census found it worse — **zero** of 2,463 cards have an arts-length mismatch in any locale, so no real card can cover a rule that still runs in production in two languages |
+| **Phase 0 contract** | `"unknown"` is **no longer a `card_type_code`** ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)). ADR 0001 modelled it as legitimate so the build would not fail on cards we already ship; it was the pipeline's fallback in four enums but a member of only this one, so an unmapped value blocked the build in three fields and shipped silently in the fourth — into no deck section, counted by nothing. All four now behave identically |
+| **ADR 0001 §4** | `--allow-unknown-enums` **had never worked** — `build()` honoured the flag then discarded the result on a `len(validated) != len(cards)` check that is true exactly when a card fails validation, untested since Phase 0. Its documented promise ("publishes anyway") was also unimplementable against closed `Literal`s: such a card cannot be constructed. It now **drops** those cards, records their ids in `CardCollection.dropped`, and `publish`/`seed` refuse a non-empty list with no override ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) |
+| **Phase 1 pipeline** | `transform` now reports the **source values no mapping covers**. The sentinel discards what the site printed, so every downstream error could name only the values we accept — an operator got `Input should be 'debut', 'first', 'second' or 'spot'` and a card id, never `超進化`. Two lookups that *omit* rather than substitute (skill timing, keyword type) are reported too: they fail nothing, so the card ships with no timing badge or no keyword at all ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) |
 
 ## Phase 2 — R2 publish
 
@@ -373,8 +493,13 @@ npx wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtu
 Or just `make check-api`, which does both and then exercises every endpoint.
 
 `fixtures.sql` is committed and generated from the 34 fixture cards — every card type,
-every rarity, all 9 colours, all 7 locales, 546 Q&A items. No token, no network, no
+every rarity, all 9 colours, all 7 locales, 539 Q&A items. No token, no network, no
 Python. `seed` is deliberately not involved: it only ever writes to production.
+
+33 of the 34 are real cards selected from `holo-data build` output; **one is synthetic**
+(`9000001`), carrying the only remaining cover for `localize()`'s short-arts merge rule
+([#16](https://github.com/tskrlabs/hololive-ocg-wiki/issues/16)). It appears in local dev
+with an image that does not resolve, which is itself worth seeing.
 
 Done when `seed --dry` reports the estimate above, production D1 is populated, and a
 second `seed` writes nothing.
@@ -403,12 +528,12 @@ were blockers:
 3. **Raw input crashes FTS5** — `a AND`, `-x` and a bare `"` are syntax errors. Every
    query is now wrapped as a literal phrase, so they return 200 with zero hits.
 4. **The `name` filter was broken in v1**: 41% of characters are spelled inconsistently
-   across their own cards ([F-015](findings.md#f-015)). It keys on `name_ja` now.
+   across their own cards ([F-015](archive/findings.md#f-015)). It keys on `name_ja` now.
 5. **`apps/web/` does not exist**, so the phase's own done-when was unmeetable. Scope
    became API-only.
 
 **A sixth turned up while building:** v1's colour filter silently omits fused
-dual-colour cards ([F-016](findings.md#f-016)). Filtering `blue` misses the 5 `blue_red`
+dual-colour cards ([F-016](archive/findings.md#f-016)). Filtering `blue` misses the 5 `blue_red`
 cards, because `LIKE '%"blue"%'` does not match `"blue_red"`. The Worker expands the
 filter instead of the storage.
 
@@ -432,8 +557,7 @@ correct and worth keeping. Commands are in [Phase 5](#phase-5--the-website).
 
 ## Phase 5 — the website
 
-Full reasoning in [ADR 0006](adr/0006-website.md); the complete interview, including
-every option rejected, in [`phase-5-grilling.md`](./phase-5-grilling.md).
+Full reasoning in [ADR 0006](adr/0006-website.md).
 
 **The grilling found three holes, all of them gaps *between* phases rather than bugs
 inside one:**
@@ -460,7 +584,7 @@ inside one:**
 | 8 | `assets` binding + SPA fallback + `run_worker_first` | ✅ built, rehearsed |
 | — | **deploy to workers.dev** | ✅ done — verified against 2,448 cards |
 | — | **attach the custom domain** | ✅ done — live at `hololive-ocg-wiki.tskrlabs.com` |
-| — | Cloudflare's managed `robots.txt` conflict | 🔍 accepted, deferred to Phase 7 — [F-017](./findings.md#f-017) |
+| — | Cloudflare's managed `robots.txt` conflict | 🔍 accepted, deferred to Phase 7 — [F-017](./archive/findings.md#f-017) |
 
 **Candidate 02 arrived early, by necessity.** The empty-filter literal was written out
 five times in v1, each a hand-maintained list of every colour, card type, rarity and bloom
@@ -608,7 +732,7 @@ D2's whole point. Verified: `/tc/` 200, `/api/health` ok, SPA fallback on an unk
 code, `noindex` meta present.
 
 **It turned up one thing local rehearsal could not** — a zone-level Cloudflare setting
-rewrites what the Worker appears to serve. See [F-017](./findings.md#f-017): the managed
+rewrites what the Worker appears to serve. See [F-017](./archive/findings.md#f-017): the managed
 `robots.txt` prepends `User-agent: * / Allow: /` above our `Disallow: /`. Accepted and
 deferred; `noindex` carries the guard alone until Phase 7, when the conflict resolves
 itself.
@@ -640,8 +764,7 @@ Two things to know when Phase 6 arrives:
 
 ## Phase 6 — push-to-deploy
 
-Full reasoning in [ADR 0007](adr/0007-push-to-deploy.md); the interview, including every
-rejected option, in [`phase-6-grilling.md`](./phase-6-grilling.md).
+Full reasoning in [ADR 0007](adr/0007-push-to-deploy.md).
 
 Three things, in the order they depend on each other: make the deploy reproducible from a
 clean checkout, close the last gap between "fresh clone" and "working site", then write
@@ -719,7 +842,7 @@ Verified with a `python3` shim that exits 127: local R2 seeding still succeeds.
 - **`LICENSE`** — Apache-2.0, matching v1. Without it, "public at Phase 7" means
   all-rights-reserved, which would contradict a `CONTRIBUTING.md` inviting contributions.
   Code only; card data and art stay Cover Corp.'s under the Derivative Works Guidelines.
-- **[F-018](./findings.md#f-018)** — writing the above surfaced that D14 promised
+- **[F-018](./archive/findings.md#f-018)** — writing the above surfaced that D14 promised
   translation fixes as a reviewable PR, and ADR 0002 replaced the mechanism without
   replacing that property: the cache is gitignored, so there is no file to edit. Logged,
   not fixed — closing it is pipeline design work, and the repo is private until Phase 7.
@@ -754,5 +877,12 @@ Was two; the rehearsal added a third.
 | switch | where | why it is off now |
 |---|---|---|
 | `NUXT_PUBLIC_LAUNCHED=true` | build variable | flips indexing **and** analytics together |
-| `workers_dev: false` | `wrangler.jsonc` | kept while [F-017](./findings.md#f-017) is open — comparing the two origins is the only way that bug is visible |
+| `workers_dev: false` | `wrangler.jsonc` | kept while [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) is open — comparing the two origins is the only way that bug is visible |
 | repo public + v1 archived | GitHub | v2-plan §7 |
+
+Two open issues are gated on this phase and close with it:
+[#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) (the managed `robots.txt`
+conflict resolves itself once our own rule flips to `Allow`) and
+[#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) (a translation fix needs a
+reviewable surface once the repo is public and outside contributors exist). Archiving v1
+also retires [F-014](./archive/findings.md#f-014)'s standing read-tier failure mode.

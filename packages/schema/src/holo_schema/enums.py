@@ -46,20 +46,36 @@ use, not at some edge.
 # --- Card type ---------------------------------------------------------------
 #
 # 13 distinct values across 2,448 cards, plus `supportStaff` (see below). v1's
-# `types/card.ts` listed only 12 — it was missing "unknown", which the scraper writes
-# when it cannot classify a card. It stays a legitimate, documented member: the scraper
-# degrading gracefully beats it crashing, and modelling it means `holo-data build` does
-# not fail on cards we already ship.
+# `types/card.ts` listed only 12.
 #
-# `supportStaff` was added in Phase 1. The two cards that carry "unknown" in v1's live
+# `supportStaff` was added in Phase 1. The two cards that carried "unknown" in v1's live
 # data (both hBP07-091, ライブスタッフ / "Live Staff") are `サポート・スタッフ` — a real
 # card type that was simply missing from the pipeline's mapping table, so it fell through
-# to the placeholder. See docs/findings.md F-001.
+# to the placeholder. See docs/archive/findings.md F-001.
 #
-# `support` and `supportLocation` are deliberately NOT members: the pipeline can emit
-# them but no card has ever used them, so admitting them would mean shipping enum values
-# with no evidence behind them. If a Location card ever appears, `build` fails loudly —
-# which is the intended behaviour for a genuinely new card type.
+# **"unknown" is deliberately NOT a member**, as of issue #19. It was one until then, on
+# the reasoning that a scraper degrading gracefully beats it crashing — but the pipeline
+# writes it as the fallback at eight sites across four enums, and this was the only enum
+# that accepted it. So the same event, the site printing a value we have no mapping for,
+# stopped the build in three fields and shipped silently in the fourth. The absorbing
+# card was then excluded from every deck section (see the deck sections below) with
+# nothing counting, printing or alerting on it: not merely unmonitored but silent, with
+# no baseline anyone would notice moving.
+#
+# That is F-001's own shape. Those two ライブスタッフ cards sat in v1's live database as
+# `unknown` from the day they shipped and were found by a census run by hand during the
+# v2 port, not by anything the pipeline said.
+#
+# Graceful degradation is still available, but it is now a thing the operator chooses
+# rather than a thing that happens quietly: `holo-data transform` names the source value
+# the site printed, and `build --allow-unknown-enums` ships the rest without it. That
+# artifact records what it dropped and `publish`/`seed` refuse it, so the escape hatch
+# unblocks `build` alone and never reaches the site.
+#
+# `support` and `supportLocation` are NOT members for a related reason: the pipeline can
+# emit them but no card has ever used them, so admitting them would mean shipping enum
+# values with no evidence behind them. If a Location card ever appears, `build` fails
+# loudly — which is now what happens for *any* unrecognised type, not just that one.
 #
 # `rulesNotice` was added by the 2,464-card data refresh, and it is not a card. The
 # official site publishes format-legality notices *into the card list*: id 2459
@@ -73,7 +89,7 @@ use, not at some edge.
 # store: the same update added 「【使用可能カード】セレクションカップ」 to ~660 existing
 # cards' `card_sets`, and this notice is the only place the site explains what that
 # means. A deck simulator needs exactly this record to answer "is this deck legal for
-# this format?". See docs/findings.md F-020.
+# this format?". See docs/archive/findings.md F-020.
 
 CardTypeCode = Literal[
     "buzzCharacter",
@@ -90,15 +106,15 @@ CardTypeCode = Literal[
     "supportStaff",
     "supportStaffLimited",
     "supportTool",
-    "unknown",
 ]
 
 CARD_TYPE_VALUES: tuple[CardTypeCode, ...] = get_args(CardTypeCode)
 
 # Types that are not playable cards. Named rather than compared inline so every
 # consumer asks one question — the deck sections below, counts, and any future
-# format-legality check. `unknown` is NOT here: it is an unclassified *card*, which is a
-# scraper gap to fix, whereas a rules notice is correctly classified as a non-card.
+# format-legality check. A rules notice is *correctly classified* as a non-card, which
+# is what distinguishes it from a card we failed to classify — and the latter no longer
+# reaches the contract at all (#19).
 NON_CARD_TYPES: tuple[CardTypeCode, ...] = ("rulesNotice",)
 
 
@@ -109,11 +125,16 @@ NON_CARD_TYPES: tuple[CardTypeCode, ...] = ("rulesNotice",)
 # deck rules derive from the same enum as everything else (see architecture review
 # Candidate 03, Phase 5).
 #
-# Note "unknown" is deliberately absent from all three: an unclassified card cannot be
-# routed to a section, and silently dropping it into MAIN would be a guess. `rulesNotice`
-# is absent for a stronger reason — it is not a card at all (NON_CARD_TYPES), so no
-# section can ever hold it. Leaving it out here is what makes the deck builder
-# structurally unable to add it, rather than relying on every consumer to filter.
+# `rulesNotice` is deliberately absent from all three: it is not a card at all
+# (NON_CARD_TYPES), so no section can ever hold it. Leaving it out here is what makes the
+# deck builder structurally unable to add it, rather than relying on every consumer to
+# filter.
+#
+# "unknown" used to be absent for a weaker version of the same reason — an unclassified
+# card cannot be routed, and dropping it into MAIN would be a guess. That is now moot:
+# the value is not in the enum, so such a card never reaches the site to be routed (#19).
+# This left `rulesNotice` as the only type in no section, which is why the deck tests
+# exercise the null path with it.
 
 OSHI_CARD_TYPES: tuple[CardTypeCode, ...] = ("oshiCharacter",)
 
@@ -162,18 +183,24 @@ RARITY_VALUES: tuple[RarityCode, ...] = get_args(RarityCode)
 
 # --- Colour ------------------------------------------------------------------
 #
-# 9 distinct values. `blue_red` and `white_green` are *fused dual-colour symbols* as
-# printed on the card, not shorthand for a two-element array — the game renders each
-# as a single icon (public/icons/type_blue_red.webp is a distinct 4.2 KB asset, vs
-# ~20 KB for each single-colour icon).
+# 9 distinct values. `blue_red` and `white_green` are the source's single-token spelling
+# of a dual-colour card: `["blue_red"]` (5 FUWAMOCO cards), `["white_green"]` (2 SorAZ
+# cards) and `["red", "blue"]` (3 miComet cards) all occur in the data.
 #
-# This matters because the data contains BOTH `["blue_red"]` (5 FUWAMOCO cards) and
-# `["red", "blue"]` (3 miComet cards). They are different things: one card bears one
-# fused symbol, the other bears two separate symbols. Normalising the fused codes into
-# arrays would render two icons and a comma where the card shows one icon.
+# These are NOT different printings. F-007 checked all three against the card images:
+# every one prints the same form, two separate badges on a gold ribbon. The split is an
+# artifact of the source HTML — FUWAMOCO and SorAZ get one <img alt="青赤"> of a
+# pre-composited pair, miComet gets two separate <img> tags. `type_blue_red.png` is
+# itself a picture of two badges, not a fused emblem, and its small file size is a
+# low-resolution export (88x108 vs 330x410 for `white_green`, which is equally "fused"),
+# not evidence of a simpler symbol. See F-023.
 #
-# Consequence for Phase 4: a "red" filter must also match fused codes containing red.
-# That is a query-layer rule, deliberately not a contract-layer one.
+# So normalising the two codes into arrays is defensible and would retire the query-layer
+# expansion below. It is not done: it touches a populated D1 column, the seeder, the
+# Worker and F-016's fix, and wants its own design pass. Kept as-is until then.
+#
+# Consequence for Phase 4, while the codes remain: a "red" filter must also match fused
+# codes containing red. That is a query-layer rule, deliberately not a contract-layer one.
 #
 # "null" is the game's colourless concept (無色 / "None"), a real domain value — not a
 # serialisation accident. i18n/locales/*.json:100 translates it in all 7 languages.

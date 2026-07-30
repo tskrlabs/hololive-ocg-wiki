@@ -131,9 +131,15 @@ check "colour groups OR"           200 "/api/cards/filter?colors=blue,purple&lim
 check "groups AND"                 200 "/api/cards/filter?cardTypes=oshiCharacter&rarity=OSR&limit=1" \
   "d['total'] == 2"
 check "invalid colour"             400 "/api/cards/filter?colors=chartreuse"
-# One ja key returns every spelling of the character (F-015).
+# One ja key returns every card for the character (F-015).
+#
+# This used to assert *two different* `en` spellings — the F-015 defect pinned as a
+# fixture property, back when the filter had to key on ja precisely because the same
+# character was spelled inconsistently. #23 made one source string resolve to one
+# translation, so the spellings now agree and the count is 1. The filter still keys on
+# ja, which is what this checks; the reason it must has simply stopped being visible.
 check "name filter keys on ja"     200 "/api/cards/filter?name=%E3%81%A8%E3%81%8D%E3%81%AE%E3%81%9D%E3%82%89&locale=en" \
-  "d['total'] == 2 and len({c['name'] for c in d['cards']}) == 2"
+  "d['total'] == 2 and len({c['name'] for c in d['cards']}) == 1"
 
 echo ""
 echo "batch"

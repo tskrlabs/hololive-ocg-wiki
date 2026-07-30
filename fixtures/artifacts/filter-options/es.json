@@ -28,259 +28,259 @@
     },
     {
       "value": "うぱお",
-      "label": "うぱお"
+      "label": "Upao"
     },
     {
       "value": "ときのそら",
-      "label": "ときのそら"
+      "label": "Tokino Sora"
     },
     {
       "value": "サブパソコン",
-      "label": "サブパソコン"
+      "label": "Sub PC"
     },
     {
       "value": "スゴイパソコン",
-      "label": "スゴイパソコン"
+      "label": "Amazing PC"
+    },
+    {
+      "value": "テスト・ショートアーツ",
+      "label": "Prueba de Artes Cortas"
     },
     {
       "value": "ホロリスの輪",
-      "label": "El Círculo de Hololis"
+      "label": "Hololist Circle"
     },
     {
       "value": "ライブスタッフ",
-      "label": "ライブスタッフ"
+      "label": "Personal del directo"
     },
     {
       "value": "ロゼ隊",
-      "label": "ロゼ隊"
+      "label": "Rose-tai"
     },
     {
       "value": "七詩ムメイ",
-      "label": "七詩ムメイ"
+      "label": "Nanashi Mumei"
     },
     {
       "value": "天音かなた",
-      "label": "天音かなた"
+      "label": "Amane Kanata"
     },
     {
       "value": "姫森ルーナ",
-      "label": "姫森ルーナ"
+      "label": "Himemori Luna"
     },
     {
       "value": "小鳥遊キアラ",
-      "label": "小鳥遊キアラ"
+      "label": "Takanashi Kiara"
     },
     {
       "value": "常闇トワ",
-      "label": "常闇トワ"
+      "label": "Tokoyami Towa"
     },
     {
       "value": "星街すいせい",
-      "label": "星街すいせい"
+      "label": "Hoshimachi Suisei"
     },
     {
       "value": "星街すいせいのマイク",
-      "label": "星街すいせいのマイク"
+      "label": "Hoshimachi Suisei's Microphone"
     },
     {
       "value": "春先のどか",
-      "label": "春先のどか"
+      "label": "Harukawa Nodoka"
     },
     {
       "value": "猫又おかゆ",
-      "label": "猫又おかゆ"
+      "label": "Nekomata Okayu"
     },
     {
       "value": "癒月ちょこ",
-      "label": "癒月ちょこ"
+      "label": "Yuzuki Choco"
     },
     {
       "value": "白エール",
-      "label": "白エール"
+      "label": "White Cheer"
     },
     {
       "value": "音乃瀬奏",
-      "label": "音乃瀬奏"
+      "label": "Otonose Kanade"
     }
   ],
   "tags": [
     {
-      "value": "#0期生",
-      "label": "#0期生"
+      "value": "0期生",
+      "label": "#0th Gen"
     },
     {
-      "value": "#2期生",
-      "label": "#2期生"
+      "value": "2期生",
+      "label": "#2nd Gen"
     },
     {
-      "value": "#4期生",
-      "label": "#4期生"
+      "value": "4期生",
+      "label": "#4th Gen"
     },
     {
-      "value": "#Advent",
+      "value": "Advent",
       "label": "#Advent"
     },
     {
-      "value": "#DEV_IS",
+      "value": "DEV_IS",
       "label": "#DEV_IS"
     },
     {
-      "value": "#EN",
+      "value": "EN",
       "label": "#EN"
     },
     {
-      "value": "#JP",
+      "value": "JP",
       "label": "#JP"
     },
     {
-      "value": "#Promise",
+      "value": "Promise",
       "label": "#Promise"
     },
     {
-      "value": "#ReGLOSS",
+      "value": "ReGLOSS",
       "label": "#ReGLOSS"
     },
     {
-      "value": "#ケモミミ",
-      "label": "#ケモミミ"
+      "value": "ケモミミ",
+      "label": "#Animal Ears"
     },
     {
-      "value": "#ゲーマーズ",
-      "label": "#ゲーマーズ"
+      "value": "ゲーマーズ",
+      "label": "#Gamers"
     },
     {
-      "value": "#シューター",
-      "label": "#シューター"
+      "value": "シューター",
+      "label": "#Shooter"
     },
     {
-      "value": "#トリ",
-      "label": "#トリ"
+      "value": "ベイビー",
+      "label": "#Baby"
     },
     {
-      "value": "#ベイビー",
-      "label": "#ベイビー"
+      "value": "料理",
+      "label": "#Cooking"
     },
     {
-      "value": "#料理",
-      "label": "#料理"
-    },
-    {
-      "value": "#歌",
-      "label": "#歌"
-    },
-    {
-      "value": "#絵",
-      "label": "#絵"
+      "value": "歌",
+      "label": "#Singing"
     }
   ],
   "sets": [
     {
-      "value": "PRカード",
-      "label": "PRカード"
+      "value": "hSYN",
+      "label": "hSYN"
     },
     {
       "value": "hololive OFFICIAL CARD GAME ツインウエハース",
-      "label": "hololive OFFICIAL CARD GAME ツインウエハース"
+      "label": "hololive OFFICIAL CARD GAME Twin Wafer"
+    },
+    {
+      "value": "【使用可能カード】セレクションカップ",
+      "label": "【Cartas permitidas】Copa de Selección"
     },
     {
       "value": "オフィシャルホロカコレクション-2025ライブセット-",
-      "label": "オフィシャルホロカコレクション-2025ライブセット-"
+      "label": "Colección Oficial de HoloCa - Set de Directos 2025 -"
     },
     {
       "value": "スタートエールセット",
-      "label": "スタートエールセット"
+      "label": "Start Cheer Set"
     },
     {
       "value": "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
-      "label": "スタートデッキ FLOW GLOW 推し 虎金妃笑虎"
+      "label": "Start Deck FLOW GLOW Oshi Tokane Hisatora"
     },
     {
       "value": "スタートデッキ FLOW GLOW 推し 輪堂千速",
-      "label": "スタートデッキ FLOW GLOW 推し 輪堂千速"
+      "label": "Start Deck FLOW GLOW Oshi Rindou Chihaya"
     },
     {
       "value": "スタートデッキ 推し Advent",
-      "label": "スタートデッキ 推し Advent"
+      "label": "Start Deck Oshi Advent"
     },
     {
       "value": "スタートデッキ 推し Justice",
-      "label": "スタートデッキ 推し Justice"
+      "label": "Start Deck Oshi Justice"
     },
     {
       "value": "スタートデッキ 白 天音かなた",
-      "label": "スタートデッキ 白 天音かなた"
+      "label": "Start Deck White Amane Kanata"
     },
     {
       "value": "スタートデッキ 白 轟はじめ",
-      "label": "スタートデッキ 白 轟はじめ"
+      "label": "Start Deck White Todoroki Hajime"
     },
     {
       "value": "スタートデッキ 紫 癒月ちょこ",
-      "label": "スタートデッキ 紫 癒月ちょこ"
+      "label": "Start Deck Purple Yuzuki Choco"
     },
     {
       "value": "スタートデッキ 緑 風真いろは",
-      "label": "スタートデッキ 緑 風真いろは"
+      "label": "Start Deck Green Kazama Iroha"
     },
     {
       "value": "スタートデッキ 赤 百鬼あやめ",
-      "label": "スタートデッキ 赤 百鬼あやめ"
+      "label": "Start Deck Red Nakiri Ayame"
     },
     {
       "value": "スタートデッキ 青 猫又おかゆ",
-      "label": "スタートデッキ 青 猫又おかゆ"
+      "label": "Start Deck Blue Nekomata Okayu"
     },
     {
       "value": "スタートデッキ 黄 不知火フレア",
-      "label": "スタートデッキ 黄 不知火フレア"
+      "label": "Start Deck Yellow Shiranui Flare"
     },
     {
       "value": "スタートデッキ「ときのそら＆AZKi」",
-      "label": "スタートデッキ「ときのそら＆AZKi」"
+      "label": "Start Deck \"Tokino Sora & AZKi\""
     },
     {
       "value": "ブースターパック バウンサーバウンド",
-      "label": "ブースターパック バウンサーバウンド"
+      "label": "Sobre de Expansión Bouncer Bound"
     },
     {
       "value": "ブースターパック「エリートスパーク」",
-      "label": "ブースターパック「エリートスパーク」"
+      "label": "Booster Pack \"Elite Spark\""
     },
     {
       "value": "ブースターパック「エンチャントレガリア」",
-      "label": "ブースターパック「エンチャントレガリア」"
+      "label": "Booster Pack \"Enchant Regalia\""
     },
     {
       "value": "ブースターパック「クインテットスペクトラム」",
-      "label": "ブースターパック「クインテットスペクトラム」"
+      "label": "Booster Pack \"Quintet Spectrum\""
     },
     {
       "value": "ブースターパック「ディーヴァフィーバー」",
-      "label": "ブースターパック「ディーヴァフィーバー」"
+      "label": "Booster Pack \"Diva Fever\""
     },
     {
       "value": "ブースターパック「ブルーミングレディアンス」",
-      "label": "ブースターパック「ブルーミングレディアンス」"
+      "label": "Booster Pack \"Blooming Radiance\""
     },
     {
       "value": "ライブスタートデッキ さくらみこ",
-      "label": "ライブスタートデッキ さくらみこ"
+      "label": "Mazo Inicial de Directo Sakura Miko"
     },
     {
       "value": "ライブスタートデッキ 儒烏風亭らでん",
-      "label": "ライブスタートデッキ 儒烏風亭らでん"
+      "label": "Mazo Inicial de Directo Juufuutei Raden"
     },
     {
       "value": "ライブスタートデッキ 大空スバル",
-      "label": "ライブスタートデッキ 大空スバル"
+      "label": "Mazo Inicial de Directo Oozora Subaru"
     },
     {
       "value": "ライブスタートデッキ 星街すいせい",
-      "label": "ライブスタートデッキ 星街すいせい"
+      "label": "Mazo Inicial de Directo Hoshimachi Suisei"
     },
     {
       "value": "ライブスタートデッキ 白上フブキ",
-      "label": "ライブスタートデッキ 白上フブキ"
+      "label": "Mazo Inicial de Directo Shirakami Fubuki"
     }
   ]
 }

@@ -5,8 +5,9 @@ gated update flow: everything before `publish` is local, free and reversible, an
 steps that cost money or touch production are explicit.
 
     holo-data scrape              official site -> raw HTML + images   (local, free)
+    holo-data transform           re-transform the scrape, no refetch  (local, free)
     holo-data images              PNG -> WebP                          (local, free)
-    holo-data translate           Poe API                              ($$ — never implicit)
+    holo-data translate-units     Poe API, content-addressed           ($$ — never implicit)
     holo-data build               merge + validate -> cards.json       (local, free)
     holo-data verify              diff against v1's data               (local, free)
     holo-data verify-images       coverage; --remote re-checks bytes   (local / ~2.4k reqs)
@@ -14,6 +15,9 @@ steps that cost money or touch production are explicit.
     holo-data seed --dry          row counts + D1 write estimate       (reads only)
     holo-data seed --confirm      diff-based upsert into D1            (writes)
 
+    holo-data glossary            proper-noun coverage, per locale     (local, free)
+    holo-data cache-status        migration progress, per locale       (local, free)
+    holo-data backup-cache        snapshot the translation cache       (local / R2)
     holo-data migrate-images      one-time v1 flat -> set-scoped tree
 
 `translate` requires `--confirm` or refuses, and prints exactly what it would spend
@@ -39,16 +43,21 @@ import typer
 from dotenv import load_dotenv
 
 from holo_schema import SCHEMA_VERSION
+from holo_schema.enums import SOURCE_LOCALE
 
 from . import build as build_module
+from . import glossary as glossary_module
 from . import images as images_module
 from . import migrate_images as migrate_module
 from . import paths, r2, transform, verify as verify_module
 from . import publish as publish_module
 from . import verify_images as verify_images_module
 from .scrape import card_list, extract, fetch
-from .translate import poe
+from .translate import backup, batcher, mask_table, masking, poe, runner
+from .translate import units as units_module
 from .translate.cache import TranslationCache
+from .translate import cache_v2 as cache_v2_module
+from .translate.cache_v2 import TranslationCacheV2
 
 app = typer.Typer(
     help="hololive-ocg-wiki data pipeline.",
@@ -113,10 +122,85 @@ def scrape(
     extract.save_structured(structured)
 
     typer.echo("→ transforming to contract shape")
-    cards = transform.transform_cards(structured, on_progress=_progress("cards"))
+    cards, unmapped = transform.transform_cards(
+        structured, on_progress=_progress("cards")
+    )
     transform.save_i18n(cards)
 
     typer.echo(f"✓ scraped {len(cards)} cards")
+    _report_unmapped(unmapped)
+
+
+def _report_unmapped(report: transform.UnmappedReport) -> None:
+    """Print the source values no mapping table covered.
+
+    Printed here because this is the only place they exist. The mapping tables replace
+    an unrecognised value with `unknown` and discard what the site printed, so `build`'s
+    own error can name the values we accept and never the one that caused it — an
+    operator got "Input should be 'debut', 'first', 'second' or 'spot'", a card id, and
+    no way to learn what to add to `mappings.py` short of opening the card by hand.
+
+    Not an error: `transform` succeeded, and whether an unmapped value stops anything is
+    `build`'s call. This says what happened and what to do about it (issue #19).
+    """
+    if report.is_empty:
+        return
+
+    typer.echo("")
+    typer.echo(
+        f"⚠ {report.card_count} card(s) carry a value no mapping covers:", err=True
+    )
+    for field_name, source, card_ids in report.rows():
+        ids = ", ".join(card_ids[:5])
+        more = f" (+{len(card_ids) - 5} more)" if len(card_ids) > 5 else ""
+        typer.echo(f"    {field_name:22s} {source}", err=True)
+        typer.echo(f"    {'':22s}   {len(card_ids)} card(s): {ids}{more}", err=True)
+
+    typer.echo("", err=True)
+    typer.echo(
+        "  Add the missing entries to `mappings.py`. Until then `build` fails on these "
+        "cards — which is deliberate; a card the site prints and we cannot classify "
+        "should not ship unannounced (issue #19).",
+        err=True,
+    )
+
+
+# --- transform ---------------------------------------------------------------
+
+@app.command("transform")
+def transform_() -> None:
+    """Re-transform the scraped data into contract shape, without re-scraping.
+
+    `scrape` ends by running this, so the only way to repair `cards_i18n.json` used to
+    be re-fetching 2,464 pages from a small operator's site — a bad reason to hit
+    someone's server when the scrape artifact on disk is already correct.
+
+    That is not hypothetical: when the contract dropped `cost_count`, the transformer
+    stopped emitting it but `cards_i18n.json` had been written before the change, so
+    `build` failed on 1,991 arts against data that was fine. This command is the repair
+    (issue #16).
+
+    Ungated, like `build`: local, free, and reproducible from `cards_structured.json`.
+    """
+    structured = extract.load_structured()
+    if not structured:
+        typer.echo(
+            f"no scraped data at {paths.structured_file()} — run `holo-data scrape` first",
+            err=True,
+        )
+        raise typer.Exit(1)
+
+    typer.echo(f"→ transforming {len(structured)} entries to contract shape")
+    cards, unmapped = transform.transform_cards(
+        structured, on_progress=_progress("cards")
+    )
+    transform.save_i18n(cards)
+
+    size = paths.i18n_file().stat().st_size
+    typer.echo(
+        f"✓ wrote {paths.i18n_file()} — {len(cards)} entries, {size / 1024 / 1024:.1f} MB"
+    )
+    _report_unmapped(unmapped)
 
 
 # --- images ------------------------------------------------------------------
@@ -153,6 +237,112 @@ def images(
 
 
 # --- translate ---------------------------------------------------------------
+
+@app.command("translate-units")
+def translate_units(
+    locale: Optional[str] = typer.Option(
+        None, "--locale", help="translate one locale only"
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="report what would be sent, spend nothing"
+    ),
+    confirm: bool = typer.Option(
+        False, "--confirm", help="required to actually call the Poe API"
+    ),
+    include_qa: bool = typer.Option(
+        False, "--include-qa", help="also translate Q&A (62% of the corpus)"
+    ),
+    model: str = typer.Option(poe.DEFAULT_MODEL, "--model"),
+) -> None:
+    """Translate stale units into the content-addressed cache. Costs money — D10.
+
+    The v2 path: distinct strings batched by kind, names and tags masked out, one
+    translation per source string rather than one per card printing it.
+
+    **Q&A is excluded by default.** It is 596 units but 62% of the corpus by character
+    count, its existing translations were migrated as `legacy`, and re-doing it is a
+    separate decision from re-doing everything else (#23 D6).
+    """
+    collection = build_module.load()
+    if collection is None:
+        typer.echo("no build found — run `holo-data build` first", err=True)
+        raise typer.Exit(1)
+
+    cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
+    all_units = units_module.collect(cards)
+    work = [
+        unit
+        for unit in all_units.values()
+        if include_qa or unit.kind != units_module.QA_KIND
+    ]
+
+    names = glossary_module.Glossary.load("names")
+    tags = glossary_module.Glossary.load("tags")
+    table = mask_table.combined_table(names, tags)
+    restorer = mask_table.Restorer(names, tags)
+
+    cache = TranslationCacheV2.load()
+    locales = [locale] if locale else poe.target_locales()
+
+    typer.echo(f"→ {len(work)} translatable units, {len(locales)} locale(s)")
+    typer.echo(f"  mask table: {len(table)} entries")
+
+    plans = {}
+    total_calls = total_units = 0
+    for loc in locales:
+        stale = cache.stale(loc, work)
+        batches = batcher.build_batches(stale, loc, table)
+        plans[loc] = (stale, batches)
+        total_calls += len(batches)
+        total_units += len(stale)
+        fresh = len(work) - len(stale)
+        typer.echo(
+            f"  {loc}: {len(stale)} stale units in {len(batches)} call(s), "
+            f"{fresh} already current"
+        )
+
+    if total_units == 0:
+        typer.echo("✓ everything is up to date")
+        return
+
+    typer.echo("")
+    typer.echo(f"Would send {total_calls} call(s) covering {total_units} unit(s).")
+
+    if dry_run or not confirm:
+        if not confirm:
+            typer.echo("This costs money. Re-run with --confirm to proceed.")
+        raise typer.Exit(0 if dry_run else 1)
+
+    import asyncio
+
+    reports = []
+    for loc in locales:
+        stale, batches = plans[loc]
+        if not stale:
+            continue
+        typer.echo(f"→ translating {loc}")
+        report = asyncio.run(
+            runner.run_locale(
+                work, cache, table, restorer, loc,
+                model=model, on_progress=_progress(loc),
+            )
+        )
+        # Saved per locale, not at the end: a run is 34 calls and losing all of them to
+        # a failure on the last one is the kind of thing that happens once and is never
+        # forgiven.
+        cache.save()
+        reports.append(report)
+        for line in report.lines():
+            typer.echo(f"  {line}")
+
+    typer.echo("")
+    total_tokens = sum(r.total_tokens for r in reports)
+    translated = sum(r.units_translated for r in reports)
+    typer.echo(f"✓ {translated} units translated, {total_tokens:,} tokens")
+    for report in reports:
+        status = cache.status(report.locale, work)
+        typer.echo(f"  {status.describe()}")
+
 
 @app.command()
 def translate(
@@ -233,7 +423,8 @@ def build(
     allow_unknown_enums: bool = typer.Option(
         False,
         "--allow-unknown-enums",
-        help="publish despite unrecognised enum values (prints what it let through)",
+        help="build without the cards carrying unrecognised enum values "
+        "(publish and seed then refuse the artifact)",
     ),
 ) -> None:
     """Merge translations and validate against the contract, producing cards.json."""
@@ -243,11 +434,19 @@ def build(
         raise typer.Exit(1)
 
     cache = TranslationCache.load()
+    cache_v2 = TranslationCacheV2.load()
     locales = poe.target_locales()
 
     typer.echo(f"→ building {len(cards)} entries across {len(locales) + 1} locales")
+    if cache_v2.entries:
+        typer.echo(
+            f"  content-addressed cache: {cache_v2.count()} entries "
+            f"({cache_v2.count(source='legacy')} legacy, "
+            f"{cache_v2.count(source='manual')} manual); v1 fills any gap"
+        )
     collection, notices, report = build_module.build(
-        cards, cache, locales, allow_unknown_enums=allow_unknown_enums
+        cards, cache, locales,
+        allow_unknown_enums=allow_unknown_enums, cache_v2=cache_v2,
     )
     if report.notice_count:
         typer.echo(
@@ -262,11 +461,20 @@ def build(
 
     if report.enum_violations:
         typer.echo("")
-        label = "allowed" if allow_unknown_enums else "unrecognised"
+        label = "dropped for" if allow_unknown_enums else "unrecognised"
         typer.echo(f"  {label} enum values:", err=not allow_unknown_enums)
         for message, ids in sorted(report.enum_violations.items()):
             typer.echo(f"    {len(ids):5d}  {message}")
             typer.echo(f"           e.g. card {', '.join(ids[:5])}")
+        if not allow_unknown_enums:
+            typer.echo("", err=True)
+            typer.echo(
+                "  Add the missing entry to `mappings.py` — `holo-data transform` "
+                "names the source value the site printed. `--allow-unknown-enums` "
+                "builds without these cards, but `publish` and `seed` then refuse "
+                "the artifact.",
+                err=True,
+            )
 
     if report.errors:
         typer.echo("")
@@ -282,9 +490,22 @@ def build(
 
     size = build_module.save(collection)
     typer.echo("")
+    dropped_note = f", {len(collection.dropped)} dropped" if collection.dropped else ""
     typer.echo(
-        f"✓ wrote {paths.cards_json()} — {report.valid} cards, {size / 1024 / 1024:.1f} MB"
+        f"✓ wrote {paths.cards_json()} — {report.valid} cards{dropped_note}, "
+        f"{size / 1024 / 1024:.1f} MB"
     )
+
+    # Said after the ✓ on purpose: the build succeeded, and the operator needs to know
+    # the artifact is not shippable before they reach for `publish` and read a refusal
+    # they have no context for.
+    if collection.dropped:
+        typer.echo("")
+        typer.echo(
+            f"⚠ {len(collection.dropped)} card(s) are missing from this artifact. "
+            "`publish` and `seed` will refuse it — add the mapping and rebuild.",
+            err=True,
+        )
 
     notices_size = build_module.save_notices(notices)
     typer.echo(
@@ -853,6 +1074,264 @@ def _upload_status(status: dict) -> None:
 
 
 # --- status ------------------------------------------------------------------
+
+@app.command("glossary")
+def glossary_(
+    locale: Optional[str] = typer.Option(None, "--locale", help="report one locale only"),
+    missing: bool = typer.Option(
+        False, "--missing", help="list the keys with no decision yet"
+    ),
+    review: bool = typer.Option(
+        False, "--review", help="list machine-written entries nobody has checked"
+    ),
+) -> None:
+    """Report what the proper-noun glossary covers.
+
+    `pipeline/glossary/` is the committed source of truth for names, sets and tags —
+    what `translate` masks with, what `build` labels dropdowns with, and what the site's
+    i18n maps are generated from. This shows where it still has gaps.
+    """
+    glossaries = glossary_module.load_all()
+    if not any(g.entries for g in glossaries.values()):
+        typer.echo(
+            "glossary is empty — seed it with\n"
+            "  uv run python pipeline/scripts/seed_glossary.py",
+            err=True,
+        )
+        raise typer.Exit(1)
+
+    locales = [locale] if locale else list(poe.target_locales())
+    for line in glossary_module.coverage_report(glossaries, locales):
+        typer.echo(line)
+
+    # Two distinct names displaying identically is almost always a copy-paste slip, and
+    # it is invisible in review. The seeded glossary carried one, inherited from the
+    # hand-written i18n and live on the site: Shiranui Flare shown as Shirakami Fubuki.
+    found_collisions = False
+    for kind, glossary in glossaries.items():
+        for loc in locales:
+            for display, keys in sorted(glossary.collisions(loc).items()):
+                if not found_collisions:
+                    typer.echo("")
+                    typer.echo("⚠ distinct entries sharing one display name:")
+                    found_collisions = True
+                typer.echo(f"  {kind}/{loc}: {display!r} <- {keys}")
+
+    pending = {
+        kind: glossary.needs_review() for kind, glossary in glossaries.items()
+    }
+    if any(pending.values()):
+        total = sum(len(keys) for keys in pending.values())
+        typer.echo("")
+        typer.echo(f"{total} entry(ies) are machine-written and unreviewed:")
+        for kind, keys in pending.items():
+            if keys:
+                typer.echo(f"  {kind}: {len(keys)}")
+
+    if review:
+        for kind, keys in pending.items():
+            if not keys:
+                continue
+            typer.echo(f"\n{kind} — needs review:")
+            for key in keys:
+                entry = glossaries[kind].entries[key]
+                shown = ", ".join(
+                    f"{loc}={entry.translations[loc]!r}"
+                    for loc in sorted(entry.translations)
+                )
+                typer.echo(f"  {key}\n      {shown}")
+
+    if not missing:
+        return
+
+    for kind, entries in glossaries.items():
+        for loc in locales:
+            gaps = entries.missing(loc)
+            if gaps:
+                typer.echo(f"\n{kind}/{loc} — {len(gaps)} undecided:")
+                for key in gaps:
+                    typer.echo(f"  {key}")
+
+
+@app.command("cache-status")
+def cache_status() -> None:
+    """How far each locale has moved to the content-addressed cache. Spends nothing.
+
+    Answers "is this locale consistent yet?" — which without this is a question you
+    answer by reading the diff of a 24 MB gitignored file.
+
+    A locale is complete when every unit in the build has a v2 entry. Until then the
+    build falls back to the per-card cache for the rest, so output stays complete while
+    the migration is half-done.
+    """
+    collection = build_module.load()
+    if collection is None:
+        typer.echo("no build found — run `holo-data build` first", err=True)
+        raise typer.Exit(1)
+
+    cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
+    units = units_module.collect(cards)
+    stats = units_module.stats(units)
+    cache = TranslationCacheV2.load()
+
+    typer.echo(
+        f"{stats.distinct} distinct units from {stats.occurrences} field occurrences "
+        f"({stats.chars:,} source chars)"
+    )
+    for line in stats.lines():
+        typer.echo(line)
+
+    typer.echo("")
+    if not cache.entries:
+        typer.echo("no v2 cache yet — run pipeline/scripts/migrate_cache.py")
+        return
+
+    for locale in poe.target_locales():
+        typer.echo(f"  {cache.status(locale, units.values()).describe()}")
+
+
+@app.command("report-masks")
+def report_masks(
+    show: int = typer.Option(25, "--show", help="how many names to list"),
+    failures_only: bool = typer.Option(
+        False, "--failures-only", help="print nothing unless a string fails to restore"
+    ),
+) -> None:
+    """Show what masking would do to every translatable string. Spends nothing.
+
+    Masking rewrites text on its way to the model and puts names back afterwards, so a
+    bug here corrupts translations rather than failing them. This is the offline
+    rehearsal: every string in the build is masked and restored, and any that does not
+    come back byte-identical is reported.
+
+    Run it after editing `pipeline/glossary/` and before `translate`.
+    """
+    collection = build_module.load()
+    if collection is None:
+        typer.echo("no build found — run `holo-data build` first", err=True)
+        raise typer.Exit(1)
+
+    names = glossary_module.Glossary.load("names")
+    tags = glossary_module.Glossary.load("tags")
+    table = mask_table.combined_table(names, tags)
+    report = masking.MaskReport()
+
+    for card in collection.cards:
+        source = card.translations[SOURCE_LOCALE]
+        for text in _translatable_strings(source):
+            report.record(text, table)
+
+    if failures_only:
+        if not report.failures:
+            typer.echo(f"✓ {report.total} strings round-trip")
+            return
+    else:
+        typer.echo(
+            f"mask table: {len(table)} entries "
+            f"({len(names.entries)} names + {len(tags.entries)} tags)"
+        )
+        for line in report.lines(top=show):
+            typer.echo(line)
+
+    if report.failures:
+        raise typer.Exit(1)
+
+
+def _translatable_strings(translation) -> list[str]:
+    """Every short label and prose string on one locale's translation."""
+    out: list[str] = []
+    for value in (translation.name, translation.ability_text, translation.extra):
+        if value:
+            out.append(value)
+    out.extend(translation.tags or [])
+    for art in translation.arts or []:
+        out.extend(v for v in (art.name, art.effect) if v)
+    if translation.keyword:
+        out.extend(v for v in (translation.keyword.name, translation.keyword.effect) if v)
+    for skill in (translation.oshi_skill, translation.sp_oshi_skill):
+        if skill:
+            out.extend(v for v in (skill.name, skill.effect, skill.timing) if v)
+    for qa in translation.qa_items or []:
+        out.extend(v for v in (qa.title, qa.question, qa.answer) if v)
+    return out
+
+
+@app.command("backup-cache")
+def backup_cache(
+    remote: bool = typer.Option(
+        False, "--remote", help="also upload a copy to R2 (needs credentials + boto3)"
+    ),
+    keep: int = typer.Option(10, "--keep", help="how many local snapshots to retain"),
+    backup_dir: Optional[Path] = typer.Option(
+        None, "--dir", help=f"where to write (default: {backup.DEFAULT_BACKUP_DIR})"
+    ),
+) -> None:
+    """Back up the translation cache — the one file the pipeline cannot rebuild.
+
+    Everything else under `pipeline/` is reproducible by re-running. The cache is a
+    year of paid API calls, it is gitignored, and `publish` does not upload it — so
+    until this command existed it lived in exactly one place, on one laptop.
+
+    Writes a dated snapshot outside the repo (so `git clean` cannot take it) and
+    verifies the copy by loading it back and comparing entry counts. `--remote` adds
+    a copy in the artifacts bucket, which is what survives losing the machine.
+    """
+    target_dir = backup_dir or backup.DEFAULT_BACKUP_DIR
+
+    # Both caches, because both hold work that exists nowhere else. v1 is a year of paid
+    # calls; v2 holds the `manual` entries — which are hand-written, gitignored, and
+    # therefore exactly as unbacked as v1 was before this command existed.
+    sources = [(paths.cache_file(), False)]
+    if cache_v2_module.cache_v2_file().exists():
+        sources.append((cache_v2_module.cache_v2_file(), True))
+
+    written: list[Path] = []
+    for source, is_v2 in sources:
+        if not source.exists():
+            continue
+        try:
+            path, stats = backup.write_local(source=source, backup_dir=target_dir)
+        except backup.BackupError as exc:
+            typer.echo(f"✗ {exc}", err=True)
+            raise typer.Exit(1)
+
+        typer.echo(f"→ {source.name}: {stats.describe()}")
+        typer.echo(f"✓ verified: {path}")
+        written.append(path)
+
+        removed = backup.prune_local(target_dir, keep=keep, v2=is_v2)
+        if removed:
+            typer.echo(f"  pruned {len(removed)} older snapshot(s), keeping {keep}")
+
+    if not written:
+        typer.echo("no cache found to back up", err=True)
+        raise typer.Exit(1)
+
+    if not remote:
+        typer.echo("")
+        typer.echo(
+            "These copies are on the same disk as the originals. Re-run with --remote "
+            "to put one in R2."
+        )
+        return
+
+    try:
+        config = r2.load_config()
+        s3 = r2.client(config)
+    except r2.R2Error as exc:
+        typer.echo(f"✗ {exc}", err=True)
+        raise typer.Exit(1)
+
+    for path in written:
+        key = backup.upload_to_r2(s3, config.artifacts_bucket, path)
+        typer.echo(f"✓ uploaded to r2://{config.artifacts_bucket}/{key}")
+
+    existing = backup.list_r2_backups(s3, config.artifacts_bucket)
+    total = sum(size for _, size in existing)
+    typer.echo(
+        f"  {len(existing)} backup(s) in the bucket, {total / 1_048_576:.1f} MB total"
+    )
+
 
 @app.command()
 def status() -> None:

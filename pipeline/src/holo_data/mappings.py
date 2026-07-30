@@ -29,14 +29,22 @@ CARD_TYPE: dict[str, str] = {
     "サポート・スタッフ・LIMITED": "supportStaffLimited",
     "サポート": "rulesNotice",
 }
-"""Card type. Unmapped values become `unknown` — a documented, legitimate code.
+"""Card type. Unmapped values become `unknown`, which **fails validation** (issue #19).
+
+`unknown` was a legal `CardTypeCode` until #19; a card that fell through this table
+validated, shipped, and was then excluded from every deck section with nothing to
+announce it. It is now rejected like any other unrecognised value, so a missing entry
+here stops the build instead. `holo-data transform` prints the source string the site
+printed, which is the thing you need to add below.
 
 `サポート・スタッフ` was missing here until Phase 1, which is why hBP07-091 (ライブスタッフ,
-2 cards) shows as `unknown` in v1's live data. See docs/findings.md F-001.
+2 cards) showed as `unknown` in v1's live data — for months, unnoticed, which is the
+argument #19 acted on. See docs/archive/findings.md F-001.
 
-Note `サポート・ロケーション` maps to a code the contract's enum does not accept. That is
-deliberate: no card has ever used it, so a card that did would be a genuinely new type
-and should fail `build` loudly rather than validate silently.
+Note `サポート・ロケーション` maps to a code the contract's enum does not accept. Since
+#19 both branches fail the build — dropping this entry would produce `unknown`, which is
+equally rejected — so the entry no longer buys *safety*. What it buys is the error
+message: `card_type_code: supportLocation` names the type, where `unknown` would not.
 
 `サポート` — the bare type, with no subtype — was in that same category until the
 2,464-card refresh, when it turned up on id 2459 (デッキ構築ルール): a Selection Cup
