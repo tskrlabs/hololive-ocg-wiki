@@ -23,7 +23,14 @@ const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? ""
 </script>
 
 <template>
-  <header class="border-solid sticky top-0 z-50 w-full border-b bg-background">
+  <!--
+    A flex child of the shell, not `sticky` (#44). Nothing scrolls past it now — the
+    scroll region is the sibling below — so stickiness bought nothing and cost the
+    scroller a reliable height, which is what left ~138px of the card list hidden
+    underneath this bar. `shrink-0` keeps it at its natural height when the middle
+    region is under pressure.
+  -->
+  <header class="border-solid shrink-0 z-50 w-full border-b bg-background">
     <div class="p-2 md:p-4 flex items-center gap-2">
       <slot />
 

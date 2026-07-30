@@ -115,7 +115,13 @@ const viewIcons = { list: List, table: Table2 };
 </script>
 
 <template>
-  <div class="min-h-svh bg-background">
+  <!--
+    Its own scroll region (#44). The shell is now `h-dvh overflow-hidden`, so a page that
+    relies on the document scrolling gets clipped instead. This page has no app header or
+    footer — its sticky top bar is its own — so it takes the full height and scrolls
+    inside it, and that bar goes on scrolling with it exactly as before.
+  -->
+  <div class="h-full overflow-y-auto bg-background">
     <!-- Top bar -->
     <div class="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
       <div

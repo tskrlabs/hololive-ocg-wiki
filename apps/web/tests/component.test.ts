@@ -290,3 +290,54 @@ describe("CardListViewAPI", () => {
     expect(scrollToItem).toHaveBeenCalledWith(0);
   });
 });
+
+describe("the scroller's height (#44)", () => {
+  /*
+   * happy-dom does no layout — every element measures zero — so these assert the *rules*
+   * rather than the resulting pixels. That is a real limit and worth stating: they would
+   * not catch a wrong flex-basis or a stacking-context mistake, only a return to the
+   * shapes that caused the bug. The pixel check is a browser, and was done by hand.
+   *
+   * What they do cover is the specific regression: a height keyed to the viewport rather
+   * than to the space between the bars, which put ~138px of the list under the chrome,
+   * and the two workarounds that grew on top of it.
+   */
+  it("sizes itself from its parent, never from the viewport", async () => {
+    const wrapper = await mountList();
+    await settle();
+
+    // `100dvh` is the bug. `h-full`/`height: 100%` is the fix, and the difference is
+    // only visible in the class list — both render identically at zero size.
+    //
+    // Comments are stripped first: the markup carries prose *about* `100dvh` explaining
+    // why it is gone, and matching that would make this pass for the wrong reason.
+    const markup = wrapper.html().replace(/<!--[\s\S]*?-->/g, "");
+    expect(markup).not.toMatch(/100dvh|h-dvh|h-screen/);
+  });
+
+  it("has no dead padding standing in for the hidden region", async () => {
+    const wrapper = await mountList();
+    await settle();
+
+    // `pb-[65vh]` was 520px of empty space at an 800px viewport, added to keep the last
+    // row clear of chrome that overlapped it. With the scroller sized correctly there is
+    // nothing to clear.
+    const markup = wrapper.html().replace(/<!--[\s\S]*?-->/g, "");
+    expect(markup).not.toMatch(/pb-\[\d+vh\]/);
+  });
+
+  it("puts the results summary in flow rather than floating it", async () => {
+    const wrapper = await mountList();
+    await settle();
+
+    // It was `fixed` *because* of this bug — in flow it sat below a full-viewport
+    // scroller and was never on screen, which is how "Showing 200 of 2448" went unseen
+    // while infinite scroll was broken (F-019).
+    const summary = wrapper
+      .findAll("div")
+      .find((node) => node.text().startsWith("Showing {count} of {total} cards"));
+
+    expect(summary, "the results summary should render").toBeDefined();
+    expect(summary!.classes()).not.toContain("fixed");
+  });
+});

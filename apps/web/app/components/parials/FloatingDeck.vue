@@ -64,9 +64,18 @@ const goToDetailPage = () => {
 
 <template>
   <Transition name="fade-up">
+    <!--
+      Anchored to the bottom of the shell rather than the viewport (#44).
+
+      `bottom-13 md:bottom-16` was a guess at the sticky footer's height — 52px and 64px
+      against a real 69px, so it overlapped slightly at one breakpoint and left a gap at
+      the other. The footer is a flex child now, so the shell's own bottom edge *is* the
+      top of the footer and `bottom-0` is exact. The offset had to be guessed only
+      because the footer floated over content whose height nothing knew.
+    -->
     <div
       v-show="isEditing"
-      class="fixed bottom-13 md:bottom-16 left-0 m-2 md:m-4 z-40"
+      class="absolute bottom-0 left-0 m-2 md:m-4 z-40"
     >
       <div
         class="rounded-lg shadow-lg border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90"

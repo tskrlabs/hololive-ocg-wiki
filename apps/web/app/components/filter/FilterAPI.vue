@@ -151,9 +151,18 @@ const handleResetAll = () => {
         </div>
       </div>
 
+      <!--
+        The sheet caps itself at 85% of the viewport and scrolls inside that (#44).
+
+        It was `max-h-[calc(100dvh-96px-16px-16px)]`, where 96px was a hardcoded estimate
+        of chrome that is a real 69px — and the estimate had no referent in any case: the
+        sheet is `fixed top-0`, so it does not sit between the header and the footer and
+        never needed to subtract them. A fraction states the intent ("leave some page
+        visible behind it") without encoding anyone's height.
+      -->
       <div class="flex grow">
         <ScrollArea>
-          <div class="w-full max-h-[calc(100dvh-96px-16px-16px)]">
+          <div class="w-full max-h-[85dvh]">
             <!-- quick filters -->
             <div class="flex flex-col gap-4 pt-4 px-4">
               <!-- name -->

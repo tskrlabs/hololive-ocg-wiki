@@ -20,6 +20,9 @@ useSeoMeta({
 });
 
 useHead({
+  // The body must not scroll: the shell is exactly one viewport tall and the card
+  // scroller does the scrolling inside it (#44). Without this, iOS Safari still
+  // rubber-bands the whole document over a page that has nowhere to go.
   bodyAttrs: {
     class: "overflow-hidden",
   },
@@ -38,12 +41,25 @@ useHead({
     <SearchInputAPI />
   </AppHeader>
 
-  <!-- Card List -->
-  <div class="grow">
-    <CardListViewAPI />
-  </div>
+  <!--
+    The card list takes whatever the chrome leaves. `min-h-0` is load-bearing: a flex
+    child defaults to `min-height: auto` and refuses to shrink below its content, so
+    without it this region would grow to fit 2,448 cards and push the footer off-screen.
 
-  <FloatingDeck />
+    The scroller itself does the scrolling — this is `overflow-hidden` so nothing can
+    scroll twice. See #44.
+  -->
+  <main class="relative grow min-h-0 overflow-hidden">
+    <CardListViewAPI />
+
+    <!--
+      Inside the list region, not a sibling of the footer (#44). It anchors to the bottom
+      of this region, so "just above the footer" is a position rather than an arithmetic
+      guess about how tall the footer is. It stays bottom-*left*; the results summary is
+      right-aligned, which is what keeps the two from colliding.
+    -->
+    <FloatingDeck />
+  </main>
 
   <AppFooter>
     <AppFooterCurrentDeck />

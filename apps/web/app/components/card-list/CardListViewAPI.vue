@@ -233,7 +233,13 @@ watch(
 </script>
 
 <template>
-  <div>
+  <!--
+    A flex column filling the region the shell gives it (#44). The scroller needs a real
+    height to inherit; before the shell change there was none to inherit, which is how it
+    came to be `height: 100dvh` — a whole viewport, sitting between a sticky header and a
+    sticky footer, with ~138px of the list hidden underneath them.
+  -->
+  <div class="flex h-full flex-col">
     <!-- Filtering overlay - only when filtering, not when loading more -->
     <div
       v-if="isFiltering"
@@ -265,13 +271,16 @@ watch(
     </div>
 
     <!-- Virtual Scroller for cards grid -->
-    <div v-else-if="displayedCards.length > 0" class="">
-      <div class="">
+    <div
+      v-else-if="displayedCards.length > 0"
+      class="flex min-h-0 grow flex-col"
+    >
+      <div class="min-h-0 grow">
         <RecycleScroller
           v-if="shouldRenderScroller"
           ref="virtualScroller"
           :key="`scroller-${gridColCount}-${locale}`"
-          class="scroller p-2 pb-[65vh]"
+          class="scroller p-2"
           :items="displayedCards"
           :item-size="itemSize"
           :item-secondary-size="itemSecondarySize"
@@ -304,7 +313,7 @@ watch(
         -->
         <div
           v-else
-          class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 p-2"
+          class="grid h-full grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 overflow-y-auto p-2"
         >
           <div
             v-for="item in displayedCards"
@@ -348,57 +357,40 @@ watch(
     </div>
 
     <!--
-      Results summary.
+      Results summary — back in normal flow (#44).
 
-      Floated rather than placed in flow. In flow it sits *below* a scroller that is
-      `height: 100dvh`, so it is never on screen — which is how it came to be commented
-      out, and why "Showing 200 of 2448" went unseen while infinite scroll was broken.
-      Mirrors FloatingDeck (bottom-left) on the opposite side so the two do not overlap.
+      It was `fixed`, and its comment recorded why: *"In flow it sits below a scroller
+      that is `height: 100dvh`, so it is never on screen — which is how it came to be
+      commented out, and why 'Showing 200 of 2448' went unseen while infinite scroll was
+      broken."* That was this bug, diagnosed and worked around rather than fixed. With
+      the scroller sized to the space it actually has, below the scroller *is* on screen,
+      so the workaround and its `bottom-13 md:bottom-16` guess both go.
     -->
     <div
       v-if="displayedCards.length > 0"
-      class="fixed bottom-13 md:bottom-16 right-0 m-2 md:m-4 z-40 pointer-events-none"
+      class="shrink-0 border-t px-2 py-1 text-right text-xs text-muted-foreground"
     >
-      <p
-        class="rounded-md border bg-background/90 px-2 py-1 text-xs text-muted-foreground backdrop-blur"
-      >
-        {{
-          $t("Showing {count} of {total} cards", {
-            count: displayedCards.length,
-            total: cardQuery.total.value,
-          })
-        }}
-      </p>
+      {{
+        $t("Showing {count} of {total} cards", {
+          count: displayedCards.length,
+          total: cardQuery.total.value,
+        })
+      }}
     </div>
   </div>
 </template>
 
 <style lang="css" scoped>
+/*
+ * The scroller fills its parent rather than the viewport (#44).
+ *
+ * It used to be `height: 100dvh` between a sticky header and a sticky footer, each 69px,
+ * so ~138px of the list was permanently hidden underneath the chrome — 17% of the list
+ * at an 800px viewport. The commented-out `50vh`/`60vh`/`70vh` ladder below it was an
+ * earlier attempt at the same problem by guessing; both are gone now that the shell is a
+ * flex column and there is a real height to inherit.
+ */
 .scroller {
-  height: 100dvh;
+  height: 100%;
 }
-
-/* Responsive heights for virtual scroller */
-/* @media (min-height: 500px) {
-  .scroller {
-    height: 50vh;
-  }
-}
-
-@media (min-height: 800px) {
-  .scroller {
-    height: 60vh;
-  }
-}
-
-@media (min-height: 1000px) {
-  .scroller {
-    height: 70vh;
-  }
-} */
-
-/* Ensure virtual scroller items maintain proper aspect ratio */
-/* .scroller :deep(.vue-recycle-scroller__item-wrapper) {
-  overflow: visible;
-} */
 </style>

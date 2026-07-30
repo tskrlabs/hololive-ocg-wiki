@@ -84,7 +84,12 @@ useHead({
     </Button>
   </AppHeader>
 
-  <div class="grow p-2 md:p-4">
+  <!--
+    The shell is now exactly one viewport tall (#44), so the page no longer scrolls as a
+    whole and this region owns its own scrolling. `min-h-0` lets it shrink below its
+    content, which is what allows it to scroll rather than pushing the footer away.
+  -->
+  <main class="grow min-h-0 overflow-y-auto p-2 md:p-4">
     <div v-if="deck" class="flex flex-col gap-2 md:gap-4">
       <div class="flex gap-2">
         <div
@@ -170,7 +175,7 @@ useHead({
       </div>
       <!-- </template> -->
     </div>
-  </div>
+  </main>
 
   <AppFooter>
     <AppFooterDeckDetailStatus />
