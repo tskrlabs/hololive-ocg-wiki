@@ -40,7 +40,69 @@ from .localized import (
     LocalizedCard,
     LocalizedKeyword,
     LocalizedOshiSkill,
+    OriginalLabels,
 )
+
+
+def _original_labels(card: Card, resolved: Locale) -> OriginalLabels | None:
+    """The source-locale labels, where they differ from what this locale shows.
+
+    Returns None when there is nothing to show — a `ja` response, or a locale that left
+    every label untranslated. That is what keeps the +14% payload cost a ceiling rather
+    than a constant, and it means the frontend's check is `v-if="card.original"` with no
+    per-field emptiness test.
+    """
+    if resolved == SOURCE_LOCALE:
+        return None
+
+    source = card.translations.get(SOURCE_LOCALE)
+    shown = card.translations.get(resolved)
+    if source is None or shown is None:
+        return None
+
+    def differing(source_value: str | None, shown_value: str | None) -> str | None:
+        return source_value if source_value and source_value != shown_value else None
+
+    source_arts = source.arts or []
+    shown_arts = shown.arts or []
+    art_names = [
+        differing(
+            art.name,
+            shown_arts[index].name if index < len(shown_arts) else None,
+        )
+        for index, art in enumerate(source_arts)
+    ]
+
+    labels = OriginalLabels(
+        name=differing(source.name, shown.name),
+        # Whole list or nothing: a partially-shown tag list would read as a data error.
+        tags=list(source.tags or []) if (source.tags or []) != (shown.tags or []) else [],
+        art_names=art_names if any(art_names) else [],
+        keyword_name=differing(
+            source.keyword.name if source.keyword else None,
+            shown.keyword.name if shown.keyword else None,
+        ),
+        oshi_skill_name=differing(
+            source.oshi_skill.name if source.oshi_skill else None,
+            shown.oshi_skill.name if shown.oshi_skill else None,
+        ),
+        sp_oshi_skill_name=differing(
+            source.sp_oshi_skill.name if source.sp_oshi_skill else None,
+            shown.sp_oshi_skill.name if shown.sp_oshi_skill else None,
+        ),
+    )
+
+    has_content = any(
+        (
+            labels.name,
+            labels.tags,
+            labels.art_names,
+            labels.keyword_name,
+            labels.oshi_skill_name,
+            labels.sp_oshi_skill_name,
+        )
+    )
+    return labels if has_content else None
 
 
 def localize(card: Card, locale: Locale) -> LocalizedCard:
@@ -145,4 +207,5 @@ def localize(card: Card, locale: Locale) -> LocalizedCard:
         oshi_skill=oshi_skill,
         sp_oshi_skill=sp_oshi_skill,
         qa_items=translation.qa_items or [],
+        original=_original_labels(card, resolved),
     )

@@ -16,6 +16,12 @@
     "life": 5,
     "locale": "tc",
     "name": "ときのそら",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "リプレイスメント",
+      "sp_oshi_skill_name": "じゃあ敵だね？",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[每回合1次]將自己舞台上的1張應援，改附加到自己的任一位Holomen上。",
       "name": "替換",
@@ -94,6 +100,12 @@
     "life": 6,
     "locale": "tc",
     "name": "AZKi",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "左手に地図",
+      "sp_oshi_skill_name": "右手にマイク",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[每回合1次] 當自己的Holomen能力要擲骰時可以使用：宣告一個數字，並將下一次擲出的骰子點數視為所宣告的數字。",
       "name": "左手握著地圖",
@@ -241,6 +253,12 @@
     "image_key": "hSD01/hSD01-013_R",
     "locale": "tc",
     "name": "SorAZ",
+    "original": {
+      "art_names": [
+        "越えたい未来"
+      ],
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "代表此卡同時擁有〈ときのそら〉、〈AZKi〉與〈SorAZ〉三個卡名。",
@@ -551,6 +569,11 @@
     "image_key": "hSD01/hSD01-020_C",
     "locale": "tc",
     "name": "Holoris之環",
+    "original": {
+      "art_names": [],
+      "name": "ホロリスの輪",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "不可以。若自己的檔案區域中沒有應援卡，則無法僅擲骰子。",
@@ -738,6 +761,11 @@
     "life": 5,
     "locale": "tc",
     "name": "小鳥遊キアラ",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "フェニックステール",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[每回合1次]將自己檔案區域中的1張ホロメン加入手牌。",
       "name": "鳳凰之尾",
@@ -1174,6 +1202,12 @@
     "life": 5,
     "locale": "tc",
     "name": "七詩ムメイ",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "ホワイトバトン",
+      "sp_oshi_skill_name": "クイックガード",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[每回合1次]本回合中，我方的白色合作Holomen的藝能+20。",
       "name": "白色指揮棒",
@@ -1784,6 +1818,11 @@
     "image_key": "hBP07/hBP07-091_S",
     "locale": "tc",
     "name": "Live Staff",
+    "original": {
+      "art_names": [],
+      "name": "ライブスタッフ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "S",
     "tags": []
@@ -1871,6 +1910,13 @@
     "image_key": "hCO01/hBP03-055_SR",
     "locale": "tc",
     "name": "常闇トワ",
+    "original": {
+      "art_names": [
+        "トワとお家デートしたっていい",
+        null
+      ],
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
@@ -2048,6 +2094,14 @@
     "image_key": "hSYN/hSYN-001_C",
     "locale": "tc",
     "name": "測試短技能",
+    "original": {
+      "art_names": [
+        "アーツ一",
+        "アーツ二"
+      ],
+      "name": "テスト・ショートアーツ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []

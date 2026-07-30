@@ -241,6 +241,12 @@
     "image_key": "hSD01/hSD01-013_R",
     "locale": "id",
     "name": "SorAZ",
+    "original": {
+      "art_names": [
+        "越えたい未来"
+      ],
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "Artinya kartu ini memiliki nama sebagai〈ときのそら〉,〈AZKi〉dan〈SorAZ〉.",
@@ -551,6 +557,11 @@
     "image_key": "hSD01/hSD01-020_C",
     "locale": "id",
     "name": "Holoris no Wa",
+    "original": {
+      "art_names": [],
+      "name": "ホロリスの輪",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "Tidak bisa. Jika di Arsipmu tidak ada Yell, kamu juga tidak dapat hanya melempar dadu saja.",
@@ -826,6 +837,11 @@
     "life": 5,
     "locale": "id",
     "name": "小鳥遊キアラ",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "フェニックステール",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[Sekali per giliran] Kembalikan 1 Holomen dari Area Arsip kamu ke tangan.",
       "name": "Phoenix Tail",
@@ -1859,6 +1875,11 @@
     "image_key": "hBP07/hBP07-091_C",
     "locale": "id",
     "name": "Staf Live",
+    "original": {
+      "art_names": [],
+      "name": "ライブスタッフ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
@@ -1879,6 +1900,11 @@
     "image_key": "hBP07/hBP07-091_S",
     "locale": "id",
     "name": "Staf Live",
+    "original": {
+      "art_names": [],
+      "name": "ライブスタッフ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "S",
     "tags": []
@@ -2012,6 +2038,13 @@
     "image_key": "hWF01/hBP03-011_P",
     "locale": "id",
     "name": "姫森ルーナ",
+    "original": {
+      "art_names": [
+        "おつルーナ",
+        "ぐっどないと～"
+      ],
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "P",
     "tags": [
@@ -2141,6 +2174,14 @@
     "image_key": "hSYN/hSYN-001_C",
     "locale": "id",
     "name": "Tes Seni Pendek",
+    "original": {
+      "art_names": [
+        "アーツ一",
+        "アーツ二"
+      ],
+      "name": "テスト・ショートアーツ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []

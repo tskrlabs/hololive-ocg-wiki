@@ -241,6 +241,12 @@
     "image_key": "hSD01/hSD01-013_R",
     "locale": "th",
     "name": "SorAZ",
+    "original": {
+      "art_names": [
+        "越えたい未来"
+      ],
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "หมายถึงถือว่าการ์ดนี้มีชื่อการ์ดเป็น〈ときのそら〉, 〈AZKi〉 และ〈SorAZ〉พร้อมกัน",
@@ -1248,6 +1254,11 @@
     "image_key": "COMMON/hY01-001_C",
     "locale": "th",
     "name": "ไวท์เอร์ล",
+    "original": {
+      "art_names": [],
+      "name": "白エール",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
@@ -2141,6 +2152,14 @@
     "image_key": "hSYN/hSYN-001_C",
     "locale": "th",
     "name": "ทดสอบ",
+    "original": {
+      "art_names": [
+        "アーツ一",
+        "アーツ二"
+      ],
+      "name": "テスト・ショートアーツ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []

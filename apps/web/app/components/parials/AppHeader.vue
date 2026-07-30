@@ -51,6 +51,7 @@ const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? ""
             <Database class="w-5 h-5" />
           </NuxtLink>
         </Button>
+        <AppOriginalSwitcher />
         <AppLanguageSwitcher />
         <AppColorModeSwitcher />
         <Button

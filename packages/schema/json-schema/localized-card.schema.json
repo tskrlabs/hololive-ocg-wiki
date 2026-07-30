@@ -132,6 +132,46 @@
       "title": "LocalizedOshiSkill",
       "type": "object"
     },
+    "OriginalLabels": {
+      "additionalProperties": false,
+      "description": "The source-locale text for the labels a card shows.\n\nPowers the show-original toggle: a reader who knows the Japanese name can check what\na card is without a round-trip, which matters most in a list of 50 tiles where they\nare scanning for a name they already know.\n\n**Labels only, not prose.** Returning every source field costs +69% on a response;\nthe labels cost +14% (~4.7 KB on a 33 KB page of 50 cards). Rules text is the part a\nreader wants *translated* — the names are the part they may want to verify.\n\n**Emitted only where the two differ.** On a `ja` request this is absent entirely, and\non any locale a field that was never translated contributes nothing. So the +14% is\nthe ceiling, not the typical case.\n\nAbsent rather than empty when there is nothing to say: `Optional` here means the\nfrontend's `v-if=\"card.original\"` is the whole check.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "tags": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "art_names": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Art Names",
+          "type": "array"
+        },
+        "keyword_name": {
+          "title": "Keyword Name",
+          "type": "string"
+        },
+        "oshi_skill_name": {
+          "title": "Oshi Skill Name",
+          "type": "string"
+        },
+        "sp_oshi_skill_name": {
+          "title": "Sp Oshi Skill Name",
+          "type": "string"
+        }
+      },
+      "title": "OriginalLabels",
+      "type": "object"
+    },
     "QaItem": {
       "additionalProperties": false,
       "description": "One official Q&A entry attached to a card.\n\nPresent on 5,992 of 17,136 card-locale pairs; 13,300 items in total.",
@@ -367,6 +407,9 @@
       },
       "title": "Qa Items",
       "type": "array"
+    },
+    "original": {
+      "$ref": "#/$defs/OriginalLabels"
     }
   },
   "required": [

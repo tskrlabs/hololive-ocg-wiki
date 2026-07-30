@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from holo_schema import LOCALE_VALUES, CardCollection, localize
+from holo_schema import LOCALE_VALUES, Card, CardCollection, localize
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = PACKAGE_ROOT.parent.parent / "fixtures" / "cards.json"
@@ -155,3 +155,92 @@ class TestAllFixturesProject:
                 result = localize(card, locale)
                 assert result.id == card.id
                 assert result.image_key == card.image_key
+
+
+class TestOriginalLabels:
+    """The show-original toggle's payload.
+
+    Emitted only where the source and the shown locale differ, so the +14% response cost
+    is a ceiling rather than a constant — and so the frontend's check is
+    `v-if="card.original"` with no per-field emptiness test.
+    """
+
+    def _card(self, **en):
+        base = {
+            "id": "1",
+            "card_number": "hSD01-001",
+            "card_type_code": "character",
+            "rarity_code": "C",
+            "image_key": "hSD01/hSD01-001_C",
+            "source_image_url": "https://example.test/x.png",
+            "card_sets": ["セット"],
+            "arts": [{"cost_types": ["red"]}],
+            "translations": {
+                "ja": {
+                    "name": "白上フブキ",
+                    "tags": ["#EN"],
+                    "arts": [{"name": "こんこん"}],
+                },
+                "en": {"name": "白上フブキ", "tags": ["#EN"], "arts": [{"name": "こんこん"}]},
+            },
+        }
+        base["translations"]["en"].update(en)
+        return Card.model_validate(base)
+
+    def test_absent_on_a_source_locale_request(self):
+        """Nothing to compare against; sending it would be pure waste."""
+        assert localize(self._card(), "ja").original is None
+
+    def test_absent_when_nothing_was_translated(self):
+        """Every label identical, so the toggle has nothing to reveal."""
+        assert localize(self._card(), "en").original is None
+
+    def test_carries_the_source_name_when_it_differs(self):
+        card = self._card(name="Shirakami Fubuki")
+
+        original = localize(card, "en").original
+
+        assert original is not None
+        assert original.name == "白上フブキ"
+
+    def test_omits_fields_that_match(self):
+        """The art name was left in Japanese, so there is nothing to reveal about it."""
+        original = localize(self._card(name="Shirakami Fubuki"), "en").original
+
+        assert original.art_names == []
+        assert original.keyword_name is None
+
+    def test_art_names_are_positional_against_the_shown_arts(self):
+        card = self._card(arts=[{"name": "Konkon"}])
+
+        original = localize(card, "en").original
+
+        assert original.art_names == ["こんこん"]
+
+    def test_tags_are_all_or_nothing(self):
+        """A partially-shown tag list reads as a data error, not a partial translation."""
+        card = self._card(tags=["#EN-translated"])
+
+        original = localize(card, "en").original
+
+        assert original.tags == ["#EN"]
+
+    def test_skill_names_are_carried(self):
+        base = {
+            "id": "1",
+            "card_number": "hSD01-001",
+            "card_type_code": "oshiCharacter",
+            "rarity_code": "OSR",
+            "image_key": "hSD01/hSD01-001_OSR",
+            "source_image_url": "https://example.test/x.png",
+            "card_sets": ["セット"],
+            "oshi_skill": {"timing_code": "once_per_turn"},
+            "translations": {
+                "ja": {"name": "X", "oshi_skill": {"name": "秩序の先駆者", "effect": "効果"}},
+                "en": {"name": "X", "oshi_skill": {"name": "Order's Pioneer", "effect": "Effect"}},
+            },
+        }
+
+        original = localize(Card.model_validate(base), "en").original
+
+        assert original.oshi_skill_name == "秩序の先駆者"

@@ -53,6 +53,36 @@ class LocalizedArt(BaseModel):
     effect: Optional[str] = None
 
 
+class OriginalLabels(BaseModel):
+    """The source-locale text for the labels a card shows.
+
+    Powers the show-original toggle: a reader who knows the Japanese name can check what
+    a card is without a round-trip, which matters most in a list of 50 tiles where they
+    are scanning for a name they already know.
+
+    **Labels only, not prose.** Returning every source field costs +69% on a response;
+    the labels cost +14% (~4.7 KB on a 33 KB page of 50 cards). Rules text is the part a
+    reader wants *translated* — the names are the part they may want to verify.
+
+    **Emitted only where the two differ.** On a `ja` request this is absent entirely, and
+    on any locale a field that was never translated contributes nothing. So the +14% is
+    the ceiling, not the typical case.
+
+    Absent rather than empty when there is nothing to say: `Optional` here means the
+    frontend's `v-if="card.original"` is the whole check.
+    """
+
+    model_config = _STRICT
+
+    name: Optional[str] = None
+    tags: list[str] = []
+    art_names: list[Optional[str]] = []
+    """Positional against `LocalizedCard.arts`. `None` where that art's name matches."""
+    keyword_name: Optional[str] = None
+    oshi_skill_name: Optional[str] = None
+    sp_oshi_skill_name: Optional[str] = None
+
+
 class LocalizedKeyword(BaseModel):
     """A keyword with its type and translated text merged."""
 
@@ -131,3 +161,6 @@ class LocalizedCard(BaseModel):
     oshi_skill: Optional[LocalizedOshiSkill] = None
     sp_oshi_skill: Optional[LocalizedOshiSkill] = None
     qa_items: list[QaItem] = []
+
+    # --- The source text, for the show-original toggle ---
+    original: Optional["OriginalLabels"] = None

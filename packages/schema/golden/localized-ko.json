@@ -16,6 +16,12 @@
     "life": 5,
     "locale": "ko",
     "name": "ときのそら",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "リプレイスメント",
+      "sp_oshi_skill_name": "じゃあ敵だね？",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[턴에 1번] 자신의 스테이지에 있는 에일 1장을 자신의 홀로멘에게 갈아낀다.",
       "name": "리플레이스먼트",
@@ -94,6 +100,12 @@
     "life": 6,
     "locale": "ko",
     "name": "AZKi",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "左手に地図",
+      "sp_oshi_skill_name": "右手にマイク",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[턴당 1번] 자신의 홀로멘 능력으로 주사위를 굴릴 때 사용할 수 있음: 주사위 눈의 숫자 하나를 선언하고, 다음에 나오는 눈을 선언한 눈으로 취급한다.",
       "name": "왼손에 지도",
@@ -241,6 +253,12 @@
     "image_key": "hSD01/hSD01-013_R",
     "locale": "ko",
     "name": "SorAZ",
+    "original": {
+      "art_names": [
+        "越えたい未来"
+      ],
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "카드 이름으로서 〈ときのそら〉, 〈AZKi〉, 〈SorAZ〉를 모두 가진다는 뜻입니다.",
@@ -508,6 +526,11 @@
     "image_key": "hSD01/hSD01-019_C_02",
     "locale": "ko",
     "name": "스고이파소콘",
+    "original": {
+      "art_names": [],
+      "name": "スゴイパソコン",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "네, 공개하지 않아도 됩니다. 그 경우에는 덱을 셔플하고 능력이 종료됩니다.",
@@ -639,6 +662,12 @@
     "life": 5,
     "locale": "ko",
     "name": "天音かなた",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "ぎゅっぎゅっ",
+      "sp_oshi_skill_name": "握りつぶしちゃうぞ",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[턴당 1회] 상대 센터 홀로멘의 남은 HP를 50으로 만든다.",
       "name": "꽉꽉",
@@ -826,6 +855,11 @@
     "life": 5,
     "locale": "ko",
     "name": "小鳥遊キアラ",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "フェニックステール",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[턴당 1회] 자신의 아카이브에 있는 홀로멘 1장을 손패로 되돌린다.",
       "name": "페닉스 테일",
@@ -1525,6 +1559,13 @@
     "image_key": "hBP03/hBP03-050_R",
     "locale": "ko",
     "name": "FUWAMOCO",
+    "original": {
+      "art_names": [
+        "魔界乃番犬シスターズ",
+        "2人揃ってFUWAMOCOです！"
+      ],
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "카드 명칭으로서, 〈フワワ・アビスガード〉, 〈モココ・アビスガード〉, 〈FUWAMOCO〉를 모두 가진다는 뜻입니다.",
@@ -1859,6 +1900,11 @@
     "image_key": "hBP07/hBP07-091_C",
     "locale": "ko",
     "name": "라이브 스태프",
+    "original": {
+      "art_names": [],
+      "name": "ライブスタッフ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
@@ -2012,6 +2058,18 @@
     "image_key": "hWF01/hBP03-011_P",
     "locale": "ko",
     "name": "히메모리 루나",
+    "original": {
+      "art_names": [
+        "おつルーナ",
+        "ぐっどないと～"
+      ],
+      "name": "姫森ルーナ",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#ベイビー"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "P",
     "tags": [
@@ -2098,6 +2156,12 @@
     "image_key": "hBP08/hBP01-028_HR",
     "locale": "ko",
     "name": "IRyS",
+    "original": {
+      "art_names": [
+        "ハイRyS！"
+      ],
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "HR",
     "tags": [
@@ -2141,6 +2205,14 @@
     "image_key": "hSYN/hSYN-001_C",
     "locale": "ko",
     "name": "테스트",
+    "original": {
+      "art_names": [
+        "アーツ一",
+        "アーツ二"
+      ],
+      "name": "テスト・ショートアーツ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []

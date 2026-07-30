@@ -16,6 +16,13 @@
     "life": 5,
     "locale": "en",
     "name": "Tokino Sora",
+    "original": {
+      "art_names": [],
+      "name": "ときのそら",
+      "oshi_skill_name": "リプレイスメント",
+      "sp_oshi_skill_name": "じゃあ敵だね？",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[1/Turn]Reattach 1 cheer from your stage to 1 of your holomem.",
       "name": "Replacement",
@@ -94,6 +101,12 @@
     "life": 6,
     "locale": "en",
     "name": "AZKi",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "左手に地図",
+      "sp_oshi_skill_name": "右手にマイク",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[1/Turn]Usable if your holomem's ability would roll a die：Declare 1 of the face numbers of the die, and regard the next result as the declared number.",
       "name": "A Map in My Left Hand",
@@ -241,6 +254,12 @@
     "image_key": "hSD01/hSD01-013_R",
     "locale": "en",
     "name": "SorAZ",
+    "original": {
+      "art_names": [
+        "越えたい未来"
+      ],
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "It means this card has the names 〈ときのそら〉, 〈AZKi〉, and 〈SorAZ〉.",
@@ -423,6 +442,13 @@
     "image_key": "hSD01/hSD01-014_U",
     "locale": "en",
     "name": "Amane Kanata",
+    "original": {
+      "art_names": [
+        "へい"
+      ],
+      "name": "天音かなた",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "U",
     "tags": [
@@ -551,6 +577,11 @@
     "image_key": "hSD01/hSD01-020_C",
     "locale": "en",
     "name": "Hororisu's Ring",
+    "original": {
+      "art_names": [],
+      "name": "ホロリスの輪",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "No, you can’t. If you don’t have any Cheers in your Archive, you also cannot roll the die.",
@@ -639,6 +670,12 @@
     "life": 5,
     "locale": "en",
     "name": "天音かなた",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "ぎゅっぎゅっ",
+      "sp_oshi_skill_name": "握りつぶしちゃうぞ",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[Once per turn] Set the remaining HP of your opponent’s Center Holomem to 50.",
       "name": "Gyugyu",
@@ -826,6 +863,11 @@
     "life": 5,
     "locale": "en",
     "name": "小鳥遊キアラ",
+    "original": {
+      "art_names": [],
+      "oshi_skill_name": "フェニックステール",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[Once per turn] Return 1 Holomen from your Archive to your hand.",
       "name": "Phoenix Tail",
@@ -1005,6 +1047,14 @@
     },
     "locale": "en",
     "name": "Amane Kanata",
+    "original": {
+      "art_names": [
+        "♰漆黒の翼♰"
+      ],
+      "keyword_name": "堕ちた天使",
+      "name": "天音かなた",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "Yes, damage is dealt.hBP01-014 〈Amane Kanata） receiving damage triggers hBP01-116 〈Upao）'s 'when the holomem this mascot is attached to takes damage' ability, which goes into standby.Then, rule-based down resolution archives hBP01-014 and hBP01-116, and resolves that standby effect of 'when the holomem this mascot is attached to takes damage' at the check timing.",
@@ -1107,6 +1157,11 @@
     "image_key": "hBP01/hBP01-116_C",
     "locale": "en",
     "name": "Upao",
+    "original": {
+      "art_names": [],
+      "name": "うぱお",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "The order for resolution for this scenario follows the following order: first, any rule resolutions (e.g. Resolving downed holomem). Then, resolve all abilities that belong to the turn player that is pending resolution (e.g. Any abilities that has been activated and is pending resolution). Finally, the non-turn player will resolve all abilities that belong to the non-turn player that is pending resolution (e.g. abilities that trigger when holomem takes damage).As hBP01-116〈Upao〉is an ability that belongs to the non-turn player, it will be resolved last.",
@@ -1220,6 +1275,11 @@
     "image_key": "hBP01/hBP01-122_C",
     "locale": "en",
     "name": "Rose Knights",
+    "original": {
+      "art_names": [],
+      "name": "ロゼ隊",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
@@ -1248,6 +1308,11 @@
     "image_key": "COMMON/hY01-001_C",
     "locale": "en",
     "name": "White Cheer",
+    "original": {
+      "art_names": [],
+      "name": "白エール",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
@@ -1269,6 +1334,13 @@
     "life": 5,
     "locale": "en",
     "name": "Nanashi Mumei",
+    "original": {
+      "art_names": [],
+      "name": "七詩ムメイ",
+      "oshi_skill_name": "ホワイトバトン",
+      "sp_oshi_skill_name": "クイックガード",
+      "tags": []
+    },
     "oshi_skill": {
       "effect": "[1/Turn]During this turn, your white collab holomem get Arts+20.",
       "name": "White Baton",
@@ -1352,6 +1424,11 @@
     "image_key": "hBP02/hSD03-009_SR",
     "locale": "en",
     "name": "Nekomata Okayu",
+    "original": {
+      "art_names": [],
+      "name": "猫又おかゆ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
@@ -1413,6 +1490,11 @@
     "image_key": "hBP02/hSD04-009_SR",
     "locale": "en",
     "name": "Yuzuki Choco",
+    "original": {
+      "art_names": [],
+      "name": "癒月ちょこ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
@@ -1438,6 +1520,11 @@
     "image_key": "hBP02/hY01-003_SY",
     "locale": "en",
     "name": "White Cheer",
+    "original": {
+      "art_names": [],
+      "name": "白エール",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "SY",
     "tags": []
@@ -1920,6 +2007,13 @@
     },
     "locale": "en",
     "name": "星街すいせい",
+    "original": {
+      "art_names": [
+        "バーチャルゴースト"
+      ],
+      "keyword_name": "プラネットステージ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
@@ -2012,6 +2106,13 @@
     "image_key": "hWF01/hBP03-011_P",
     "locale": "en",
     "name": "姫森ルーナ",
+    "original": {
+      "art_names": [
+        "おつルーナ",
+        "ぐっどないと～"
+      ],
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "P",
     "tags": [
@@ -2141,6 +2242,14 @@
     "image_key": "hSYN/hSYN-001_C",
     "locale": "en",
     "name": "Test Short Arts",
+    "original": {
+      "art_names": [
+        "アーツ一",
+        "アーツ二"
+      ],
+      "name": "テスト・ショートアーツ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
