@@ -23,14 +23,16 @@ const hasMore = computed(() => {
 });
 
 /**
- * Virtual scroller card size and padding configuration
+ * Virtual scroller geometry.
+ *
+ * The rule lives in `gridColumns.ts` — columns follow from a target tile width rather
+ * than from a breakpoint ladder, which is what stops the cards shrinking as the window
+ * grows (#43). `RecycleScroller` cannot measure its own children, so both axes are
+ * computed here and passed as props.
  */
-let cardPadding = 8;
-const cardImageRatio =
-  (558 + cardPadding + cardPadding) / (400 + cardPadding + cardPadding); // Ratio of card height to width
-const gridColCount = shallowRef(6);
-const itemSize = shallowRef(574); // Default calculated size (400 + padding)
-const itemSecondarySize = shallowRef(416); // Default calculated secondary size (558 + padding)
+const gridColCount = shallowRef(gridGeometry(1280).columns);
+const itemSize = shallowRef(gridGeometry(1280).itemSize);
+const itemSecondarySize = shallowRef(gridGeometry(1280).itemSecondarySize);
 
 function onResizeObserver(entries: ResizeObserverEntry[]) {
   const [entry] = entries;
@@ -39,34 +41,11 @@ function onResizeObserver(entries: ResizeObserverEntry[]) {
   const { width } = entry.contentRect;
   if (!width || width <= 0) return;
 
-  if (width < 640) {
-    cardPadding = 4; // Adjust ratio for smaller screens
-  } else {
-    cardPadding = 8; // Default padding for larger screens
-  }
+  const geometry = gridGeometry(width);
 
-  if (width < 640) {
-    gridColCount.value = 3;
-  } else if (width < 768) {
-    gridColCount.value = 4;
-  } else if (width < 1024) {
-    gridColCount.value = 5;
-  } else if (width < 1280) {
-    gridColCount.value = 6;
-  } else if (width < 1536) {
-    gridColCount.value = 8;
-  } else if (width < 2000) {
-    gridColCount.value = 10;
-  } else {
-    gridColCount.value = 12;
-  }
-
-  // Ensure we have valid dimensions
-  const newSecondarySize = Math.max(100, width / gridColCount.value); // Min 100px width
-  const newSize = Math.max(140, newSecondarySize * cardImageRatio); // Min 140px height
-
-  itemSecondarySize.value = newSecondarySize;
-  itemSize.value = newSize;
+  gridColCount.value = geometry.columns;
+  itemSecondarySize.value = geometry.itemSecondarySize;
+  itemSize.value = geometry.itemSize;
 }
 
 // Debounced filter application - simplified
@@ -310,10 +289,22 @@ watch(
           </template>
         </RecycleScroller>
 
-        <!-- Fallback grid when virtual scroller can't render -->
+        <!--
+          Fallback grid, rendered until the resize observer reports a width.
+
+          This carried its own copy of the breakpoint ladder
+          (`xl:grid-cols-8 2xl:grid-cols-10`), so it had the same bug: a *smaller* card at
+          1536px than at 1440px. Fixing only the scroller would have left it live here.
+
+          `auto-fill` keys on the minimum track rather than on a target, so it is not
+          identical to `columnsForWidth` — it fills to whatever fits above `MIN_TILE`
+          instead of aiming at `TARGET_TILE`. What it does share is the property the bug
+          was about: columns are derived from width, so the tile can never fall below
+          150px and adding a column can never shrink the grid's floor. #43.
+        -->
         <div
           v-else
-          class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-2 p-2"
+          class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 p-2"
         >
           <div
             v-for="item in displayedCards"

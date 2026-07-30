@@ -74,7 +74,8 @@ Object.assign(globalThis, {
 // The real filter module — its `useState` is the shim above, so this is the production
 // module under test rather than a reimplementation of it.
 const { useFilter } = await import("../app/composables/filter-states");
-Object.assign(globalThis, { useFilter, useCardQuery });
+const { gridGeometry } = await import("../app/composables/gridColumns");
+Object.assign(globalThis, { useFilter, useCardQuery, gridGeometry });
 
 // happy-dom has no ResizeObserver, and `v-resize-observer` constructs one on mount.
 class ResizeObserverStub {
