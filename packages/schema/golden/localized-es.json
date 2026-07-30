@@ -15,15 +15,16 @@
     "image_key": "hSD01/hSD01-001_OSR",
     "life": 5,
     "locale": "es",
-    "name": "ときのそら",
+    "name": "Tokino Sora",
     "original": {
       "art_names": [],
+      "name": "ときのそら",
       "oshi_skill_name": "リプレイスメント",
       "sp_oshi_skill_name": "じゃあ敵だね？",
       "tags": []
     },
     "oshi_skill": {
-      "effect": "[Una vez por turno] Cambia una carta de Apoyo en tu Escenario y asígnala a tu Holomen.",
+      "effect": "[Una vez por turno] Cambia 1 Cheer de tu escenario a uno de tus holomen.",
       "name": "Reemplazo",
       "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
@@ -76,8 +77,8 @@
     ],
     "rarity_code": "OSR",
     "sp_oshi_skill": {
-      "effect": "[Una vez por partida] Intercambia el Holomen central y un Holomen de respaldo del oponente. Luego, durante este turno, los Artes de tu Holomen central blanco obtienen +50.",
-      "name": "¿Entonces eres mi enemigo?",
+      "effect": "[Una vez por partida] Haz que el Centro holomen de tu oponente y 1 Back holomen se intercambien. Después, durante este turno, las Arts de tu Centro holomen blanco +50.",
+      "name": "¿Then you're an enemy?",
       "timing": "Una vez por partida",
       "timing_code": "once_per_game"
     },
@@ -107,7 +108,7 @@
       "tags": []
     },
     "oshi_skill": {
-      "effect": "[Una vez por turno] Puedes usarlo cuando lances un dado por una habilidad de tu Holomen: declara un número del dado, y el siguiente resultado del dado se tratará como el número declarado.",
+      "effect": "[Una vez por turno] Puedes usar esto cuando una habilidad de tus holomen te haga tirar un dado: declara 1 resultado de dado, y el próximo resultado se trata como el resultado declarado.",
       "name": "Mapa en la mano izquierda",
       "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
@@ -115,7 +116,7 @@
     "qa_items": [
       {
         "answer": "Sí, puedes hacerlo.",
-        "question": "Cuando tu Holomen favorito es hSD01-002〈AZKi〉 y tu Holomen recibe daño, usas el regalo “V.7” de hBP01-027〈ベスティア・ゼータ〉. En este caso, ¿puedes declarar el número del dado usando la habilidad 推し de hSD01-002〈AZKi〉 “Mapa en la mano izquierda”?",
+        "question": "Si tu Holomen favorito es hSD01-002〈AZKi〉 y cuando tu Holomen recibe daño usas el regalo “V.7” de hBP01-027〈ベスティア・ゼータ〉, ¿puedes declarar el resultado del dado usando la habilidad favorita “左手に地図” de hSD01-002〈AZKi〉?",
         "related_cards": {
           "card_number": [
             "hSD01-002",
@@ -123,7 +124,7 @@
           ],
           "raw_html": "[hSD01-002 ： AZKi]\n[hBP01-027 ： ベスティア・ゼータ]"
         },
-        "title": "P221（2024.10.23）"
+        "title": "Q221（2024.10.23）"
       },
       {
         "answer": "Sí, se puede usar.",
@@ -139,7 +140,7 @@
     ],
     "rarity_code": "OSR",
     "sp_oshi_skill": {
-      "effect": "[Una vez por partida] Envía cualquier número de cartas de Ánimo desde tu Archivo a un Holomen verde de tu elección.",
+      "effect": "[Una vez por partida] Envía cualquier cantidad de Cheers de tu archivo a 1 de tus holomen verdes.",
       "name": "Micrófono en la mano derecha",
       "timing": "Una vez por partida",
       "timing_code": "once_per_game"
@@ -154,7 +155,7 @@
           "null"
         ],
         "damage": 50,
-        "name": "ドリームライブ"
+        "name": "Dream Live"
       },
       {
         "cost_types": [
@@ -163,9 +164,9 @@
           "null"
         ],
         "damage": 60,
-        "effect": "Si tienes en tu escenario a la Holomen〈AZKi〉, este arte obtiene +50.",
+        "effect": "Si hay un 〈AZKi〉 de holomen en tu Escenario, este Arte +50.",
         "is_plus": true,
-        "name": "SorAZ シンパシー"
+        "name": "Simpatía SorAZ"
       }
     ],
     "baton_touch_count": 2,
@@ -182,17 +183,29 @@
     "color_codes": [
       "white"
     ],
-    "extra": "Cuando este Holomen sea derrotado, tu vida se reduce en 2.",
+    "extra": "Cuando este holomen quede abatido, tu vida -2",
     "hp": 240,
     "id": "6",
     "illustrator": "I☆LA",
     "image_key": "hSD01/hSD01-006_RR",
     "locale": "es",
-    "name": "ときのそら",
+    "name": "Tokino Sora",
+    "original": {
+      "art_names": [
+        "ドリームライブ",
+        "SorAZ シンパシー"
+      ],
+      "name": "ときのそら",
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#歌"
+      ]
+    },
     "qa_items": [
       {
-        "answer": "Sí, obtiene +50. Incluso si no existe una carta con ese nombre exacto, si alguna carta tiene en su habilidad Extra algo como “Este Holomen también se considera como〈ときのそら〉〈AZKi〉”, se cumple la condición.",
-        "question": "Cuando la carta hSD01-006〈ときのそら〉 usa el arte “SorAZ シンパシー”, si tienes entre tus Holomen a hSD01-013〈SorAZ〉, ¿también obtiene “este arte +50.”?",
+        "answer": "Sí, recibe +50. Aunque una carta no tenga exactamente ese nombre, si tiene una habilidad extra como “Este Holomen también se considera como 〈ときのそら〉 y 〈AZKi〉”, cumple la condición.",
+        "question": "En el Arte “SorAZ Sympathy” de hSD01-006〈ときのそら〉, ¿recibe igualmente “este Arte +50.” si tengo hSD01-013〈SorAZ〉 entre mis Holomen?",
         "related_cards": {
           "card_number": [
             "hSD01-006",
@@ -203,8 +216,8 @@
         "title": "Q5（2024.09.21）"
       },
       {
-        "answer": "Sí, se cumple la condición. Aunque no haya una carta con ese nombre exacto, como en el texto Extra dice “Este Holomen también se considera como〈ときのそら〉〈AZKi〉”, la condición se cumple.",
-        "question": "En el arte “SorAZ シンパシー” de hSD01-006〈ときのそら〉, la condición “Si tienes en tu escenario a la Holomen〈AZKi〉” ¿también se cumple si tienes a hSD01-013〈SorAZ〉?",
+        "answer": "Sí, se cumple. Aunque el nombre de la carta no coincida exactamente, en la sección de Extra se indica “Este Holomen también se considera como 〈ときのそら〉 y 〈AZKi〉”, por lo tanto cumple la condición.",
+        "question": "En el arte “SorAZ シンパシー” de hSD01-006〈ときのそら〉, la condición “Cuando tengas a la Holomen〈AZKi〉en tu escenario” ¿también se cumple si tienes a hSD01-013〈SorAZ〉?",
         "related_cards": {
           "card_number": [
             "hSD01-006"
@@ -217,8 +230,8 @@
     "rarity_code": "RR",
     "tags": [
       "#JP",
-      "#0期生",
-      "#歌"
+      "#0th Gen",
+      "#Singing"
     ]
   },
   {
@@ -229,8 +242,8 @@
           "null"
         ],
         "damage": 50,
-        "effect": "Puedes tirar un dado una vez: si sale número impar, envía la carta superior de tu mazo de apoyo a este Holomen. Si sale número par, roba una carta de tu mazo.",
-        "name": "Futuro que quiero superar"
+        "effect": "Puedes lanzar 1 dado: si sale un número impar, envía la carta superior de tu mazo de Cheer a este holomen. Si sale un número par, roba 1 carta de tu mazo.",
+        "name": "El futuro que quiero alcanzar"
       }
     ],
     "baton_touch_count": 1,
@@ -246,7 +259,7 @@
     "color_codes": [
       "white_green"
     ],
-    "extra": "Este Holomen también se considera como 〈ときのそら〉 y 〈AZKi〉.",
+    "extra": "Este holomen también se considera como 〈Tokino Sora〉 y 〈AZKi〉",
     "hp": 130,
     "id": "13",
     "illustrator": "© 2023 Victor Entertainment.",
@@ -257,12 +270,16 @@
       "art_names": [
         "越えたい未来"
       ],
-      "tags": []
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#歌"
+      ]
     },
     "qa_items": [
       {
-        "answer": "Indica que posee los nombres de carta 〈ときのそら〉, 〈AZKi〉 y 〈SorAZ〉.",
-        "question": "¿Qué significa la habilidad extra de hSD01-013〈SorAZ〉 “Este Holomen también se considera como 〈ときのそら〉 y 〈AZKi〉”?",
+        "answer": "Significa que posee los nombres de carta〈ときのそら〉,〈AZKi〉y〈SorAZ〉.",
+        "question": "¿Qué significa la habilidad extra de hSD01-013〈SorAZ〉『Este Holomen también se considera como〈ときのそら〉y〈AZKi〉』?",
         "related_cards": {
           "card_number": [
             "hSD01-013"
@@ -272,8 +289,8 @@
         "title": "Q616（2026.03.02）"
       },
       {
-        "answer": "No, no puede.",
-        "question": "Si tienes un hSD01-013〈SorAZ〉 y hBP07-068〈AZKi〉 realiza una colaboración, ¿puede contarse hSD01-013〈SorAZ〉 como dos Holomen, 〈ときのそら〉 y 〈SorAZ〉, para el efecto de colaboración “Huella de lo que caminamos juntas”?",
+        "answer": "No, no se puede.",
+        "question": "Cuando tienes un hSD01-013〈SorAZ〉 en tu campo y hBP07-068〈AZKi〉 realiza una colaboración, ¿en este caso se puede contar a hSD01-013〈SorAZ〉 como dos personas, 〈ときのそら〉 y 〈SorAZ〉, para la habilidad del efecto de colaboración «El camino recorrido juntos»?",
         "related_cards": {
           "card_number": [
             "hSD01-013",
@@ -284,8 +301,8 @@
         "title": "Q602（2026.03.02）"
       },
       {
-        "answer": "Sí, puedes añadirlos.",
-        "question": "Usando hBP04-089〈ツートンカラーパソコン〉, si eliges como Holomen de distinto color pero de un solo color cada uno a 〈ときのそら〉 y 〈フワワ・アビスガード〉 en tu escenario, ¿puedes añadir a tu mano a hSD01-013〈SorAZ〉 y hBP03-050〈FUWAMOCO〉 como 1st Holomen del mismo color que los elegidos?",
+        "answer": "Sí, puedes hacerlo.",
+        "question": "Usando hBP04-089〈ツートンカラーパソコン〉, elegí como holomen de colores diferentes en mi escenario a 〈ときのそら〉 y 〈フワワ・アビスガード〉. En este caso, ¿puedo añadir a mi mano a hSD01-013〈SorAZ〉 y a hBP03-050〈FUWAMOCO〉 como holomen 1st del mismo color que los elegidos?",
         "related_cards": {
           "card_number": [
             "hBP04-089",
@@ -310,8 +327,8 @@
         "title": "Q402（2025.06.11）"
       },
       {
-        "answer": "Sí, puedes hacerlo.",
-        "question": "¿Puedo usar hBP02-078〈かなた建設〉 para añadir hSD01-013〈SorAZ〉 a mi mano?",
+        "answer": "Sí, es posible.",
+        "question": "¿Puedo añadir hSD01-013〈SorAZ〉 a mi mano usando hBP02-078〈かなた建設〉?",
         "related_cards": {
           "card_number": [
             "hBP02-078",
@@ -322,8 +339,8 @@
         "title": "Q250（2024.12.12）"
       },
       {
-        "answer": "No, hBP01-124〈開拓者〉 se archiva.",
-        "question": "Si mi hSD01-013〈SorAZ〉 con hBP01-124〈開拓者〉 unido se hace Bloom hacia hBP01-023〈ときのそら〉, ¿sigue hBP01-124〈開拓者〉 unido?",
+        "answer": "No, hBP01-124〈開拓者〉se archiva.",
+        "question": "Si tu hSD01-013〈SorAZ〉con hBP01-124〈開拓者〉adjunto hace Bloom hacia hBP01-023〈ときのそら〉, ¿permanece adjunto hBP01-124〈開拓者〉?",
         "related_cards": {
           "card_number": [
             "hSD01-013",
@@ -334,8 +351,8 @@
         "title": "Q116（2024.09.21）"
       },
       {
-        "answer": "Sí, puedes hacerlo. Aunque una carta no tenga exactamente ese nombre, si tiene una habilidad extra como “Este Holomen también se considera como 〈ときのそら〉 y 〈AZKi〉”, cumple la condición.",
-        "question": "En hSD01-021〈First Gravity〉 se indica “revela cualquier número de cartas 〈ときのそら〉 y 〈AZKi〉”. ¿Puedo revelar hSD01-013〈SorAZ〉 y añadirla a mi mano?",
+        "answer": "Sí, puedes. Aunque no exista una carta con ese nombre exacto, si en el Extra hay una carta que indique algo como «esta Holomen también cuenta como 〈ときのそら〉 y 〈AZKi〉», entonces cumple con las condiciones.",
+        "question": "En el texto de hSD01-021〈First Gravity〉 dice «puedes revelar cualquier número de 〈ときのそら〉 y 〈AZKi〉». ¿Puedo revelar y añadir a la mano una hSD01-013〈SorAZ〉?",
         "related_cards": {
           "card_number": [
             "hSD01-021",
@@ -346,8 +363,8 @@
         "title": "Q17（2024.09.21）"
       },
       {
-        "answer": "Sí, ambas se activan. Debido a su habilidad extra, hSD01-013〈SorAZ〉 se considera también como 〈ときのそら〉 y 〈AZKi〉, y por tanto ambas Holomen se consideran presentes en el escenario.",
-        "question": "Si hSD01-013〈SorAZ〉 está en la posición central y hSD01-015〈博衣こより〉 realiza una colaboración, ¿se activan ambas habilidades de colaboración?",
+        "answer": "Sí, se activan ambas habilidades. hSD01-013〈SorAZ〉, debido a su extra, se trata como 〈ときのそら〉 y 〈AZKi〉, por lo que se considera que ambos nombres de Holomen están en el escenario.",
+        "question": "Si tienes a hSD01-013〈SorAZ〉 en la posición central, y haces una colaboración con tu hSD01-015〈博衣こより〉, ¿se activan ambas habilidades del efecto de colaboración?",
         "related_cards": {
           "card_number": [
             "hSD01-013",
@@ -369,8 +386,8 @@
         "title": "Q12（2025.12.18）"
       },
       {
-        "answer": "Sí, puedes usarlo. Después de declarar el uso del Arte, resuelves los efectos escritos en el texto tanto como sea posible y luego causas el daño del Arte.",
-        "question": "¿Puedo usar el Arte “Futuro que quiero superar” de hSD01-013〈SorAZ〉 incluso si mi mazo o mazo de apoyo tiene 0 cartas?",
+        "answer": "Sí, se puede usar. Después de declarar el uso del arte, se resuelve el efecto del texto lo más posible y luego se aplica el daño del arte.",
+        "question": "¿Se puede usar el arte『Futuro que quiero superar』de hSD01-013〈SorAZ〉incluso si tu mazo o tu mazo de ánimo tienen 0 cartas?",
         "related_cards": {
           "card_number": [
             "hSD01-013"
@@ -380,8 +397,8 @@
         "title": "Q11（2024.09.21）"
       },
       {
-        "answer": "Sí, puedes hacerlo. Aunque una carta no tenga exactamente ese nombre, si tiene una habilidad extra como “Este Holomen también se considera como 〈ときのそら〉 y 〈AZKi〉”, cumple la condición.",
-        "question": "En el Arte “SorAZ Gravity” de hSD01-011〈AZKi〉, si no tengo 〈ときのそら〉 entre mis Holomen, ¿puedo enviar la carta superior de mi mazo de apoyo a uno de mis Holomen si tengo hSD01-013〈SorAZ〉?",
+        "answer": "Sí, puedes hacerlo. Incluso si no hay una carta con ese nombre exacto, si existe una carta en el Extra que diga algo como “Este Holomen también se considera como 〈ときのそら〉 y 〈AZKi〉”, esa carta cumple con la condición.",
+        "question": "En hSD01-011〈AZKi〉, la Artes «SorAZ グラビティ» te permite enviar la carta superior de tu mazo de Aplausos a uno de tus Holomen si tienes a 〈ときのそら〉 en tu escenario. ¿Puedes hacerlo también si no tienes a 〈ときのそら〉 pero sí a hSD01-013〈SorAZ〉?",
         "related_cards": {
           "card_number": [
             "hSD01-011",
@@ -407,8 +424,8 @@
     "rarity_code": "R",
     "tags": [
       "#JP",
-      "#0期生",
-      "#歌"
+      "#0th Gen",
+      "#Singing"
     ]
   },
   {
@@ -419,7 +436,7 @@
           "green"
         ],
         "damage": 30,
-        "name": "へい"
+        "name": "Hey"
       }
     ],
     "baton_touch_count": 1,
@@ -435,22 +452,33 @@
     "color_codes": [
       "null"
     ],
-    "extra": "Este Holomen no puede hacer Bloom",
+    "extra": "Este holomen no puede Bloom",
     "hp": 150,
     "id": "14",
     "image_key": "hSD01/hSD01-014_U",
     "locale": "es",
-    "name": "天音かなた",
+    "name": "Amane Kanata",
+    "original": {
+      "art_names": [
+        "へい"
+      ],
+      "name": "天音かなた",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "U",
     "tags": [
       "#JP",
-      "#4期生",
-      "#歌"
+      "#4th Gen",
+      "#Singing"
     ]
   },
   {
-    "ability_text": "Roba 3 cartas de tu mazo.\n\nLIMITED: Solo puedes usar 1 por turno.",
+    "ability_text": "Roba 3 cartas de tu mazo.\n\r\nLIMITED: Solo puedes usar 1 carta por turno.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-016",
@@ -474,13 +502,18 @@
     "illustrator": "Yoshimo",
     "image_key": "hSD01/hSD01-016_C",
     "locale": "es",
-    "name": "春先のどか",
+    "name": "Harukawa Nodoka",
+    "original": {
+      "art_names": [],
+      "name": "春先のどか",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
   },
   {
-    "ability_text": "Mira las 5 cartas superiores de tu mazo. Revela 1 carta de apoyo LIMITED de entre ellas y añádela a tu mano. Luego, coloca las cartas restantes en la parte inferior del mazo en el orden que prefieras.",
+    "ability_text": "Mira las 5 cartas de la parte superior de tu mazo. De entre ellas, muestra 1 carta de Support con LIMITED y añádela a tu mano. Luego devuelve las cartas restantes al fondo del mazo en el orden que quieras.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-018",
@@ -495,13 +528,18 @@
     "illustrator": "JinArt こばやかわやまと",
     "image_key": "hSD01/hSD01-018_C",
     "locale": "es",
-    "name": "サブパソコン",
+    "name": "Sub PC",
+    "original": {
+      "art_names": [],
+      "name": "サブパソコン",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
   },
   {
-    "ability_text": "Esta carta no se puede usar a menos que archives 1 Cheer de tu Escenario.\n\nMuestra 1 [1stホロメン o 2ndホロメン] que no sea Buzz de tu mazo y añádelo a tu mano. Después, baraja el mazo.\n\nLIMITED: Solo puedes usar 1 carta por turno.",
+    "ability_text": "Debes archivar 1 Cheer de tu Stage para poder usar esta carta.\n\nRevela de tu mazo 1 [1st holomem o 2nd holomem] que no sea Buzz, añádelo a tu mano y luego baraja tu mazo.\n\nLIMITED: solo puedes usar 1 carta por turno.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-019",
@@ -525,7 +563,12 @@
     "illustrator": "JinArt KABAKURA",
     "image_key": "hSD01/hSD01-019_C_02",
     "locale": "es",
-    "name": "スゴイパソコン",
+    "name": "Amazing PC",
+    "original": {
+      "art_names": [],
+      "name": "スゴイパソコン",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "Sí, puedes optar por no revelar ninguna. En ese caso, baraja tu mazo y la habilidad termina.",
@@ -554,7 +597,7 @@
     "tags": []
   },
   {
-    "ability_text": "Lanza un dado una vez: si el resultado es 3 o más, envía 1 carta de Aplauso desde tu Archivo a tu Holomen.",
+    "ability_text": "Lanza 1 dado: si el resultado es 3 o más, envía 1 Cheer de tu Archive a uno de tus holomen.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-020",
@@ -568,7 +611,7 @@
     "illustrator": "JinArt KABAKURA",
     "image_key": "hSD01/hSD01-020_C",
     "locale": "es",
-    "name": "El Círculo de Hololis",
+    "name": "Hololist Circle",
     "original": {
       "art_names": [],
       "name": "ホロリスの輪",
@@ -587,8 +630,8 @@
         "title": "Q554（2026.01.16）"
       },
       {
-        "answer": "Sí, el daño del arte se incrementa. Independientemente del resultado del dado, la habilidad de la carta de soporte se activa, por lo que se considera usada y el daño del arte se incrementa.",
-        "question": "Si usas hSD01-020〈ホロリスの輪〉 y el resultado del dado es 2 o menos, luego usas el arte «Oh,Hi» de hBP01-015〈七詩ムメイ〉, ¿el daño del arte se incrementa?",
+        "answer": "Sí, el daño del arte se incrementa. Sin importar el resultado del dado, la habilidad de la carta de apoyo se considera activada, por lo que se considera como usada y el daño del arte aumenta.",
+        "question": "Si uso hSD01-020〈ホロリスの輪〉 y el resultado del dado es 2 o menos, cuando uso el arte «Oh,Hi» de hBP01-015〈七詩ムメイ〉, ¿el daño del arte se incrementa?",
         "related_cards": {
           "card_number": [
             "hBP01-015",
@@ -603,7 +646,7 @@
     "tags": []
   },
   {
-    "ability_text": "Solo puedes usar esta carta si, sin contar esta carta, tienes 6 o menos cartas en tu mano.\n\nMira las 4 cartas superiores de tu mazo. Puedes revelar cualquier número de cartas que sean 〈ときのそら〉 o 〈AZKi〉 entre ellas, y añade a tu mano las Holomen reveladas. Coloca las cartas restantes en la parte inferior de tu mazo en el orden que prefieras.\n\nLIMITED: Solo puedes usar una por turno.",
+    "ability_text": "Esta carta solo se puede usar si tienes 6 cartas o menos en la mano, sin contar esta carta.\n\nMira las 4 cartas de la parte superior de tu mazo. De entre ellas, revela cualquier cantidad de holomen con 〈Tokino Sora〉 y 〈AZKi〉, añade a tu mano los holomen revelados y devuelve las cartas restantes al fondo del mazo en el orden que prefieras.\n\nLIMITED: Solo puedes usar 1 carta por turno.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-021",
@@ -661,17 +704,24 @@
     "image_key": "hBP01/hBP01-001_OUR",
     "life": 5,
     "locale": "es",
-    "name": "天音かなた",
+    "name": "Amane Kanata",
+    "original": {
+      "art_names": [],
+      "name": "天音かなた",
+      "oshi_skill_name": "ぎゅっぎゅっ",
+      "sp_oshi_skill_name": "握りつぶしちゃうぞ",
+      "tags": []
+    },
     "oshi_skill": {
-      "effect": "[Una vez por turno] Reduce el HP restante del holomen central del oponente a 50.",
-      "name": "ぎゅっぎゅっ",
+      "effect": "[Una vez por turno] Los PS restantes del holomen central de tu oponente pasan a ser 50.",
+      "name": "Apretujón, apretujón",
       "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
       {
         "answer": "No, no se puede.",
-        "question": "¿Se puede hacer que el holomen Buzz con hBP06-097〈カワイイスタジャン〉 anexado tenga su HP restante reducido a '50' por la habilidad oshi de hBP01-001〈天音かなた〉 「ぎゅっぎゅっ」?",
+        "question": "¿Se puede hacer que los HP restantes de un Holomen Buzz con hBP06-097〈カワイイスタジャン〉 sean 50 usando la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -682,8 +732,8 @@
         "title": "Q536（2025.12.12）"
       },
       {
-        "answer": "No, no puede, ya que el HP no cambia y no se convierte en '50'.",
-        "question": "¿Puede la habilidad de regalo 「冷静沈着」 de hBP04-024〈儒烏風亭らでん〉 hacer que, mediante la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉, el HP restante sea '50'?",
+        "answer": "No, no se puede, ya que los HP no se modifican, por lo tanto no pueden ser 50.",
+        "question": "¿La Gift «冷静沈着» de hBP04-024〈儒烏風亭らでん〉 puede hacer que los HP restantes sean 50 al usar la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -706,8 +756,8 @@
         "title": "Q362（2025.03.11）"
       },
       {
-        "answer": "No, no puede, ya que el HP no cambia y no se vuelve '50'.",
-        "question": "¿Puede la habilidad de regalo 「ボクシングスタイル」 de hBP03-065〈戌神ころね〉 permitir que, mediante la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉, el HP restante se convierta en '50'?",
+        "answer": "No, no se puede, ya que los HP no se modifican, por lo tanto no pueden ser 50.",
+        "question": "¿La Gift «ボクシングスタイル» de hBP03-065〈戌神ころね〉 permite hacer que los HP restantes sean 50 al usar la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -718,8 +768,8 @@
         "title": "Q327（2025.03.11）"
       },
       {
-        "answer": "No, no lo recibe. La habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 no inflige daño, por lo tanto, la habilidad de hBP01-116〈うぱお〉 no se activa.",
-        "question": "Si se usa la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 sobre el holomen central del oponente que tiene anexado hBP01-116〈うぱお〉, ¿recibe mi holomen central daño especial por la habilidad de hBP01-116〈うぱお〉?",
+        "answer": "No, no lo recibe. La habilidad 推しスキル “ぎゅっぎゅっ” de hBP01-001〈天音かなた〉 no es una habilidad que inflija daño, por lo tanto la habilidad de hBP01-116〈うぱお〉 no se activa.",
+        "question": "Si uso la habilidad 推しスキル “ぎゅっぎゅっ” de mi hBP01-001〈天音かなた〉 contra el holomen central del oponente que tiene anexado un hBP01-116〈うぱお〉, ¿mi holomen central recibe daño especial por la habilidad de hBP01-116〈うぱお〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -730,8 +780,8 @@
         "title": "Q26（2024.09.21）"
       },
       {
-        "answer": "No, no se puede usar. Como no es una habilidad que inflige daño, la habilidad SP oshi 「クイックガード」 de hYS01-001〈七詩ムメイ〉 no puede usarse contra la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉.",
-        "question": "¿Se puede usar la habilidad SP oshi 「クイックガード」 de hYS01-001〈七詩ムメイ〉 contra la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉?",
+        "answer": "No, no se puede. Como no inflige daño, no se puede usar la habilidad de la SP Oshi Skill «クイックガード» de hYS01-001〈七詩ムメイ〉 contra la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉.",
+        "question": "¿Se puede usar la SP Oshi Skill «クイックガード» de hYS01-001〈七詩ムメイ〉 contra la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -766,8 +816,8 @@
         "title": "Q23（2024.09.21）"
       },
       {
-        "answer": "No, no se puede. Como no inflige daño, la habilidad de regalo 「V.7」 de hBP01-027〈ベスティア・ゼータ〉 no puede usarse contra la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉.",
-        "question": "¿Se puede usar el regalo 「V.7」 de hBP01-027〈ベスティア・ゼータ〉 contra la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉?",
+        "answer": "No, no se puede. Como no inflige daño, no se puede usar la Gift «V.7» de hBP01-027〈ベスティア・ゼータ〉 contra la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉.",
+        "question": "¿Se puede usar la Gift «V.7» de hBP01-027〈ベスティア・ゼータ〉 contra la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -778,8 +828,8 @@
         "title": "Q22（2024.09.21）"
       },
       {
-        "answer": "No, no puede. La habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 no inflige daño, por lo que no se puede usar la habilidad 「文明の守護者」 de hBP01-002〈七詩ムメイ〉 para reducirlo.",
-        "question": "Durante el turno del oponente, si la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 hace que el HP restante de mi holomen con #Promise sea 50, ¿puede la habilidad oshi 「文明の守護者」 de hBP01-002〈七詩ムメイ〉 reducir dicho daño en -50?",
+        "answer": "No, no se puede. La Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉 no inflige daño, por lo tanto no se puede usar la habilidad de la Oshi Skill «文明の守護者» de hBP01-002〈七詩ムメイ〉.",
+        "question": "Durante el turno del oponente, cuando un Holomen propio con #Promise tiene sus HP reducidos a 50 por la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉, ¿se puede usar la Oshi Skill «文明の守護者» de hBP01-002〈七詩ムメイ〉 para reducir en 50 el daño recibido?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -801,8 +851,8 @@
         "title": "Q20（2024.09.21）"
       },
       {
-        "answer": "El HP restante del holomen oponente se vuelve 50.",
-        "question": "Cuando se usa la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 sobre un holomen oponente con HP restante de 40 o menos, ¿qué sucede con su HP?",
+        "answer": "Los HP restantes del Holomen oponente se establecen en 50.",
+        "question": "Cuando se usa la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉 en un Holomen oponente con HP restantes de 40 o menos, ¿qué ocurre con sus HP?",
         "related_cards": {
           "card_number": [
             "hBP01-001"
@@ -812,8 +862,8 @@
         "title": "Q19（2024.09.21）"
       },
       {
-        "answer": "No, no se puede. Como la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 no inflige daño, no es posible reducir ni evitar el daño recibido.",
-        "question": "Cuando la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 reduce el HP de mi holomen central a 50, ¿puedo evitar el daño con el regalo 「V.7」 de hBP01-027〈ベスティア・ゼータ〉?",
+        "answer": "No, no se puede. La Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉 no inflige daño, así que no se puede reducir ni evitar el daño recibido.",
+        "question": "Cuando los HP de mi Holomen central se reducen a 50 por la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉, ¿puedo evitar el daño usando la Gift «V.7» de hBP01-027〈ベスティア・ゼータ〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001"
@@ -825,8 +875,8 @@
     ],
     "rarity_code": "OUR",
     "sp_oshi_skill": {
-      "effect": "[Una vez por partida] Durante este turno, uno de tus holomen obtiene +50 en Artes. Si ese holomen es de color blanco, obtiene +50 adicionales.",
-      "name": "握りつぶしちゃうぞ",
+      "effect": "[Una vez por partida] Durante este turno, las artes de 1 de tus holomen obtienen +50. Si el color de ese holomen es blanco, además, esas artes obtienen +50.",
+      "name": "¡Te aplastaré con mi mano!",
       "timing": "Una vez por partida",
       "timing_code": "once_per_game"
     },
@@ -848,17 +898,23 @@
     "image_key": "hBP01/hBP01-006_SEC",
     "life": 5,
     "locale": "es",
-    "name": "小鳥遊キアラ",
+    "name": "Takanashi Kiara",
+    "original": {
+      "art_names": [],
+      "name": "小鳥遊キアラ",
+      "oshi_skill_name": "フェニックステール",
+      "tags": []
+    },
     "oshi_skill": {
-      "effect": "[Una vez por turno] Devuelve 1 Holomen de tu archivo a tu mano.",
-      "name": "フェニックステール",
+      "effect": "[Una vez por turno] Devuelve 1 holomen de tu archivo a tu mano.",
+      "name": "Cola de fénix",
       "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
       {
-        "answer": "Sí, puedes usarla porque el Holomen derribado se considera como un Holomen que tiene todos los colores.",
-        "question": "Cuando tu Holomen favorito es hBP01-006〈小鳥遊キアラ〉, y el 〈一伊那尓栖〉 del oponente con hBP08-110〈Takodachi〉 derriba a uno de tus Holomen cuyo color original no es rojo, ¿puedes usar la habilidad favorita de hBP01-006〈小鳥遊キアラ〉, «Rise from the ashes»?",
+        "answer": "Sí, puedes usarla, ya que el holomen que fue derribado se considera como un holomen que posee todos los colores.",
+        "question": "Cuando mi holomen favorito es hBP01-006〈小鳥遊キアラ〉, el 〈一伊那尓栖〉 del oponente que tiene equipado un hBP08-110〈Takodachi〉 hizo caer a un holomen mío cuyo color original no era rojo. En este caso, ¿puedo usar la habilidad favorita de hBP01-006〈小鳥遊キアラ〉 “Rise from the ashes”?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -869,8 +925,8 @@
         "title": "Q689（2026.06.12）"
       },
       {
-        "answer": "El daño de vida que recibes es 1. [Actualización 6/26] El contenido publicado el viernes 6/12 contenía un error. Lo corregimos y pedimos disculpas.",
-        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉 y un holomen rojo con hBP08-103〈ホロマント〉 equipado queda derribado, usaste la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉 y redujiste en 1 la vida que se perdería. En este caso, ¿cuánto daño de vida recibes?",
+        "answer": "El daño de vida que recibes es 1. [Actualizado el 26/6] El contenido publicado el viernes 12/6 contenía un error. Lo corregimos y ofrecemos nuestras disculpas.",
+        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉 y un Holomen rojo con hBP08-103〈ホロマント〉 acoplado queda down, usaste la habilidad de la skill de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉 para reducir en -1 la vida que pierdes. En este caso, ¿cuánto daño de vida recibes?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -882,8 +938,8 @@
         "title": "Q682（2026.06.26）"
       },
       {
-        "answer": "Sí, puedes usarla, porque el holomen derribado se considera un holomen de todos los colores.",
-        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉, el oponente usó la habilidad del art \"ネクロ・エリミネーション!!\" de hBP08-074〈一伊那尓栖〉 para hacer que uno de tus holomen cuyo color original no es rojo se convierta en un holomen de todos los colores. Después, si ese holomen queda derribado, ¿puedes usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Sí. Como el holomen que quedó down se está tratando como un holomen de todos los colores, puedes usarla.",
+        "question": "Cuando mi oshi holomen es hBP01-006〈小鳥遊キアラ〉, mi oponente usa la habilidad del art \"ネクロ・エリミネーション!!\" de hBP08-074〈一伊那尓栖〉 y hace que todos mis holomen cuyo color original no es rojo se conviertan en holomen de todos los colores. Después, si uno de esos holomen queda down, ¿puedo usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -906,8 +962,8 @@
         "title": "Q669（2026.06.26）"
       },
       {
-        "answer": "Sí, puedes usarla, porque el holomen derribado se considera un holomen de todos los colores.",
-        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉, el oponente usó la habilidad del efecto de colaboración \"きタコれ！\" de hBP08-068〈一伊那尓栖〉 para hacer que uno de tus holomen cuyo color original no es rojo se convierta en un holomen de todos los colores. Después, si ese holomen queda derribado, ¿puedes usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Sí. Como el holomen que quedó down se trata como un holomen de todos los colores, puedes usarla.",
+        "question": "Cuando mi oshi holomen es hBP01-006〈小鳥遊キアラ〉, mi oponente usó la habilidad del efecto de colaboración \"きタコれ！\" de hBP08-068〈一伊那尓栖〉 e hizo que todos mis holomen cuyo color original no era rojo pasaran a ser holomen de todos los colores. Después, si uno de esos holomen queda down, ¿puedo usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -918,8 +974,8 @@
         "title": "Q663（2026.06.26）"
       },
       {
-        "answer": "Sí, puedes usarla, porque el holomen derribado se considera un holomen de todos los colores.",
-        "question": "Cuando tu oshiholomen es hBP01-006〈小鳥遊キアラ〉, el oponente usó la habilidad de oshi \"Ina'nisの色彩\" de hBP08-006〈一伊那尓栖〉 para hacer que uno de tus holomen cuyo color original no es rojo se convierta en un holomen de todos los colores. Después, si ese holomen queda derribado, ¿puedes usar la habilidad de oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉?",
+        "answer": "Sí. Como el holomen que quedó down se considera un holomen de todos los colores, puedes usarla.",
+        "question": "Cuando mi oshiholomen es hBP01-006〈小鳥遊キアラ〉, mi oponente usó la habilidad de oshi «Ina'nisの色彩» de hBP08-006〈一伊那尓栖〉 y convirtió a mi holomen, cuyo color original no era rojo, en un holomen de todos los colores. Después, si ese holomen queda down, ¿puedo usar la habilidad de oshi «Rise from the ashes» de hBP01-006〈小鳥遊キアラ〉?",
         "related_cards": {
           "card_number": [
             "hBP01-006",
@@ -941,8 +997,8 @@
         "title": "Q232（2024.10.30）"
       },
       {
-        "answer": "Como la habilidad extra de hBP01-071〈尾丸ポルカ〉 es una habilidad continua con efecto de reemplazo, el daño de vida al quedar derribado pasa a ser 2. Sobre ese daño de vida, la habilidad de SP oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉 reduce en 1 el daño de vida, por lo que el daño de vida al quedar derribado será \"1\".",
-        "question": "Tu Buzz holomen, hBP01-071〈尾丸ポルカ〉, quedó derribado. Después, si usas la habilidad de SP oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉, ¿cuánto daño de vida recibes?",
+        "answer": "Como la habilidad extra de hBP01-071〈尾丸ポルカ〉 es una habilidad continua con efecto de reemplazo, el daño de vida al ser derribado pasa a ser 2. Sobre ese daño de vida, la habilidad de SP oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉 reduce el daño de vida en 1, así que el daño de vida al ser derribado pasa a ser \"1\".",
+        "question": "Tu Buzz holomem, hBP01-071〈尾丸ポルカ〉, fue derribado. Después, si usas la habilidad de SP oshi \"Rise from the ashes\" de hBP01-006〈小鳥遊キアラ〉, ¿cuánto daño de vida recibes?",
         "related_cards": {
           "card_number": [
             "hBP01-006"
@@ -976,7 +1032,7 @@
     ],
     "rarity_code": "SEC",
     "sp_oshi_skill": {
-      "effect": "[Una vez por partida] Puede usarse durante el turno del oponente cuando uno de tus Holomen rojos sea derribado: Reduce el daño a tu vida en 1. Luego, elige al Holomen derribado y devuelve a tu mano ese Holomen y todos los Holomen apilados bajo él.",
+      "effect": "[Una vez por partida] Puedes usar esto durante el turno de tu oponente, cuando uno de tus holomen rojos quede fuera de combate: tu pérdida de vidas se reduce en 1. Además, elige a 1 de los que quedaron fuera de combate y devuelve a tu mano todos los holomen apilados, incluido ese holomen.",
       "name": "Rise from the ashes",
       "timing": "Una vez por partida",
       "timing_code": "once_per_game"
@@ -992,8 +1048,8 @@
           "white"
         ],
         "damage": 100,
-        "effect": "Cuando derribas al Holomen del oponente con este Arte, si el daño infligido supera en 50 o más los HP restantes, el oponente pierde 1 de Vida.",
-        "name": "♰漆黒の翼♰",
+        "effect": "Cuando esta Art derribe a un holomen del oponente, si el daño infligido excedía los HP restantes por 50 o más, la Vida del oponente -1.",
+        "name": "♰Alas azabache♰",
         "special_targets": [
           "red"
         ],
@@ -1021,17 +1077,29 @@
     "illustrator": "うなぽっぽ",
     "image_key": "hBP01/hBP01-014_UR",
     "keyword": {
-      "effect": "Inflige 50 de daño especial al Holomen central del oponente.",
-      "name": "堕ちた天使",
+      "effect": "Inflige 50 de daño especial al holomen central del oponente.",
+      "name": "Ángel caído",
       "type": "コラボエフェクト",
       "type_code": "collab_effect"
     },
     "locale": "es",
-    "name": "天音かなた",
+    "name": "Amane Kanata",
+    "original": {
+      "art_names": [
+        "♰漆黒の翼♰"
+      ],
+      "keyword_name": "堕ちた天使",
+      "name": "天音かなた",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#歌"
+      ]
+    },
     "qa_items": [
       {
-        "answer": "Sí, puede hacerlo. Cuando hBP01-014〈天音かなた〉 recibe daño, se activa la habilidad de hBP01-116〈うぱお〉 que dice “cuando el Holomen al que está unido esta mascota recibe daño”, quedando en estado de espera. Después, en el proceso de regla de derribo, hBP01-014〈天音かなた〉 y hBP01-116〈うぱお〉 se archivan, y en el momento de verificación se resuelve el efecto en espera de “cuando el Holomen al que está unida esta mascota recibe daño”.",
-        "question": "Si estando con 2 o más de Vida, mi hBP01-014〈天音かなた〉 con hBP01-116〈うぱお〉 adjunto es derribada por un Arte del Holomen central del oponente, ¿la habilidad de hBP01-116〈うぱお〉 puede infligir daño al Holomen central del oponente?",
+        "answer": "Sí, puede infligirse daño. Cuando hBP01-014〈天音かなた〉 recibe daño, se activa la habilidad de hBP01-116〈うぱお〉 que dice “cuando el Holomem al que está unido esta mascota recibe daño”, quedando en estado de espera. Luego, durante la resolución de reglas para el fuera de combate, tanto hBP01-014〈天音かなた〉 como hBP01-116〈うぱお〉 se archivan, y en el momento de verificación se resuelve el efecto en espera de “cuando el Holomem al que está unida esta mascota recibe daño”.",
+        "question": "Si mi vida es de 2 o más y el hBP01-014〈天音かなた〉 con el hBP01-116〈うぱお〉 adjunto queda fuera de combate por el Arte del Holomem central del oponente, ¿puede activarse la habilidad de hBP01-116〈うぱお〉 para infligir daño al Holomem central del oponente?",
         "related_cards": {
           "card_number": [
             "hBP01-014",
@@ -1042,8 +1110,8 @@
         "title": "Q230（2024.10.23）"
       },
       {
-        "answer": "Como se cumple la condición de la habilidad del Arte “♰漆黒の翼♰” de hBP01-014〈天音かなた〉, el oponente pierde 1 de Vida. Además, por la habilidad de la regla extra del Holomen Buzz, “cuando este Holomen es derribado, pierdes 2 de Vida”, por lo que en total se pierden 3 de Vida.",
-        "question": "Mi Holomen Buzz recibió daño del Arte “♰漆黒の翼♰” de hBP01-014〈天音かなた〉, excediendo sus HP restantes en más de 50. En este caso, ¿cuánto daño de Vida recibe?",
+        "answer": "Como se cumple la condición de la habilidad del Arte “♰漆黒の翼♰” de hBP01-014〈天音かなた〉, el oponente pierde 1 de vida. Además, por la habilidad de regla extra del Holomem Buzz de “cuando este Holomem queda fuera de combate, pierdes 2 de vida”, en total pierdes 3 de vida.",
+        "question": "Mi Holomem Buzz recibió daño de más de 50 por encima de su HP restante por el daño del Arte “♰漆黒の翼♰” de hBP01-014〈天音かなた〉. En este caso, ¿cuánto daño de vida se recibe?",
         "related_cards": {
           "card_number": [
             "hBP01-014"
@@ -1053,8 +1121,8 @@
         "title": "Q228（2024.10.23）"
       },
       {
-        "answer": "Sí, puedes hacerlo. Incluso si derribas al Holomen del oponente con daño especial, mientras no haya una indicación específica como “aunque sea derribado, la Vida del oponente no disminuye”, puedes reducir la Vida del oponente igual que cuando lo derribas con el daño de un Arte.",
-        "question": "Si con el efecto de colaboración “堕ちた天使” de hBP01-014〈天音かなた〉 derribo al Holomen central del oponente, ¿puedo infligir daño a la Vida del oponente?",
+        "answer": "Sí, puedes hacerlo. Incluso si el Holomem del oponente queda fuera de combate por daño especial, mientras no haya texto que indique que “la vida no cambia al quedar fuera de combate”, se puede reducir la vida del oponente igual que cuando se derrota al Holomem mediante daño de un Arte.",
+        "question": "Si con el efecto de colaboración “堕ちた天使” de hBP01-014〈天音かなた〉 hago que el Holomem central del oponente quede fuera de combate, ¿puedo infligir daño a la vida del oponente?",
         "related_cards": {
           "card_number": [
             "hBP01-014"
@@ -1067,12 +1135,12 @@
     "rarity_code": "UR",
     "tags": [
       "#JP",
-      "#4期生",
-      "#歌"
+      "#4th Gen",
+      "#Singing"
     ]
   },
   {
-    "ability_text": "Las Artes del Holomen que tenga equipada esta herramienta reciben +10.\n\n◆ Si está equipada a una 〈星街すいせい〉 de 1st o superior, gana una habilidad adicional:\nCuando el Holomen que tenga esta herramienta deja fuera de combate a un Holomen del oponente, envía la carta superior de tu mazo de Aplaudo a ese Holomen.\n\nSolo puedes equipar una herramienta por cada Holomen que controles.",
+    "ability_text": "Las Arts del holomen al que esté unida esta Tool +10.\n\n◆ Si está unida a 〈Hoshimachi Suisei〉 de nivel 1st o superior, obtiene una habilidad adicional\nCuando el holomen al que esté unida esta Tool haga Down a un holomen de tu oponente, envía la carta superior de tu Cheer Deck a este holomen.\n\nSolo puedes unir 1 Tool a cada uno de tus holomen.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP01-115",
@@ -1085,11 +1153,16 @@
     "illustrator": "JinArt こばやかわやまと",
     "image_key": "hBP01/hBP01-115_U",
     "locale": "es",
-    "name": "星街すいせいのマイク",
+    "name": "Hoshimachi Suisei's Microphone",
+    "original": {
+      "art_names": [],
+      "name": "星街すいせいのマイク",
+      "tags": []
+    },
     "qa_items": [
       {
         "answer": "Sí, se cumple.",
-        "question": "El hBP01-079〈星街すいせい〉 al que está unida hBP01-115〈星街すいせいのマイク〉 dejó fuera de combate a un holomen del oponente con daño especial del Bloom Effect. ¿Se cumple la condición de «cuando el holomen al que está unida esta herramienta deja fuera de combate a un holomen del oponente» de hBP01-115〈星街すいせいのマイク〉?",
+        "question": "hBP01-115〈星街すいせいのマイク〉 está unido a hBP01-079〈星街すいせい〉, y con el daño especial de un efecto Bloom derribó a un holomem del oponente. ¿Se cumple la condición de hBP01-115〈星街すいせいのマイク〉 que dice «cuando el holomem al que está unida esta herramienta derribe a un holomem del oponente»?",
         "related_cards": {
           "card_number": [
             "hBP01-115",
@@ -1115,7 +1188,7 @@
     "tags": []
   },
   {
-    "ability_text": "El holomen que tenga este Mascota obtiene +10 a sus Artes.\n\n◆ Si está unido a 〈天音かなた〉, gana habilidad adicional:\n[Una vez por turno] Durante el turno del oponente, cuando el holomen con este Mascota reciba daño, inflige 20 de daño especial al holomen central del oponente.\n\nSolo puedes tener 1 Mascota anexada a cada uno de tus holomen.",
+    "ability_text": "Las Arts del holomem al que está unida esta Mascota +10.\n\r\n◆Si está unida a 〈Amane Kanata〉, añade una habilidad\n[Una vez por turno] Durante el turno de tu oponente, cuando el holomem al que está unida esta Mascota reciba daño, inflige 20 de daño especial al Center holomem de tu oponente.\n\r\nSolo puedes unir 1 Mascota a cada uno de tus holomems.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP01-116",
@@ -1129,11 +1202,16 @@
     "illustrator": "JinArt KABAKURA",
     "image_key": "hBP01/hBP01-116_C",
     "locale": "es",
-    "name": "うぱお",
+    "name": "Upao",
+    "original": {
+      "art_names": [],
+      "name": "うぱお",
+      "tags": []
+    },
     "qa_items": [
       {
-        "answer": "En cuanto al orden de resolución: primero se procesan todas las acciones que deben resolverse por regla (como el procesamiento de “down”). Luego, se resuelven todas las habilidades que deben hacerlo del lado del jugador del turno (por ejemplo, las que se activan al usar una carta). Finalmente, se resuelven las habilidades que deben hacerlo del lado del jugador que no está en turno (como las que se activan cuando se recibe daño). Por lo tanto, las habilidades de hBP01-116〈うぱお〉, al pertenecer al jugador que no está en turno, se resuelven al final.",
-        "question": "Usé el Arts “輝く彗星” de mi hBP01-081〈星街すいせい〉 para derribar a mi holomen central 〈天音かなた〉 que tenía anexado un hBP01-116〈うぱお〉. Luego realicé el proceso de “down”, y después utilicé la habilidad SP 推しスキル “シューティングスター” de mi hBP01-007〈星街すいせい〉 para derribar al holomen trasero del oponente, el cual también tenía anexado un hBP01-116〈うぱお〉. En este caso, ¿cuándo se resuelve la habilidad de cada hBP01-116〈うぱお〉?",
+        "answer": "Según la prioridad de resolución, primero se procesan todas las acciones obligatorias por las reglas (como el proceso de derribo). Después, se resuelven todas las habilidades que debe procesar el jugador del turno (como las habilidades que se activan al usarse). Finalmente, se resuelven todas las habilidades del jugador que no está en turno (como las que se activan cuando se recibe daño). Dado que la habilidad de hBP01-116〈うぱお〉 pertenece al jugador que no está en turno, se procesará al final.",
+        "question": "Usas el Arts “Cometa brillante” de tu hBP01-081〈星街すいせい〉 y derribas al Holomen central 〈天音かなた〉 que tiene hBP01-116〈うぱお〉 equipado. Luego realizas el proceso de derribo y usas la SP Oshi Skill “Shooting Star” de tu hBP01-007〈星街すいせい〉 para derribar al Holomen trasero 〈天音かなた〉 que también tiene hBP01-116〈うぱお〉 equipado en el lado del oponente. En este caso, ¿cuándo se resuelven las habilidades de cada hBP01-116〈うぱお〉?",
         "related_cards": {
           "card_number": [
             "hBP01-007",
@@ -1156,8 +1234,8 @@
         "title": "Q286（2025.01.17）"
       },
       {
-        "answer": "Sí, lo inflige. Cuando hBP01-014〈天音かなた〉 recibe daño, se activa y queda en espera la habilidad de hBP01-116〈うぱお〉: “cuando el holomen con este Mascota recibe daño”. Luego, el proceso de “down” por regla archiva a hBP01-014〈天音かなた〉 y a hBP01-116〈うぱお〉, y en el momento de la verificación posterior se resuelve el efecto que estaba en espera.",
-        "question": "Si mi vida está en 2 o más, y mi hBP01-014〈天音かなた〉 que tiene anexado un hBP01-116〈うぱお〉 es derribado por el Arts del holomen central del oponente, ¿la habilidad de hBP01-116〈うぱお〉 infligirá daño al holomen central del oponente?",
+        "answer": "Sí, puede infligirse daño. Cuando hBP01-014〈天音かなた〉 recibe daño, se activa la habilidad de hBP01-116〈うぱお〉 que dice “cuando el Holomem al que está unido esta mascota recibe daño”, quedando en estado de espera. Luego, durante la resolución de reglas para el fuera de combate, tanto hBP01-014〈天音かなた〉 como hBP01-116〈うぱお〉 se archivan, y en el momento de verificación se resuelve el efecto en espera de “cuando el Holomem al que está unida esta mascota recibe daño”.",
+        "question": "Si mi vida es de 2 o más y el hBP01-014〈天音かなた〉 con el hBP01-116〈うぱお〉 adjunto queda fuera de combate por el Arte del Holomem central del oponente, ¿puede activarse la habilidad de hBP01-116〈うぱお〉 para infligir daño al Holomem central del oponente?",
         "related_cards": {
           "card_number": [
             "hBP01-014",
@@ -1179,8 +1257,8 @@
         "title": "Q212（2024.10.04）"
       },
       {
-        "answer": "No, no puedes. En el momento en que sus HP llegan a 0 se realiza el procesamiento de “down”, y tu vida también pasa a 0, perdiendo la partida inmediatamente antes de poder resolver el efecto que estaba en espera de 〈うぱお〉.",
-        "question": "Si mi vida está en 1 y mi hBP01-013〈天音かなた〉 con un hBP01-116〈うぱお〉 anexo recibe daño por el Arts del oponente y cae, ¿puedo infligir daño especial con la habilidad de hBP01-116〈うぱお〉?",
+        "answer": "No, no puedes. En el momento en que tus HP llegan a 0, se realiza la “resolución de caída” como parte de las reglas, y tu vida se convierte en 0. Por lo tanto, pierdes inmediatamente antes de que se resuelva el efecto de 〈うぱお〉 que está en estado de espera.",
+        "question": "Si mi vida es 1 y mi hBP01-013〈天音かなた〉 equipada con hBP01-116〈うぱお〉 recibe daño por un Arts del oponente y queda fuera de combate, ¿puedo infligir daño especial al Holomen del oponente con la habilidad de hBP01-116〈うぱお〉?",
         "related_cards": {
           "card_number": [
             "hBP01-116",
@@ -1229,7 +1307,7 @@
     "tags": []
   },
   {
-    "ability_text": "Durante el turno del oponente, cuando la Holomen con este fan sea derribada, envía la carta superior de tu mazo de Aplausos a tu 〈アキ・ローゼンタール〉.\n\nEste fan solo puede equiparse a tu 〈アキ・ローゼンタール〉, y puedes colocar cualquier número de ellos en una sola.",
+    "ability_text": "Durante el turno de tu oponente, cuando el holomem al que está unido este Fan sea Derribado, envía 1 carta de la parte superior de tu Cheer Deck a tu 〈Aki Rosenthal〉.\n\nEste Fan solo puede unirse a tu 〈Aki Rosenthal〉, y puedes unir cualquier cantidad a cada holomem.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP01-122",
@@ -1242,13 +1320,18 @@
     "illustrator": "JinArt KABAKURA",
     "image_key": "hBP01/hBP01-122_C",
     "locale": "es",
-    "name": "ロゼ隊",
+    "name": "Rose-tai",
+    "original": {
+      "art_names": [],
+      "name": "ロゼ隊",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
   },
   {
-    "ability_text": "■Cuando una Holomen deja el escenario, archiva todos los Ales de esa Holomen.\n■Cuando una Holomen hace un relevo, archiva la cantidad indicada de sus Ales.",
+    "ability_text": "■Cuando un holomen deja el Stage, archiva todos los Cheer de ese holomen.\n■Cuando un holomen hace Baton Touch, archiva la cantidad de Cheer especificada de ese holomen.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hY01-001",
@@ -1270,7 +1353,12 @@
     "illustrator": "はずき",
     "image_key": "COMMON/hY01-001_C",
     "locale": "es",
-    "name": "白エール",
+    "name": "White Cheer",
+    "original": {
+      "art_names": [],
+      "name": "白エール",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
@@ -1291,17 +1379,24 @@
     "image_key": "hY01/hYS01-001_OC",
     "life": 5,
     "locale": "es",
-    "name": "七詩ムメイ",
+    "name": "Nanashi Mumei",
+    "original": {
+      "art_names": [],
+      "name": "七詩ムメイ",
+      "oshi_skill_name": "ホワイトバトン",
+      "sp_oshi_skill_name": "クイックガード",
+      "tags": []
+    },
     "oshi_skill": {
-      "effect": "[Una vez por turno] Durante este turno, los Arts de tus Holomen colaborativos blancos obtienen +20.",
-      "name": "ホワイトバトン",
+      "effect": "[Una vez por turno] Durante este turno, las artes de tu holomen de colaboración blanco obtienen +20.",
+      "name": "Bastón Blanco",
       "timing": "Una vez por turno",
       "timing_code": "once_per_turn"
     },
     "qa_items": [
       {
-        "answer": "No, no se puede usar. Como no es una habilidad que inflige daño, no es posible aplicar el efecto de la habilidad SP Oshi «クイックガード» de hYS01-001〈七詩ムメイ〉 contra la habilidad Oshi «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉.",
-        "question": "¿Se puede usar la habilidad SP Oshi «クイックガード» de hYS01-001〈七詩ムメイ〉 contra la habilidad Oshi «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉?",
+        "answer": "No, no se puede. Como no inflige daño, no se puede usar la habilidad de la SP Oshi Skill «クイックガード» de hYS01-001〈七詩ムメイ〉 contra la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉.",
+        "question": "¿Se puede usar la SP Oshi Skill «クイックガード» de hYS01-001〈七詩ムメイ〉 contra la Oshi Skill «ぎゅっぎゅっ» de hBP01-001〈天音かなた〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -1314,8 +1409,8 @@
     ],
     "rarity_code": "OC",
     "sp_oshi_skill": {
-      "effect": "[Una vez por partida] Puedes usarla durante el turno del oponente, cuando uno de tus Holomen blancos vaya a recibir daño del oponente: ese Holomen recibe -20 de daño.",
-      "name": "クイックガード",
+      "effect": "[Una vez por partida] Puedes usar esto durante el turno de tu oponente, cuando uno de tus holomen blancos vaya a recibir daño del oponente: el daño que recibe ese holomen se reduce en 20.",
+      "name": "Guardia rápida",
       "timing": "Una vez por partida",
       "timing_code": "once_per_game"
     },
@@ -1345,8 +1440,8 @@
           "null"
         ],
         "damage": 100,
-        "effect": "Puedes archivar 2 Eroles Azules de esta Holomem: inflige 30 de daño especial al Holomem central y a 1 Holomem de respaldo del oponente.",
-        "name": "おかゆ～",
+        "effect": "Puedes archivar 2 Blue Cheer de este holomen: inflige 30 de daño especial al holomen del Centro de tu oponente y a 1 holomen de la Retaguardia.",
+        "name": "Okayu~",
         "special_targets": [
           "white"
         ],
@@ -1374,13 +1469,25 @@
     "illustrator": "江田藤",
     "image_key": "hBP02/hSD03-009_SR",
     "locale": "es",
-    "name": "猫又おかゆ",
+    "name": "Nekomata Okayu",
+    "original": {
+      "art_names": [
+        null,
+        "おかゆ～"
+      ],
+      "name": "猫又おかゆ",
+      "tags": [
+        "#JP",
+        "#ゲーマーズ",
+        "#ケモミミ"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
-      "#ゲーマーズ",
-      "#ケモミミ"
+      "#Gamers",
+      "#Animal Ears"
     ]
   },
   {
@@ -1406,9 +1513,9 @@
           "null"
         ],
         "damage": 60,
-        "effect": "Por cada carta de evento que hayas usado en este turno, este arte obtiene +40.",
+        "effect": "Esta Art +40 por cada 1 Evento que hayas usado este turno.",
         "is_plus": true,
-        "name": "あくとっ",
+        "name": "Akutto",
         "special_targets": [
           "green"
         ],
@@ -1435,17 +1542,29 @@
     "illustrator": "saihate",
     "image_key": "hBP02/hSD04-009_SR",
     "locale": "es",
-    "name": "癒月ちょこ",
+    "name": "Yuzuki Choco",
+    "original": {
+      "art_names": [
+        null,
+        "あくとっ"
+      ],
+      "name": "癒月ちょこ",
+      "tags": [
+        "#JP",
+        "#2期生",
+        "#料理"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
-      "#2期生",
-      "#料理"
+      "#2nd Gen",
+      "#Cooking"
     ]
   },
   {
-    "ability_text": "■ Cuando una Holomen abandona el escenario, archiva todos los Eales de esa Holomen.\n■ Cuando una Holomen hace un relevo, archiva la cantidad indicada de Eales de esa Holomen.",
+    "ability_text": "■Cuando un holomen deja el Stage, archiva todos los Cheer de ese holomen.\n■Cuando un holomen hace Baton Touch, archiva la cantidad de Cheer especificada de ese holomen.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hY01-003",
@@ -1460,7 +1579,12 @@
     "illustrator": "リズ",
     "image_key": "hBP02/hY01-003_SY",
     "locale": "es",
-    "name": "白エール",
+    "name": "White Cheer",
+    "original": {
+      "art_names": [],
+      "name": "白エール",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "SY",
     "tags": []
@@ -1472,7 +1596,7 @@
           "null"
         ],
         "damage": 20,
-        "name": "ガハw"
+        "name": "Gaha w"
       }
     ],
     "baton_touch_count": 1,
@@ -1493,19 +1617,31 @@
     "illustrator": "Watersnake",
     "image_key": "hSD05/hSD05-013_U",
     "keyword": {
-      "effect": "Puedes reasignar 1 carta de Apoyo de tu escenario a otro Holomen tuyo que no sea este Holomen.",
-      "name": "クレッシェンドな日々",
+      "effect": "Puedes recolocar 1 Cheer de tu escenario en uno de tus holomen que no sea este holomen.",
+      "name": "Días de crescendo",
       "type": "コラボエフェクト",
       "type_code": "collab_effect"
     },
     "locale": "es",
-    "name": "音乃瀬奏",
+    "name": "Otonose Kanade",
+    "original": {
+      "art_names": [
+        "ガハw"
+      ],
+      "keyword_name": "クレッシェンドな日々",
+      "name": "音乃瀬奏",
+      "tags": [
+        "#DEV_IS",
+        "#ReGLOSS",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "U",
     "tags": [
       "#DEV_IS",
       "#ReGLOSS",
-      "#歌"
+      "#Singing"
     ]
   },
   {
@@ -1516,8 +1652,8 @@
           "null"
         ],
         "damage": 40,
-        "effect": "Revela 1 carta de [Energía Roja o Energía Azul] de tu mazo de Energías, envíala a tu Holomen con #Advent y luego baraja tu mazo de Energías.",
-        "name": "Hermana Perra Guardiana del Inframundo"
+        "effect": "Revela 1 carta de [Red CheerかBlue Cheer] de tu Mazo de Cheer y envíala a un holomem tuyo con #Advent. Después baraja tu Mazo de Cheer.",
+        "name": "Las hermanas sabueso infernal"
       },
       {
         "cost_types": [
@@ -1541,7 +1677,7 @@
     "color_codes": [
       "blue_red"
     ],
-    "extra": "Este Holomen también se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉.",
+    "extra": "Este holomen también se considera como 〈Fuwawa Abyssgard〉 y 〈Mococo Abyssgard〉",
     "hp": 150,
     "id": "614",
     "illustrator": "© 2016 COVER Corp. MariA",
@@ -1553,12 +1689,16 @@
         "魔界乃番犬シスターズ",
         "2人揃ってFUWAMOCOです！"
       ],
-      "tags": []
+      "tags": [
+        "#EN",
+        "#Advent",
+        "#ケモミミ"
+      ]
     },
     "qa_items": [
       {
-        "answer": "Significa que esta carta se considera como si tuviera los nombres 〈フワワ・アビスガード〉, 〈モココ・アビスガード〉 y 〈FUWAMOCO〉.",
-        "question": "¿Qué significa la habilidad extra de hBP03-050〈FUWAMOCO〉 «Este Holomen también se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉»?",
+        "answer": "Significa que tiene los nombres de carta 〈フワワ・アビスガード〉, 〈モココ・アビスガード〉 y 〈FUWAMOCO〉.",
+        "question": "¿Qué significa la habilidad extra de hBP03-050〈FUWAMOCO〉 «Este holomen también se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉»?",
         "related_cards": {
           "card_number": [
             "hBP03-050"
@@ -1579,8 +1719,8 @@
         "title": "Q544（2025.12.18）"
       },
       {
-        "answer": "Sí, puedes añadirlos.",
-        "question": "Usando hBP04-089〈ツートンカラーパソコン〉, elijo en mi escenario a los Holomen de colores distintos 〈ときのそら〉 y 〈フワワ・アビスガード〉. En este caso, ¿puedo añadir a mi mano hSD01-013〈SorAZ〉 y hBP03-050〈FUWAMOCO〉 como 1st Holomen del mismo color?",
+        "answer": "Sí, puedes hacerlo.",
+        "question": "Usando hBP04-089〈ツートンカラーパソコン〉, elegí como holomen de colores diferentes en mi escenario a 〈ときのそら〉 y 〈フワワ・アビスガード〉. En este caso, ¿puedo añadir a mi mano a hSD01-013〈SorAZ〉 y a hBP03-050〈FUWAMOCO〉 como holomen 1st del mismo color que los elegidos?",
         "related_cards": {
           "card_number": [
             "hBP04-089",
@@ -1604,8 +1744,8 @@
         "title": "Q390（2025.06.11）"
       },
       {
-        "answer": "Sí, puedes hacerlo. Incluso si la carta no tiene el nombre exacto, si posee un Extra que indique «Este Holomen también se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉», cumple esa condición.",
-        "question": "Con la habilidad de hBP03-109〈Ruffians〉 que dice «Puedes enviar una Energía Azul desde tu archivo a tu 〈フワワ・アビスガード〉», ¿puedo también enviarla a hBP03-050〈FUWAMOCO〉?",
+        "answer": "Sí, se puede. Incluso si una carta no tiene el nombre mencionado, si existe una carta que en su texto Extra indique algo como “Esta Holomen también se considera como 〈フワワ・アビスガード〉 o 〈モココ・アビスガード〉”, cumple con esa condición.",
+        "question": "En la carta hBP03-109〈Ruffians〉 se indica: “Puedes enviar un Cheer azul de tu archivo a tu 〈フワワ・アビスガード〉.” ¿También se puede enviar a hBP03-050〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-109",
@@ -1617,8 +1757,8 @@
         "title": "Q359（2025.03.11）"
       },
       {
-        "answer": "Sí, puedes. Como hBP03-050〈FUWAMOCO〉 es tanto Roja como Azul, cumple los requisitos.",
-        "question": "Si mi Holomen favorito es hBP03-004〈FUWAMOCO〉, ¿puedo usar hBP03-084〈ゴージャスパソコン〉 para añadir hBP03-050〈FUWAMOCO〉 a mi mano?",
+        "answer": "Sí, puedes. hBP03-050〈FUWAMOCO〉 es tanto roja como azul, por lo que cumple la condición.",
+        "question": "Si mi holomen favorito es hBP03-004〈FUWAMOCO〉, ¿puedo añadir hBP03-050〈FUWAMOCO〉 a mi mano con hBP03-084〈ゴージャスパソコン〉?",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -1630,8 +1770,8 @@
         "title": "Q340（2025.03.11）"
       },
       {
-        "answer": "Sí, puedes. Aunque la carta no tenga el mismo nombre, si tiene el Extra «Este Holomen también se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉», cumple la condición.",
-        "question": "Con el arte «¿Comemos juntas?» de hBP03-043〈フワワ・アビスガード〉, ¿puedo mover la Energía a mi hBP03-050〈FUWAMOCO〉?",
+        "answer": "Sí, se puede. Incluso si una carta no tiene el nombre mencionado, si existe una carta que en su texto Extra indique algo como “Esta Holomen también se considera como 〈フワワ・アビスガード〉 o 〈モココ・アビスガード〉”, cumple con esa condición.",
+        "question": "En la habilidad “¿Comemos juntas?” del arte de hBP03-043〈フワワ・アビスガード〉, ¿puedo cambiar un Cheer de esta carta a mi hBP03-050〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -1678,8 +1818,8 @@
         "title": "Q319（2025.03.11）"
       },
       {
-        "answer": "Sí, puedes. Aunque el nombre difiera, si posee un Extra que indica que se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉, se considera válida.",
-        "question": "¿Con la habilidad del efecto Bloom «¡Hora de jugar!» de hBP03-038〈モココ・アビスガード〉 puedo añadir hBP03-050〈FUWAMOCO〉 a mi mano desde el mazo?",
+        "answer": "Sí, se puede. Aunque el nombre no coincida directamente, si tiene la habilidad extra «Este holomen también se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉», cumple con la condición.",
+        "question": "¿Con la habilidad del efecto Bloom «¡Hora de jugar!» de hBP03-038〈モココ・アビスガード〉 se puede añadir hBP03-050〈FUWAMOCO〉 a la mano desde el mazo?",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -1690,8 +1830,8 @@
         "title": "Q318（2025.03.11）"
       },
       {
-        "answer": "Sí, puede. Aunque la carta no tenga el mismo nombre, si tiene un Extra que indica que se considera como 〈フワワ・アビスガード〉 y 〈モココ・アビスガード〉, cumple esa condición.",
-        "question": "¿La habilidad favorita «¡Moco-chan!» de hBP03-004〈FUWAMOCO〉 puede enviar Energía a mi hBP03-050〈FUWAMOCO〉?",
+        "answer": "Sí, puede. Incluso si no hay una carta con ese nombre exacto, mientras exista una carta en Extra que diga algo como «Este Holomen también se considera como 〈フワワ・アビスガード〉 o 〈モココ・アビスガード〉», se cumple la condición.",
+        "question": "¿La habilidad Oshi «¡Moco-chan!» de hBP03-004〈FUWAMOCO〉 puede enviar apoyo a tu hBP03-050〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -1706,7 +1846,7 @@
     "tags": [
       "#EN",
       "#Advent",
-      "#ケモミミ"
+      "#Animal Ears"
     ]
   },
   {
@@ -1717,8 +1857,8 @@
           "null"
         ],
         "damage": 40,
-        "effect": "Si tu holo favorito es 〈星街すいせい〉, puedes mover 1 carta de Cheer azul de este holomen y equiparla al 〈星街すいせい〉 que tengas en tu zona de apoyo.",
-        "name": "バーチャルゴースト"
+        "effect": "Si tu oshi holomen es 〈Hoshimachi Suisei〉, puedes mover 1 Blue Cheer de este holomen a tu 〈Hoshimachi Suisei〉 de Reserva.",
+        "name": "Fantasma virtual"
       }
     ],
     "baton_touch_count": 1,
@@ -1739,19 +1879,31 @@
     "illustrator": "えいひ",
     "image_key": "hBP03/hBP03-044_SR",
     "keyword": {
-      "effect": "Mira las 4 cartas superiores de tu mazo. Revela 1 carta de 〈星街すいせい〉 de entre ellas y añádela a tu mano. Luego devuelve las demás cartas al fondo del mazo en el orden que prefieras.",
-      "name": "プラネットステージ",
+      "effect": "Mira las 4 cartas superiores de tu mazo. De entre ellas, revela 1 〈Hoshimachi Suisei〉 y añádelo a tu mano. Luego devuelve las cartas restantes al fondo del mazo en el orden que prefieras.",
+      "name": "Escenario planetario",
       "type": "ブルームエフェクト",
       "type_code": "bloom_effect"
     },
     "locale": "es",
-    "name": "星街すいせい",
+    "name": "Hoshimachi Suisei",
+    "original": {
+      "art_names": [
+        "バーチャルゴースト"
+      ],
+      "keyword_name": "プラネットステージ",
+      "name": "星街すいせい",
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
-      "#0期生",
-      "#歌"
+      "#0th Gen",
+      "#Singing"
     ]
   },
   {
@@ -1761,7 +1913,7 @@
           "purple"
         ],
         "damage": 40,
-        "name": "Está bien tener una cita en casa con Towa"
+        "name": "Está bien si tengo una cita en casa con Towa"
       },
       {
         "cost_types": [
@@ -1769,8 +1921,8 @@
           "null"
         ],
         "damage": 50,
-        "effect": "Si tienes un holomem de respaldo con #歌, inflige 20 de daño especial al holomem colaborativo del oponente.",
-        "name": "てんQ"
+        "effect": "Si tienes un holomen de Reserva que tenga #Singing, inflige 20 de daño especial al holomen de Colaboración del oponente.",
+        "name": "TenQ"
       }
     ],
     "baton_touch_count": 1,
@@ -1791,21 +1943,27 @@
     "illustrator": "雨傘ゆん",
     "image_key": "hBP03/hBP03-055_SR",
     "locale": "es",
-    "name": "常闇トワ",
+    "name": "Tokoyami Towa",
     "original": {
       "art_names": [
         "トワとお家デートしたっていい",
-        null
+        "てんQ"
       ],
-      "tags": []
+      "name": "常闇トワ",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#歌",
+        "#シューター"
+      ]
     },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
-      "#4期生",
-      "#歌",
-      "#シューター"
+      "#4th Gen",
+      "#Singing",
+      "#Shooter"
     ]
   },
   {
@@ -1817,8 +1975,8 @@
           "null"
         ],
         "damage": 90,
-        "effect": "Puedes mover una carta de Elan de este Holomen y equiparla a tu Holomen de respaldo.",
-        "name": "ビジネスパートナー"
+        "effect": "Puedes cambiar de lugar 1 Cheer de este holomen para unirlo a uno de tus holomen de la Retaguardia.",
+        "name": "Socio de negocios"
       }
     ],
     "baton_touch_count": 1,
@@ -1835,19 +1993,31 @@
       "red",
       "blue"
     ],
-    "extra": "Este Holomen también se considera como 〈さくらみこ〉 y 〈星街すいせい〉.",
+    "extra": "Este holomen también se considera como 〈Sakura Miko〉 y 〈Hoshimachi Suisei〉",
     "hp": 150,
     "id": "1218",
     "illustrator": "UIIV◇",
     "image_key": "hBP05/hBP05-040_U",
     "keyword": {
-      "effect": "Si tu vida es 3 o menos, puedes hacer que tu Holomen central que floreció (Bloom) este turno y que sea [〈さくらみこ〉 o 〈星街すいせい〉] florezca otra vez usando un Holomen de tu mano.",
-      "name": "ビジネスフレンド",
+      "effect": "Si tu Vida es 3 o menos, tu holomen central [〈Sakura Miko〉 o 〈Hoshimachi Suisei〉] que haya hecho Bloom este turno puede hacer Bloom 1 vez más usando un holomen de tu mano.",
+      "name": "Amigos de negocios",
       "type": "コラボエフェクト",
       "type_code": "collab_effect"
     },
     "locale": "es",
     "name": "miComet",
+    "original": {
+      "art_names": [
+        "ビジネスパートナー"
+      ],
+      "keyword_name": "ビジネスフレンド",
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#ベイビー",
+        "#歌"
+      ]
+    },
     "qa_items": [
       {
         "answer": "Significa que la carta posee los nombres 〈さくらみこ〉, 〈星街すいせい〉 y 〈miComet〉 como nombres de carta.",
@@ -1875,13 +2045,13 @@
     "rarity_code": "U",
     "tags": [
       "#JP",
-      "#0期生",
-      "#ベイビー",
-      "#歌"
+      "#0th Gen",
+      "#Baby",
+      "#Singing"
     ]
   },
   {
-    "ability_text": "No puedes usar esta carta a menos que archives 1 carta de Apoyo en tu escenario.\n\nAdjunta 1 carta de Fan de tu Archivo a uno de tus Holomen. Si lo haces, devuelve 1 carta de Holomen de tu Archivo a tu mano.",
+    "ability_text": "Debes archivar 1 Cheer de tu Stage para poder usar esta carta.\n\nUne 1 Fan de tu Archive a 1 de tus holomems. Si lo haces, devuelve a tu mano 1 holomem de tu Archive.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP07-091",
@@ -1895,13 +2065,18 @@
     "illustrator": "海原カイロ",
     "image_key": "hBP07/hBP07-091_C",
     "locale": "es",
-    "name": "ライブスタッフ",
+    "name": "Personal del directo",
+    "original": {
+      "art_names": [],
+      "name": "ライブスタッフ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "C",
     "tags": []
   },
   {
-    "ability_text": "No puedes usar esta carta a menos que archives 1 carta de Apoyo en tu escenario.\n\nAdjunta 1 carta de Fan de tu archivo a uno de tus Holomen. Si lo haces, devuelve 1 carta de Holomen de tu archivo a tu mano.",
+    "ability_text": "Debes archivar 1 Cheer de tu Stage para poder usar esta carta.\n\nUne 1 Fan de tu Archive a 1 de tus holomems. Si lo haces, devuelve a tu mano 1 holomem de tu Archive.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP07-091",
@@ -1915,7 +2090,12 @@
     "illustrator": "海原カイロ",
     "image_key": "hBP07/hBP07-091_S",
     "locale": "es",
-    "name": "ライブスタッフ",
+    "name": "Personal del directo",
+    "original": {
+      "art_names": [],
+      "name": "ライブスタッフ",
+      "tags": []
+    },
     "qa_items": [],
     "rarity_code": "S",
     "tags": []
@@ -1928,8 +2108,8 @@
           "null"
         ],
         "damage": 40,
-        "effect": "Si tu Holomen favorita es 〈星街すいせい〉, puedes transferir una carta de Aplauso Azul de esta Holomen a tu Holomen de respaldo 〈星街すいせい〉.",
-        "name": "バーチャルゴースト"
+        "effect": "Si tu oshi holomen es 〈Hoshimachi Suisei〉, puedes mover 1 Blue Cheer de este holomen a tu 〈Hoshimachi Suisei〉 de Reserva.",
+        "name": "Fantasma virtual"
       }
     ],
     "baton_touch_count": 1,
@@ -1950,19 +2130,31 @@
     "illustrator": "Mika Pikazo",
     "image_key": "hCO01/hBP03-044_SR",
     "keyword": {
-      "effect": "Mira las 4 cartas superiores de tu mazo. Revela una carta de 〈星街すいせい〉 entre ellas y añádela a tu mano. Coloca el resto de las cartas en la parte inferior del mazo en el orden que prefieras.",
-      "name": "プラネットステージ",
+      "effect": "Mira las 4 cartas superiores de tu mazo. De entre ellas, revela 1 〈Hoshimachi Suisei〉 y añádelo a tu mano. Luego devuelve las cartas restantes al fondo del mazo en el orden que prefieras.",
+      "name": "Escenario planetario",
       "type": "ブルームエフェクト",
       "type_code": "bloom_effect"
     },
     "locale": "es",
-    "name": "星街すいせい",
+    "name": "Hoshimachi Suisei",
+    "original": {
+      "art_names": [
+        "バーチャルゴースト"
+      ],
+      "keyword_name": "プラネットステージ",
+      "name": "星街すいせい",
+      "tags": [
+        "#JP",
+        "#0期生",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
-      "#0期生",
-      "#歌"
+      "#0th Gen",
+      "#Singing"
     ]
   },
   {
@@ -1972,7 +2164,7 @@
           "purple"
         ],
         "damage": 40,
-        "name": "Trato de cita en casa con Towa está bien"
+        "name": "Está bien si tengo una cita en casa con Towa"
       },
       {
         "cost_types": [
@@ -1980,8 +2172,8 @@
           "null"
         ],
         "damage": 50,
-        "effect": "Cuando tienes un holo compañero de respaldo con #歌, inflige 20 de daño especial al holo colaborador del oponente.",
-        "name": "てんQ"
+        "effect": "Si tienes un holomen de Reserva que tenga #Singing, inflige 20 de daño especial al holomen de Colaboración del oponente.",
+        "name": "TenQ"
       }
     ],
     "baton_touch_count": 1,
@@ -2002,21 +2194,27 @@
     "illustrator": "花澤明",
     "image_key": "hCO01/hBP03-055_SR",
     "locale": "es",
-    "name": "常闇トワ",
+    "name": "Tokoyami Towa",
     "original": {
       "art_names": [
         "トワとお家デートしたっていい",
-        null
+        "てんQ"
       ],
-      "tags": []
+      "name": "常闇トワ",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#歌",
+        "#シューター"
+      ]
     },
     "qa_items": [],
     "rarity_code": "SR",
     "tags": [
       "#JP",
-      "#4期生",
-      "#歌",
-      "#シューター"
+      "#4th Gen",
+      "#Singing",
+      "#Shooter"
     ]
   },
   {
@@ -2026,7 +2224,7 @@
           "white"
         ],
         "damage": 40,
-        "name": "Otsu Luna"
+        "name": "OtsuLuna"
       },
       {
         "cost_types": [
@@ -2034,7 +2232,7 @@
           "null"
         ],
         "damage": 60,
-        "name": "Buenas noches~"
+        "name": "Buenas nocheees~"
       }
     ],
     "baton_touch_count": 1,
@@ -2055,20 +2253,25 @@
     "illustrator": "葉桜ちこり",
     "image_key": "hWF01/hBP03-011_P",
     "locale": "es",
-    "name": "姫森ルーナ",
+    "name": "Himemori Luna",
     "original": {
       "art_names": [
         "おつルーナ",
         "ぐっどないと～"
       ],
-      "tags": []
+      "name": "姫森ルーナ",
+      "tags": [
+        "#JP",
+        "#4期生",
+        "#ベイビー"
+      ]
     },
     "qa_items": [],
     "rarity_code": "P",
     "tags": [
       "#JP",
-      "#4期生",
-      "#ベイビー"
+      "#4th Gen",
+      "#Baby"
     ]
   },
   {
@@ -2079,8 +2282,8 @@
           "null"
         ],
         "damage": 50,
-        "effect": "Si tu holo favorito es un〈FUWAMOCO〉azul, convierte la carta superior de tu mazo en Holopoder.",
-        "name": "いっしょういっしょ♡"
+        "effect": "Si tu Oshi holomem es el 〈FUWAMOCO〉 azul, pon la carta superior de tu Mazo en tu Holo Power.",
+        "name": "Juntas para siempre♡"
       }
     ],
     "baton_touch_count": 1,
@@ -2097,25 +2300,35 @@
     "color_codes": [
       "blue_red"
     ],
-    "extra": "Este holomen también se considera como〈フワワ・アビスガード〉y〈モココ・アビスガード〉.",
+    "extra": "Este holomen también se considera como 〈Fuwawa Abyssgard〉 y 〈Mococo Abyssgard〉",
     "hp": 170,
     "id": "2263",
     "illustrator": "兎未枝",
     "image_key": "hBP08/hBP08-060_R",
     "keyword": {
-      "effect": "[Solo en posición de colaboración] Cambia el [Holopoder:-3] de tu habilidad favorita «モコちゃん！» a [Holopoder:-2].",
+      "effect": "[Solo Posición de Colaboración] Cambia el [holoPower:-3] de tu habilidad Oshi «モコちゃん！」 a [holoPower:-2].",
       "name": "“BAU” DOL♡",
       "type": "ギフト",
       "type_code": "gift"
     },
     "locale": "es",
     "name": "FUWAMOCO",
+    "original": {
+      "art_names": [
+        "いっしょういっしょ♡"
+      ],
+      "tags": [
+        "#EN",
+        "#Advent",
+        "#ケモミミ"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "R",
     "tags": [
       "#EN",
       "#Advent",
-      "#ケモミミ"
+      "#Animal Ears"
     ]
   },
   {
@@ -2125,7 +2338,7 @@
           "null"
         ],
         "damage": 30,
-        "name": "ハイRyS！"
+        "name": "HiRyS!"
       }
     ],
     "baton_touch_count": 1,
@@ -2142,19 +2355,29 @@
     "color_codes": [
       "white"
     ],
-    "extra": "Puedes incluir cualquier cantidad de esta holomem en tu mazo.",
+    "extra": "Se puede incluir cualquier cantidad de copias de este holomen en el mazo",
     "hp": 100,
     "id": "2444",
     "illustrator": "がり",
     "image_key": "hBP08/hBP01-028_HR",
     "locale": "es",
     "name": "IRyS",
+    "original": {
+      "art_names": [
+        "ハイRyS！"
+      ],
+      "tags": [
+        "#EN",
+        "#Promise",
+        "#歌"
+      ]
+    },
     "qa_items": [],
     "rarity_code": "HR",
     "tags": [
       "#EN",
       "#Promise",
-      "#歌"
+      "#Singing"
     ]
   },
   {
