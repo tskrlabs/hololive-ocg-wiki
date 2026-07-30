@@ -585,5 +585,11 @@
       "title": "필터 옵션을 불러오지 못했습니다",
       "detail": "아래 목록이 불완전할 수 있습니다."
     }
-  }
+  },
+  "Toggle theme": "테마 전환",
+  "Change language": "언어 변경",
+  "Source code on GitHub": "GitHub 소스 코드",
+  "Join the Discord server": "Discord 서버 참여",
+  "About this site": "사이트 정보",
+  "Filter (active)": "필터(적용 중)"
 }

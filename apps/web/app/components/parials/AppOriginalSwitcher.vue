@@ -27,5 +27,11 @@ const isSourceLocale = computed(() => locale.value === "ja");
     @click="toggle"
   >
     <Languages class="w-5 h-5" :class="enabled ? '' : 'opacity-40'" />
+    <!--
+      `title` was the only name here, and it is not a reliable one (#51): several screen
+      readers ignore it when computing the accessible name, and it is unreachable on
+      touch entirely. It stays for the sighted tooltip; this is the actual name.
+    -->
+    <span class="sr-only">{{ $t("Show original names") }}</span>
   </Button>
 </template>

@@ -23,6 +23,11 @@ const toggleColorMode = () => {
       icon="radix-icons:moon"
       class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
     />
-    <span class="sr-only">Toggle theme</span>
+    <!--
+      This was the *one* control with a correct accessible name, and it was hardcoded
+      English in an app shipping seven locales (#51). The pattern was right; the string
+      was not.
+    -->
+    <span class="sr-only">{{ $t("Toggle theme") }}</span>
   </Button>
 </template>

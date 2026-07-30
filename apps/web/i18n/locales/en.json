@@ -585,5 +585,11 @@
       "title": "Filter options couldn't be loaded",
       "detail": "The lists below may be incomplete."
     }
-  }
+  },
+  "Toggle theme": "Toggle theme",
+  "Change language": "Change language",
+  "Source code on GitHub": "Source code on GitHub",
+  "Join the Discord server": "Join the Discord server",
+  "About this site": "About this site",
+  "Filter (active)": "Filter (filters active)"
 }

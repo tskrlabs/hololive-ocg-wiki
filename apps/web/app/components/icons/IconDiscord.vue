@@ -1,5 +1,8 @@
 <template>
+  <!-- Decorative; the control that wraps it carries the name (#51). -->
   <svg
+    aria-hidden="true"
+    focusable="false"
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"

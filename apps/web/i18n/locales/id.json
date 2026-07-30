@@ -585,5 +585,11 @@
       "title": "Opsi filter gagal dimuat",
       "detail": "Daftar di bawah mungkin tidak lengkap."
     }
-  }
+  },
+  "Toggle theme": "Ganti tema",
+  "Change language": "Ganti bahasa",
+  "Source code on GitHub": "Kode sumber di GitHub",
+  "Join the Discord server": "Gabung server Discord",
+  "About this site": "Tentang situs ini",
+  "Filter (active)": "Filter (sedang aktif)"
 }

@@ -8,8 +8,14 @@ const switchLocalePath = useSwitchLocalePath();
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="ghost" size="icon">
+      <!--
+        Named, and it needs to be (#51). This carries the *same* Languages icon as
+        `AppOriginalSwitcher` next to it, so without names the two are indistinguishable
+        even to a sighted user — and a screen reader heard "button" for both.
+      -->
+      <Button variant="ghost" size="icon" :title="$t('Change language')">
         <Languages />
+        <span class="sr-only">{{ $t("Change language") }}</span>
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent>

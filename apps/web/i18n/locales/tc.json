@@ -586,5 +586,11 @@
       "title": "無法載入篩選選項",
       "detail": "下方清單可能不完整。"
     }
-  }
+  },
+  "Toggle theme": "切換主題",
+  "Change language": "切換語言",
+  "Source code on GitHub": "GitHub 原始碼",
+  "Join the Discord server": "加入 Discord 伺服器",
+  "About this site": "關於本站",
+  "Filter (active)": "篩選器（已套用）"
 }

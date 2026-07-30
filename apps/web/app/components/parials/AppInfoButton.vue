@@ -76,8 +76,9 @@ const dataSummary = computed(() => {
 <template>
   <Dialog v-model:open="isOpen">
     <DialogTrigger as-child>
-      <Button variant="ghost" size="icon">
+      <Button variant="ghost" size="icon" :title="$t('About this site')">
         <Info />
+        <span class="sr-only">{{ $t("About this site") }}</span>
       </Button>
     </DialogTrigger>
     <DialogScrollContent class="sm:max-w-[425px]">
@@ -94,15 +95,18 @@ const dataSummary = computed(() => {
             {{ $t("status.sourceTotal") }}: {{ dataSummary }}
           </span>
 
+          <!-- Same two links as the header, and the same naming rule (#51). -->
           <div class="flex gap-2 mt-2">
             <Button variant="outline" size="icon" as-child>
               <a href="https://github.com/tskrlabs/hololive-ocg-wiki" target="_blank">
                 <IconGithub />
+                <span class="sr-only">{{ $t("Source code on GitHub") }}</span>
               </a>
             </Button>
             <Button v-if="discordInviteUrl" variant="outline" size="icon" as-child>
               <a :href="discordInviteUrl" target="_blank">
                 <IconDiscord />
+                <span class="sr-only">{{ $t("Join the Discord server") }}</span>
               </a>
             </Button>
           </div>

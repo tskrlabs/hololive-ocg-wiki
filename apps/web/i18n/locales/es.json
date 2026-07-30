@@ -585,5 +585,11 @@
       "title": "No se han podido cargar las opciones de filtro",
       "detail": "Las listas siguientes pueden estar incompletas."
     }
-  }
+  },
+  "Toggle theme": "Cambiar tema",
+  "Change language": "Cambiar idioma",
+  "Source code on GitHub": "Código fuente en GitHub",
+  "Join the Discord server": "Unirse al servidor de Discord",
+  "About this site": "Acerca de este sitio",
+  "Filter (active)": "Filtro (filtros activos)"
 }

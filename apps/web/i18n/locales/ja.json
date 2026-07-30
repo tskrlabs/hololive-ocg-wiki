@@ -585,5 +585,11 @@
       "title": "フィルター項目を読み込めませんでした",
       "detail": "以下のリストは不完全な可能性があります。"
     }
-  }
+  },
+  "Toggle theme": "テーマを切り替える",
+  "Change language": "言語を変更する",
+  "Source code on GitHub": "GitHub のソースコード",
+  "Join the Discord server": "Discord サーバーに参加する",
+  "About this site": "このサイトについて",
+  "Filter (active)": "フィルター（適用中）"
 }

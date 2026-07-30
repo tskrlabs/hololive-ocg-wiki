@@ -585,5 +585,11 @@
       "title": "โหลดตัวเลือกตัวกรองไม่สำเร็จ",
       "detail": "รายการด้านล่างอาจไม่ครบถ้วน"
     }
-  }
+  },
+  "Toggle theme": "สลับธีม",
+  "Change language": "เปลี่ยนภาษา",
+  "Source code on GitHub": "ซอร์สโค้ดบน GitHub",
+  "Join the Discord server": "เข้าร่วมเซิร์ฟเวอร์ Discord",
+  "About this site": "เกี่ยวกับเว็บไซต์นี้",
+  "Filter (active)": "ตัวกรอง (กำลังใช้งาน)"
 }

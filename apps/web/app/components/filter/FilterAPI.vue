@@ -118,14 +118,21 @@ const handleResetAll = () => {
 <template>
   <Sheet>
     <SheetTrigger as-child>
-      <Button size="icon" class="relative">
-        <!-- filtered dot -->
+      <Button size="icon" class="relative" :title="$t('Filter')">
+        <!--
+          The filtered dot is decorative and purely visual, so the *state* it conveys
+          goes into the accessible name instead — a screen-reader user otherwise has no
+          way to know filters are active (#51).
+        -->
         <div
           v-if="isFiltered"
           class="absolute left-0 top-0 -translate-2/4 size-2.5 bg-red-500 rounded-full"
         ></div>
 
         <Funnel />
+        <span class="sr-only">
+          {{ isFiltered ? $t("Filter (active)") : $t("Filter") }}
+        </span>
       </Button>
     </SheetTrigger>
     <SheetContent side="top" hide-top-right-close>
