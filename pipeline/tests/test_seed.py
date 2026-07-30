@@ -155,8 +155,7 @@ class TestSchema:
 
         A *join* against a junction table returns one row per matching value, so
         `colors=blue,red` would return a two-colour card twice and corrupt the
-        pagination count. The `IN (SELECT …)` form returns one row per card and is
-        still index-driven.
+        pagination count. The correlated `EXISTS` form returns one row per card.
         """
         apply(db, [seed_module.to_row(card) for card in collection.cards])
 
@@ -166,17 +165,45 @@ class TestSchema:
             "WHERE cc.color_code IN ('blue', 'red')"
         ).fetchone()[0]
         scoped = db.execute(
-            "SELECT count(*) FROM cards c WHERE c.id IN "
-            "(SELECT card_id FROM card_colors WHERE color_code IN ('blue', 'red'))"
+            "SELECT count(*) FROM cards c WHERE EXISTS "
+            "(SELECT 1 FROM card_colors j WHERE j.card_id = c.id "
+            "AND j.color_code IN ('blue', 'red'))"
         ).fetchone()[0]
 
         assert scoped <= joined
-        # And the form we recommend still resolves through the junction's primary key.
-        plan = db.execute(
-            "EXPLAIN QUERY PLAN SELECT c.id FROM cards c WHERE c.id IN "
-            "(SELECT card_id FROM card_colors WHERE color_code = 'blue')"
-        ).fetchall()
-        assert any("card_colors" in row[3] and "SCAN" not in row[3] for row in plan), plan
+
+    def test_a_filtered_page_is_not_sorted_before_its_limit(self, db, collection):
+        """The read-budget half of the junction design (#40).
+
+        Returning each card once was never the whole requirement — the form also has to
+        let `LIMIT` stop the scan. `id IN (SELECT card_id …)` does not: the id set drives
+        the query, so every match is materialised and sorted in a temp b-tree before the
+        limit applies, and a filter costs the same rows at `LIMIT 20` as at `LIMIT 200`.
+        Measured on production, that was 4–8× more rows read than needed, growing with
+        the match set — 3,885 rows for the top tag against 269 for the same filter as
+        `EXISTS`.
+
+        The discriminator is in the plan: a full `USE TEMP B-TREE FOR ORDER BY` sorts the
+        whole match set, while `FOR LAST TERM OF ORDER BY` sorts only the `id` tiebreak
+        within one card number. This asserts both halves — the driver is the ordered walk
+        over `cards`, and the junction is probed through the `card_id` covering index
+        that Phase 3 added for the seeder's deletes.
+        """
+        apply(db, [seed_module.to_row(card) for card in collection.cards])
+
+        page = (
+            "SELECT c.id FROM cards c WHERE EXISTS "
+            "(SELECT 1 FROM card_colors j WHERE j.card_id = c.id "
+            "AND j.color_code IN ('blue', 'red')) "
+            "ORDER BY c.card_number, c.id LIMIT 50"
+        )
+        detail = " ".join(
+            row[3] for row in db.execute(f"EXPLAIN QUERY PLAN {page}").fetchall()
+        )
+
+        assert "USE TEMP B-TREE FOR ORDER BY" not in detail, detail
+        assert "idx_cards_card_number" in detail, detail
+        assert "idx_card_colors_card_id" in detail, detail
 
     def test_fts_matches_a_cjk_substring(self, db):
         """findings F-013 — the bug this phase fixes.

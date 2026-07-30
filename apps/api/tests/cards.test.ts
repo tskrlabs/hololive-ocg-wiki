@@ -34,13 +34,41 @@ test("a filtered colour expands to the fused codes containing it", () => {
   assert.deepEqual(expandColors(["blue", "red"]), ["blue", "blue_red", "red"]);
 });
 
-test("junction filters use IN (SELECT …), never a join", () => {
-  // A join against a junction returns one row per matching *value*, so a card matching
-  // two requested colours would appear twice and corrupt both the page and the count.
-  // ADR 0004 calls this out specifically.
+test("junction filters use a correlated EXISTS, never a join and never IN (SELECT …)", () => {
+  // Two independent constraints, and the shape is the only place both are visible.
+  //
+  // *Never a join* (ADR 0004): a join against a junction returns one row per matching
+  // *value*, so a card matching two requested colours would appear twice and corrupt
+  // both the page and the count.
+  //
+  // *Never `IN (SELECT …)`* (#40): that form makes the id set the driver, so every match
+  // is materialised and sorted before LIMIT applies — 4–8× more rows read than needed,
+  // and the cost grows with the match set. `EXISTS` correlates against `cards.id`, which
+  // lets the walk stop at LIMIT.
+  // Three placeholders, not two: `blue, red` expands to `blue, blue_red, red`.
   const where = buildWhere({ ...base, colors: ["blue", "red"] });
-  assert.match(where.sql, /id IN \(SELECT card_id FROM card_colors WHERE color_code IN/);
+  assert.match(
+    where.sql,
+    /EXISTS \(SELECT 1 FROM card_colors j WHERE j\.card_id = cards\.id AND j\.color_code IN \(\?, \?, \?\)\)/,
+  );
   assert.doesNotMatch(where.sql, /JOIN/i);
+  assert.doesNotMatch(where.sql, /id IN \(SELECT/);
+});
+
+test("every junction filter takes the EXISTS form, not just colours", () => {
+  // All three call sites share `buildWhere`, and the tag and set filters are where the
+  // measured saving is largest — the top tag went 3,885 → 269 rows, the top set
+  // 1,513 → 152, because a big match set is exactly what the old form sorted in full.
+  for (const [filters, table, column] of [
+    [{ ...base, tag: "JP" }, "card_tags", "tag"],
+    [{ ...base, set: "hBP01" }, "card_sets", "set_name"],
+  ] as const) {
+    const where = buildWhere(filters);
+    assert.match(
+      where.sql,
+      new RegExp(`EXISTS \\(SELECT 1 FROM ${table} j WHERE j\\.card_id = cards\\.id AND j\\.${column} IN`),
+    );
+  }
 });
 
 test("filter groups are OR within and AND across", () => {
@@ -51,7 +79,16 @@ test("filter groups are OR within and AND across", () => {
     cardTypes: ["character"],
   });
   assert.match(where.sql, /rarity_code IN \(\?, \?\)/);
-  assert.equal(where.sql.split(" AND ").length, 3);
+  // Count only the ANDs *between* groups. Splitting the whole string no longer works:
+  // the junction subquery carries its own `AND` correlating j.card_id to cards.id, so
+  // a naive split reports one group too many. Collapse nested parens innermost-first
+  // until nothing changes, which leaves only the top-level conjunction.
+  let topLevel = where.sql;
+  for (let flat = ""; flat !== topLevel; ) {
+    flat = topLevel;
+    topLevel = flat.replace(/\([^()]*\)/g, "…");
+  }
+  assert.equal(topLevel.split(" AND ").length, 3);
 });
 
 test("the name filter matches the source-locale column", () => {

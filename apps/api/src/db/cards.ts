@@ -71,11 +71,31 @@ interface WhereClause {
 /**
  * The WHERE fragment shared by the count and page queries.
  *
- * **Junction filters use `id IN (SELECT card_id FROM …)`, never a join.** A join against
- * a junction returns one row per matching *value*, so `colors=blue,red` would return a
- * card once per colour it matches and corrupt both the page and the count. The `IN` form
- * returns one row per card and is still fully index-driven — verified on real D1:
- * `SEARCH card_colors USING PRIMARY KEY (color_code=?)` plus a Bloom filter, no scan.
+ * **Junction filters use a correlated `EXISTS`, never a join and never `IN (SELECT …)`.**
+ *
+ * A join against a junction returns one row per matching *value*, so `colors=blue,red`
+ * would return a card once per colour it matches and corrupt both the page and the count.
+ * That rules out the join; the subquery forms both return one row per card.
+ *
+ * Between the two subquery forms the difference is where the sort happens.
+ * `id IN (SELECT card_id …)` makes the id set the driver, so SQLite materialises every
+ * match and sorts it in a temp b-tree *before* `LIMIT` applies — the page size then makes
+ * no difference at all, and a filter costs the same 1,328 rows at `LIMIT 20` as at
+ * `LIMIT 200`. The correlated `EXISTS` inverts it: `cards` is walked in
+ * `idx_cards_card_number` order and the scan stops at `LIMIT`, with the junction probed
+ * per row through `idx_card_colors_card_id` (the covering index Phase 3 added for the
+ * seeder's deletes). Only the `id` tiebreak within one card number is sorted, and the
+ * saving grows with the match set instead of shrinking:
+ *
+ * | filter | `IN` | `EXISTS` |
+ * |---|---|---|
+ * | 1 colour | 1,328 | 845 |
+ * | 2 colours | 2,713 | 897 |
+ * | top tag (`JP`) | 3,885 | 269 |
+ * | top set | 1,513 | 152 |
+ *
+ * Measured on production D1 over 2,463 cards — 77% fewer rows read overall, which is
+ * 66% → 15% of the free read tier at v1's traffic. See issue #40.
  *
  * Groups are OR'd internally and AND'd against each other, matching the checkbox UI.
  */
@@ -88,9 +108,11 @@ export function buildWhere(filters: CardFilters, searchIds?: readonly string[]):
     params.push(...values);
   };
 
+  // The subquery is aliased so `cards.id` in the correlation can never be captured by
+  // the junction's own columns, whatever they are named.
   const junction = (table: string, column: string, values: readonly string[]) => {
     conditions.push(
-      `id IN (SELECT card_id FROM ${table} WHERE ${column} IN (${values
+      `EXISTS (SELECT 1 FROM ${table} j WHERE j.card_id = cards.id AND j.${column} IN (${values
         .map(() => "?")
         .join(", ")}))`,
     );
