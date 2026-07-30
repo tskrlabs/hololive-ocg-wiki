@@ -16,6 +16,7 @@ steps that cost money or touch production are explicit.
     holo-data seed --confirm      diff-based upsert into D1            (writes)
 
     holo-data glossary            proper-noun coverage, per locale     (local, free)
+    holo-data cache-status        migration progress, per locale       (local, free)
     holo-data backup-cache        snapshot the translation cache       (local / R2)
     holo-data migrate-images      one-time v1 flat -> set-scoped tree
 
@@ -53,7 +54,10 @@ from . import publish as publish_module
 from . import verify_images as verify_images_module
 from .scrape import card_list, extract, fetch
 from .translate import backup, masking, poe
+from .translate import units as units_module
 from .translate.cache import TranslationCache
+from .translate import cache_v2 as cache_v2_module
+from .translate.cache_v2 import TranslationCacheV2
 
 app = typer.Typer(
     help="hololive-ocg-wiki data pipeline.",
@@ -1008,6 +1012,43 @@ def glossary_(
                     typer.echo(f"  {key}")
 
 
+@app.command("cache-status")
+def cache_status() -> None:
+    """How far each locale has moved to the content-addressed cache. Spends nothing.
+
+    Answers "is this locale consistent yet?" — which without this is a question you
+    answer by reading the diff of a 24 MB gitignored file.
+
+    A locale is complete when every unit in the build has a v2 entry. Until then the
+    build falls back to the per-card cache for the rest, so output stays complete while
+    the migration is half-done.
+    """
+    collection = build_module.load()
+    if collection is None:
+        typer.echo("no build found — run `holo-data build` first", err=True)
+        raise typer.Exit(1)
+
+    cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
+    units = units_module.collect(cards)
+    stats = units_module.stats(units)
+    cache = TranslationCacheV2.load()
+
+    typer.echo(
+        f"{stats.distinct} distinct units from {stats.occurrences} field occurrences "
+        f"({stats.chars:,} source chars)"
+    )
+    for line in stats.lines():
+        typer.echo(line)
+
+    typer.echo("")
+    if not cache.entries:
+        typer.echo("no v2 cache yet — run pipeline/scripts/migrate_cache.py")
+        return
+
+    for locale in poe.target_locales():
+        typer.echo(f"  {cache.status(locale, units.values()).describe()}")
+
+
 @app.command("report-masks")
 def report_masks(
     show: int = typer.Option(25, "--show", help="how many names to list"),
@@ -1092,24 +1133,40 @@ def backup_cache(
     """
     target_dir = backup_dir or backup.DEFAULT_BACKUP_DIR
 
-    try:
-        path, stats = backup.write_local(backup_dir=target_dir)
-    except backup.BackupError as exc:
-        typer.echo(f"✗ {exc}", err=True)
+    # Both caches, because both hold work that exists nowhere else. v1 is a year of paid
+    # calls; v2 holds the `manual` entries — which are hand-written, gitignored, and
+    # therefore exactly as unbacked as v1 was before this command existed.
+    sources = [(paths.cache_file(), False)]
+    if cache_v2_module.cache_v2_file().exists():
+        sources.append((cache_v2_module.cache_v2_file(), True))
+
+    written: list[Path] = []
+    for source, is_v2 in sources:
+        if not source.exists():
+            continue
+        try:
+            path, stats = backup.write_local(source=source, backup_dir=target_dir)
+        except backup.BackupError as exc:
+            typer.echo(f"✗ {exc}", err=True)
+            raise typer.Exit(1)
+
+        typer.echo(f"→ {source.name}: {stats.describe()}")
+        typer.echo(f"✓ verified: {path}")
+        written.append(path)
+
+        removed = backup.prune_local(target_dir, keep=keep, v2=is_v2)
+        if removed:
+            typer.echo(f"  pruned {len(removed)} older snapshot(s), keeping {keep}")
+
+    if not written:
+        typer.echo("no cache found to back up", err=True)
         raise typer.Exit(1)
-
-    typer.echo(f"→ {stats.describe()}")
-    typer.echo(f"✓ local backup verified: {path}")
-
-    removed = backup.prune_local(target_dir, keep=keep)
-    if removed:
-        typer.echo(f"  pruned {len(removed)} older snapshot(s), keeping {keep}")
 
     if not remote:
         typer.echo("")
         typer.echo(
-            "This copy is on the same disk as the original. Re-run with --remote to "
-            "put one in R2."
+            "These copies are on the same disk as the originals. Re-run with --remote "
+            "to put one in R2."
         )
         return
 
@@ -1120,8 +1177,9 @@ def backup_cache(
         typer.echo(f"✗ {exc}", err=True)
         raise typer.Exit(1)
 
-    key = backup.upload_to_r2(s3, config.artifacts_bucket, path)
-    typer.echo(f"✓ uploaded to r2://{config.artifacts_bucket}/{key}")
+    for path in written:
+        key = backup.upload_to_r2(s3, config.artifacts_bucket, path)
+        typer.echo(f"✓ uploaded to r2://{config.artifacts_bucket}/{key}")
 
     existing = backup.list_r2_backups(s3, config.artifacts_bucket)
     total = sum(size for _, size in existing)

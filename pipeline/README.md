@@ -18,6 +18,7 @@ holo-data verify          # diff against v1's data               (local, free)
 holo-data verify-images   # coverage; --remote re-checks bytes   (local / ~2.4k reqs)
 holo-data status          # what is on disk right now
 holo-data glossary        # proper-noun coverage, per locale     (local, free)
+holo-data cache-status    # migration progress, per locale       (local, free)
 holo-data report-masks    # rehearse masking over every string   (local, free)
 holo-data backup-cache    # snapshot the translation cache       (--remote adds R2)
 
@@ -48,6 +49,34 @@ uv sync --extra publish         # adds boto3 — only needed for `publish`
 
 `scrape`, `images`, `build`, `verify` and `verify-images` need no credentials.
 `publish` needs R2 credentials and `boto3`; see [`docs/infra.md`](../docs/infra.md).
+
+## A translation belongs to a string, not to a card
+
+`locales/translation-cache-v2.json` keys on `(locale, kind, sha256(source))`. The old
+cache keyed on `(locale, card_id, field_path)`, so the same Japanese printed on five cards
+was translated five times — and came back five different ways. Measured: 362 of 926
+distinct art names have two or more `en` translations.
+
+One string, one slot. Two cards cannot disagree, because there is nowhere for a second
+answer to live.
+
+It is also smaller. 2,463 cards hold **17,377 translatable field occurrences but only
+3,893 distinct units** — 284 KB against 1.42 MB of whole-card text.
+
+```bash
+holo-data cache-status    # units per kind, and how far each locale has migrated
+```
+
+**Q&A is migrated; everything else is re-translated cold.** Re-keying the old cache by
+content puts conflicting values in one slot — 59% of `en`'s fillable slots hold two or
+more different translations, and 2,006 of those have no principled winner. Q&A is the
+exception because it is 62% of the corpus by character count, the least read, and the
+Japanese is authoritative anyway. Migrated entries are marked `source: "legacy"` so a
+later pass can find exactly them.
+
+**Dual-read during the migration.** A unit missing from v2 falls back to the per-card
+cache, so a build is always complete and a locale ships when it is ready rather than all
+six landing together.
 
 ## Translation is incremental
 

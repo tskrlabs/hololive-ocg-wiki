@@ -39,6 +39,8 @@ from typing import Any
 
 from ..paths import cache_file
 from .cache import TranslationCache
+from .cache_v2 import CACHE_VERSION as CACHE_V2_VERSION
+from .cache_v2 import TranslationCacheV2, cache_v2_file
 
 # Outside the repo, on purpose. `~/.holo-data/` rather than a directory under
 # `pipeline/`: everything in the repo tree is subject to `git clean -fdx`, and a backup
@@ -84,11 +86,27 @@ class CacheStats:
 
 
 def stats_for(path: Path) -> CacheStats:
-    """Load a cache file and describe it.
+    """Load a cache file and describe it. Handles both cache versions.
 
     Loading rather than stat-ing is the point: this parses the JSON and walks every
     entry, so a file that is present but corrupt fails here.
     """
+    import json
+
+    version = json.loads(path.read_text(encoding="utf-8")).get("version")
+
+    if version == CACHE_V2_VERSION:
+        v2 = TranslationCacheV2.load(path)
+        locales = {locale: len(units) for locale, units in v2.entries.items()}
+        return CacheStats(
+            locales=locales,
+            entry_count=sum(locales.values()),
+            # A content-addressed cache has no card dimension — that is the point of it.
+            card_count=0,
+            manual_count=v2.count(source="manual"),
+            byte_size=path.stat().st_size,
+        )
+
     cache = TranslationCache.load(path)
     locales = {
         locale: sum(len(fields) for fields in cards.values())
@@ -103,14 +121,14 @@ def stats_for(path: Path) -> CacheStats:
     )
 
 
-def backup_name(when: datetime | None = None) -> str:
+def backup_name(when: datetime | None = None, stem: str = "translation-cache") -> str:
     """The filename for a snapshot taken now.
 
     UTC and sortable, so `ls` orders them chronologically and two backups on the same
     day do not collide.
     """
     moment = when or datetime.now(timezone.utc)
-    return f"translation-cache-{moment.strftime('%Y%m%dT%H%M%SZ')}.json"
+    return f"{stem}-{moment.strftime('%Y%m%dT%H%M%SZ')}.json"
 
 
 class BackupError(RuntimeError):
@@ -140,7 +158,10 @@ def write_local(
     before = stats_for(origin)
 
     backup_dir.mkdir(parents=True, exist_ok=True)
-    target = backup_dir / backup_name(when)
+    # Distinct stem per cache, so `prune_local` cannot delete every v2 snapshot to make
+    # room for v1 ones (they are pruned as separate series).
+    stem = "translation-cache-v2" if origin == cache_v2_file() else "translation-cache"
+    target = backup_dir / backup_name(when, stem=stem)
 
     # copy2 preserves mtime, so a backup directory listing shows when the cache was last
     # *written*, not when it was copied — which is the more useful fact when choosing
@@ -161,7 +182,7 @@ def write_local(
 
 
 def prune_local(
-    backup_dir: Path = DEFAULT_BACKUP_DIR, keep: int = 10
+    backup_dir: Path = DEFAULT_BACKUP_DIR, keep: int = 10, v2: bool = False
 ) -> list[Path]:
     """Delete all but the newest `keep` snapshots. Returns what was removed.
 
@@ -177,9 +198,11 @@ def prune_local(
     if not backup_dir.exists():
         return []
 
+    # `translation-cache-*` would also match `translation-cache-v2-*`, so the two
+    # series are pruned separately — otherwise ten v1 snapshots would evict every v2 one.
+    pattern = "translation-cache-v2-*.json" if v2 else "translation-cache-2*.json"
     snapshots = sorted(
-        (p for p in backup_dir.glob("translation-cache-*.json") if p.is_file()),
-        reverse=True,
+        (p for p in backup_dir.glob(pattern) if p.is_file()), reverse=True
     )
 
     removed = []
