@@ -186,6 +186,11 @@ class Entry:
     translations: dict[str, str] = field(default_factory=dict)
     aliases: list[Alias] = field(default_factory=list)
     note: str | None = None
+    review: bool = False
+    """True when a model wrote these translations and nobody has checked them.
+
+    Machine output that is indistinguishable from a curated decision is how a bad name
+    survives for a year. `holo-data glossary --review` lists exactly these."""
 
     def __post_init__(self) -> None:
         # Accept bare strings as well as `Alias` objects. Most aliases have nothing to
@@ -235,6 +240,8 @@ class Entry:
             ]
         if self.note:
             out["note"] = self.note
+        if self.review:
+            out["review"] = True
         return out
 
     @classmethod
@@ -246,6 +253,7 @@ class Entry:
             translations={k: v for k, v in (raw.get("translations") or {}).items() if v},
             aliases=[Alias.from_json(a) for a in (raw.get("aliases") or [])],
             note=raw.get("note"),
+            review=bool(raw.get("review", False)),
         )
 
 
@@ -279,6 +287,10 @@ class Glossary:
         """Keys with no decision recorded for this locale."""
         return sorted(k for k, e in self.entries.items() if not e.has(locale))
 
+    def needs_review(self) -> list[str]:
+        """Keys whose translations came from a model and have not been checked."""
+        return sorted(k for k, e in self.entries.items() if e.review)
+
     def mask_table(self) -> list[tuple[str, str]]:
         """Every maskable string paired with the entry key it belongs to, longest first.
 
@@ -287,6 +299,25 @@ class Glossary:
         entry in isolation.
         """
         pairs = [(text, e.key) for e in self.entries.values() for text in e.maskable()]
+        return sorted(pairs, key=lambda pair: len(pair[0]), reverse=True)
+
+    def prefixed_mask_table(self, prefix: str) -> list[tuple[str, str]]:
+        """Mask table for entries that appear in text with a prefix.
+
+        Tags are stored unprefixed (`0期生`) because that is the identity the junction
+        table and the filter key on, but they appear in rules text with their display
+        prefix (`#0期生`). Masking has to match what the text contains.
+
+        The prefix is also what makes tags *safer* to mask than names: `#` is an explicit
+        delimiter, so `#ID` cannot be absorbed into a longer word the way a bare katakana
+        run can. Three real pairs still nest — `#ID` inside `#ID1期生` — which longest-first
+        ordering handles.
+        """
+        pairs = [
+            (f"{prefix}{text}", entry.key)
+            for entry in self.entries.values()
+            for text in entry.maskable()
+        ]
         return sorted(pairs, key=lambda pair: len(pair[0]), reverse=True)
 
     def validate(self) -> None:

@@ -53,7 +53,7 @@ from . import paths, r2, transform, verify as verify_module
 from . import publish as publish_module
 from . import verify_images as verify_images_module
 from .scrape import card_list, extract, fetch
-from .translate import backup, masking, poe
+from .translate import backup, mask_table, masking, poe
 from .translate import units as units_module
 from .translate.cache import TranslationCache
 from .translate import cache_v2 as cache_v2_module
@@ -967,6 +967,9 @@ def glossary_(
     missing: bool = typer.Option(
         False, "--missing", help="list the keys with no decision yet"
     ),
+    review: bool = typer.Option(
+        False, "--review", help="list machine-written entries nobody has checked"
+    ),
 ) -> None:
     """Report what the proper-noun glossary covers.
 
@@ -999,6 +1002,30 @@ def glossary_(
                     typer.echo("⚠ distinct entries sharing one display name:")
                     found_collisions = True
                 typer.echo(f"  {kind}/{loc}: {display!r} <- {keys}")
+
+    pending = {
+        kind: glossary.needs_review() for kind, glossary in glossaries.items()
+    }
+    if any(pending.values()):
+        total = sum(len(keys) for keys in pending.values())
+        typer.echo("")
+        typer.echo(f"{total} entry(ies) are machine-written and unreviewed:")
+        for kind, keys in pending.items():
+            if keys:
+                typer.echo(f"  {kind}: {len(keys)}")
+
+    if review:
+        for kind, keys in pending.items():
+            if not keys:
+                continue
+            typer.echo(f"\n{kind} — needs review:")
+            for key in keys:
+                entry = glossaries[kind].entries[key]
+                shown = ", ".join(
+                    f"{loc}={entry.translations[loc]!r}"
+                    for loc in sorted(entry.translations)
+                )
+                typer.echo(f"  {key}\n      {shown}")
 
     if not missing:
         return
@@ -1071,7 +1098,8 @@ def report_masks(
         raise typer.Exit(1)
 
     names = glossary_module.Glossary.load("names")
-    table = names.mask_table()
+    tags = glossary_module.Glossary.load("tags")
+    table = mask_table.combined_table(names, tags)
     report = masking.MaskReport()
 
     for card in collection.cards:
@@ -1084,7 +1112,10 @@ def report_masks(
             typer.echo(f"✓ {report.total} strings round-trip")
             return
     else:
-        typer.echo(f"mask table: {len(table)} entries from {len(names.entries)} names")
+        typer.echo(
+            f"mask table: {len(table)} entries "
+            f"({len(names.entries)} names + {len(tags.entries)} tags)"
+        )
         for line in report.lines(top=show):
             typer.echo(line)
 

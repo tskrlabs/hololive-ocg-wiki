@@ -52,7 +52,7 @@
     },
     {
       "value": "ライブスタッフ",
-      "label": "ライブスタッフ"
+      "label": "Personal del directo"
     },
     {
       "value": "ロゼ隊",
@@ -176,15 +176,15 @@
     },
     {
       "value": "hololive OFFICIAL CARD GAME ツインウエハース",
-      "label": "hololive OFFICIAL CARD GAME ツインウエハース"
+      "label": "hololive OFFICIAL CARD GAME Twin Wafer"
     },
     {
       "value": "【使用可能カード】セレクションカップ",
-      "label": "【使用可能カード】セレクションカップ"
+      "label": "【Cartas permitidas】Copa de Selección"
     },
     {
       "value": "オフィシャルホロカコレクション-2025ライブセット-",
-      "label": "オフィシャルホロカコレクション-2025ライブセット-"
+      "label": "Colección Oficial de HoloCa - Set de Directos 2025 -"
     },
     {
       "value": "スタートエールセット",
@@ -240,7 +240,7 @@
     },
     {
       "value": "ブースターパック バウンサーバウンド",
-      "label": "ブースターパック バウンサーバウンド"
+      "label": "Sobre de Expansión Bouncer Bound"
     },
     {
       "value": "ブースターパック「エリートスパーク」",
@@ -264,23 +264,23 @@
     },
     {
       "value": "ライブスタートデッキ さくらみこ",
-      "label": "ライブスタートデッキ さくらみこ"
+      "label": "Mazo Inicial de Directo Sakura Miko"
     },
     {
       "value": "ライブスタートデッキ 儒烏風亭らでん",
-      "label": "ライブスタートデッキ 儒烏風亭らでん"
+      "label": "Mazo Inicial de Directo Juufuutei Raden"
     },
     {
       "value": "ライブスタートデッキ 大空スバル",
-      "label": "ライブスタートデッキ 大空スバル"
+      "label": "Mazo Inicial de Directo Oozora Subaru"
     },
     {
       "value": "ライブスタートデッキ 星街すいせい",
-      "label": "ライブスタートデッキ 星街すいせい"
+      "label": "Mazo Inicial de Directo Hoshimachi Suisei"
     },
     {
       "value": "ライブスタートデッキ 白上フブキ",
-      "label": "ライブスタートデッキ 白上フブキ"
+      "label": "Mazo Inicial de Directo Shirakami Fubuki"
     }
   ]
 }

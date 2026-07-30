@@ -12,7 +12,15 @@
       }
     },
     "hololive OFFICIAL CARD GAME ツインウエハース": {
-      "translations": {}
+      "translations": {
+        "en": "hololive OFFICIAL CARD GAME Twin Wafers",
+        "es": "hololive OFFICIAL CARD GAME Twin Wafer",
+        "id": "hololive OFFICIAL CARD GAME Twin Wafer",
+        "ko": "hololive OFFICIAL CARD GAME 트윈 웨하스",
+        "tc": "hololive OFFICIAL CARD GAME 雙子威化餅",
+        "th": "hololive OFFICIAL CARD GAME ทวินเวเฟอร์"
+      },
+      "review": true
     },
     "【hololive production OFFICIAL SHOP限定】hololive OFFICIAL CARD GAME 1st Anniversary Celebration Set": {
       "translations": {
@@ -45,10 +53,26 @@
       }
     },
     "【使用可能カード】セレクションカップ": {
-      "translations": {}
+      "translations": {
+        "en": "[Usable Cards] Selection Cup",
+        "es": "【Cartas permitidas】Copa de Selección",
+        "id": "【Kartu yang Dapat Digunakan】Selection Cup",
+        "ko": "【사용 가능 카드】셀렉션 컵",
+        "tc": "【可使用卡牌】Selection Cup",
+        "th": "【การ์ดที่สามารถใช้ได้】ซีเลกชันคัพ"
+      },
+      "review": true
     },
     "オフィシャルホロカコレクション-2025ライブセット-": {
-      "translations": {}
+      "translations": {
+        "en": "Official hololive Card Collection -2025 Live Set-",
+        "es": "Colección Oficial de HoloCa - Set de Directos 2025 -",
+        "id": "Koleksi HoloKa Resmi -Set Live 2025-",
+        "ko": "오피셜 홀로카 컬렉션 -2025 라이브 세트-",
+        "tc": "官方holoca收藏-2025演唱會套組-",
+        "th": "คอลเลกชันโฮโลคาอย่างเป็นทางการ - ชุดไลฟ์ 2025 -"
+      },
+      "review": true
     },
     "スタートエールセット": {
       "translations": {
@@ -191,7 +215,15 @@
       }
     },
     "ブースターパック バウンサーバウンド": {
-      "translations": {}
+      "translations": {
+        "en": "Booster Pack Bouncer Bound",
+        "es": "Sobre de Expansión Bouncer Bound",
+        "id": "Booster Pack Bouncer Bound",
+        "ko": "부스터 팩 바운서 바운드",
+        "tc": "補充包 Bouncer Bound",
+        "th": "บูสเตอร์แพ็ก บาวน์เซอร์บาวนด์"
+      },
+      "review": true
     },
     "ブースターパック「アヤカシヴァーミリオン」": {
       "translations": {
@@ -264,22 +296,70 @@
       }
     },
     "ライブスタートデッキ さくらみこ": {
-      "translations": {}
+      "translations": {
+        "en": "Start Deck Sakura Miko",
+        "es": "Mazo Inicial de Directo Sakura Miko",
+        "id": "Deck Awal Live Sakura Miko",
+        "ko": "라이브 스타트 덱 사쿠라 미코",
+        "tc": "Live Start牌組 櫻巫女",
+        "th": "ไลฟ์สตาร์ตเด็ค ซากุระ มิโกะ"
+      },
+      "review": true
     },
     "ライブスタートデッキ 儒烏風亭らでん": {
-      "translations": {}
+      "translations": {
+        "en": "Start Deck Juufuutei Raden",
+        "es": "Mazo Inicial de Directo Juufuutei Raden",
+        "id": "Deck Awal Live Juufuutei Raden",
+        "ko": "라이브 스타트 덱 주우후테이 라덴",
+        "tc": "Live Start牌組 儒烏風亭螺鈿",
+        "th": "ไลฟ์สตาร์ตเด็ค จูฟูเท ราเด็น"
+      },
+      "review": true
     },
     "ライブスタートデッキ 大空スバル": {
-      "translations": {}
+      "translations": {
+        "en": "Start Deck Oozora Subaru",
+        "es": "Mazo Inicial de Directo Oozora Subaru",
+        "id": "Deck Awal Live Oozora Subaru",
+        "ko": "라이브 스타트 덱 오오조라 스바루",
+        "tc": "Live Start牌組 大空昴",
+        "th": "ไลฟ์สตาร์ตเด็ค โอซากะ สุบารุ"
+      },
+      "review": true
     },
     "ライブスタートデッキ 星街すいせい": {
-      "translations": {}
+      "translations": {
+        "en": "Start Deck Hoshimachi Suisei",
+        "es": "Mazo Inicial de Directo Hoshimachi Suisei",
+        "id": "Deck Awal Live Hoshimachi Suisei",
+        "ko": "라이브 스타트 덱 호시마치 스이세이",
+        "tc": "Live Start牌組 星街彗星",
+        "th": "ไลฟ์สตาร์ตเด็ค โฮชิมาจิ ซุยเซย์"
+      },
+      "review": true
     },
     "ライブスタートデッキ 森カリオペ": {
-      "translations": {}
+      "translations": {
+        "en": "Start Deck Mori Calliope",
+        "es": "Mazo Inicial de Directo Mori Calliope",
+        "id": "Deck Awal Live Mori Calliope",
+        "ko": "라이브 스타트 덱 모리 칼리오페",
+        "tc": "Live Start牌組 森美聲",
+        "th": "ไลฟ์สตาร์ตเด็ค โมริ คาลิโอเป"
+      },
+      "review": true
     },
     "ライブスタートデッキ 白上フブキ": {
-      "translations": {}
+      "translations": {
+        "en": "Start Deck Shirakami Fubuki",
+        "es": "Mazo Inicial de Directo Shirakami Fubuki",
+        "id": "Deck Awal Live Shirakami Fubuki",
+        "ko": "라이브 스타트 덱 시라카미 후부키",
+        "tc": "Live Start牌組 白上吹雪",
+        "th": "ไลฟ์สตาร์ตเด็ค ชิรากามิ ฟุบุกิ"
+      },
+      "review": true
     }
   }
 }

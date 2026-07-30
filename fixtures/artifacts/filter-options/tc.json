@@ -52,7 +52,7 @@
     },
     {
       "value": "ライブスタッフ",
-      "label": "Live Staff"
+      "label": "直播工作人員"
     },
     {
       "value": "ロゼ隊",
@@ -176,15 +176,15 @@
     },
     {
       "value": "hololive OFFICIAL CARD GAME ツインウエハース",
-      "label": "hololive OFFICIAL CARD GAME ツインウエハース"
+      "label": "hololive OFFICIAL CARD GAME 雙子威化餅"
     },
     {
       "value": "【使用可能カード】セレクションカップ",
-      "label": "【使用可能カード】セレクションカップ"
+      "label": "【可使用卡牌】Selection Cup"
     },
     {
       "value": "オフィシャルホロカコレクション-2025ライブセット-",
-      "label": "オフィシャルホロカコレクション-2025ライブセット-"
+      "label": "官方holoca收藏-2025演唱會套組-"
     },
     {
       "value": "スタートエールセット",
@@ -240,7 +240,7 @@
     },
     {
       "value": "ブースターパック バウンサーバウンド",
-      "label": "ブースターパック バウンサーバウンド"
+      "label": "補充包 Bouncer Bound"
     },
     {
       "value": "ブースターパック「エリートスパーク」",
@@ -264,23 +264,23 @@
     },
     {
       "value": "ライブスタートデッキ さくらみこ",
-      "label": "ライブスタートデッキ さくらみこ"
+      "label": "Live Start牌組 櫻巫女"
     },
     {
       "value": "ライブスタートデッキ 儒烏風亭らでん",
-      "label": "ライブスタートデッキ 儒烏風亭らでん"
+      "label": "Live Start牌組 儒烏風亭螺鈿"
     },
     {
       "value": "ライブスタートデッキ 大空スバル",
-      "label": "ライブスタートデッキ 大空スバル"
+      "label": "Live Start牌組 大空昴"
     },
     {
       "value": "ライブスタートデッキ 星街すいせい",
-      "label": "ライブスタートデッキ 星街すいせい"
+      "label": "Live Start牌組 星街彗星"
     },
     {
       "value": "ライブスタートデッキ 白上フブキ",
-      "label": "ライブスタートデッキ 白上フブキ"
+      "label": "Live Start牌組 白上吹雪"
     }
   ]
 }

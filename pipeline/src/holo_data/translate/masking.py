@@ -40,7 +40,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Iterable
+from typing import Any, Callable, Iterable
 
 from ..glossary import Glossary, absorbed_in
 
@@ -160,13 +160,15 @@ def mask(text: str, table: Iterable[tuple[str, str]]) -> Masked:
     )
 
 
-def unmask(text: str, masked: Masked, glossary: Glossary, locale: str) -> str:
+def unmask(text: str, masked: Masked, glossary: Any, locale: str) -> str:
     """Substitute each placeholder with the glossary's translation for that locale.
 
     Args:
         text: the model's reply, still carrying the placeholders.
         masked: what `mask` produced, for the token map.
-        glossary: the names glossary.
+        glossary: a `Glossary`, or a `mask_table.Restorer` when the table spans several
+            glossaries. Both expose `display(key, locale, surface=...)`; the `Restorer`
+            additionally resolves the `kind:key` form that a combined table emits.
         locale: which translation to restore.
 
     Returns:
@@ -196,20 +198,42 @@ def unmask(text: str, masked: Masked, glossary: Glossary, locale: str) -> str:
             f"  received: {text!r}"
         )
 
+    # A `Restorer` resolves `kind:key`; a bare `Glossary` resolves a plain key. Chosen by
+    # capability rather than by catching TypeError, because both objects have a `display`
+    # and guessing from a failed call would swallow real bugs inside it.
+    restore = _restorer_for(glossary)
+
     out = text
     for token, key in masked.tokens.items():
-        entry = glossary.entries.get(key)
-        if entry is None:
-            raise MaskError(
-                f"{token} maps to {key!r}, which is not in the glossary. "
-                "The glossary changed between masking and unmasking."
-            )
         # The surface is passed so an alias can restore to its own short form —
         # `モココ` -> "Mococo", not "Mococo Abyssgard". Falls back to the full name
         # when the alias has no decision for this locale.
-        out = out.replace(token, entry.display(locale, surface=masked.surfaces.get(token)))
+        try:
+            replacement = restore(key, locale, masked.surfaces.get(token))
+        except KeyError as exc:
+            raise MaskError(
+                f"{token} maps to {key!r}, which is not in the glossary. "
+                "The glossary changed between masking and unmasking."
+            ) from exc
+
+        out = out.replace(token, replacement)
 
     return out
+
+
+def _restorer_for(glossary: Any) -> Callable[[str, str, str | None], str]:
+    """Adapt either a `Glossary` or a `Restorer` to one calling convention."""
+    if hasattr(glossary, "entries"):
+
+        def from_glossary(key: str, locale: str, surface: str | None) -> str:
+            entry = glossary.entries.get(key)
+            if entry is None:
+                raise KeyError(key)
+            return entry.display(locale, surface=surface)
+
+        return from_glossary
+
+    return lambda key, locale, surface: glossary.display(key, locale, surface=surface)
 
 
 def verify_roundtrip(text: str, table: Iterable[tuple[str, str]]) -> None:
