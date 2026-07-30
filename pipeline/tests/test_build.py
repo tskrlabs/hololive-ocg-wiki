@@ -84,17 +84,56 @@ class TestFilterOptions:
                 second, ensure_ascii=False
             )
 
-    def test_tags_and_sets_come_from_the_requested_locale(self, collection):
+    def test_sets_key_on_the_set_name(self, collection):
         options = build_module.filter_options(collection, "ja")
         expected_sets = {name for card in collection.cards for name in card.card_sets}
         assert {entry["value"] for entry in options["sets"]} == expected_sets
 
-        expected_tags = {
-            tag
-            for card in collection.cards
-            for tag in (card.translations["ja"].tags or [])
-        }
-        assert {entry["value"] for entry in options["tags"]} == expected_tags
+    def test_tags_key_on_the_identity_not_the_display_text(self, collection):
+        """`Card.tags` is what the junction holds; `Translation.tags` carries the `#`.
+
+        Emitting the display spelling as `value` sent `#0期生` to a `WHERE tag = ?`
+        matching `0期生`, so **the tag filter returned zero cards for every tag in every
+        locale** (#26). Measured against the deployed site: 0 rows for the prefixed
+        value, 165 for the unprefixed one.
+
+        Same shape as the name split in F-015 — the filter keys on the stable identity,
+        and the localised text is a label.
+        """
+        expected = {tag for card in collection.cards for tag in (card.tags or [])}
+
+        for locale in LOCALE_VALUES:
+            options = build_module.filter_options(collection, locale)
+            values = {entry["value"] for entry in options["tags"]}
+            assert values == expected
+            assert not any(value.startswith("#") for value in values), (
+                "a `#`-prefixed value is display text, and matches nothing in card_tags"
+            )
+
+    def test_a_tag_label_is_the_locale_display_text(self, collection):
+        """The prefix belongs on the label, where it is presentation rather than a key."""
+        options = build_module.filter_options(collection, "ja")
+        by_value = {entry["value"]: entry["label"] for entry in options["tags"]}
+
+        for card in collection.cards:
+            shown = card.translations["ja"].tags or []
+            for index, identity in enumerate(card.tags or []):
+                if index < len(shown):
+                    assert by_value[identity] == shown[index]
+
+    def test_every_tag_label_carries_the_prefix(self, collection):
+        """Uniformly — not "if someone curated this one".
+
+        All 5,481 tag occurrences carry `#` in every locale, but the glossary stores the
+        bare text (`"0th Gen"`). Taking the curated value verbatim gave `"#0期生"` in `ja`
+        and `"0th Gen"` in `en`, so a tag's prefix depended on whether it happened to be
+        curated. The prefix is normalised in one place instead.
+        """
+        for locale in LOCALE_VALUES:
+            labels = [e["label"] for e in build_module.filter_options(collection, locale)["tags"]]
+            assert labels, f"{locale} produced no tags"
+            assert all(label.startswith("#") for label in labels), locale
+            assert not any(label.startswith("##") for label in labels), locale
 
     def test_entries_are_sorted(self, collection):
         options = build_module.filter_options(collection, "tc")

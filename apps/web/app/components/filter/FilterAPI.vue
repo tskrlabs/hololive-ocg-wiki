@@ -294,7 +294,6 @@ const handleResetAll = () => {
                                 tagOption.label
                               )
                             }}
-                            ({{ tagOption.label }})
                           </CommandItem>
                         </CommandGroup>
                       </CommandList>

@@ -32,15 +32,15 @@
     },
     {
       "value": "ときのそら",
-      "label": "ときのそら"
+      "label": "時乃空"
     },
     {
       "value": "サブパソコン",
-      "label": "サブパソコン"
+      "label": "副電腦"
     },
     {
       "value": "スゴイパソコン",
-      "label": "スゴイパソコン"
+      "label": "厲害的電腦"
     },
     {
       "value": "テスト・ショートアーツ",
@@ -48,7 +48,7 @@
     },
     {
       "value": "ホロリスの輪",
-      "label": "Holoris之環"
+      "label": "Holo友的圈圈"
     },
     {
       "value": "ライブスタッフ",
@@ -56,7 +56,7 @@
     },
     {
       "value": "ロゼ隊",
-      "label": "ロゼ隊"
+      "label": "Rose-tai"
     },
     {
       "value": "七詩ムメイ",
@@ -64,109 +64,109 @@
     },
     {
       "value": "天音かなた",
-      "label": "天音かなた"
+      "label": "天音彼方"
     },
     {
       "value": "姫森ルーナ",
-      "label": "姫森ルーナ"
+      "label": "姬森璐娜"
     },
     {
       "value": "小鳥遊キアラ",
-      "label": "小鳥遊キアラ"
+      "label": "小鳥遊琪亞拉"
     },
     {
       "value": "常闇トワ",
-      "label": "常闇トワ"
+      "label": "常闇永遠"
     },
     {
       "value": "星街すいせい",
-      "label": "星街すいせい"
+      "label": "星街彗星"
     },
     {
       "value": "星街すいせいのマイク",
-      "label": "星街すいせいのマイク"
+      "label": "星街彗星的麥克風"
     },
     {
       "value": "春先のどか",
-      "label": "春先のどか"
+      "label": "春先野花"
     },
     {
       "value": "猫又おかゆ",
-      "label": "猫又おかゆ"
+      "label": "貓又小粥"
     },
     {
       "value": "癒月ちょこ",
-      "label": "癒月ちょこ"
+      "label": "癒月巧可"
     },
     {
       "value": "白エール",
-      "label": "白エール"
+      "label": "白色應援"
     },
     {
       "value": "音乃瀬奏",
-      "label": "音乃瀬奏"
+      "label": "音乃瀨奏"
     }
   ],
   "tags": [
     {
-      "value": "#0期生",
+      "value": "0期生",
       "label": "#0期生"
     },
     {
-      "value": "#2期生",
+      "value": "2期生",
       "label": "#2期生"
     },
     {
-      "value": "#4期生",
+      "value": "4期生",
       "label": "#4期生"
     },
     {
-      "value": "#Advent",
+      "value": "Advent",
       "label": "#Advent"
     },
     {
-      "value": "#DEV_IS",
+      "value": "DEV_IS",
       "label": "#DEV_IS"
     },
     {
-      "value": "#EN",
+      "value": "EN",
       "label": "#EN"
     },
     {
-      "value": "#JP",
+      "value": "JP",
       "label": "#JP"
     },
     {
-      "value": "#Promise",
+      "value": "Promise",
       "label": "#Promise"
     },
     {
-      "value": "#ReGLOSS",
+      "value": "ReGLOSS",
       "label": "#ReGLOSS"
     },
     {
-      "value": "#ケモミミ",
-      "label": "#ケモミミ"
+      "value": "ケモミミ",
+      "label": "#獸耳"
     },
     {
-      "value": "#ゲーマーズ",
-      "label": "#ゲーマーズ"
+      "value": "ゲーマーズ",
+      "label": "#Gamers"
     },
     {
-      "value": "#シューター",
-      "label": "#シューター"
+      "value": "シューター",
+      "label": "#射手"
     },
     {
-      "value": "#ベイビー",
-      "label": "#ベイビー"
+      "value": "ベイビー",
+      "label": "#嬰兒"
     },
     {
-      "value": "#料理",
+      "value": "料理",
       "label": "#料理"
     },
     {
-      "value": "#歌",
-      "label": "#歌"
+      "value": "歌",
+      "label": "#歌唱"
     }
   ],
   "sets": [
@@ -188,55 +188,55 @@
     },
     {
       "value": "スタートエールセット",
-      "label": "スタートエールセット"
+      "label": "起始應援套組"
     },
     {
       "value": "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
-      "label": "スタートデッキ FLOW GLOW 推し 虎金妃笑虎"
+      "label": "起始牌組 FLOW GLOW 推し 虎金妃笑虎"
     },
     {
       "value": "スタートデッキ FLOW GLOW 推し 輪堂千速",
-      "label": "スタートデッキ FLOW GLOW 推し 輪堂千速"
+      "label": "起始牌組 FLOW GLOW 推し 輪堂千速"
     },
     {
       "value": "スタートデッキ 推し Advent",
-      "label": "スタートデッキ 推し Advent"
+      "label": "起始牌組 推し Advent"
     },
     {
       "value": "スタートデッキ 推し Justice",
-      "label": "スタートデッキ 推し Justice"
+      "label": "起始牌組 推し Justice"
     },
     {
       "value": "スタートデッキ 白 天音かなた",
-      "label": "スタートデッキ 白 天音かなた"
+      "label": "起始牌組 白 天音彼方"
     },
     {
       "value": "スタートデッキ 白 轟はじめ",
-      "label": "スタートデッキ 白 轟はじめ"
+      "label": "起始牌組 白 轟初芽"
     },
     {
       "value": "スタートデッキ 紫 癒月ちょこ",
-      "label": "スタートデッキ 紫 癒月ちょこ"
+      "label": "起始牌組 紫 癒月巧可"
     },
     {
       "value": "スタートデッキ 緑 風真いろは",
-      "label": "スタートデッキ 緑 風真いろは"
+      "label": "起始牌組 綠 風真伊呂波"
     },
     {
       "value": "スタートデッキ 赤 百鬼あやめ",
-      "label": "スタートデッキ 赤 百鬼あやめ"
+      "label": "起始牌組 紅 百鬼綾目"
     },
     {
       "value": "スタートデッキ 青 猫又おかゆ",
-      "label": "スタートデッキ 青 猫又おかゆ"
+      "label": "起始牌組 藍 貓又小粥"
     },
     {
       "value": "スタートデッキ 黄 不知火フレア",
-      "label": "スタートデッキ 黄 不知火フレア"
+      "label": "起始牌組 黃 不知火芙蕾雅"
     },
     {
       "value": "スタートデッキ「ときのそら＆AZKi」",
-      "label": "スタートデッキ「ときのそら＆AZKi」"
+      "label": "起始牌組「時乃空＆AZKi」"
     },
     {
       "value": "ブースターパック バウンサーバウンド",
@@ -244,23 +244,23 @@
     },
     {
       "value": "ブースターパック「エリートスパーク」",
-      "label": "ブースターパック「エリートスパーク」"
+      "label": "擴充包「Elite Spark」"
     },
     {
       "value": "ブースターパック「エンチャントレガリア」",
-      "label": "ブースターパック「エンチャントレガリア」"
+      "label": "擴充包「Enchant Regalia」"
     },
     {
       "value": "ブースターパック「クインテットスペクトラム」",
-      "label": "ブースターパック「クインテットスペクトラム」"
+      "label": "擴充包「Quintet Spectrum」"
     },
     {
       "value": "ブースターパック「ディーヴァフィーバー」",
-      "label": "ブースターパック「ディーヴァフィーバー」"
+      "label": "擴充包「Diva Fever」"
     },
     {
       "value": "ブースターパック「ブルーミングレディアンス」",
-      "label": "ブースターパック「ブルーミングレディアンス」"
+      "label": "擴充包「Blooming Radiance」"
     },
     {
       "value": "ライブスタートデッキ さくらみこ",

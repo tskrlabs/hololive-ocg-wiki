@@ -1,0 +1,415 @@
+{
+  "kind": "tags",
+  "entries": {
+    "0期生": {
+      "translations": {
+        "en": "0th Gen",
+        "es": "0th Gen",
+        "id": "Gen 0",
+        "ko": "0기생",
+        "tc": "0期生",
+        "th": "รุ่น 0"
+      }
+    },
+    "1期生": {
+      "translations": {
+        "en": "1st Gen",
+        "es": "1st Gen",
+        "id": "Gen 1",
+        "ko": "1기생",
+        "tc": "1期生",
+        "th": "รุ่น 1"
+      }
+    },
+    "2期生": {
+      "translations": {
+        "en": "2nd Gen",
+        "es": "2nd Gen",
+        "id": "Gen 2",
+        "ko": "2기생",
+        "tc": "2期生",
+        "th": "รุ่น 2"
+      }
+    },
+    "3期生": {
+      "translations": {
+        "en": "3rd Gen",
+        "es": "3rd Gen",
+        "id": "Gen 3",
+        "ko": "3기생",
+        "tc": "3期生",
+        "th": "รุ่น 3"
+      }
+    },
+    "4期生": {
+      "translations": {
+        "en": "4th Gen",
+        "es": "4th Gen",
+        "id": "Gen 4",
+        "ko": "4기생",
+        "tc": "4期生",
+        "th": "รุ่น 4"
+      }
+    },
+    "5期生": {
+      "translations": {
+        "en": "5th Gen",
+        "es": "5th Gen",
+        "id": "Gen 5",
+        "ko": "5기생",
+        "tc": "5期生",
+        "th": "รุ่น 5"
+      }
+    },
+    "Advent": {
+      "translations": {
+        "en": "Advent",
+        "es": "Advent",
+        "id": "Advent",
+        "ko": "Advent",
+        "tc": "Advent",
+        "th": "Advent"
+      }
+    },
+    "Buzzグッズ": {
+      "translations": {
+        "en": "#Buzzグッズ",
+        "es": "#Buzzグッズ",
+        "id": "#Buzzグッズ",
+        "ko": "#Buzzグッズ",
+        "tc": "#Buzzグッズ",
+        "th": "#Buzzグッズ"
+      }
+    },
+    "DEV_IS": {
+      "translations": {
+        "en": "DEV_IS",
+        "es": "DEV_IS",
+        "id": "DEV_IS",
+        "ko": "DEV_IS",
+        "tc": "DEV_IS",
+        "th": "DEV_IS"
+      }
+    },
+    "EN": {
+      "translations": {
+        "en": "EN",
+        "es": "EN",
+        "id": "EN",
+        "ko": "EN",
+        "tc": "EN",
+        "th": "EN"
+      }
+    },
+    "FLOW GLOW": {
+      "translations": {
+        "en": "FLOW GLOW",
+        "es": "FLOW GLOW",
+        "id": "FLOW GLOW",
+        "ko": "FLOW GLOW",
+        "tc": "FLOW GLOW",
+        "th": "FLOW GLOW"
+      }
+    },
+    "ID": {
+      "translations": {
+        "en": "ID",
+        "es": "ID",
+        "id": "ID",
+        "ko": "ID",
+        "tc": "ID",
+        "th": "ID"
+      }
+    },
+    "ID1期生": {
+      "translations": {
+        "en": "ID 1st Gen",
+        "es": "ID 1st Gen",
+        "id": "ID Gen 1",
+        "ko": "ID 1기생",
+        "tc": "ID1期生",
+        "th": "ID รุ่น 1"
+      }
+    },
+    "ID2期生": {
+      "translations": {
+        "en": "ID 2nd Gen",
+        "es": "ID 2nd Gen",
+        "id": "ID Gen 2",
+        "ko": "ID 2기생",
+        "tc": "ID2期生",
+        "th": "ID รุ่น 2"
+      }
+    },
+    "ID3期生": {
+      "translations": {
+        "en": "ID 3rd Gen",
+        "es": "ID 3rd Gen",
+        "id": "ID Gen 3",
+        "ko": "ID 3기생",
+        "tc": "ID3期生",
+        "th": "ID รุ่น 3"
+      }
+    },
+    "JP": {
+      "translations": {
+        "en": "JP",
+        "es": "JP",
+        "id": "JP",
+        "ko": "JP",
+        "tc": "JP",
+        "th": "JP"
+      }
+    },
+    "Justice": {
+      "translations": {
+        "en": "Justice",
+        "es": "Justice",
+        "id": "Justice",
+        "ko": "Justice",
+        "tc": "Justice",
+        "th": "Justice"
+      }
+    },
+    "Myth": {
+      "translations": {
+        "en": "Myth",
+        "es": "Myth",
+        "id": "Myth",
+        "ko": "Myth",
+        "tc": "Myth",
+        "th": "Myth"
+      }
+    },
+    "Promise": {
+      "translations": {
+        "en": "Promise",
+        "es": "Promise",
+        "id": "Promise",
+        "ko": "Promise",
+        "tc": "Promise",
+        "th": "Promise"
+      }
+    },
+    "ReGLOSS": {
+      "translations": {
+        "en": "ReGLOSS",
+        "es": "ReGLOSS",
+        "id": "ReGLOSS",
+        "ko": "ReGLOSS",
+        "tc": "ReGLOSS",
+        "th": "ReGLOSS"
+      }
+    },
+    "お酒": {
+      "translations": {
+        "en": "Alcohol",
+        "es": "Alcohol",
+        "id": "Alkohol",
+        "ko": "술",
+        "tc": "酒",
+        "th": "แอลกอฮอล์"
+      }
+    },
+    "きのこ": {
+      "translations": {
+        "en": "Mushroom",
+        "es": "Mushroom",
+        "id": "Jamur",
+        "ko": "버섯",
+        "tc": "蘑菇",
+        "th": "เห็ด"
+      }
+    },
+    "こよラボ": {
+      "translations": {
+        "en": "KoyoLabo",
+        "es": "KoyoLabo",
+        "id": "KoyoLabo",
+        "ko": "코요라보",
+        "tc": "Koyolabo",
+        "th": "โคโยลาโบ"
+      }
+    },
+    "カエラ'sアームズ": {
+      "translations": {
+        "en": "Kaela's Arms",
+        "es": "Kaela's Arms",
+        "id": "Senjata Kaela",
+        "ko": "카엘라의 무기",
+        "tc": "Kaela's Arms",
+        "th": "อาวุธของคาเอลา"
+      }
+    },
+    "ケモミミ": {
+      "translations": {
+        "en": "Animal Ears",
+        "es": "Animal Ears",
+        "id": "Telinga Hewan",
+        "ko": "수인귀",
+        "tc": "獸耳",
+        "th": "หูสัตว์"
+      }
+    },
+    "ゲーマーズ": {
+      "translations": {
+        "en": "Gamers",
+        "es": "Gamers",
+        "id": "Gamers",
+        "ko": "게이머즈",
+        "tc": "Gamers",
+        "th": "เกมเมอร์ส"
+      }
+    },
+    "サマー": {
+      "translations": {
+        "en": "Summer",
+        "es": "Summer",
+        "id": "Musim Panas",
+        "ko": "여름",
+        "tc": "夏日",
+        "th": "ซัมเมอร์"
+      }
+    },
+    "シューター": {
+      "translations": {
+        "en": "Shooter",
+        "es": "Shooter",
+        "id": "Penembak",
+        "ko": "슈터",
+        "tc": "射手",
+        "th": "ชูตเตอร์"
+      }
+    },
+    "トリ": {
+      "translations": {
+        "en": "Bird",
+        "es": "Bird",
+        "id": "Burung",
+        "ko": "새",
+        "tc": "小鳥",
+        "th": "นก"
+      }
+    },
+    "ハーフエルフ": {
+      "translations": {
+        "en": "Half-Elf",
+        "es": "Half-Elf",
+        "id": "Setengah Elf",
+        "ko": "하프엘프",
+        "tc": "半精靈",
+        "th": "ฮาล์ฟเอลฟ์"
+      }
+    },
+    "ベイビー": {
+      "translations": {
+        "en": "Baby",
+        "es": "Baby",
+        "id": "Bayi",
+        "ko": "베이비",
+        "tc": "嬰兒",
+        "th": "เบบี้"
+      }
+    },
+    "ホロウィッチ": {
+      "translations": {
+        "en": "HoloWitch",
+        "es": "HoloWitch",
+        "id": "HoloWitch",
+        "ko": "홀로위치",
+        "tc": "HoloWitch",
+        "th": "โฮโลวิช"
+      }
+    },
+    "料理": {
+      "translations": {
+        "en": "Cooking",
+        "es": "Cooking",
+        "id": "Masakan",
+        "ko": "요리",
+        "tc": "料理",
+        "th": "ทำอาหาร"
+      }
+    },
+    "歌": {
+      "translations": {
+        "en": "Singing",
+        "es": "Singing",
+        "id": "Menyanyi",
+        "ko": "노래",
+        "tc": "歌唱",
+        "th": "เพลง"
+      }
+    },
+    "海": {
+      "translations": {
+        "en": "Ocean",
+        "es": "Ocean",
+        "id": "Laut",
+        "ko": "바다",
+        "tc": "海洋",
+        "th": "ทะเล"
+      }
+    },
+    "白上'sキャラクター": {
+      "translations": {
+        "en": "Shirakami's Character",
+        "es": "Shirakami's Character",
+        "id": "Karakter Shirakami",
+        "ko": "시라카미의 캐릭터",
+        "tc": "白上的角色",
+        "th": "ตัวละครของชิรากามิ"
+      }
+    },
+    "秘密結社holoX": {
+      "translations": {
+        "en": "Secret Society holoX",
+        "es": "Secret Society holoX",
+        "id": "Organisasi Rahasia holoX",
+        "ko": "비밀결사 holoX",
+        "tc": "秘密結社holoX",
+        "th": "องค์กรลับ holoX"
+      }
+    },
+    "絵": {
+      "translations": {
+        "en": "Art",
+        "es": "Art",
+        "id": "Seni",
+        "ko": "그림",
+        "tc": "繪畫",
+        "th": "ศิลปะ"
+      }
+    },
+    "語学": {
+      "translations": {
+        "en": "Languages",
+        "es": "Languages",
+        "id": "Bahasa",
+        "ko": "언어",
+        "tc": "語言",
+        "th": "ภาษา"
+      }
+    },
+    "食べ物": {
+      "translations": {
+        "en": "Food",
+        "es": "Food",
+        "id": "Makanan",
+        "ko": "음식",
+        "tc": "食物",
+        "th": "อาหาร"
+      }
+    },
+    "魔法": {
+      "translations": {
+        "en": "Magic",
+        "es": "Magic",
+        "id": "Sihir",
+        "ko": "마법",
+        "tc": "魔法",
+        "th": "เวทมนตร์"
+      }
+    }
+  }
+}

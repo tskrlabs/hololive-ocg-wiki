@@ -17,6 +17,7 @@ holo-data build           # merge + validate -> cards.json       (local, free)
 holo-data verify          # diff against v1's data               (local, free)
 holo-data verify-images   # coverage; --remote re-checks bytes   (local / ~2.4k reqs)
 holo-data status          # what is on disk right now
+holo-data glossary        # proper-noun coverage, per locale     (local, free)
 holo-data backup-cache    # snapshot the translation cache       (--remote adds R2)
 
 holo-data publish         # images + artifacts -> R2   (needs CF credentials)
@@ -70,6 +71,40 @@ mark it manual:
 Nothing overwrites it. As long as the JP source has not changed, that field is never
 stale, so `translate` skips it even when the rest of the card is re-sent. This is what
 replaces D14's corrections overlay.
+
+## `glossary/` is source, and it is committed
+
+`pipeline/glossary/{names,sets,tags}.json` holds the curated translations of proper nouns
+— 296 card names, 35 sets, 41 tags — keyed on the **source-language string**.
+
+Everything else the pipeline translates is prose, and prose can be machine-translated per
+string. Proper nouns cannot: `一伊那尓栖` is "Ninomae Ina'nis", and no model produces that
+reliably. They also have to be *identical everywhere they appear*, which is the defect
+[#20](https://github.com/tskrlabs/hololive-ocg-wiki/issues/20) and
+[#21](https://github.com/tskrlabs/hololive-ocg-wiki/issues/21) record.
+
+Three consumers read this one file, which is why it is one file:
+
+- **`translate`** masks these strings out before text goes to the model and restores them
+  after, so the model never sees a character name and cannot spell it two ways.
+- **`build`** labels the filter dropdowns from it.
+- **The site** displays from it — `apps/web/i18n/locales/*.json`'s `names`, `sets` and
+  `tags` maps are **generated** by `make generate` and `make check` fails if they drift.
+  Edit the glossary, not the locale files.
+
+```bash
+holo-data glossary              # coverage per locale
+holo-data glossary --missing    # which keys still have no decision
+```
+
+**Identity is the source string; display is per-locale.** The same rule `Card.tags` and
+`name_ja` already follow. Tag entries key on `Card.tags` (`"0期生"`), not the prefixed
+display text (`"#0期生"`) — keying on the prefix is what made the tag filter match nothing
+([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)).
+
+**Aliases** cover the short forms characters are referred to by — `おつルーナ`, `おつムーナ`.
+They are masked longest-first, and an alias claimed by two characters is rejected outright
+rather than silently resolving to whichever was matched first.
 
 ## The cache is the one thing you cannot re-run
 

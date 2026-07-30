@@ -15,6 +15,7 @@ steps that cost money or touch production are explicit.
     holo-data seed --dry          row counts + D1 write estimate       (reads only)
     holo-data seed --confirm      diff-based upsert into D1            (writes)
 
+    holo-data glossary            proper-noun coverage, per locale     (local, free)
     holo-data backup-cache        snapshot the translation cache       (local / R2)
     holo-data migrate-images      one-time v1 flat -> set-scoped tree
 
@@ -43,6 +44,7 @@ from dotenv import load_dotenv
 from holo_schema import SCHEMA_VERSION
 
 from . import build as build_module
+from . import glossary as glossary_module
 from . import images as images_module
 from . import migrate_images as migrate_module
 from . import paths, r2, transform, verify as verify_module
@@ -953,6 +955,44 @@ def _upload_status(status: dict) -> None:
 
 
 # --- status ------------------------------------------------------------------
+
+@app.command("glossary")
+def glossary_(
+    locale: Optional[str] = typer.Option(None, "--locale", help="report one locale only"),
+    missing: bool = typer.Option(
+        False, "--missing", help="list the keys with no decision yet"
+    ),
+) -> None:
+    """Report what the proper-noun glossary covers.
+
+    `pipeline/glossary/` is the committed source of truth for names, sets and tags —
+    what `translate` masks with, what `build` labels dropdowns with, and what the site's
+    i18n maps are generated from. This shows where it still has gaps.
+    """
+    glossaries = glossary_module.load_all()
+    if not any(g.entries for g in glossaries.values()):
+        typer.echo(
+            "glossary is empty — seed it with\n"
+            "  uv run python pipeline/scripts/seed_glossary.py",
+            err=True,
+        )
+        raise typer.Exit(1)
+
+    locales = [locale] if locale else list(poe.target_locales())
+    for line in glossary_module.coverage_report(glossaries, locales):
+        typer.echo(line)
+
+    if not missing:
+        return
+
+    for kind, entries in glossaries.items():
+        for loc in locales:
+            gaps = entries.missing(loc)
+            if gaps:
+                typer.echo(f"\n{kind}/{loc} — {len(gaps)} undecided:")
+                for key in gaps:
+                    typer.echo(f"  {key}")
+
 
 @app.command("backup-cache")
 def backup_cache(

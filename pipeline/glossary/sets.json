@@ -1,0 +1,285 @@
+{
+  "kind": "sets",
+  "entries": {
+    "PRカード": {
+      "translations": {
+        "en": "PR Cards",
+        "es": "PR Cards",
+        "id": "Kartu PR",
+        "ko": "PR 카드",
+        "tc": "PR卡",
+        "th": "การ์ด PR"
+      }
+    },
+    "hololive OFFICIAL CARD GAME ツインウエハース": {
+      "translations": {}
+    },
+    "【hololive production OFFICIAL SHOP限定】hololive OFFICIAL CARD GAME 1st Anniversary Celebration Set": {
+      "translations": {
+        "en": "[hololive production OFFICIAL SHOP Exclusive] hololive OFFICIAL CARD GAME 1st Anniversary Celebration Set",
+        "es": "[hololive production OFFICIAL SHOP Exclusive] hololive OFFICIAL CARD GAME 1st Anniversary Celebration Set",
+        "id": "[Eksklusif hololive production OFFICIAL SHOP] hololive OFFICIAL CARD GAME 1st Anniversary Celebration Set",
+        "ko": "[hololive production OFFICIAL SHOP 한정] hololive OFFICIAL CARD GAME 1주년 기념 세트",
+        "tc": "【hololive production OFFICIAL SHOP限定】hololive OFFICIAL CARD GAME 1週年紀念套組",
+        "th": "[เฉพาะ hololive production OFFICIAL SHOP] ชุดฉลองครบรอบ 1 ปี hololive OFFICIAL CARD GAME"
+      }
+    },
+    "【イベント物販限定商品】スタートデッキセット-2025 ホロナツパラダイスver.": {
+      "translations": {
+        "en": "[Event Merchandise Exclusive] Start Deck Set - 2025 Holo Summer Paradise ver.",
+        "es": "[Event Merchandise Exclusive] Start Deck Set - 2025 Holo Summer Paradise ver.",
+        "id": "[Produk Eksklusif Merchandise Event] Set Starter Deck-2025 Holo Summer Paradise ver.",
+        "ko": "[이벤트 굿즈 한정 상품] 스타트 덱 세트-2025 홀로여름파라다이스ver.",
+        "tc": "【活動販售限定商品】起始牌組套組-2025 Holo夏日樂園ver.",
+        "th": "[สินค้าขายเฉพาะงานอีเวนต์] ชุดสตาร์ทเด็ค-2025 โฮโลนัตสึพาราไดส์ ver."
+      }
+    },
+    "【イベント物販／hololive production OFFICIAL SHOP限定商品】オフィシャルホロカコレクション-PCセット-": {
+      "translations": {
+        "en": "[Event Merchandise/hololive production OFFICIAL SHOP Exclusive] Official HoloCa Collection -PC Set-",
+        "es": "[Event Merchandise/hololive production OFFICIAL SHOP Exclusive] Official HoloCa Collection -PC Set-",
+        "id": "[Merchandise Event/Produk Eksklusif hololive production OFFICIAL SHOP] Koleksi HoloCa Resmi -Set PC-",
+        "ko": "[이벤트 굿즈/hololive production OFFICIAL SHOP 한정 상품] 오피셜 홀로카 컬렉션 -PC세트-",
+        "tc": "【活動販售／hololive production OFFICIAL SHOP限定商品】官方HoloCa收藏 -PC套組-",
+        "th": "[สินค้าขายในงานอีเวนต์/เฉพาะ hololive production OFFICIAL SHOP] คอลเลกชั่นโฮโลคาอย่างเป็นทางการ -ชุดพีซี-"
+      }
+    },
+    "【使用可能カード】セレクションカップ": {
+      "translations": {}
+    },
+    "オフィシャルホロカコレクション-2025ライブセット-": {
+      "translations": {}
+    },
+    "スタートエールセット": {
+      "translations": {
+        "en": "Start Cheer Set",
+        "es": "Start Cheer Set",
+        "id": "Set Yell Starter",
+        "ko": "스타트 옐 세트",
+        "tc": "起始應援套組",
+        "th": "ชุดสตาร์ทเยล"
+      }
+    },
+    "スタートデッキ FLOW GLOW 推し 虎金妃笑虎": {
+      "translations": {
+        "en": "Start Deck FLOW GLOW Oshi Tokane Hisatora",
+        "es": "Start Deck FLOW GLOW Oshi Tokane Hisatora",
+        "id": "Start Deck FLOW GLOW Oshi Tokane Hisatora",
+        "ko": "스타트 덱 FLOW GLOW 오시 토카네 히사토라",
+        "tc": "起始牌組 FLOW GLOW 推し 虎金妃笑虎",
+        "th": "สตาร์ทเด็ค FLOW GLOW โอชิ โทคาเนะ ฮิซาโทระ"
+      }
+    },
+    "スタートデッキ FLOW GLOW 推し 輪堂千速": {
+      "translations": {
+        "en": "Start Deck FLOW GLOW Oshi Rindou Chihaya",
+        "es": "Start Deck FLOW GLOW Oshi Rindou Chihaya",
+        "id": "Start Deck FLOW GLOW Oshi Rindou Chihaya",
+        "ko": "스타트 덱 FLOW GLOW 오시 린도 치하야",
+        "tc": "起始牌組 FLOW GLOW 推し 輪堂千速",
+        "th": "สตาร์ทเด็ค FLOW GLOW โอชิ รินโด ชิฮายะ"
+      }
+    },
+    "スタートデッキ 推し Advent": {
+      "translations": {
+        "en": "Start Deck Oshi Advent",
+        "es": "Start Deck Oshi Advent",
+        "id": "Start Deck Oshi Advent",
+        "ko": "스타트 덱 오시 Advent",
+        "tc": "起始牌組 推し Advent",
+        "th": "สตาร์ทเด็ค โอชิ Advent"
+      }
+    },
+    "スタートデッキ 推し Justice": {
+      "translations": {
+        "en": "Start Deck Oshi Justice",
+        "es": "Start Deck Oshi Justice",
+        "id": "Start Deck Oshi Justice",
+        "ko": "스타트 덱 오시 Justice",
+        "tc": "起始牌組 推し Justice",
+        "th": "สตาร์ทเด็ค โอชิ Justice"
+      }
+    },
+    "スタートデッキ 白 天音かなた": {
+      "translations": {
+        "en": "Start Deck White Amane Kanata",
+        "es": "Start Deck White Amane Kanata",
+        "id": "Deck Starter Putih Amane Kanata",
+        "ko": "스타트 덱 화이트 아마네 카나타",
+        "tc": "起始牌組 白 天音彼方",
+        "th": "สตาร์ทเด็คขาว อามาเนะ คานาตะ"
+      }
+    },
+    "スタートデッキ 白 轟はじめ": {
+      "translations": {
+        "en": "Start Deck White Todoroki Hajime",
+        "es": "Start Deck White Todoroki Hajime",
+        "id": "Deck Starter Putih Todoroki Hajime",
+        "ko": "스타트 덱 화이트 토도로키 하지메",
+        "tc": "起始牌組 白 轟初芽",
+        "th": "สตาร์ทเด็คขาว โทโดโรกิ ฮาจิเมะ"
+      }
+    },
+    "スタートデッキ 紫 癒月ちょこ": {
+      "translations": {
+        "en": "Start Deck Purple Yuzuki Choco",
+        "es": "Start Deck Purple Yuzuki Choco",
+        "id": "Deck Starter Ungu Yuzuki Choco",
+        "ko": "스타트 덱 퍼플 유즈키 초코",
+        "tc": "起始牌組 紫 癒月巧可",
+        "th": "สตาร์ทเด็คม่วง ยุซุกิ โชโคะ"
+      }
+    },
+    "スタートデッキ 緑 風真いろは": {
+      "translations": {
+        "en": "Start Deck Green Kazama Iroha",
+        "es": "Start Deck Green Kazama Iroha",
+        "id": "Deck Starter Hijau Kazama Iroha",
+        "ko": "스타트 덱 그린 카자마 이로하",
+        "tc": "起始牌組 綠 風真伊呂波",
+        "th": "สตาร์ทเด็คเขียว คาซามะ อิโรฮะ"
+      }
+    },
+    "スタートデッキ 赤 宝鐘マリン": {
+      "translations": {
+        "en": "Start Deck Red Houshou Marine",
+        "es": "Start Deck Red Houshou Marine",
+        "id": "Deck Starter Merah Houshou Marine",
+        "ko": "스타트 덱 레드 호쇼 마린",
+        "tc": "起始牌組 紅 寶鐘瑪琳",
+        "th": "สตาร์ทเด็คแดง โฮโช มารีน"
+      }
+    },
+    "スタートデッキ 赤 百鬼あやめ": {
+      "translations": {
+        "en": "Start Deck Red Nakiri Ayame",
+        "es": "Start Deck Red Nakiri Ayame",
+        "id": "Deck Starter Merah Nakiri Ayame",
+        "ko": "스타트 덱 레드 나키리 아야메",
+        "tc": "起始牌組 紅 百鬼綾目",
+        "th": "สตาร์ทเด็คแดง นากิริ อายาเมะ"
+      }
+    },
+    "スタートデッキ 青 猫又おかゆ": {
+      "translations": {
+        "en": "Start Deck Blue Nekomata Okayu",
+        "es": "Start Deck Blue Nekomata Okayu",
+        "id": "Deck Starter Biru Nekomata Okayu",
+        "ko": "스타트 덱 블루 네코마타 오카유",
+        "tc": "起始牌組 藍 貓又小粥",
+        "th": "สตาร์ทเด็คน้ำเงิน เนโกะมาตะ โอกายุ"
+      }
+    },
+    "スタートデッキ 黄 不知火フレア": {
+      "translations": {
+        "en": "Start Deck Yellow Shiranui Flare",
+        "es": "Start Deck Yellow Shiranui Flare",
+        "id": "Deck Starter Kuning Shiranui Flare",
+        "ko": "스타트 덱 옐로우 시라누이 플레어",
+        "tc": "起始牌組 黃 不知火芙蕾雅",
+        "th": "สตาร์ทเด็คเหลือง ชิรานุย เฟลร์"
+      }
+    },
+    "スタートデッキ「ときのそら＆AZKi」": {
+      "translations": {
+        "en": "Start Deck \"Tokino Sora & AZKi\"",
+        "es": "Start Deck \"Tokino Sora & AZKi\"",
+        "id": "Deck Starter \"Tokino Sora & AZKi\"",
+        "ko": "스타트 덱 \"토키노 소라 & AZKi\"",
+        "tc": "起始牌組「時乃空＆AZKi」",
+        "th": "สตาร์ทเด็ค \"โตกิโนะ โซระ & AZKi\""
+      }
+    },
+    "ブースターパック バウンサーバウンド": {
+      "translations": {}
+    },
+    "ブースターパック「アヤカシヴァーミリオン」": {
+      "translations": {
+        "en": "Booster Pack \"Ayakashi Vermillion\"",
+        "es": "Booster Pack \"Ayakashi Vermillion\"",
+        "id": "Booster Pack \"Ayakashi Vermillion\"",
+        "ko": "부스터 팩 \"아야카시 버밀리온\"",
+        "tc": "擴充包「Ayakashi Vermillion」",
+        "th": "บูสเตอร์แพ็ค \"Ayakashi Vermillion\""
+      }
+    },
+    "ブースターパック「エリートスパーク」": {
+      "translations": {
+        "en": "Booster Pack \"Elite Spark\"",
+        "es": "Booster Pack \"Elite Spark\"",
+        "id": "Booster Pack \"Elite Spark\"",
+        "ko": "부스터 팩 \"Elite Spark\"",
+        "tc": "擴充包「Elite Spark」",
+        "th": "บูสเตอร์แพ็ค \"Elite Spark\""
+      }
+    },
+    "ブースターパック「エンチャントレガリア」": {
+      "translations": {
+        "en": "Booster Pack \"Enchant Regalia\"",
+        "es": "Booster Pack \"Enchant Regalia\"",
+        "id": "Booster Pack \"Enchant Regalia\"",
+        "ko": "부스터 팩 \"Enchant Regalia\"",
+        "tc": "擴充包「Enchant Regalia」",
+        "th": "บูสเตอร์แพ็ค \"Enchant Regalia\""
+      }
+    },
+    "ブースターパック「キュリアスユニバース」": {
+      "translations": {
+        "en": "Booster Pack \"Curious Universe\"",
+        "es": "Booster Pack \"Curious Universe\"",
+        "id": "Booster Pack \"Curious Universe\"",
+        "ko": "부스터 팩 \"Curious Universe\"",
+        "tc": "擴充包「Curious Universe」",
+        "th": "บูสเตอร์แพ็ค \"Curious Universe\""
+      }
+    },
+    "ブースターパック「クインテットスペクトラム」": {
+      "translations": {
+        "en": "Booster Pack \"Quintet Spectrum\"",
+        "es": "Booster Pack \"Quintet Spectrum\"",
+        "id": "Booster Pack \"Quintet Spectrum\"",
+        "ko": "부스터 팩 \"Quintet Spectrum\"",
+        "tc": "擴充包「Quintet Spectrum」",
+        "th": "บูสเตอร์แพ็ค \"Quintet Spectrum\""
+      }
+    },
+    "ブースターパック「ディーヴァフィーバー」": {
+      "translations": {
+        "en": "Booster Pack \"Diva Fever\"",
+        "es": "Booster Pack \"Diva Fever\"",
+        "id": "Booster Pack \"Diva Fever\"",
+        "ko": "부스터 팩 \"Diva Fever\"",
+        "tc": "擴充包「Diva Fever」",
+        "th": "บูสเตอร์แพ็ค \"Diva Fever\""
+      }
+    },
+    "ブースターパック「ブルーミングレディアンス」": {
+      "translations": {
+        "en": "Booster Pack \"Blooming Radiance\"",
+        "es": "Booster Pack \"Blooming Radiance\"",
+        "id": "Booster Pack \"Blooming Radiance\"",
+        "ko": "부스터 팩 \"Blooming Radiance\"",
+        "tc": "擴充包「Blooming Radiance」",
+        "th": "บูสเตอร์แพ็ค \"Blooming Radiance\""
+      }
+    },
+    "ライブスタートデッキ さくらみこ": {
+      "translations": {}
+    },
+    "ライブスタートデッキ 儒烏風亭らでん": {
+      "translations": {}
+    },
+    "ライブスタートデッキ 大空スバル": {
+      "translations": {}
+    },
+    "ライブスタートデッキ 星街すいせい": {
+      "translations": {}
+    },
+    "ライブスタートデッキ 森カリオペ": {
+      "translations": {}
+    },
+    "ライブスタートデッキ 白上フブキ": {
+      "translations": {}
+    }
+  }
+}

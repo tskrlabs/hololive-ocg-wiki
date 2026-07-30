@@ -109,63 +109,63 @@
   ],
   "tags": [
     {
-      "value": "#0期生",
+      "value": "0期生",
       "label": "#0期生"
     },
     {
-      "value": "#2期生",
+      "value": "2期生",
       "label": "#2期生"
     },
     {
-      "value": "#4期生",
+      "value": "4期生",
       "label": "#4期生"
     },
     {
-      "value": "#Advent",
+      "value": "Advent",
       "label": "#Advent"
     },
     {
-      "value": "#DEV_IS",
+      "value": "DEV_IS",
       "label": "#DEV_IS"
     },
     {
-      "value": "#EN",
+      "value": "EN",
       "label": "#EN"
     },
     {
-      "value": "#JP",
+      "value": "JP",
       "label": "#JP"
     },
     {
-      "value": "#Promise",
+      "value": "Promise",
       "label": "#Promise"
     },
     {
-      "value": "#ReGLOSS",
+      "value": "ReGLOSS",
       "label": "#ReGLOSS"
     },
     {
-      "value": "#ケモミミ",
+      "value": "ケモミミ",
       "label": "#ケモミミ"
     },
     {
-      "value": "#ゲーマーズ",
+      "value": "ゲーマーズ",
       "label": "#ゲーマーズ"
     },
     {
-      "value": "#シューター",
+      "value": "シューター",
       "label": "#シューター"
     },
     {
-      "value": "#ベイビー",
+      "value": "ベイビー",
       "label": "#ベイビー"
     },
     {
-      "value": "#料理",
+      "value": "料理",
       "label": "#料理"
     },
     {
-      "value": "#歌",
+      "value": "歌",
       "label": "#歌"
     }
   ],

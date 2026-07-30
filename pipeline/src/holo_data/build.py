@@ -29,6 +29,7 @@ from holo_schema import Card, CardCollection, Notice, NoticeCollection
 from holo_schema.enums import SOURCE_LOCALE
 
 from . import transform
+from .glossary import load_all
 from .paths import cards_json, ensure_dirs, filter_options_json, notices_json
 from .translate.cache import TranslationCache, field_keys
 
@@ -228,6 +229,9 @@ def save_notices(collection: NoticeCollection) -> int:
 def _best_label(ja_name: str, labels: dict[str, int]) -> str:
     """Pick one display name for a character from the spellings its cards carry.
 
+    **Fallback only.** The glossary is consulted first; this runs for keys it has no
+    decision for — 81 of 296 names at the time of writing.
+
     A spelling that differs from the ja name wins, because that is the one that was
     actually translated; among equals, the most common, then the text itself so the
     result does not depend on dict ordering. See `filter_options` for the measurements.
@@ -257,31 +261,71 @@ def filter_options(collection: CardCollection, locale: str) -> dict[str, Any]:
     296 characters in `en` and 65 in `ko`. Ties break on the label text so the artifact
     is deterministic.
 
-    Tags and sets have no such split: tags are localised display text with no stable
-    identity to preserve, and set names are language-independent.
+    **Tags key on the identity too, and this was a live bug.** `Card.tags` holds the
+    unprefixed source tag (`"0期生"`) and feeds the `card_tags` junction; `Translation.tags`
+    holds the localised display text with its prefix (`"#0期生"`). This function used to
+    emit the *display* spelling as `value`, so every dropdown selection sent `#0期生` to a
+    `WHERE tag = ?` matching `0期生` and **the tag filter returned zero cards for every
+    tag, in every locale** (#26). Verified against the deployed site before the fix: 0
+    rows for the prefixed value, 165 for the unprefixed one.
+
+    Sets are language-independent, so identity and label coincide unless the glossary
+    supplies a translation.
+
+    **Labels come from the glossary first.** It is the curated, committed source of truth
+    for proper nouns; `_best_label` is the fallback for keys it has no decision for.
     """
+    glossaries = load_all()
     label_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
-    tags: set[str] = set()
+    tag_labels: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     sets: set[str] = set()
 
     for card in collection.cards:
         source = card.translations[SOURCE_LOCALE]
         translation = card.translations.get(locale) or source
         label_counts[source.name][translation.name] += 1
-        tags.update(translation.tags or [])
         sets.update(card.card_sets)
 
-    names = [
-        {"value": ja_name, "label": _best_label(ja_name, labels)}
-        for ja_name, labels in sorted(label_counts.items())
-    ]
+        # `Card.tags` and `Translation.tags` are positional pairs — verified across all
+        # 2,463 cards in all 7 locales, zero length mismatches. A card that somehow
+        # disagreed would contribute its identities with no display text rather than
+        # silently pairing the wrong ones.
+        identities = card.tags or []
+        shown = translation.tags or []
+        for index, identity in enumerate(identities):
+            tag_labels[identity][
+                shown[index] if index < len(shown) else identity
+            ] += 1
+
+    def labelled(kind: str, key: str, counts: dict[str, int] | None) -> dict[str, str]:
+        curated = glossaries[kind].entries.get(key)
+        if curated is not None and curated.has(locale):
+            label = curated.display(locale)
+        else:
+            label = _best_label(key, counts) if counts else key
+
+        # The `#` is presentation and belongs in exactly one place. All 5,481 tag
+        # occurrences carry it in every locale, while the curated glossary stores the
+        # bare text ("0th Gen", not "#0th Gen") — so without this, a tag's label would
+        # have a prefix or not depending on whether someone had curated it. Normalising
+        # here keeps the artifact uniform without putting a `#` in the glossary, where
+        # it would be one more thing to get wrong on every future entry.
+        if kind == "tags" and not label.startswith("#"):
+            label = f"#{label}"
+
+        return {"value": key, "label": label}
 
     return {
         "locale": locale,
         "generated_at": collection.generated_at,
-        "names": names,
-        "tags": [{"value": tag, "label": tag} for tag in sorted(tags)],
-        "sets": [{"value": name, "label": name} for name in sorted(sets)],
+        "names": [
+            labelled("names", key, counts)
+            for key, counts in sorted(label_counts.items())
+        ],
+        "tags": [
+            labelled("tags", key, counts) for key, counts in sorted(tag_labels.items())
+        ],
+        "sets": [labelled("sets", key, None) for key in sorted(sets)],
     }
 
 
