@@ -431,7 +431,17 @@
         "th": "โคโบะ คานาเอรุ"
       },
       "aliases": [
-        "こぼ"
+        {
+          "text": "こぼ",
+          "translations": {
+            "en": "Kobo",
+            "es": "Kobo",
+            "id": "Kobo",
+            "ko": "코보",
+            "tc": "Kobo",
+            "th": "โคโบ"
+          }
+        }
       ]
     },
     "こよりの助手くん": {
@@ -744,7 +754,17 @@
         "th": "อากิ โรเซนธาล"
       },
       "aliases": [
-        "アキ"
+        {
+          "text": "アキ",
+          "translations": {
+            "en": "Aki",
+            "es": "Aki",
+            "id": "Aki",
+            "ko": "아키",
+            "tc": "亞綺",
+            "th": "อากิ"
+          }
+        }
       ]
     },
     "アキ・ローゼンタールの斧": {
@@ -767,7 +787,17 @@
         "th": "อายุนดา ริสุ"
       },
       "aliases": [
-        "リス"
+        {
+          "text": "リス",
+          "translations": {
+            "en": "Risu",
+            "es": "Risu",
+            "id": "Risu",
+            "ko": "리스",
+            "tc": "莉絲",
+            "th": "ริสุ"
+          }
+        }
       ]
     },
     "アンコール": {
@@ -813,7 +843,17 @@
         "th": "เอลิซาเบธ โรส บลัดเฟลม"
       },
       "aliases": [
-        "ローズ"
+        {
+          "text": "ローズ",
+          "translations": {
+            "en": "Rose",
+            "es": "Rose",
+            "id": "Rose",
+            "ko": "로즈",
+            "tc": "蘿絲",
+            "th": "โรส"
+          }
+        }
       ]
     },
     "エルフレンド": {
@@ -891,8 +931,28 @@
         "th": "เครซี่ โอลลี่"
       },
       "aliases": [
-        "オリー",
-        "クレイジー"
+        {
+          "text": "オリー",
+          "translations": {
+            "en": "Ollie",
+            "es": "Ollie",
+            "id": "Ollie",
+            "ko": "올리",
+            "tc": "Ollie",
+            "th": "ออลลี่"
+          }
+        },
+        {
+          "text": "クレイジー",
+          "translations": {
+            "en": "Kureiji",
+            "es": "Kureiji",
+            "id": "Kureiji",
+            "ko": "쿠레이지",
+            "tc": "Kureiji",
+            "th": "Kureiji"
+          }
+        }
       ]
     },
     "クロスインパクト": {
@@ -971,7 +1031,17 @@
         "th": "จิจิ มุริน"
       },
       "aliases": [
-        "ムリン"
+        {
+          "text": "ムリン",
+          "translations": {
+            "en": "Murin",
+            "es": "Murin",
+            "id": "Murin",
+            "ko": "무린",
+            "tc": "Murin",
+            "th": "มูริน"
+          }
+        }
       ]
     },
     "ジョブズ": {
@@ -1096,7 +1166,17 @@
         "th": "เนริสซา เรเวนครอฟต์"
       },
       "aliases": [
-        "ネリッサ"
+        {
+          "text": "ネリッサ",
+          "translations": {
+            "en": "Nerissa",
+            "es": "Nerissa",
+            "id": "Nerissa",
+            "ko": "네리사",
+            "tc": "Nerissa",
+            "th": "เนริสสา"
+          }
+        }
       ]
     },
     "ネリッサ・レイヴンクロフトの杖": {
@@ -1234,7 +1314,17 @@
         "th": "ฟุวาวา อะบิสการ์ด"
       },
       "aliases": [
-        "フワワ"
+        {
+          "text": "フワワ",
+          "translations": {
+            "en": "Fuwawa",
+            "es": "Fuwawa",
+            "id": "Fuwawa",
+            "ko": "후와와",
+            "tc": "Fuwawa",
+            "th": "ฟุวาวะ"
+          }
+        }
       ]
     },
     "ブヒー！": {
@@ -1465,7 +1555,17 @@
         "th": "มูนา โฮชิโนวา"
       },
       "aliases": [
-        "ムーナ"
+        {
+          "text": "ムーナ",
+          "translations": {
+            "en": "Moona",
+            "es": "Moona",
+            "id": "Moona",
+            "ko": "무나",
+            "tc": "Moona",
+            "th": "มูนา"
+          }
+        }
       ]
     },
     "モココ・アビスガード": {
@@ -1478,7 +1578,17 @@
         "th": "โมโคโคะ อะบิสการ์ด"
       },
       "aliases": [
-        "モココ"
+        {
+          "text": "モココ",
+          "translations": {
+            "en": "Mococo",
+            "es": "Mococo",
+            "id": "Mococo",
+            "ko": "모코코",
+            "tc": "Mococo",
+            "th": "โมโคโคะ"
+          }
+        }
       ]
     },
     "ライフル": {
@@ -1619,13 +1729,34 @@
         "es": "Shiranui Flare",
         "id": "Shiranui Flare",
         "ko": "시라누이 플레어",
-        "tc": "白上吹雪",
+        "tc": "不知火芙蕾雅",
         "th": "ชิรานุย เฟลร์"
       },
       "aliases": [
-        "フレア",
-        "不知火"
-      ]
+        {
+          "text": "フレア",
+          "translations": {
+            "en": "Flare",
+            "es": "Flare",
+            "id": "Flare",
+            "ko": "플레어",
+            "tc": "芙蕾雅",
+            "th": "เฟลร์"
+          }
+        },
+        {
+          "text": "不知火",
+          "translations": {
+            "en": "Shiranui",
+            "es": "Shiranui",
+            "id": "Shiranui",
+            "ko": "시라누이",
+            "tc": "不知火",
+            "th": "ชิรานุย"
+          }
+        }
+      ],
+      "note": "tc was 白上吹雪 (Shirakami Fubuki) in the hand-written i18n — a copy-paste slip, live on the site until 2026-07-30"
     },
     "不知火建設": {
       "translations": {
@@ -1657,7 +1788,17 @@
         "th": "จูอูฟุเทย ราเด็ง"
       },
       "aliases": [
-        "儒烏風"
+        {
+          "text": "儒烏風",
+          "translations": {
+            "en": "Juufuutei",
+            "es": "Juufuutei",
+            "id": "Juufuutei",
+            "ko": "주우후테이",
+            "tc": "儒烏風亭",
+            "th": "จูฟูเทย์"
+          }
+        }
       ]
     },
     "優しいモンスター": {
@@ -1673,7 +1814,17 @@
         "th": "อุซาดะ เปโคระ"
       },
       "aliases": [
-        "兎田"
+        {
+          "text": "兎田",
+          "translations": {
+            "en": "Usada",
+            "es": "Usada",
+            "id": "Usada",
+            "ko": "우사다",
+            "tc": "兔田",
+            "th": "อุซาดะ"
+          }
+        }
       ]
     },
     "凸待ち": {
@@ -1716,7 +1867,17 @@
         "th": "โคเซกิ บิจู"
       },
       "aliases": [
-        "ビジュー"
+        {
+          "text": "ビジュー",
+          "translations": {
+            "en": "Bijou",
+            "es": "Bijou",
+            "id": "Bijou",
+            "ko": "비쥬",
+            "tc": "Bijou",
+            "th": "บิชู"
+          }
+        }
       ]
     },
     "塩っ子": {
@@ -1739,7 +1900,17 @@
         "th": "นัตสึอิโระ มัตสึริ"
       },
       "aliases": [
-        "夏色"
+        {
+          "text": "夏色",
+          "translations": {
+            "en": "Natsuiro",
+            "es": "Natsuiro",
+            "id": "Natsuiro",
+            "ko": "나츠이로",
+            "tc": "夏色",
+            "th": "นัตสึอิโระ"
+          }
+        }
       ]
     },
     "大神ミオ": {
@@ -1752,8 +1923,28 @@
         "th": "โอกามิ มิโอ"
       },
       "aliases": [
-        "ミオ",
-        "大神"
+        {
+          "text": "ミオ",
+          "translations": {
+            "en": "Mio",
+            "es": "Mio",
+            "id": "Mio",
+            "ko": "미오",
+            "tc": "澪",
+            "th": "มิโอะ"
+          }
+        },
+        {
+          "text": "大神",
+          "translations": {
+            "en": "Ookami",
+            "es": "Ookami",
+            "id": "Ookami",
+            "ko": "오오카미",
+            "tc": "大神",
+            "th": "โอคามิ"
+          }
+        }
       ]
     },
     "大空スバル": {
@@ -1766,8 +1957,28 @@
         "th": "โอโซระ สุบารุ"
       },
       "aliases": [
-        "スバル",
-        "大空"
+        {
+          "text": "スバル",
+          "translations": {
+            "en": "Subaru",
+            "es": "Subaru",
+            "id": "Subaru",
+            "ko": "스바루",
+            "tc": "昴",
+            "th": "ซุบารุ"
+          }
+        },
+        {
+          "text": "大空",
+          "translations": {
+            "en": "Oozora",
+            "es": "Oozora",
+            "id": "Oozora",
+            "ko": "오오조라",
+            "tc": "大空",
+            "th": "โอโซระ"
+          }
+        }
       ]
     },
     "天音かなた": {
@@ -1800,7 +2011,17 @@
         "th": "โฮโช มารีน"
       },
       "aliases": [
-        "宝鐘"
+        {
+          "text": "宝鐘",
+          "translations": {
+            "en": "Houshou",
+            "es": "Houshou",
+            "id": "Houshou",
+            "ko": "호쇼",
+            "tc": "寶鐘",
+            "th": "โฮโช"
+          }
+        }
       ]
     },
     "小鳥遊キアラ": {
@@ -1823,7 +2044,17 @@
         "th": "โอมารุ โปลกะ"
       },
       "aliases": [
-        "ポルカ"
+        {
+          "text": "ポルカ",
+          "translations": {
+            "en": "Polka",
+            "es": "Polka",
+            "id": "Polka",
+            "ko": "폴카",
+            "tc": "Polka",
+            "th": "โพลก้า"
+          }
+        }
       ]
     },
     "山田ルイ54世": {
@@ -1839,7 +2070,17 @@
         "th": "โทโคยามิ โทวะ"
       },
       "aliases": [
-        "トワ"
+        {
+          "text": "トワ",
+          "translations": {
+            "en": "Towa",
+            "es": "Towa",
+            "id": "Towa",
+            "ko": "토와",
+            "tc": "永遠",
+            "th": "โทวะ"
+          }
+        }
       ]
     },
     "座員": {
@@ -1868,7 +2109,17 @@
         "th": "อินุกามิ โคโรเนะ"
       },
       "aliases": [
-        "戌神"
+        {
+          "text": "戌神",
+          "translations": {
+            "en": "Inugami",
+            "es": "Inugami",
+            "id": "Inugami",
+            "ko": "이누가미",
+            "tc": "戌神",
+            "th": "อินุงามิ"
+          }
+        }
       ]
     },
     "星街すいせい": {
@@ -1881,7 +2132,17 @@
         "th": "โฮชิมาชิ สุยเซย"
       },
       "aliases": [
-        "星街"
+        {
+          "text": "星街",
+          "translations": {
+            "en": "Hoshimachi",
+            "es": "Hoshimachi",
+            "id": "Hoshimachi",
+            "ko": "호시마치",
+            "tc": "星街",
+            "th": "โฮชิมาจิ"
+          }
+        }
       ]
     },
     "星街すいせいのマイク": {
@@ -1937,7 +2198,17 @@
         "th": "โมโมสุซุ เนเนะ"
       },
       "aliases": [
-        "桃鈴"
+        {
+          "text": "桃鈴",
+          "translations": {
+            "en": "Momosuzu",
+            "es": "Momosuzu",
+            "id": "Momosuzu",
+            "ko": "모모스즈",
+            "tc": "桃鈴",
+            "th": "โมโมสึซุ"
+          }
+        }
       ]
     },
     "森カリオペ": {
@@ -1950,7 +2221,17 @@
         "th": "โมริ คาลลิโอเป"
       },
       "aliases": [
-        "カリオペ"
+        {
+          "text": "カリオペ",
+          "translations": {
+            "en": "Calliope",
+            "es": "Calliope",
+            "id": "Calliope",
+            "ko": "칼리오페",
+            "tc": "美聲",
+            "th": "คัลลิโอเป"
+          }
+        }
       ]
     },
     "森カリオペの鎌": {
@@ -1976,7 +2257,17 @@
         "th": "ซากามาตะ โคลเอ"
       },
       "aliases": [
-        "沙花叉"
+        {
+          "text": "沙花叉",
+          "translations": {
+            "en": "Sakamata",
+            "es": "Sakamata",
+            "id": "Sakamata",
+            "ko": "사카마타",
+            "tc": "沙花叉",
+            "th": "ซาคามาตะ"
+          }
+        }
       ]
     },
     "泥棒建設": {
@@ -2029,7 +2320,17 @@
         "th": "เนโกะมาตะ โอกายุ"
       },
       "aliases": [
-        "猫又"
+        {
+          "text": "猫又",
+          "translations": {
+            "en": "Nekomata",
+            "es": "Nekomata",
+            "id": "Nekomata",
+            "ko": "네코마타",
+            "tc": "貓又",
+            "th": "เนโคมาตะ"
+          }
+        }
       ]
     },
     "獅白ぼたん": {
@@ -2042,7 +2343,17 @@
         "th": "ชิชิโระ โบตัง"
       },
       "aliases": [
-        "獅白"
+        {
+          "text": "獅白",
+          "translations": {
+            "en": "Shishiro",
+            "es": "Shishiro",
+            "id": "Shishiro",
+            "ko": "시시로",
+            "tc": "獅白",
+            "th": "ชิชิโระ"
+          }
+        }
       ]
     },
     "癒月ちょこ": {
@@ -2075,8 +2386,28 @@
         "th": "ชิรากามิ ฟุบุกิ"
       },
       "aliases": [
-        "フブキ",
-        "白上"
+        {
+          "text": "フブキ",
+          "translations": {
+            "en": "Fubuki",
+            "es": "Fubuki",
+            "id": "Fubuki",
+            "ko": "후부키",
+            "tc": "吹雪",
+            "th": "ฟุบุกิ"
+          }
+        },
+        {
+          "text": "白上",
+          "translations": {
+            "en": "Shirakami",
+            "es": "Shirakami",
+            "id": "Shirakami",
+            "ko": "시라카미",
+            "tc": "白上",
+            "th": "ชิรากามิ"
+          }
+        }
       ]
     },
     "白銀ノエル": {
@@ -2089,8 +2420,28 @@
         "th": "ชิโรกาเนะ โนเอล"
       },
       "aliases": [
-        "ノエル",
-        "白銀"
+        {
+          "text": "ノエル",
+          "translations": {
+            "en": "Noel",
+            "es": "Noel",
+            "id": "Noel",
+            "ko": "노엘",
+            "tc": "諾艾爾",
+            "th": "โนเอล"
+          }
+        },
+        {
+          "text": "白銀",
+          "translations": {
+            "en": "Shirogane",
+            "es": "Shirogane",
+            "id": "Shirogane",
+            "ko": "시로가네",
+            "tc": "白銀",
+            "th": "ชิโรกาเนะ"
+          }
+        }
       ]
     },
     "白銀ノエルのメイス": {
@@ -2123,7 +2474,17 @@
         "th": "นากิริ อายาเมะ"
       },
       "aliases": [
-        "百鬼"
+        {
+          "text": "百鬼",
+          "translations": {
+            "en": "Nakiri",
+            "es": "Nakiri",
+            "id": "Nakiri",
+            "ko": "나키리",
+            "tc": "百鬼",
+            "th": "นาคิริ"
+          }
+        }
       ]
     },
     "石の斧": {
@@ -2182,7 +2543,17 @@
     "綺々羅々ヴィヴィ": {
       "translations": {},
       "aliases": [
-        "ヴィヴィ"
+        {
+          "text": "ヴィヴィ",
+          "translations": {
+            "en": "Vivi",
+            "es": "Vivi",
+            "id": "Vivi",
+            "ko": "비비",
+            "tc": "Vivi",
+            "th": "วีวี่"
+          }
+        }
       ]
     },
     "緑の試験管": {
@@ -2357,7 +2728,17 @@
         "th": "ยุกิฮานะ ลามี"
       },
       "aliases": [
-        "ラミィ"
+        {
+          "text": "ラミィ",
+          "translations": {
+            "en": "Lamy",
+            "es": "Lamy",
+            "id": "Lamy",
+            "ko": "라미",
+            "tc": "菈米",
+            "th": "ลามี่"
+          }
+        }
       ]
     },
     "青エール": {
@@ -2380,7 +2761,17 @@
         "th": "โอโตโนเซะ คานาเดะ"
       },
       "aliases": [
-        "音乃瀬"
+        {
+          "text": "音乃瀬",
+          "translations": {
+            "en": "Otonose",
+            "es": "Otonose",
+            "id": "Otonose",
+            "ko": "오토노세",
+            "tc": "音乃瀨",
+            "th": "โอโตโนเสะ"
+          }
+        }
       ]
     },
     "響咲リオナ": {
@@ -2396,7 +2787,17 @@
         "th": "คาซามะ อิโรฮะ"
       },
       "aliases": [
-        "風真"
+        {
+          "text": "風真",
+          "translations": {
+            "en": "Kazama",
+            "es": "Kazama",
+            "id": "Kazama",
+            "ko": "카자마",
+            "tc": "風真",
+            "th": "คาซามะ"
+          }
+        }
       ]
     },
     "鬼神刀「阿修羅」": {
@@ -2482,7 +2883,17 @@
         "th": "ทาคาเนะ รุย"
       },
       "aliases": [
-        "ルイ"
+        {
+          "text": "ルイ",
+          "translations": {
+            "en": "Lui",
+            "es": "Lui",
+            "id": "Lui",
+            "ko": "루이",
+            "tc": "露依",
+            "th": "ลูอี้"
+          }
+        }
       ]
     },
     "黄エール": {

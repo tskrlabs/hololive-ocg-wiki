@@ -42,6 +42,7 @@ import typer
 from dotenv import load_dotenv
 
 from holo_schema import SCHEMA_VERSION
+from holo_schema.enums import SOURCE_LOCALE
 
 from . import build as build_module
 from . import glossary as glossary_module
@@ -51,7 +52,7 @@ from . import paths, r2, transform, verify as verify_module
 from . import publish as publish_module
 from . import verify_images as verify_images_module
 from .scrape import card_list, extract, fetch
-from .translate import backup, poe
+from .translate import backup, masking, poe
 from .translate.cache import TranslationCache
 
 app = typer.Typer(
@@ -982,6 +983,19 @@ def glossary_(
     for line in glossary_module.coverage_report(glossaries, locales):
         typer.echo(line)
 
+    # Two distinct names displaying identically is almost always a copy-paste slip, and
+    # it is invisible in review. The seeded glossary carried one, inherited from the
+    # hand-written i18n and live on the site: Shiranui Flare shown as Shirakami Fubuki.
+    found_collisions = False
+    for kind, glossary in glossaries.items():
+        for loc in locales:
+            for display, keys in sorted(glossary.collisions(loc).items()):
+                if not found_collisions:
+                    typer.echo("")
+                    typer.echo("⚠ distinct entries sharing one display name:")
+                    found_collisions = True
+                typer.echo(f"  {kind}/{loc}: {display!r} <- {keys}")
+
     if not missing:
         return
 
@@ -992,6 +1006,68 @@ def glossary_(
                 typer.echo(f"\n{kind}/{loc} — {len(gaps)} undecided:")
                 for key in gaps:
                     typer.echo(f"  {key}")
+
+
+@app.command("report-masks")
+def report_masks(
+    show: int = typer.Option(25, "--show", help="how many names to list"),
+    failures_only: bool = typer.Option(
+        False, "--failures-only", help="print nothing unless a string fails to restore"
+    ),
+) -> None:
+    """Show what masking would do to every translatable string. Spends nothing.
+
+    Masking rewrites text on its way to the model and puts names back afterwards, so a
+    bug here corrupts translations rather than failing them. This is the offline
+    rehearsal: every string in the build is masked and restored, and any that does not
+    come back byte-identical is reported.
+
+    Run it after editing `pipeline/glossary/` and before `translate`.
+    """
+    collection = build_module.load()
+    if collection is None:
+        typer.echo("no build found — run `holo-data build` first", err=True)
+        raise typer.Exit(1)
+
+    names = glossary_module.Glossary.load("names")
+    table = names.mask_table()
+    report = masking.MaskReport()
+
+    for card in collection.cards:
+        source = card.translations[SOURCE_LOCALE]
+        for text in _translatable_strings(source):
+            report.record(text, table)
+
+    if failures_only:
+        if not report.failures:
+            typer.echo(f"✓ {report.total} strings round-trip")
+            return
+    else:
+        typer.echo(f"mask table: {len(table)} entries from {len(names.entries)} names")
+        for line in report.lines(top=show):
+            typer.echo(line)
+
+    if report.failures:
+        raise typer.Exit(1)
+
+
+def _translatable_strings(translation) -> list[str]:
+    """Every short label and prose string on one locale's translation."""
+    out: list[str] = []
+    for value in (translation.name, translation.ability_text, translation.extra):
+        if value:
+            out.append(value)
+    out.extend(translation.tags or [])
+    for art in translation.arts or []:
+        out.extend(v for v in (art.name, art.effect) if v)
+    if translation.keyword:
+        out.extend(v for v in (translation.keyword.name, translation.keyword.effect) if v)
+    for skill in (translation.oshi_skill, translation.sp_oshi_skill):
+        if skill:
+            out.extend(v for v in (skill.name, skill.effect, skill.timing) if v)
+    for qa in translation.qa_items or []:
+        out.extend(v for v in (qa.title, qa.question, qa.answer) if v)
+    return out
 
 
 @app.command("backup-cache")

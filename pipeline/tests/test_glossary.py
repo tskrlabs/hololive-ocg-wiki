@@ -19,6 +19,7 @@ import json
 import pytest
 
 from holo_data.glossary import (
+    Alias,
     Entry,
     Glossary,
     GlossaryError,
@@ -208,8 +209,36 @@ class TestPersistence:
         entry = loaded.entries["白上フブキ"]
 
         assert entry.translations == {"en": "Shirakami Fubuki", "tc": "白上狐狸"}
-        assert entry.aliases == ["フブキ"]
+        assert entry.alias_texts() == ["フブキ"]
         assert entry.note == "fanbase is フブキング"
+
+    def test_an_alias_keeps_its_own_translations_across_a_round_trip(self, tmp_path):
+        """Register-preserving short forms: `モココ` -> "Mococo", not the full name."""
+        Glossary(
+            kind="names",
+            entries={
+                "モココ・アビスガード": Entry(
+                    key="モココ・アビスガード",
+                    translations={"en": "Mococo Abyssgard"},
+                    aliases=[Alias(text="モココ", translations={"en": "Mococo"})],
+                )
+            },
+        ).save(tmp_path)
+
+        entry = Glossary.load("names", tmp_path).entries["モココ・アビスガード"]
+
+        assert entry.display("en") == "Mococo Abyssgard"
+        assert entry.display("en", surface="モココ") == "Mococo"
+
+    def test_a_bare_string_alias_stays_bare_on_disk(self, tmp_path):
+        """An alias with nothing to say should not become an object in the diff."""
+        Glossary(
+            kind="names", entries={"白上フブキ": Entry(key="白上フブキ", aliases=["フブキ"])}
+        ).save(tmp_path)
+
+        raw = json.loads((tmp_path / "names.json").read_text(encoding="utf-8"))
+
+        assert raw["entries"]["白上フブキ"]["aliases"] == ["フブキ"]
 
     def test_a_missing_file_is_an_empty_glossary_not_an_error(self, tmp_path):
         """A fresh clone before seeding should not crash the build."""

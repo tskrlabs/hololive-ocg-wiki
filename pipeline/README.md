@@ -18,6 +18,7 @@ holo-data verify          # diff against v1's data               (local, free)
 holo-data verify-images   # coverage; --remote re-checks bytes   (local / ~2.4k reqs)
 holo-data status          # what is on disk right now
 holo-data glossary        # proper-noun coverage, per locale     (local, free)
+holo-data report-masks    # rehearse masking over every string   (local, free)
 holo-data backup-cache    # snapshot the translation cache       (--remote adds R2)
 
 holo-data publish         # images + artifacts -> R2   (needs CF credentials)
@@ -105,6 +106,39 @@ display text (`"#0期生"`) — keying on the prefix is what made the tag filter
 **Aliases** cover the short forms characters are referred to by — `おつルーナ`, `おつムーナ`.
 They are masked longest-first, and an alias claimed by two characters is rejected outright
 rather than silently resolving to whichever was matched first.
+
+## Masking: names are removed, not asked about
+
+`translate` does not ask the model to leave names alone — it takes them out first:
+
+```
+白上フブキのこんこん  ->  [[N0]]のこんこん  ->  [[N0]]'s Konkon  ->  Shirakami Fubuki's Konkon
+```
+
+The name comes back from the glossary, so every occurrence on every card gets the same
+spelling **by construction**. The old prompt asked politely and was obeyed 47–81% of the
+time, which is what #20 and #21 measure.
+
+Three rules, each forced by the real data:
+
+- **Longest first.** 75 pairs in the table nest — `森カリオペ` inside `森カリオペの鎌`,
+  `Promise` inside `時の支配者 -Promise-`. Masking the short one strands a fragment.
+- **Katakana word boundaries.** `トワ` is Tokoyami Towa *and* the first two syllables of
+  `トワイライト`. Adjacency decides, per occurrence: `トワとトワイライト` masks the first
+  only.
+- **One pass.** A token like `[[N0]]` is ASCII and so is a name like `35P`, so a second
+  pass could match inside a token it just wrote. The masker never re-reads its own output.
+
+**Failure is loud.** If the model drops, mangles or invents a placeholder, `unmask` raises
+and the unit is not cached. A half-restored string would be plausible, published, and
+found by a reader months later.
+
+```bash
+holo-data report-masks     # every string masked and restored, offline
+```
+
+Verified over the full corpus: **21,205 strings, 7,023 (33%) carrying a name, zero
+round-trip failures.** `make check` runs the same sweep.
 
 ## The cache is the one thing you cannot re-run
 

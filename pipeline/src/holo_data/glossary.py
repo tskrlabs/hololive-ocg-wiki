@@ -35,6 +35,13 @@ only the full name `姫森ルーナ` was a glossary key, so the bare `ルーナ`
 `aliases` covers those. They are masked longest-first together with full names, which
 matters because they nest: `ルーナ` is a substring of `ルーナイト` (the fanbase name, itself
 a character-adjacent term). Masking the short one first would corrupt the long one.
+
+**An alias may carry its own translations**, and usually should. Restoring every alias to
+the full canonical name is more consistent but flattens register — an end-to-end check
+against the real model turned `モココとドーナツクッキング` into "Mococo Abyssgard and Donut
+Cooking", where the Japanese reads like a nickname and the English reads like a formal
+introduction. An alias with no decision for a locale falls back to the full name, which is
+never wrong, only stiff.
 """
 
 from __future__ import annotations
@@ -117,6 +124,52 @@ class GlossaryError(RuntimeError):
 
 
 @dataclass
+class Alias:
+    """A short form of a name, with its own per-locale display text.
+
+    **Aliases translate separately, and that is deliberate.** Restoring every alias to
+    the full canonical name is more consistent but flattens register: a card titled
+    `モココとドーナツクッキング` is casual on purpose, and "Mococo Abyssgard and Donut
+    Cooking" reads like a formal introduction where the Japanese reads like a nickname.
+    The source's choice of short form is information, and this rework exists to stop
+    discarding what the source tells us.
+
+    Deriving the short form mechanically does not work. `白上` and `フブキ` are both
+    aliases of one character and correspond to *different halves* of "Shirakami Fubuki",
+    so no first-token rule picks correctly.
+
+    An alias with no translation for a locale falls back to the entry's full name, which
+    is the old behaviour and is always safe — never wrong, only formal.
+    """
+
+    text: str
+    translations: dict[str, str] = field(default_factory=dict)
+
+    def to_json(self) -> dict[str, Any] | str:
+        # A bare string when there is nothing to say — most aliases start that way, and
+        # a file of `{"text": "フブキ"}` objects would be noise in review.
+        if not self.translations:
+            return self.text
+        return {
+            "text": self.text,
+            "translations": dict(sorted(self.translations.items())),
+        }
+
+    @classmethod
+    def from_json(cls, raw: Any) -> "Alias":
+        if isinstance(raw, str):
+            return cls(text=raw)
+        if isinstance(raw, dict) and raw.get("text"):
+            return cls(
+                text=raw["text"],
+                translations={
+                    k: v for k, v in (raw.get("translations") or {}).items() if v
+                },
+            )
+        raise GlossaryError(f"alias must be a string or an object with `text`: {raw!r}")
+
+
+@dataclass
 class Entry:
     """One proper noun: its per-locale display text, and how else it is written.
 
@@ -131,16 +184,39 @@ class Entry:
 
     key: str
     translations: dict[str, str] = field(default_factory=dict)
-    aliases: list[str] = field(default_factory=list)
+    aliases: list[Alias] = field(default_factory=list)
     note: str | None = None
 
-    def display(self, locale: str) -> str:
-        """What this locale shows. Falls back to the source string."""
+    def __post_init__(self) -> None:
+        # Accept bare strings as well as `Alias` objects. Most aliases have nothing to
+        # say beyond their text, and `Alias(text="フブキ")` at every call site — in tests,
+        # in scripts, in the seeder — is ceremony that buys nothing.
+        self.aliases = [
+            alias if isinstance(alias, Alias) else Alias(text=alias)
+            for alias in self.aliases
+        ]
+
+    def display(self, locale: str, surface: str | None = None) -> str:
+        """What this locale shows for `surface` — the full name unless an alias matched.
+
+        `surface` is the text actually found in the source. Passing it is what preserves
+        register: `モココ` restores as "Mococo" rather than "Mococo Abyssgard", if the
+        alias has its own translation for this locale.
+        """
+        if surface is not None and surface != self.key:
+            for alias in self.aliases:
+                if alias.text == surface:
+                    if translated := alias.translations.get(locale):
+                        return translated
+                    break  # no decision for this locale — fall through to the full name
         return self.translations.get(locale) or self.key
 
     def has(self, locale: str) -> bool:
         """Whether a decision has been recorded for this locale."""
         return bool(self.translations.get(locale))
+
+    def alias_texts(self) -> list[str]:
+        return [alias.text for alias in self.aliases]
 
     def maskable(self) -> list[str]:
         """Every string that should be masked for this entry, longest first.
@@ -148,12 +224,15 @@ class Entry:
         Longest-first is not a preference. `ルーナ` is a substring of `ルーナイト`, so
         masking the short form first would eat the long one and restore it wrongly.
         """
-        return sorted({self.key, *self.aliases}, key=len, reverse=True)
+        return sorted({self.key, *self.alias_texts()}, key=len, reverse=True)
 
     def to_json(self) -> dict[str, Any]:
         out: dict[str, Any] = {"translations": dict(sorted(self.translations.items()))}
         if self.aliases:
-            out["aliases"] = sorted(self.aliases)
+            out["aliases"] = [
+                alias.to_json()
+                for alias in sorted(self.aliases, key=lambda a: a.text)
+            ]
         if self.note:
             out["note"] = self.note
         return out
@@ -165,7 +244,7 @@ class Entry:
         return cls(
             key=key,
             translations={k: v for k, v in (raw.get("translations") or {}).items() if v},
-            aliases=list(raw.get("aliases") or []),
+            aliases=[Alias.from_json(a) for a in (raw.get("aliases") or [])],
             note=raw.get("note"),
         )
 
@@ -218,7 +297,7 @@ class Glossary:
         """
         seen: dict[str, str] = {}
         for entry in self.entries.values():
-            for text in {entry.key, *entry.aliases}:
+            for text in {entry.key, *entry.alias_texts()}:
                 if not text.strip():
                     raise GlossaryError(
                         f"{self.kind}: entry {entry.key!r} has an empty key or alias"
@@ -232,6 +311,28 @@ class Glossary:
                         f"{entry.key!r}. An alias must identify exactly one entry."
                     )
                 seen[text] = entry.key
+
+    def collisions(self, locale: str) -> dict[str, list[str]]:
+        """Distinct keys that display identically in one locale.
+
+        Not an error — `魔法少女マリン` and `宝鐘マリン` are the same character and may
+        legitimately share a name, and unrelated entries can coincide. But it is almost
+        always a copy-paste slip, and it is invisible in review: the seeded glossary
+        carried `不知火フレア` (Shiranui Flare) displaying as `白上吹雪` (Shirakami Fubuki)
+        in `tc`, inherited from the hand-written i18n file and live on the site.
+
+        Reported by `holo-data glossary`, so the maintainer sees it rather than a reader
+        discovering it.
+        """
+        by_display: dict[str, list[str]] = {}
+        for key, entry in self.entries.items():
+            if entry.has(locale):
+                by_display.setdefault(entry.display(locale), []).append(key)
+        return {
+            display: sorted(keys)
+            for display, keys in by_display.items()
+            if len(keys) > 1
+        }
 
     # --- Persistence ---
 
