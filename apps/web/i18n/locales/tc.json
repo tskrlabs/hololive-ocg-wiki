@@ -562,5 +562,26 @@
     "dbTotal": "我們的資料庫有 {valid} 張有效卡牌（{skipped} 張因資料不完整而跳過）",
     "loadMore": "載入更多（{loaded} / {total}）",
     "viewDetail": "查看卡牌詳情"
+  },
+  "errors": {
+    "retry": "重試",
+    "cards": {
+      "offline": {
+        "title": "無法連線至卡片資料庫",
+        "detail": "請檢查網路連線後再試一次。"
+      },
+      "server": {
+        "title": "卡片資料庫沒有回應",
+        "detail": "我們這邊出了點問題，請稍後再試。"
+      },
+      "timeout": {
+        "title": "請求逾時",
+        "detail": "卡片資料庫回應時間過長，請再試一次。"
+      }
+    },
+    "filterOptions": {
+      "title": "無法載入篩選選項",
+      "detail": "下方清單可能不完整。"
+    }
   }
 }

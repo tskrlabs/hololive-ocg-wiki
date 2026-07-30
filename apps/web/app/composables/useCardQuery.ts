@@ -34,11 +34,60 @@ export function setCardSource(next: CardSource) {
   source = next;
 }
 
+/**
+ * Why the last request failed, or `null` if it did not (#45).
+ *
+ * A failed fetch used to be written down as `cards: []`, which is the same value a
+ * genuine zero-result produces — so offline, HTTP 500, a timeout and a malformed response
+ * all rendered as *"No cards found — try adjusting your filters"*. That advice cannot
+ * help: no filter change reaches an unreachable API, and a user on a flaky connection
+ * concludes the wiki has no cards.
+ *
+ * `isLoading: boolean` alongside `cards: []` cannot express this — the pair has four
+ * combinations and only three are legal. The kinds are distinguished because the useful
+ * message differs: offline is the user's network, server is ours.
+ */
+export type QueryErrorKind = "offline" | "server" | "timeout";
+
+/**
+ * Classify a thrown fetch failure.
+ *
+ * `$fetch` rejects with an `FetchError` carrying `statusCode` for an HTTP response and
+ * none at all when the request never completed, which is the distinction that matters:
+ * no status means the network did not carry it.
+ */
+export function classifyError(error: unknown): QueryErrorKind {
+  const status = (error as { statusCode?: number; status?: number } | null)?.statusCode
+    ?? (error as { status?: number } | null)?.status;
+
+  if (typeof status === "number" && status > 0) {
+    return status === 408 || status === 504 ? "timeout" : "server";
+  }
+
+  const name = (error as { name?: string } | null)?.name;
+  if (name === "TimeoutError" || name === "AbortError") return "timeout";
+
+  // No status and not an abort: the request never reached anyone.
+  return "offline";
+}
+
 export const useCardQuery = () => {
   const cards = useState<CardCollection>("cards", () => []);
   const total = useState<number>("cardsTotal", () => 0);
   const page = useState<number>("cardsPage", () => 1);
   const isLoading = useState<boolean>("cardsLoading", () => false);
+
+  /**
+   * Why the last card fetch failed, or `null`. See `QueryErrorKind` (#45).
+   *
+   * Kept beside `cards` rather than replacing it with a union, because a union would
+   * change every read of `cards.value` in the app and this fix is meant to stand alone
+   * ahead of the rework. Commit 5 of Phase 8 collapses the pair into the discriminated
+   * union #45 describes; what matters today is that "failed" and "matched nothing" stop
+   * being the same value.
+   */
+  const error = useState<QueryErrorKind | null>("cardsError", () => null);
+  const optionsError = useState<QueryErrorKind | null>("filterOptionsError", () => null);
 
   const byIdCache = useState<Map<string, Card>>("cardById", () => new Map());
   const pageCache = useState<Map<string, CardPage>>("cardPages", () => new Map());
@@ -91,6 +140,7 @@ export const useCardQuery = () => {
       cards.value = cached.cards;
       total.value = cached.total ?? total.value;
       page.value = pageNumber;
+      error.value = null;
       return cached.cards;
     }
 
@@ -104,10 +154,14 @@ export const useCardQuery = () => {
       cards.value = result.cards;
       total.value = resolved;
       page.value = pageNumber;
+      error.value = null;
       pageCache.value.set(key, { cards: result.cards, total: resolved });
       return result.cards;
-    } catch (error) {
-      console.error("Failed to fetch cards:", error);
+    } catch (cause) {
+      // The empty list still happens — the view needs *something* to render — but it is
+      // no longer the only thing said about the failure (#45).
+      console.error("Failed to fetch cards:", cause);
+      error.value = classifyError(cause);
       cards.value = [];
       total.value = 0;
       return [];
@@ -146,11 +200,15 @@ export const useCardQuery = () => {
       );
       cards.value = [...existing, ...result.cards];
       page.value = nextPage;
+      error.value = null;
       // Cached with the total page 1 established, since this response carries none.
       pageCache.value.set(key, { cards: result.cards, total: total.value });
       return result.cards;
-    } catch (error) {
-      console.error("Failed to load more cards:", error);
+    } catch (cause) {
+      // The cards already on screen are kept — a failed *next* page does not invalidate
+      // the pages that arrived — but the failure is now reportable rather than silent.
+      console.error("Failed to load more cards:", cause);
+      error.value = classifyError(cause);
       cards.value = existing;
       return [];
     } finally {
@@ -223,9 +281,13 @@ export const useCardQuery = () => {
         source.filterOptions(locale),
       );
       optionsCache.value.set(locale, options);
+      optionsError.value = null;
       return options;
-    } catch (error) {
-      console.error("Failed to load filter options:", error);
+    } catch (cause) {
+      // Empty arrays render as "no filter options exist", which is a lie of the same
+      // shape as the card list's (#45). The caller can now tell the two apart.
+      console.error("Failed to load filter options:", cause);
+      optionsError.value = classifyError(cause);
       return { names: [], tags: [], sets: [] };
     }
   }
@@ -243,6 +305,8 @@ export const useCardQuery = () => {
     total,
     page,
     isLoading,
+    error,
+    optionsError,
 
     getFilteredCards,
     loadMore,

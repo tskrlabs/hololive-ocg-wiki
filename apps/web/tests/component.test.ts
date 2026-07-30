@@ -38,7 +38,11 @@ import { RecycleScroller } from "vue-virtual-scroller";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createEmpty } from "../app/composables/filter-states";
-import { setCardSource, useCardQuery } from "../app/composables/useCardQuery";
+import {
+  classifyError,
+  setCardSource,
+  useCardQuery,
+} from "../app/composables/useCardQuery";
 import type { CardCollection } from "../app/types/card";
 
 /* -------------------------------------------------------------------------- */
@@ -137,6 +141,31 @@ function fakeSource() {
   };
 }
 
+/**
+ * A card source whose `filter` rejects — offline, HTTP 500, or a timeout (#45).
+ *
+ * This is the shape no pure-function test could reach: the bug only exists when a real
+ * fetch *rejects*, and every one of the other tests here resolves. Same blind spot as
+ * F-019.
+ */
+function failingSource(rejection: unknown, failures = Infinity) {
+  let calls = 0;
+  const { source } = fakeSource();
+  return {
+    get calls() {
+      return calls;
+    },
+    source: {
+      ...source,
+      async filter(...args: unknown[]) {
+        calls++;
+        if (calls <= failures) throw rejection;
+        return (source.filter as (...a: unknown[]) => unknown)(...args);
+      },
+    },
+  };
+}
+
 /** Records the scroller's props and the imperative calls made against it. */
 const scrollToItem = vi.fn();
 const ScrollerStub = {
@@ -162,6 +191,13 @@ async function mountList() {
       stubs: {
         RecycleScroller: ScrollerStub,
         CardItem: { template: "<div class='card-item' />" },
+        // Nuxt auto-imports the shadcn `Button`; outside Nuxt it does not resolve, and
+        // an unresolved component renders nothing — which would let the Retry test
+        // "pass" by clicking some other button entirely.
+        Button: {
+          inheritAttrs: false,
+          template: "<button class='ui-button' v-bind='$attrs'><slot /></button>",
+        },
       },
       mocks: { $t: (key: string) => key },
       directives: { "resize-observer": {} },
@@ -288,6 +324,113 @@ describe("CardListViewAPI", () => {
     expect(requests.at(-1)).toMatchObject({ page: 1, skipCount: false });
     // … and the viewport follows it, rather than staying where the last list was.
     expect(scrollToItem).toHaveBeenCalledWith(0);
+  });
+});
+
+describe("a failed fetch (#45)", () => {
+  /*
+   * The bug: every failure was written down as `cards: []`, which is what a genuine
+   * zero-result also produces — so going offline rendered "No cards found — try adjusting
+   * your filters". The advice cannot help, and a user on a flaky connection concludes the
+   * wiki has no cards.
+   */
+  it("does not blame the user's filters when the API is unreachable", async () => {
+    setCardSource(failingSource(new Error("Failed to fetch")).source as never);
+
+    const wrapper = await mountList();
+    await settle();
+
+    const text = wrapper.text();
+    expect(text).not.toContain("Try adjusting your filters");
+    expect(text).not.toContain("No cards found");
+    expect(text).toContain("errors.cards.offline.title");
+    expect(text).toContain("errors.retry");
+  });
+
+  it("still blames the filters when the filters really did match nothing", async () => {
+    // The other half: the empty state has to survive, or this trades one wrong message
+    // for another.
+    const { source } = fakeSource();
+    setCardSource({
+      ...source,
+      async filter() {
+        return { cards: [], total: 0 };
+      },
+    } as never);
+
+    const wrapper = await mountList();
+    await settle();
+
+    expect(wrapper.text()).toContain("No cards found");
+    expect(wrapper.text()).toContain("Try adjusting your filters");
+    expect(wrapper.text()).not.toContain("errors.cards");
+  });
+
+  it("tells a server error apart from an unreachable network", async () => {
+    // The distinction is worth drawing because the useful advice differs: "check your
+    // connection" is wrong when the connection is fine and our Worker is down.
+    setCardSource(failingSource({ statusCode: 500 }).source as never);
+
+    const wrapper = await mountList();
+    await settle();
+
+    expect(wrapper.text()).toContain("errors.cards.server.title");
+  });
+
+  it("recovers when Retry succeeds", async () => {
+    // A failure caches nothing, so the retry is a real second request rather than a
+    // replay of the empty result.
+    const failing = failingSource(new Error("Failed to fetch"), 1);
+    setCardSource(failing.source as never);
+
+    const wrapper = await mountList();
+    await settle();
+    expect(wrapper.text()).toContain("errors.cards.offline.title");
+
+    const retry = wrapper.find("button.ui-button");
+    expect(retry.exists(), "the Retry button should render").toBe(true);
+    await retry.trigger("click");
+    await settle();
+
+    expect(failing.calls).toBe(2);
+    expect(wrapper.text()).not.toContain("errors.cards");
+    expect(wrapper.findComponent(ScrollerStub).props("items")).toHaveLength(PAGE);
+  });
+
+  it("keeps the cards already on screen when the *next* page fails", async () => {
+    // Replacing a working list with an error panel would be a worse answer than leaving
+    // the list alone, so the error surfaces only when there is nothing else to show.
+    const { source } = fakeSource();
+    let calls = 0;
+    setCardSource({
+      ...source,
+      async filter(...args: unknown[]) {
+        if (++calls > 1) throw new Error("Failed to fetch");
+        return (source.filter as (...a: unknown[]) => unknown)(...args);
+      },
+    } as never);
+
+    const wrapper = await mountList();
+    await settle();
+    await wrapper.findComponent(ScrollerStub).vm.$emit("scroll-end");
+    await settle();
+
+    expect(wrapper.findComponent(ScrollerStub).props("items")).toHaveLength(PAGE);
+    expect(wrapper.text()).not.toContain("errors.cards");
+  });
+});
+
+describe("classifying a failure (#45)", () => {
+  it("reads an HTTP status as the server's fault, and its absence as the network's", () => {
+    // `$fetch` rejects with a `statusCode` when a response came back and with none when
+    // the request never completed — which is exactly the distinction the user needs.
+    expect(classifyError({ statusCode: 500 })).toBe("server");
+    expect(classifyError({ statusCode: 404 })).toBe("server");
+    expect(classifyError({ statusCode: 504 })).toBe("timeout");
+    expect(classifyError({ statusCode: 408 })).toBe("timeout");
+    expect(classifyError(new Error("Failed to fetch"))).toBe("offline");
+    expect(classifyError(undefined)).toBe("offline");
+    expect(classifyError({ name: "AbortError" })).toBe("timeout");
   });
 });
 

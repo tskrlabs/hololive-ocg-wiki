@@ -561,5 +561,26 @@
     "dbTotal": "Our database has {valid} valid cards ({skipped} skipped due to incomplete data)",
     "loadMore": "Load more ({loaded} / {total})",
     "viewDetail": "View card detail"
+  },
+  "errors": {
+    "retry": "Retry",
+    "cards": {
+      "offline": {
+        "title": "Can't reach the card database",
+        "detail": "Check your connection and try again."
+      },
+      "server": {
+        "title": "The card database isn't responding",
+        "detail": "Something went wrong on our side. Try again in a moment."
+      },
+      "timeout": {
+        "title": "The request timed out",
+        "detail": "The card database took too long to answer. Try again."
+      }
+    },
+    "filterOptions": {
+      "title": "Filter options couldn't be loaded",
+      "detail": "The lists below may be incomplete."
+    }
   }
 }

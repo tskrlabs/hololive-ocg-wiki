@@ -155,6 +155,22 @@ onUnmounted(() => {
 // Use the filtered cards from the store
 const displayedCards = computed(() => cardQuery.cards.value);
 
+/**
+ * The failure to report, if there is one (#45).
+ *
+ * Only shown when there is nothing to show: a `loadMore` that fails leaves the pages
+ * already on screen intact, and replacing a working list with an error panel would be a
+ * worse answer than leaving the list alone.
+ */
+const queryError = computed(() =>
+  displayedCards.value.length === 0 ? cardQuery.error.value : null,
+);
+
+/** Ask again. The failed page was never cached, so this is a real retry. */
+const retry = () => {
+  applyFiltersWithPreciseLoading();
+};
+
 // Window size tracking for responsive design (simplified for virtual scroller)
 const windowHeight = ref(0);
 
@@ -341,10 +357,35 @@ watch(
       </div>
     </div>
 
-    <!-- No results message -->
+    <!--
+      The fetch failed (#45).
+
+      This has to come *before* the empty state, because both are reached with an empty
+      card list and only one of them is about the user's filters. Telling someone whose
+      API is unreachable to "try adjusting your filters" sends them to a control that
+      cannot possibly help, and reads as "this wiki has no cards".
+    -->
+    <div
+      v-else-if="!showLoadingIndicator && queryError"
+      class="flex grow justify-center items-center min-h-[200px]"
+    >
+      <div class="text-center">
+        <p class="text-lg font-medium">
+          {{ $t(`errors.cards.${queryError}.title`) }}
+        </p>
+        <p class="text-sm text-muted-foreground mt-1">
+          {{ $t(`errors.cards.${queryError}.detail`) }}
+        </p>
+        <Button variant="outline" size="sm" class="mt-4" @click="retry">
+          {{ $t("errors.retry") }}
+        </Button>
+      </div>
+    </div>
+
+    <!-- No results message — a genuine zero-result, with filters worth adjusting. -->
     <div
       v-else-if="!showLoadingIndicator && displayedCards.length === 0"
-      class="flex justify-center items-center min-h-[200px]"
+      class="flex grow justify-center items-center min-h-[200px]"
     >
       <div class="text-center">
         <p class="text-lg font-medium text-muted-foreground">

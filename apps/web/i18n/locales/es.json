@@ -561,5 +561,26 @@
     "dbTotal": "Nuestra base de datos tiene {valid} cartas válidas ({skipped} omitidas por datos incompletos)",
     "loadMore": "Cargar más ({loaded} / {total})",
     "viewDetail": "Ver detalles de la carta"
+  },
+  "errors": {
+    "retry": "Reintentar",
+    "cards": {
+      "offline": {
+        "title": "No se puede acceder a la base de datos de cartas",
+        "detail": "Comprueba tu conexión e inténtalo de nuevo."
+      },
+      "server": {
+        "title": "La base de datos de cartas no responde",
+        "detail": "Algo ha fallado por nuestra parte. Inténtalo de nuevo en un momento."
+      },
+      "timeout": {
+        "title": "La solicitud ha caducado",
+        "detail": "La base de datos de cartas ha tardado demasiado en responder. Inténtalo de nuevo."
+      }
+    },
+    "filterOptions": {
+      "title": "No se han podido cargar las opciones de filtro",
+      "detail": "Las listas siguientes pueden estar incompletas."
+    }
   }
 }

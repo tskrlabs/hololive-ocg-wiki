@@ -163,6 +163,33 @@ const handleResetAll = () => {
       <div class="flex grow">
         <ScrollArea>
           <div class="w-full max-h-[85dvh]">
+            <!--
+              The option lists failed to load (#45).
+
+              Without this the empty arrays render as "no filter options exist" — the
+              same lie the card list used to tell, and worse here because the lists sit
+              beside working controls, so nothing looks broken at all.
+            -->
+            <div
+              v-if="cardQuery.optionsError.value"
+              class="mx-4 mt-4 rounded-md border border-destructive/50 px-3 py-2"
+            >
+              <p class="text-sm font-medium">
+                {{ $t("errors.filterOptions.title") }}
+              </p>
+              <p class="text-xs text-muted-foreground mt-0.5">
+                {{ $t("errors.filterOptions.detail") }}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                class="mt-2"
+                @click="loadAllFilterOptions"
+              >
+                {{ $t("errors.retry") }}
+              </Button>
+            </div>
+
             <!-- quick filters -->
             <div class="flex flex-col gap-4 pt-4 px-4">
               <!-- name -->

@@ -561,5 +561,26 @@
     "dbTotal": "Database kami memiliki {valid} kartu valid ({skipped} dilewati karena data tidak lengkap)",
     "loadMore": "Muat lebih banyak ({loaded} / {total})",
     "viewDetail": "Lihat detail kartu"
+  },
+  "errors": {
+    "retry": "Coba lagi",
+    "cards": {
+      "offline": {
+        "title": "Tidak dapat menghubungi basis data kartu",
+        "detail": "Periksa koneksi Anda lalu coba lagi."
+      },
+      "server": {
+        "title": "Basis data kartu tidak merespons",
+        "detail": "Ada masalah di sisi kami. Coba lagi sebentar lagi."
+      },
+      "timeout": {
+        "title": "Permintaan melebihi batas waktu",
+        "detail": "Basis data kartu terlalu lama menjawab. Coba lagi."
+      }
+    },
+    "filterOptions": {
+      "title": "Opsi filter gagal dimuat",
+      "detail": "Daftar di bawah mungkin tidak lengkap."
+    }
   }
 }
