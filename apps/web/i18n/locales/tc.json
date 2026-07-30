@@ -521,7 +521,10 @@
     "seo": {
       "descriptionWithAuthor": "Hololive OCG牌組「{deckName}」由{author}製作。查看牌組構成：主牌組{mainCount}張卡片，應援牌組{yellCount}張卡片，推し{oshiCount}張卡片。",
       "description": "Hololive OCG牌組「{deckName}」。查看牌組構成：主牌組{mainCount}張卡片，應援牌組{yellCount}張卡片，推し{oshiCount}張卡片。"
-    }
+    },
+    "addedPartial": "已加入 {added} / {requested} 張 — {section}已滿",
+    "sectionFull": "{section}已滿",
+    "nothingToRemove": "沒有可移除的卡片"
   },
   "status": {
     "title": "資料狀態",

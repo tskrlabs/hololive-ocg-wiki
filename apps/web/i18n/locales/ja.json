@@ -520,7 +520,10 @@
     "seo": {
       "descriptionWithAuthor": "ホロライブOCGデッキ「{deckName}」（作成者：{author}）。メインデッキカード{mainCount}枚、エールカード{yellCount}枚、推しカード{oshiCount}枚のデッキ構成をご覧ください。",
       "description": "ホロライブOCGデッキ「{deckName}」。メインデッキカード{mainCount}枚、エールカード{yellCount}枚、推しカード{oshiCount}枚のデッキ構成をご覧ください。"
-    }
+    },
+    "addedPartial": "{requested} 枚中 {added} 枚を追加しました — {section}がいっぱいです",
+    "sectionFull": "{section}がいっぱいです",
+    "nothingToRemove": "削除できるカードがありません"
   },
   "status": {
     "title": "データステータス",

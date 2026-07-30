@@ -520,7 +520,10 @@
     "seo": {
       "descriptionWithAuthor": "Mazo de Hololive OCG \"{deckName}\" creado por {author}. Ver composición del mazo con {mainCount} cartas del mazo principal, {yellCount} cartas yell y {oshiCount} carta(s) oshi.",
       "description": "Mazo de Hololive OCG \"{deckName}\". Ver composición del mazo con {mainCount} cartas del mazo principal, {yellCount} cartas yell y {oshiCount} carta(s) oshi."
-    }
+    },
+    "addedPartial": "Se han añadido {added} de {requested} — {section} está completo",
+    "sectionFull": "{section} está completo",
+    "nothingToRemove": "No hay nada que quitar"
   },
   "status": {
     "title": "Estado de Datos",

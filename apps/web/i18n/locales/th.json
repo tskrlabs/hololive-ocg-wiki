@@ -520,7 +520,10 @@
     "seo": {
       "descriptionWithAuthor": "เด็ค Hololive OCG \"{deckName}\" สร้างโดย {author} ดูองค์ประกอบเด็คด้วยการ์ดเมนเด็ค {mainCount} ใบ การ์ดเยล {yellCount} ใบ และการ์ดโอชิ {oshiCount} ใบ",
       "description": "เด็ค Hololive OCG \"{deckName}\" ดูองค์ประกอบเด็คด้วยการ์ดเมนเด็ค {mainCount} ใบ การ์ดเยล {yellCount} ใบ และการ์ดโอชิ {oshiCount} ใบ"
-    }
+    },
+    "addedPartial": "เพิ่มแล้ว {added} จาก {requested} ใบ — {section} เต็มแล้ว",
+    "sectionFull": "{section} เต็มแล้ว",
+    "nothingToRemove": "ไม่มีการ์ดให้นำออก"
   },
   "status": {
     "title": "สถานะข้อมูล",

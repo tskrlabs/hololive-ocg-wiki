@@ -520,7 +520,10 @@
     "seo": {
       "descriptionWithAuthor": "Hololive OCG deck \"{deckName}\" created by {author}. View deck composition with {mainCount} main deck cards, {yellCount} yell cards, and {oshiCount} oshi card(s).",
       "description": "Hololive OCG deck \"{deckName}\". View deck composition with {mainCount} main deck cards, {yellCount} yell cards, and {oshiCount} oshi card(s)."
-    }
+    },
+    "addedPartial": "Added {added} of {requested} — {section} is full",
+    "sectionFull": "{section} is full",
+    "nothingToRemove": "There is nothing to remove"
   },
   "status": {
     "title": "Data Status",

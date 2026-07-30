@@ -520,7 +520,10 @@
     "seo": {
       "descriptionWithAuthor": "Deck Hololive OCG \"{deckName}\" dibuat oleh {author}. Lihat komposisi deck dengan {mainCount} kartu main deck, {yellCount} kartu yell, dan {oshiCount} kartu oshi.",
       "description": "Deck Hololive OCG \"{deckName}\". Lihat komposisi deck dengan {mainCount} kartu main deck, {yellCount} kartu yell, dan {oshiCount} kartu oshi."
-    }
+    },
+    "addedPartial": "Menambahkan {added} dari {requested} — {section} sudah penuh",
+    "sectionFull": "{section} sudah penuh",
+    "nothingToRemove": "Tidak ada yang bisa dihapus"
   },
   "status": {
     "title": "Status Data",
