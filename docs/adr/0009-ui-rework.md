@@ -191,8 +191,12 @@ is 46s today and `nuxt generate` alone is 11s.
   site stays free static assets.
 - **`image_key` needs a unique index**, or every card page is a 2,463-row scan. A migration,
   as `name_ja` was in Phase 4.
-- **Nine bugs were found by specifying this**, all pre-existing and independently
-  shippable: [#40](https://github.com/tskrlabs/hololive-ocg-wiki/issues/40),
+- **Nine bugs were found by specifying this**, all pre-existing. Six are shippable fixes;
+  three were ruled `wontfix` by the maintainer on 2026-07-31 — [#50](https://github.com/tskrlabs/hololive-ocg-wiki/issues/50)
+  (a wiki is not a legality validator), [#41](https://github.com/tskrlabs/hololive-ocg-wiki/issues/41)
+  (Worker-first on every navigation costs invocations; card URLs are covered by D7 alone),
+  and [#56](https://github.com/tskrlabs/hololive-ocg-wiki/issues/56) (the disclaimer quotes
+  an English-language policy). The full list: [#40](https://github.com/tskrlabs/hololive-ocg-wiki/issues/40),
   [#41](https://github.com/tskrlabs/hololive-ocg-wiki/issues/41),
   [#43](https://github.com/tskrlabs/hololive-ocg-wiki/issues/43),
   [#44](https://github.com/tskrlabs/hololive-ocg-wiki/issues/44),

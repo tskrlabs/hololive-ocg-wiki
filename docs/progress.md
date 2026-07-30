@@ -345,11 +345,13 @@ prerequisites because the rework's geometry and read budget depend on them.
 | P5 | [#49](https://github.com/tskrlabs/hololive-ocg-wiki/issues/49) silent partial add | `CardItem` discards `addCardToDeck`'s return |
 | P6 | [#51](https://github.com/tskrlabs/hololive-ocg-wiki/issues/51) unnamed buttons | 4 of 8 header controls have no accessible name |
 
-Three more need a maintainer decision and do **not** block:
-[#41](https://github.com/tskrlabs/hololive-ocg-wiki/issues/41) (soft 404s site-wide),
-[#50](https://github.com/tskrlabs/hololive-ocg-wiki/issues/50) (no per-card copy limit —
-a rules question), [#56](https://github.com/tskrlabs/hololive-ocg-wiki/issues/56)
-(English-only disclaimer).
+Three more were ruled on by the maintainer and **closed as `wontfix`** — none blocks:
+
+| issue | ruling |
+|---|---|
+| [#50](https://github.com/tskrlabs/hololive-ocg-wiki/issues/50) no per-card copy limit | **keep as-is** — this is a wiki and a deck sketchpad, not a legality validator; a wrong rule would reject legal decks |
+| [#41](https://github.com/tskrlabs/hololive-ocg-wiki/issues/41) site-wide soft 404s | **skipped on cost** — Worker-first on every navigation makes each page view a billable invocation. Card URLs are still covered: D7 extends `run_worker_first` to `/*/card/*` only, so the URLs in the sitemap return real 404s |
+| [#56](https://github.com/tskrlabs/hololive-ocg-wiki/issues/56) English-only disclaimer | **accepted** — it quotes Cover's English-language guidelines; D19 already scoped the dialog to restyle only |
 
 ### The commit sequence
 
