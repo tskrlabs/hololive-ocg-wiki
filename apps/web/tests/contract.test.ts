@@ -22,6 +22,7 @@ import {
   CARD_TYPES,
   COLORS,
   DEFAULT_LOCALE,
+  FILTERABLE_CARD_TYPES,
   FUSED_COLORS,
   LOCALES,
   MAIN_CARD_TYPES,
@@ -78,4 +79,63 @@ describe("the generated contract is reachable from the site", () => {
     }
     expect(FUSED_COLORS.blue_red).toEqual(["blue", "red"]);
   });
+});
+
+/**
+ * Every enum member the filter UI renders has a string in every locale
+ * ([#58](https://github.com/tskrlabs/hololive-ocg-wiki/issues/58)).
+ *
+ * This is the seam the generated contract cannot cover on its own, and it had **two live
+ * gaps**: `cardTypes.supportStaff` and `rarity.HR` were absent from all seven locale
+ * files, so both chips rendered their own i18n key — a literal `cardTypes.supportStaff` —
+ * in every language, in production.
+ *
+ * The reason it survived is worth stating, because the tests above look like they cover
+ * it and do not. The enums are *generated*, so `createEmpty()` correctly produced a
+ * checkbox for each member and `filter.test.ts` asserted exactly that; the checkbox was
+ * real, the test passed, and the label was a raw key. The translations are hand-written
+ * and nothing compared the two halves. `make check` was green the whole time.
+ *
+ * `rarity.HR` is the sharper case: ADR 0001 records `HR` as one of the drift bugs the
+ * generated contract was built to end, and the test above asserts `RARITIES` contains it.
+ * It did. It simply had no name to render.
+ *
+ * A hand audit is not the answer either — it found `supportStaff` and missed `HR`.
+ */
+describe("the filter UI can name every enum member it offers (#58)", () => {
+  const LOCALE_STRINGS = import.meta.glob("../i18n/locales/*.json", {
+    eager: true,
+    import: "default",
+  }) as Record<string, Record<string, Record<string, string>>>;
+
+  /** `group` is the i18n block; `members` the generated enum it must cover. */
+  const COVERAGE: [string, readonly string[]][] = [
+    ["cardTypes", FILTERABLE_CARD_TYPES],
+    ["rarity", RARITIES],
+    ["bloomLevel", BLOOM_LEVELS],
+    ["colors", COLORS],
+  ];
+
+  it("has a locale file for every locale the contract declares", () => {
+    // Otherwise the sweep below could pass by simply not looking at a language.
+    const found = Object.keys(LOCALE_STRINGS)
+      .map((path) => path.split("/").pop()!.replace(".json", ""))
+      .sort();
+    expect(found).toEqual([...LOCALES].sort());
+  });
+
+  for (const [group, members] of COVERAGE) {
+    it(`names every ${group} in all seven locales`, () => {
+      const missing: string[] = [];
+
+      for (const [path, strings] of Object.entries(LOCALE_STRINGS)) {
+        const locale = path.split("/").pop()!.replace(".json", "");
+        for (const member of members) {
+          if (!strings[group]?.[member]) missing.push(`${locale}.${group}.${member}`);
+        }
+      }
+
+      expect(missing).toEqual([]);
+    });
+  }
 });

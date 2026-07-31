@@ -114,22 +114,24 @@
     "supportItem": "서포트 아이템",
     "supportItemLimited": "서포트 아이템 LIMITED",
     "supportMascot": "서포트 마스코트",
+    "supportStaff": "서포트 스태프",
     "supportStaffLimited": "서포트 스태프 LIMITED"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -598,5 +600,10 @@
     "label": "카드 표시 밀도",
     "comfortable": "카드 이름 표시",
     "compact": "일러스트만"
-  }
+  },
+  "filter": {
+    "modified": "변경됨",
+    "clearGroup": "{group} 지우기"
+  },
+  "{total} cards": "{total}장"
 }

@@ -114,22 +114,24 @@
     "supportItem": "Item Dukungan",
     "supportItemLimited": "Item Dukungan TERBATAS",
     "supportMascot": "Maskot Dukungan",
+    "supportStaff": "Staf Dukungan",
     "supportStaffLimited": "Staf Dukungan TERBATAS"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -598,5 +600,10 @@
     "label": "Kepadatan kartu",
     "comfortable": "Tampilkan nama kartu",
     "compact": "Hanya gambar"
-  }
+  },
+  "filter": {
+    "modified": "Diubah",
+    "clearGroup": "Hapus {group}"
+  },
+  "{total} cards": "{total} kartu"
 }

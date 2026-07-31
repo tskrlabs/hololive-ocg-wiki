@@ -440,7 +440,7 @@ watch(
     </div>
 
     <!--
-      Results summary — back in normal flow (#44).
+      Results summary — back in normal flow (#44), and below `lg` only (#36 §4).
 
       It was `fixed`, and its comment recorded why: *"In flow it sits below a scroller
       that is `height: 100dvh`, so it is never on screen — which is how it came to be
@@ -448,10 +448,14 @@ watch(
       broken."* That was this bug, diagnosed and worked around rather than fixed. With
       the scroller sized to the space it actually has, below the scroller *is* on screen,
       so the workaround and its `bottom-13 md:bottom-16` guess both go.
+
+      Above `lg` the rail carries the count instead: it is query feedback, and the rail is
+      where the query lives. Two live counts on one screen would be one too many, and the
+      rail's is the one beside the controls that change it.
     -->
     <div
       v-if="displayedCards.length > 0"
-      class="shrink-0 border-t px-2 py-1 text-right text-xs text-muted-foreground"
+      class="shrink-0 border-t px-2 py-1 text-right text-xs text-muted-foreground lg:hidden"
     >
       {{
         $t("Showing {count} of {total} cards", {

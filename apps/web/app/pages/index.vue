@@ -34,32 +34,50 @@ useHead({
 
 <template>
   <AppHeader>
-    <!-- filter -->
+    <!--
+      Both are `lg:hidden`, because both move into the rail above that width (#36 §4).
+      The filter trigger has no panel to open once the rail is permanent, and search
+      belongs with the other query controls rather than in a header that was already
+      eight icon buttons wide.
+    -->
     <FilterAPI />
 
-    <!-- search -->
-    <SearchInputAPI />
+    <div class="grow lg:hidden">
+      <SearchInputAPI />
+    </div>
   </AppHeader>
 
   <!--
-    The card list takes whatever the chrome leaves. `min-h-0` is load-bearing: a flex
-    child defaults to `min-height: auto` and refuses to shrink below its content, so
-    without it this region would grow to fit 2,448 cards and push the footer off-screen.
+    Two columns from `lg`: the rail, then the grid (D10, #36).
 
-    The scroller itself does the scrolling — this is `overflow-hidden` so nothing can
-    scroll twice. See #44.
+    `min-h-0` on this row is load-bearing, as everywhere under the flex-column shell — a
+    flex child defaults to `min-height: auto` and refuses to shrink below its content, so
+    without it the region would grow to fit 2,448 cards and push the footer off-screen
+    (#44).
   -->
-  <main class="relative grow min-h-0 overflow-hidden">
-    <CardListViewAPI />
+  <div class="flex min-h-0 grow">
+    <FilterRail />
 
     <!--
-      Inside the list region, not a sibling of the footer (#44). It anchors to the bottom
-      of this region, so "just above the footer" is a position rather than an arithmetic
-      guess about how tall the footer is. It stays bottom-*left*; the results summary is
-      right-aligned, which is what keeps the two from colliding.
+      The card list takes whatever the rail and the chrome leave. The scroller itself does
+      the scrolling — this is `overflow-hidden` so nothing can scroll twice. See #44.
     -->
-    <FloatingDeck />
-  </main>
+    <main class="relative min-w-0 grow min-h-0 overflow-hidden">
+      <CardListViewAPI />
+
+      <!--
+        Inside the list region, not a sibling of the footer (#44). It anchors to the
+        bottom of this region, so "just above the footer" is a position rather than an
+        arithmetic guess about how tall the footer is.
+
+        Being inside `<main>` is also what keeps it off the rail (#36 §6): it was `fixed`
+        to the viewport's bottom-left, which above `lg` is exactly where the rail now is.
+        Anchoring to the grid column instead makes that overlap impossible rather than
+        merely unlikely.
+      -->
+      <FloatingDeck />
+    </main>
+  </div>
 
   <AppFooter>
     <AppFooterCurrentDeck />

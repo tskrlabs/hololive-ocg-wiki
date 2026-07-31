@@ -1,9 +1,23 @@
 <script setup lang="ts">
-// const { locale } = useI18n();
+/**
+ * The card search box.
+ *
+ * Rendered **twice** from `lg` up — once in the header for mobile and once in the rail
+ * for desktop — with CSS choosing which is visible (#36 §4). That is why the input's id
+ * is generated rather than the hardcoded `id="search"` it was: two elements sharing an id
+ * is invalid HTML, and `<label for>` and `aria-describedby` both resolve to whichever the
+ * browser finds first, which is not necessarily the visible one.
+ *
+ * Search stays outside the draft → apply flow deliberately (#36 §5). It is already
+ * debounced and applies as you type; routing it through Apply would be a regression.
+ */
 const filter = useFilter();
 
 // Use API-based store instead of local processing
 const cardQuery = useCardQuery();
+
+/** Unique per instance, so the two copies never collide. */
+const inputId = useId();
 
 // Local search value that user types into (not immediately applied to filter)
 const localSearchValue = ref(filter.filter.value.search || "");
@@ -36,10 +50,11 @@ watch(
 
 <template>
   <div class="relative grow">
+    <label :for="inputId" class="sr-only">{{ $t("Search cards") }}</label>
     <Input
+      :id="inputId"
       v-model="localSearchValue"
-      id="search"
-      type="text"
+      type="search"
       :placeholder="$t('Search cards') + '...'"
       class="pr-8 w-full"
     />

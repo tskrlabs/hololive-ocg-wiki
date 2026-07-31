@@ -114,22 +114,24 @@
     "supportItem": "Soporte・Ítem",
     "supportItemLimited": "Soporte・Ítem・LIMITADO",
     "supportMascot": "Soporte・Mascota",
+    "supportStaff": "Soporte・Personal",
     "supportStaffLimited": "Soporte・Personal・LIMITADO"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -598,5 +600,10 @@
     "label": "Densidad de cartas",
     "comfortable": "Mostrar nombres",
     "compact": "Solo ilustración"
-  }
+  },
+  "filter": {
+    "modified": "Modificado",
+    "clearGroup": "Borrar {group}"
+  },
+  "{total} cards": "{total} cartas"
 }

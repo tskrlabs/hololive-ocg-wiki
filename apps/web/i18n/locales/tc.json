@@ -115,22 +115,24 @@
     "supportItem": "支援・道具",
     "supportItemLimited": "支援・道具・LIMITED",
     "supportMascot": "支援・吉祥物",
+    "supportStaff": "支援・工作人員",
     "supportStaffLimited": "支援・工作人員・LIMITED"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -599,5 +601,10 @@
     "label": "卡片密度",
     "comfortable": "顯示卡片名稱",
     "compact": "僅顯示圖片"
-  }
+  },
+  "filter": {
+    "modified": "已修改",
+    "clearGroup": "清除{group}"
+  },
+  "{total} cards": "{total} 張卡片"
 }

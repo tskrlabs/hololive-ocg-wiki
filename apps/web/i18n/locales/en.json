@@ -114,22 +114,24 @@
     "supportItem": "Support・Item",
     "supportItemLimited": "Support・Item・LIMITED",
     "supportMascot": "Support・Mascot",
+    "supportStaff": "Support・Staff",
     "supportStaffLimited": "Support・Staff・LIMITED"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -598,5 +600,10 @@
     "label": "Card density",
     "comfortable": "Show card names",
     "compact": "Art only"
-  }
+  },
+  "filter": {
+    "modified": "Modified",
+    "clearGroup": "Clear {group}"
+  },
+  "{total} cards": "{total} cards"
 }

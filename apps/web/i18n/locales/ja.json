@@ -114,22 +114,24 @@
     "supportItem": "サポート・アイテム",
     "supportItemLimited": "サポート・アイテム・LIMITED",
     "supportMascot": "サポート・マスコット",
+    "supportStaff": "サポート・スタッフ",
     "supportStaffLimited": "サポート・スタッフ・LIMITED"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -598,5 +600,10 @@
     "label": "カード表示密度",
     "comfortable": "カード名を表示",
     "compact": "イラストのみ"
-  }
+  },
+  "filter": {
+    "modified": "変更あり",
+    "clearGroup": "{group}をクリア"
+  },
+  "{total} cards": "{total} 枚"
 }
