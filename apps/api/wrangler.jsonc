@@ -48,6 +48,14 @@
   "assets": {
     "directory": "../web/.output/public",
 
+    // Named, so the Worker can fetch the generated shell itself (ADR 0009 D7).
+    //
+    // A card page is not a static file — 2,463 cards x 7 locales is 17,241 files against
+    // a 20,000 free-tier asset cap, which would fit today and break within two card sets.
+    // Instead the Worker fetches the locale's shell through this binding and injects the
+    // card's metadata with `HTMLRewriter`, so one shell serves every card.
+    "binding": "ASSETS",
+
     // An unmatched path serves `/index.html` with 200, so the SPA router can handle it
     // client-side. Nuxt also emits `200.html` for hosts that use that convention;
     // Cloudflare rewrites to `index.html`, which is byte-identical here.
@@ -66,7 +74,25 @@
     // HTML, so the Phase 4 verification commands would appear to fail for a reason
     // unrelated to the API. Listing the prefix disables the navigation heuristic
     // entirely and routes on the path, which is what we actually mean.
-    "run_worker_first": ["/api/*"]
+    //
+    // ⚠️ **`/*/card/*` makes card-page views billable invocations** (ADR 0009 D7), and
+    // that is the direct, accepted cost of the SEO decision. Two things need the Worker
+    // on this path and neither can be done by a static asset:
+    //
+    //   1. **Metadata injection.** The generated shell has no description, no canonical,
+    //      no `og:*` and no `lang` — everything meaningful is set after hydration, which
+    //      a crawler that runs no JavaScript never sees.
+    //   2. **A real status.** `not_found_handling: "single-page-application"` serves
+    //      `index.html` with **HTTP 200** for any unmatched path, so every mistyped or
+    //      stale card URL was a textbook soft 404 — verified against production:
+    //      `/tc/card/hSD01/NOPE` returned 200 with generic site metadata.
+    //
+    // The pattern is deliberately narrow. [#41](https://github.com/tskrlabs/hololive-ocg-wiki/issues/41)
+    // proposed `/*` to fix soft 404s site-wide and was ruled `wontfix` on exactly this
+    // cost: every navigation would become an invocation. Card URLs are the ones in the
+    // sitemap, so they are the ones that must answer honestly; the rest of the site
+    // stays free static assets.
+    "run_worker_first": ["/api/*", "/*/card/*"]
   },
 
   "vars": {

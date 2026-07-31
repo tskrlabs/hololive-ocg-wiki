@@ -22,6 +22,7 @@ import { ZodError } from "zod";
 
 import type { Env } from "./types.ts";
 import { cards, cardsList } from "./routes/cards.ts";
+import { cardPage } from "./routes/cardPage.ts";
 import { filters } from "./routes/filters.ts";
 import { artifacts } from "./routes/artifacts.ts";
 import { failure } from "./lib/respond.ts";
@@ -53,6 +54,17 @@ app.route("/api/cards", cards);
 app.route("/api/cards-list", cardsList);
 app.route("/api", filters);
 app.route("/api", artifacts);
+
+/**
+ * The one non-`/api` path this Worker handles (D7).
+ *
+ * Card pages need the Worker for two things a static asset cannot do: metadata a crawler
+ * can read without running JavaScript, and a real 404 instead of the SPA fallback's
+ * HTTP 200. `run_worker_first` in `wrangler.jsonc` is what routes them here — and its
+ * pattern is scoped to card paths only, precisely because every path listed there
+ * becomes a billable invocation.
+ */
+app.route("/", cardPage);
 
 /** Liveness, and a cheap way to confirm the bindings resolved after a deploy. */
 app.get("/api/health", (c) => c.json({ ok: true }));

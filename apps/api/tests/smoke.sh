@@ -91,6 +91,51 @@ if not eval(predicate, {"__builtins__": __builtins__}, {"d": d}):
   rm -f "$body"
 }
 
+# check_html <name> <expected-status> <path> [grep -E pattern the body must match]
+#
+# The card page returns HTML, not JSON, so `check` above cannot read it. This is what the
+# metadata injection needs: what a crawler sees is the *served bytes*, before any
+# JavaScript runs, which is exactly what curl gets and a browser test would not.
+check_html() {
+  local name="$1" expect="$2" path="$3" pattern="${4:-}"
+  local body status
+  body="$(mktemp)"
+  status="$(curl -sS -o "$body" -w '%{http_code}' "${BASE}${path}")"
+
+  if [[ "$status" != "$expect" ]]; then
+    printf '  ✗ %-52s expected HTTP %s, got %s\n' "$name" "$expect" "$status"
+    FAILURES=$((FAILURES + 1))
+    rm -f "$body"
+    return
+  fi
+
+  if [[ -n "$pattern" ]] && ! grep -qE "$pattern" "$body"; then
+    printf '  ✗ %-52s body did not match: %s\n' "$name" "$pattern"
+    FAILURES=$((FAILURES + 1))
+    rm -f "$body"
+    return
+  fi
+
+  printf '  ✓ %-52s HTTP %s\n' "$name" "$status"
+  rm -f "$body"
+}
+
+# check_redirect <name> <expected-status> <path> <expected Location suffix>
+check_redirect() {
+  local name="$1" expect="$2" path="$3" suffix="$4"
+  local status location
+  status="$(curl -sS -o /dev/null -w '%{http_code}' "${BASE}${path}")"
+  location="$(curl -sS -o /dev/null -w '%{redirect_url}' "${BASE}${path}")"
+
+  if [[ "$status" != "$expect" || "$location" != *"$suffix" ]]; then
+    printf '  ✗ %-52s HTTP %s -> %s\n' "$name" "$status" "$location"
+    FAILURES=$((FAILURES + 1))
+    return
+  fi
+
+  printf '  ✓ %-52s HTTP %s\n' "$name" "$status"
+}
+
 echo ""
 echo "routing"
 # The v1 hazard: `/api/cards/search` must not be swallowed by the `:id` route. Here that
@@ -253,6 +298,35 @@ done <<'PATHS'
 PATHS
 
 echo ""
+echo ""
+echo "card pages (ADR 0009 D7, D8 — the Worker's own HTML)"
+# These read the *served bytes*, before any JavaScript runs — which is precisely what a
+# crawler sees and what the generated shell alone does not contain. The shell carries no
+# description, no canonical, no og:*, and a bare <html> with no lang.
+check_html "card page renders"          200 "/tc/card/hSD01/hSD01-001_OSR" \
+  '<html[^>]*lang="zh-TW"'
+check_html "title names the card"       200 "/tc/card/hSD01/hSD01-001_OSR" \
+  '<title>[^<]+ · hSD01-001 \| Hololive OCG Wiki</title>'
+check_html "canonical is the card URL"  200 "/tc/card/hSD01/hSD01-001_OSR" \
+  'rel="canonical" href="[^"]*/tc/card/hSD01/hSD01-001_OSR"'
+check_html "og:image is the card art"   200 "/tc/card/hSD01/hSD01-001_OSR" \
+  'property="og:image" content="[^"]*/hSD01/hSD01-001_OSR.webp"'
+check_html "hreflang covers x-default"  200 "/tc/card/hSD01/hSD01-001_OSR" \
+  'hreflang="x-default"'
+check_html "carries JSON-LD"            200 "/tc/card/hSD01/hSD01-001_OSR" \
+  'application/ld\+json'
+# The soft-404 fix. Before this, an unmatched path served index.html with HTTP 200 —
+# verified against production — so every mistyped card URL looked like a real page.
+check_html "unknown card is a real 404" 404 "/tc/card/hSD01/NOPE"
+# ...but the body is still the app, so the client renders a proper in-app screen. Status
+# and body are independent; the status is the half a crawler reads.
+check_html "404 still serves the app"   404 "/tc/card/hSD01/NOPE" 'id="__nuxt"'
+check_html "an unknown locale is a 404" 404 "/xx/card/hSD01/hSD01-001_OSR"
+# A wrong-case URL is a redirect, not a 404: the stored casing is canonical, and no two
+# real keys differ only by case (verified over all 2,463).
+check_redirect "wrong case 301s to the canonical form" 301 \
+  "/tc/card/HSD01/hsd01-001_osr" "/tc/card/hSD01/hSD01-001_OSR"
+
 if [[ "$FAILURES" -gt 0 ]]; then
   echo "✗ $FAILURES check(s) failed"
   exit 1
