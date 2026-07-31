@@ -112,6 +112,49 @@ class TestSchema:
             assert "ANY(" not in detail, f"{table} skip-scans: {detail}"
             assert "SCAN" not in detail, f"{table} scans: {detail}"
 
+    def test_a_card_is_found_by_image_key_without_a_scan(self, db):
+        """`image_key` is a card's URL from Phase 8 (ADR 0009 D6), so it is looked up.
+
+        `/{locale}/card/{set}/{stem}` is `image_key` verbatim, which turns the column
+        from something the frontend composes into an alternate key the Worker resolves
+        a row by. Without the index that is a full table scan: ~2,463 rows read per card
+        view against ~1-2, on a read tier the site has already breached once (F-014) —
+        and card views are billable Worker invocations under D7, with 2,463 of them in a
+        sitemap for crawlers to walk.
+        """
+        plan = db.execute(
+            "EXPLAIN QUERY PLAN SELECT id, payload FROM cards WHERE image_key = 'x'"
+        ).fetchall()
+        detail = " ".join(row[3] for row in plan)
+        assert "SCAN" not in detail, detail
+        assert "idx_cards_image_key" in detail, detail
+
+    def test_two_cards_cannot_share_an_image_key(self, db, collection):
+        """The index is UNIQUE, so a URL cannot resolve to two cards.
+
+        `CardCollection._keys_unique` already refuses this at build time, and not
+        hypothetically — v1's data has two genuine collisions (hBP03-044_SR and
+        hBP03-055_SR, the F-006 reprints, where an hCO01 reprint reuses the original
+        set's image filename). This states the same rule at the point of *lookup*, so a
+        hand-run INSERT or a partially-applied seed cannot introduce an ambiguity the
+        pipeline would have refused.
+
+        The failure is the feature: a duplicate must stop the write rather than let two
+        cards answer to one URL.
+        """
+        card = collection.cards[0]
+        apply(db, [seed_module.to_row(card)])
+
+        with pytest.raises(sqlite3.IntegrityError, match="image_key"):
+            db.execute(
+                "INSERT INTO cards (id, card_number, card_type_code, rarity_code, "
+                "image_key, source_image_url, name_ja, payload, content_hash, qa_hash, "
+                "seeded_at) SELECT '9999999', card_number, card_type_code, rarity_code, "
+                "image_key, source_image_url, name_ja, payload, content_hash, qa_hash, "
+                "seeded_at FROM cards WHERE id = ?",
+                (card.id,),
+            )
+
     def test_fts_rows_are_addressed_by_rowid(self, db, collection):
         """An FTS5 column cannot be indexed for lookup — only the rowid can.
 

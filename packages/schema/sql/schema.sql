@@ -76,6 +76,7 @@ CREATE INDEX IF NOT EXISTS idx_cards_card_number ON cards(card_number);
 CREATE INDEX IF NOT EXISTS idx_cards_card_type_code ON cards(card_type_code);
 CREATE INDEX IF NOT EXISTS idx_cards_rarity_code ON cards(rarity_code);
 CREATE INDEX IF NOT EXISTS idx_cards_bloom_level_code ON cards(bloom_level_code);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_cards_image_key ON cards(image_key);
 CREATE INDEX IF NOT EXISTS idx_cards_name_ja ON cards(name_ja);
 
 -- ---------------------------------------------------------------------------

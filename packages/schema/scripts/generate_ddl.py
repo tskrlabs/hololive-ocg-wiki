@@ -93,9 +93,12 @@ def column_definitions() -> tuple[list[str], list[str]]:
             parts.append("NOT NULL")
         columns.append(" ".join(parts))
 
-        if column.indexed and not column.primary_key:
+        # `unique` implies `indexed` — a UNIQUE INDEX *is* an index, and requiring both
+        # flags would let them disagree.
+        if (column.indexed or column.unique) and not column.primary_key:
+            kind = "UNIQUE INDEX" if column.unique else "INDEX"
             indexes.append(
-                f"CREATE INDEX IF NOT EXISTS idx_cards_{name} ON cards({name});"
+                f"CREATE {kind} IF NOT EXISTS idx_cards_{name} ON cards({name});"
             )
 
     return columns, indexes

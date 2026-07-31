@@ -89,11 +89,19 @@ DERIVED_COLUMNS = {"name_ja"}
 #     junction del+ins   8 statements  -> 15 writes   (~3 per row)
 #     fts del+ins        2 statements  ->  2 writes
 #
-# Raised 4 -> 5 in Phase 4 with the addition of idx_cards_name_ja. The other four are
-# card_number, card_type_code, rarity_code, bloom_level_code. A full reseed moves
-# ~47,337 -> ~49,785 writes (49.8% of the 100k/day free tier); `seed --dry` prints the
-# estimate beside the actual, so a wrong constant shows up rather than hiding.
-CARD_INDEX_COUNT = 5
+# Raised 4 -> 5 in Phase 4 with the addition of idx_cards_name_ja, and 5 -> 6 in Phase 8
+# with idx_cards_image_key (ADR 0009 D6 — a card's URL is its image_key, so the column
+# needs a unique index or every card page is a full table scan). The other five are
+# card_number, card_type_code, rarity_code, bloom_level_code and name_ja.
+#
+# Measured against today's 2,463-card build rather than extrapolated from Phase 4's
+# 2,448-card figure: a full reseed moves **52,059 -> 54,522** writes, 54.5% of the
+# 100k/day free tier. `seed --dry` prints the estimate beside the actual, so a wrong
+# constant shows up rather than hiding.
+#
+# A unique index costs the same write per row as a plain one — the uniqueness is checked
+# during that write, not by an extra one.
+CARD_INDEX_COUNT = 6
 
 # A junction row costs ~3: the WITHOUT ROWID key, the card_id index entry, and the
 # delete that precedes it (the seeder replaces a card's rows rather than diffing them).
