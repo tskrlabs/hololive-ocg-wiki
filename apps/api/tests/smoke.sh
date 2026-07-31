@@ -109,6 +109,22 @@ check "detail carries Q&A"         200 "/api/cards/1" "'qa_items' in d['card']"
 check "missing card"               404 "/api/cards/999999"
 
 echo ""
+echo "cards by image key (ADR 0009 D6 — a card's URL)"
+# `{set}/{stem}` is `image_key` verbatim, so this is how a card page resolves.
+check "by key"                     200 "/api/cards/by-key/hSD01/hSD01-001_OSR?locale=tc" \
+  "d['card']['image_key'] == 'hSD01/hSD01-001_OSR'"
+check "by key carries Q&A"         200 "/api/cards/by-key/hSD01/hSD01-001_OSR" \
+  "'qa_items' in d['card']"
+check "by key honours locale"      200 "/api/cards/by-key/hSD01/hSD01-001_OSR?locale=en" \
+  "d['card']['locale'] == 'en'"
+# A wrong-case key reports the canonical form so the caller can 301 rather than 404.
+# Safe because lowercasing all 2,463 real keys still yields 2,463 distinct values.
+check "wrong case names the canonical" 404 "/api/cards/by-key/HSD01/hsd01-001_osr" \
+  "d['canonical'] == 'hSD01/hSD01-001_OSR'"
+check "unknown key"                404 "/api/cards/by-key/hSD01/NOPE" "'canonical' not in d"
+check "malformed key segment"      400 "/api/cards/by-key/hSD01/bad%20key"
+
+echo ""
 echo "search"
 check "empty query"                200 "/api/cards/search?q=" "d['cards'] == []"
 # Each of these is an FTS5 syntax error when passed to MATCH raw. None may 500.

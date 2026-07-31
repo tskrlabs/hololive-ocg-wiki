@@ -11,6 +11,8 @@ import assert from "node:assert/strict";
 
 import {
   buildWhere,
+  cardByImageKeySql,
+  cardKeyByLowercaseSql,
   expandColors,
   filterCountSql,
   filterPageSql,
@@ -134,4 +136,32 @@ test("the first card per number is chosen numerically", () => {
 test("list queries never select the Q&A payload", () => {
   // Q&A is 53% of the translation bytes and nothing in a card tile renders it.
   assert.doesNotMatch(filterPageSql(base).sql, /qa_payload/);
+});
+
+test("a card is looked up by its whole image_key, not by set and stem apart", () => {
+  // The URL is `/{locale}/card/{set}/{stem}` and `{set}/{stem}` *is* `image_key`
+  // (ADR 0009 D6). Splitting the predicate in two would miss the unique index that
+  // commit 6 added, which is the difference between a seek and a 2,463-row scan.
+  const query = cardByImageKeySql("hSD01/hSD01-001_OSR");
+  assert.match(query.sql, /WHERE image_key = \?/);
+  assert.deepEqual(query.params, ["hSD01/hSD01-001_OSR"]);
+});
+
+test("a card page selects the Q&A payload, unlike a list", () => {
+  // 35% of cards carry Q&A and the page renders it — the one place the split payload is
+  // worth reassembling.
+  assert.match(cardByImageKeySql("hSD01/x").sql, /qa_payload/);
+});
+
+test("the case-insensitive lookup returns only a key, and only one", () => {
+  // The error path: a wrong-case URL is redirected rather than 404'd. It costs a full
+  // scan, so it must stay cheap in what it selects and must not be mistaken for the
+  // primary lookup. Verified over the real set that it cannot be ambiguous — lowercasing
+  // all 2,463 keys still yields 2,463 distinct values.
+  const query = cardKeyByLowercaseSql("HSD01/HSD01-001_OSR");
+  assert.match(query.sql, /SELECT image_key FROM cards/);
+  assert.match(query.sql, /lower\(image_key\) = lower\(\?\)/);
+  assert.match(query.sql, /LIMIT 1/);
+  // No payload: this answers "what is the right key", not "what is the card".
+  assert.doesNotMatch(query.sql, /payload/);
 });

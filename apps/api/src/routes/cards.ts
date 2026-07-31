@@ -14,6 +14,8 @@ import { Hono } from "hono";
 import type { Env } from "../types.ts";
 import {
   cardByIdSql,
+  cardByImageKeySql,
+  cardKeyByLowercaseSql,
   cardsByCardNumberSql,
   cardsByIdsSql,
   filterCountSql,
@@ -27,6 +29,7 @@ import {
   batchParamSchema,
   cardNumberParamSchema,
   filterQuerySchema,
+  imageKeySegmentSchema,
   localeQuerySchema,
   searchQuerySchema,
 } from "../lib/schemas.ts";
@@ -152,6 +155,56 @@ cards.get("/filter-by-card-number/:number", async (c) => {
   return cached(c, {
     cards: await fetchCards(c.env, cardsByCardNumberSql(parsed.data), locale as Locale),
   });
+});
+
+/**
+ * GET /api/cards/by-key/:set/:stem — one card by its `image_key` (ADR 0009 D6).
+ *
+ * The lookup behind a card URL: `/{locale}/card/{set}/{stem}` is `image_key` verbatim, so
+ * a card page resolves through here rather than deriving an id client-side — which would
+ * have meant shipping a 2,463-entry key→id map to every visitor.
+ *
+ * Registered before `/:id`, though the digit constraint on that route is what actually
+ * keeps them apart; `by-key` contains no digits at its first segment position anyway.
+ *
+ * Returns the same `{ card }` shape as `/api/cards/:id`, Q&A included, because a card
+ * *page* shows Q&A where a list tile does not.
+ *
+ * **A wrong-case key gets a `canonical` field rather than a card.** Matching is
+ * case-sensitive because the stored form is canonical and an index only serves exact
+ * matches; rather than 404 a URL that differs only in casing, the miss path asks once
+ * more case-insensitively and reports the correct key. The caller (the card-page route,
+ * commit 10) turns that into a 301. Verified over the real set: lowercasing all 2,463
+ * keys still yields 2,463 distinct values, so this can never be ambiguous.
+ */
+cards.get("/by-key/:set/:stem", async (c) => {
+  const set = imageKeySegmentSchema.safeParse(c.req.param("set"));
+  const stem = imageKeySegmentSchema.safeParse(c.req.param("stem"));
+  if (!set.success || !stem.success) return failure(c, 400, "invalid card key");
+
+  const { locale } = localeQuerySchema.parse(c.req.query());
+  const imageKey = `${set.data}/${stem.data}`;
+
+  const query = cardByImageKeySql(imageKey);
+  const row = await c.env.DB.prepare(query.sql)
+    .bind(...query.params)
+    .first<CardRow>();
+
+  if (row) return cached(c, { card: rowToCard(row, locale as Locale) });
+
+  // Only now — an exact miss is the rare path, and this second query is a full scan.
+  const alternate = cardKeyByLowercaseSql(imageKey);
+  const canonical = await c.env.DB.prepare(alternate.sql)
+    .bind(...alternate.params)
+    .first<{ image_key: string }>();
+
+  if (canonical) {
+    // 404 with a `canonical` field: the key as given does not identify a card, and the
+    // caller decides whether that becomes a redirect or a not-found screen.
+    return c.json({ error: "card not found", canonical: canonical.image_key }, 404);
+  }
+
+  return failure(c, 404, "card not found");
 });
 
 // GET /api/cards/:id — one card, with its Q&A.

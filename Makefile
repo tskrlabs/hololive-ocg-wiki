@@ -7,7 +7,7 @@
 # once per clone to have `make check` run automatically before each commit.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup hooks generate golden fixtures check check-schema check-py check-ts check-api check-web typecheck dev dev-api dev-web preview clean
+.PHONY: help setup hooks generate golden golden-meta fixtures check check-schema check-py check-ts check-api check-web typecheck dev dev-api dev-web preview clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -36,6 +36,9 @@ fixtures: ## Re-select the fixture card set (needs `holo-data build` output)
 
 golden: ## Regenerate the localize() golden files from the Python reference
 	uv run python packages/schema/scripts/golden.py
+
+golden-meta: ## Regenerate the card-metadata golden file, then read the diff
+	@node packages/schema/scripts/golden-meta.ts
 
 check: check-schema check-py check-ts check-api check-web typecheck ## Run every verification
 	@echo ""

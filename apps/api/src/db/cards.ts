@@ -175,6 +175,45 @@ export function cardByIdSql(id: string): { sql: string; params: unknown[] } {
   };
 }
 
+/**
+ * One card by its `image_key` — the lookup behind a card URL (ADR 0009 D6).
+ *
+ * `/{locale}/card/{set}/{stem}` is `image_key` verbatim, so this is how a card page
+ * resolves. Deriving the id client-side was rejected: it would mean shipping a
+ * 2,463-entry key→id map to every visitor.
+ *
+ * Selects `qa_payload` like `cardByIdSql`, because a card *page* shows Q&A (35% of cards
+ * have some) where a list tile does not.
+ *
+ * Matching is **case-sensitive**, which is the stored form and therefore canonical.
+ * `image_key` preserves the printed casing (`hSD01/hSD01-001_OSR`), and an index on it
+ * only serves exact matches — so a wrong-case URL misses here and is redirected by the
+ * route rather than silently resolved. Commit 6's unique index makes this a seek; without
+ * it, it is a 2,463-row scan per card view.
+ */
+export function cardByImageKeySql(imageKey: string): { sql: string; params: unknown[] } {
+  return {
+    sql: `SELECT ${CARD_COLUMNS}, qa_payload FROM cards WHERE image_key = ?`,
+    params: [imageKey],
+  };
+}
+
+/**
+ * The same lookup, case-insensitively — the error path only.
+ *
+ * Verified over the real set: lowercasing all 2,463 keys still yields 2,463 distinct
+ * values, so no two cards differ only by case and this can never be ambiguous. It costs a
+ * second query and a full scan, which is why it runs *only* after the exact match has
+ * already missed — a wrong-case URL is rare, and paying for it on the hot path would be
+ * the wrong trade.
+ */
+export function cardKeyByLowercaseSql(imageKey: string): { sql: string; params: unknown[] } {
+  return {
+    sql: `SELECT image_key FROM cards WHERE lower(image_key) = lower(?) LIMIT 1`,
+    params: [imageKey],
+  };
+}
+
 export function cardsByIdsSql(ids: readonly string[]): { sql: string; params: unknown[] } {
   return {
     sql: `SELECT ${CARD_COLUMNS} FROM cards WHERE id IN (${ids
