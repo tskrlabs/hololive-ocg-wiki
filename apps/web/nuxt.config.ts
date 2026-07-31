@@ -162,6 +162,75 @@ export default defineNuxtConfig({
     "nuxt-seo-utils",
   ],
 
+  /**
+   * The typefaces (ADR 0009 D22, #47).
+   *
+   * `@nuxt/fonts` was in `modules` with **no configuration at all** and no `font-family`
+   * set anywhere in the CSS, so it had nothing to resolve — seven locales rendered in
+   * whatever each OS picked. The stack now lives in `tailwind.css` as `--font-sans`; this
+   * block controls what is *downloaded* for it.
+   *
+   * **Weight count is the lever, and it is a CJK lever.** Measured in a browser on
+   * `/tc/prototype-identity` with real card names: fonts cost **1.5 MB** on a `tc` card
+   * grid, **87% of it Noto Sans TC**, at roughly **70 KB per extra CJK weight**. Varying
+   * only the weights requested: 400/500/700 → 292.8 KB, 400/600 → 224.3 KB, 400 → 156.7 KB.
+   *
+   * So Inter carries three weights (it is ~190 KB in total, and Latin is cheap) and each
+   * Noto face carries two. D3's palette has no accent hue, which means weight does real
+   * work here — but 500 *and* 700 on a CJK face is ~70 KB for a distinction nobody can
+   * see at 12px.
+   *
+   * **No manual subsetting.** Google already splits Noto Sans TC into 105
+   * `unicode-range` slices, so a browser fetches only those its glyphs touch — all card
+   * text across `tc`+`ja`+`ko` uses 2,051 distinct CJK glyphs, about 10% of a full font,
+   * and the slicing approximates that automatically.
+   *
+   * `defaults.subsets` is therefore **deliberately not set**. It reads like the control
+   * for this and is not: `unifont`'s Google provider passes only `weights` and `styles`
+   * to the CSS API and never looks at `subsets` (it is honoured by the `local` provider
+   * alone). Setting `['latin', 'latin-ext']` here would look like it excluded CJK while
+   * changing nothing — worse than leaving it out.
+   *
+   * ⚠️ **`global: true` on the CJK faces is load-bearing, not a preference.** The module
+   * discovers families by scanning CSS for `font-family` and `--font-*` declarations, and
+   * it resolves only the **first** family in a stack — every later entry is recorded as a
+   * *fallback*, and fallbacks are never downloaded. So with `--font-sans` listing Inter
+   * first, only Inter got `@font-face` rules and every CJK glyph fell through to a system
+   * font. Verified before and after on `/tc`: `document.fonts` held 48 Inter faces and
+   * **zero** Noto faces, on a page that is almost entirely Chinese.
+   *
+   * `global` injects a family's faces regardless of detected usage, which is precisely
+   * the case here — these faces exist to be reached by *fallback*, so usage detection is
+   * structurally unable to see them.
+   *
+   * ⚠️ **`@nuxt/fonts` is pinned at ≥0.14 for a correctness reason, not for features.**
+   * On 0.11.4 the Google provider fetched the CSS API once per format — woff2 *and* a
+   * legacy ttf/woff pass — and Google returns the legacy formats **unsliced**, as one file
+   * per weight with no `unicode-range`. Those faces are emitted *last*, so they win the
+   * cascade over the 420 correctly-sliced woff2 faces and the browser downloads the whole
+   * font. Measured on the real production composition (`make preview`, `/tc`): **4,340 KB
+   * in 3 files**, one of them a single 4 MB Noto TC blob — 2.9× worse than the 1,499 KB
+   * #47 measured, and it defeats the slicing this whole block relies on.
+   *
+   * 0.14 makes the format list configurable and defaults it to `['woff2']`, so the legacy
+   * pass is simply gone. Re-measured the same way: **638 KB on `/tc`**, 848 KB `ja`,
+   * 386 KB `ko`, 304 KB `th`, and **47 KB on `/en`** — the last of those being the proof
+   * that slicing is doing its job, since an English page touches no CJK slice at all.
+   */
+  fonts: {
+    defaults: { weights: [400, 600], styles: ["normal"] },
+    families: [
+      // Three weights: 400 body, 500 for a card name on a tile, 600 for headings and the
+      // active state that D4 denies a colour to. First in the stack, so it is discovered
+      // normally and can be preloaded — it is the only face with no `unicode-range`.
+      { name: "Inter", provider: "google", weights: [400, 500, 600] },
+      { name: "Noto Sans TC", provider: "google", weights: [400, 600], global: true },
+      { name: "Noto Sans JP", provider: "google", weights: [400, 600], global: true },
+      { name: "Noto Sans KR", provider: "google", weights: [400, 600], global: true },
+      { name: "Noto Sans Thai", provider: "google", weights: [400, 600], global: true },
+    ],
+  },
+
   // No `ogImage` block: `nuxt-og-image` is not installed (see `modules`). Pages set
   // `ogImage:` through `useSeoMeta`, which is a plain meta tag pointing at a static
   // `icon.png` — exactly what v1 shipped, minus the rasteriser it never invoked.

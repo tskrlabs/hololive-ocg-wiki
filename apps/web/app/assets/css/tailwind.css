@@ -1,3 +1,26 @@
+/**
+ * The design tokens (ADR 0009 — D3, D4, D5).
+ *
+ * **Variant D**: B "Console" structure with C "Gallery"'s ink-only palette, chosen by
+ * looking at four directions rendered against real card art (#35). The defining property
+ * is that `--primary` **equals `--foreground`** — there is no accent hue anywhere, so
+ * card art is the only saturated thing on screen.
+ *
+ * That is a constraint, not an oversight (D4): no state may be signalled by hue. Selected
+ * chips, in-deck tiles, uncommitted-edit markers and errors carry their meaning in
+ * weight, fill and border. `--destructive` is the single semantic colour and is reserved
+ * for destructive *actions* — never for reporting a failure.
+ *
+ * What replaced what: the stock shadcn slate this file shipped with
+ * (`--primary: oklch(0.208 0.042 265.755)`) was identical to every shadcn starter and
+ * said nothing about the game.
+ *
+ * Also gone: the `--chart-1..5` and `--sidebar-*` families the shadcn scaffold ships. Both
+ * were **unreferenced by any component, test or config** — 16 tokens describing surfaces
+ * this site does not have. Under D4 the chart ramp is actively misleading, since it is
+ * five saturated hues in a palette whose whole premise is that hue means nothing.
+ */
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -21,25 +44,66 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  /**
+   * A second border token, at ≥3:1 (D5).
+   *
+   * `--border` measures **1.23:1** light / **1.27:1** dark against the ground — a hairline,
+   * which is the intent for dividers and card outlines. But D4 makes borders load-bearing:
+   * with no accent hue, "selected" and "has uncommitted edits" have nothing *but* border,
+   * fill and weight to say it with, and WCAG 1.4.11 requires 3:1 for a UI component or
+   * state indicator. A 1.23:1 border cannot carry state.
+   *
+   * So: `--border` stays decorative, `--border-strong` conveys state — selected filter
+   * chips, focus rings, the in-deck tile ring, pending-edit markers.
+   */
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+
+  /**
+   * The font stacks (D3, D22).
+   *
+   * The site set **no `font-family` at all** before this, inheriting Tailwind's default
+   * stack — so seven locales rendered in whatever each OS happened to pick.
+   *
+   * The CJK and Thai faces are listed after Inter rather than swapped in per locale: a
+   * browser walks the stack per *glyph*, so Latin text takes Inter and a CJK run falls
+   * through to the Noto face that covers it. One stack, no locale branch.
+   *
+   * `--font-mono` exists for card numbers, which are compared down a column — hence
+   * `tabular-nums` in the base layer below.
+   */
+  --font-sans:
+    "Inter", "Noto Sans TC", "Noto Sans JP", "Noto Sans KR", "Noto Sans Thai", system-ui,
+    sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+
+  /**
+   * Six type steps (#47), replacing the prototype's ad-hoc `text-[10px]`/`text-[11px]`.
+   *
+   * These deliberately override Tailwind's defaults at the same names, so existing markup
+   * moves onto the scale without a rename: `xs` 12→11px, `sm` 14→12px, `base` 16→14px,
+   * `lg` 18→16px, `xl` 20px, `2xl` 24px. The site's own base was already
+   * `text-sm md:text-base`, so body text lands at 14px — one step down from browser
+   * default, which is what a dense reference grid wants.
+   */
+  --text-xs: 0.6875rem; /* 11px — card number, metadata */
+  --text-xs--line-height: 1rem; /* 16px */
+  --text-sm: 0.75rem; /* 12px — card name on a tile, filter chips */
+  --text-sm--line-height: 1.125rem; /* 18px */
+  --text-base: 0.875rem; /* 14px — body, rules text */
+  --text-base--line-height: 1.375rem; /* 22px */
+  --text-lg: 1rem; /* 16px — card name in the dialog / page */
+  --text-lg--line-height: 1.5rem; /* 24px */
+  --text-xl: 1.25rem; /* 20px — page and section headings */
+  --text-xl--line-height: 1.75rem; /* 28px */
+  --text-2xl: 1.5rem; /* 24px — the card page's card name */
+  --text-2xl--line-height: 2rem; /* 32px */
+
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   @keyframes accordion-down {
@@ -60,90 +124,183 @@
   }
 }
 
+/**
+ * Every colour is `oklch(L C 260)` with C ≤ 0.006 — a hue angle carried through the whole
+ * set so the greys stay neutral rather than drifting warm or cool, and a chroma low enough
+ * that none of them competes with card art.
+ *
+ * Contrast, computed from these values (OKLCH → linear sRGB → WCAG 2.1); the rows #48
+ * measured reproduce to two decimals. Each is the **worst case over every surface the
+ * token is used on** — ground, `--card`, `--muted` and `--accent` — not just the ground,
+ * which is what #48 measured and where `--muted-foreground` hid a failure.
+ *
+ * | pair                       | light | dark  |                                        |
+ * |----------------------------|-------|-------|----------------------------------------|
+ * | foreground / background    | 18.06 | 17.56 | AA                                     |
+ * | muted-foreground / worst   |  4.51 |  5.12 | AA — see the token's own note          |
+ * | primary-foreground/primary | 18.86 | 17.46 | AA                                     |
+ * | border / background        |  1.23 |  1.27 | decorative only — see --border-strong   |
+ * | border-strong / worst      |  3.10 |  3.61 | AA for UI components (1.4.11)          |
+ * | destructive-fg/destructive |  5.23 |  4.58 | AA                                     |
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --background: oklch(0.975 0.002 260);
+  --foreground: oklch(0.16 0.004 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(63.7% 0.237 25.331);
-  --destructive-foreground: oklch(63.7% 0.237 25.331);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --popover-foreground: var(--foreground);
+  /* D3: --primary is the same ink as --foreground. There is no accent hue. */
+  --primary: oklch(0.16 0.004 260);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.945 0.002 260);
+  --secondary-foreground: oklch(0.24 0.004 260);
+  --muted: oklch(0.945 0.002 260);
+  /**
+   * `L=0.515`, one step darker than the prototype's `0.545`.
+   *
+   * D5 records this token as "4.63:1 light" and passing AA — true against the *ground*,
+   * which is the pair #48 measured. It is not true on every surface it is used on:
+   * `--muted-foreground` on `--muted` is **4.22:1** and on `--accent` **3.97:1**, and the
+   * first of those is a live pairing (`pages/status.vue`'s empty-state panel is
+   * `bg-muted text-muted-foreground`).
+   *
+   * Taking D5's goal over its cited number: `0.515` clears 4.5:1 on all four surfaces
+   * (bg 5.23, card 5.63, muted 4.79, accent 4.51). The shift is 3% lightness on secondary
+   * text — imperceptible beside the approved prototype, and strictly more readable.
+   */
+  --muted-foreground: oklch(0.515 0.006 260);
+  --accent: oklch(0.925 0.003 260);
+  --accent-foreground: oklch(0.2 0.004 260);
+  /**
+   * The one semantic colour in the set, and it stays red (D4).
+   *
+   * `--destructive-foreground` used to be *the same red as the fill*, so any
+   * `bg-destructive text-destructive-foreground` control rendered red-on-red — invisible.
+   * It is the ink that goes on top, so it is near-white.
+   */
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.905 0.003 260);
+  /* bg 3.39, card 3.64, muted 3.10, accent 2.92* — worst *used* pair clears 3:1.
+     (*--accent is a hover fill, never a surface a state border is drawn against.) */
+  --border-strong: oklch(0.62 0.004 260);
+  --input: oklch(0.905 0.003 260);
+  --ring: oklch(0.16 0.004 260);
   --radius: 0.5rem;
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.129 0.042 264.695);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.129 0.042 264.695);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.984 0.003 247.858);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(63.7% 0.237 25.331);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.279 0.041 260.031);
-  --input: oklch(0.279 0.041 260.031);
-  --ring: oklch(0.446 0.043 257.281);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(0.279 0.041 260.031);
-  --sidebar-ring: oklch(0.446 0.043 257.281);
+  --background: oklch(0.135 0.004 260);
+  --foreground: oklch(0.955 0.002 260);
+  /**
+   * A surface that is *lighter* than the ground, unlike the stock theme where `--card`
+   * and `--background` were the same value — which made every card, popover and dialog
+   * edge-invisible in dark mode, findable only by its 1.27:1 border.
+   */
+  --card: oklch(0.175 0.004 260);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.175 0.004 260);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.955 0.002 260);
+  --primary-foreground: oklch(0.14 0.004 260);
+  --secondary: oklch(0.215 0.004 260);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.215 0.004 260);
+  /* 6.31 on the ground, 5.98 card, 5.52 muted, 5.12 accent — AA on all four unchanged. */
+  --muted-foreground: oklch(0.655 0.006 260);
+  --accent: oklch(0.245 0.004 260);
+  --accent-foreground: var(--foreground);
+  /**
+   * Lighter than light mode's red so the *fill* separates from a near-black ground
+   * (4.25:1), while still holding 4.58:1 for the white ink on top. Pushing it further
+   * inverts the problem — at `L=0.59` the ink drops below AA.
+   */
+  --destructive: oklch(0.58 0.19 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.255 0.004 260);
+  /* bg 4.13, card 3.91, muted 3.61, accent 3.34 — clears 3:1 on all four. */
+  --border-strong: oklch(0.55 0.004 260);
+  --input: oklch(0.255 0.004 260);
+  --ring: oklch(0.955 0.002 260);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     @apply text-sm md:text-base;
+    font-family: var(--font-sans);
+    /* Inter's alternates: `cv05` gives a straight-legged `l`, `ss01` a single-storey `g` —
+       both are what makes card numbers and rules text read cleanly at 11–12px. */
+    font-feature-settings: "cv05", "ss01";
   }
 
   button {
     @apply cursor-pointer;
   }
+
+  /**
+   * Card numbers are compared down a column, so their digits must share a width.
+   *
+   * `font-mono` is a Tailwind utility rather than a rule here; this adds the numeric
+   * variant to it, so a component only ever writes `font-mono` and gets both.
+   */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /**
+   * Two script-specific rules, from measured data rather than taste (#47).
+   *
+   * They key off `<html lang>`, which `@nuxtjs/i18n` sets per locale — verified at
+   * runtime: `/th` renders `lang="th-TH"` and matches `:lang(th)`. `:lang()` matches on
+   * the primary subtag, so `th-TH` matches `:lang(th)` without listing regions.
+   */
+
+  /* Thai stacks diacritics above *and* below the baseline, and has the longest median
+     card name of any locale (16.6 width units against Latin's 13, measured in #37). The
+     default leading collides. */
+  :lang(th) {
+    line-height: 1.75;
+  }
+
+  /* Inter's display tracking is negative, which is correct for Latin and wrong for CJK —
+     those glyphs are designed on a fixed em square and tightening them makes a run muddy.
+     So tracking is opt-in per script rather than global. */
+  .tracking-display {
+    letter-spacing: 0;
+  }
+
+  :lang(en) .tracking-display,
+  :lang(es) .tracking-display,
+  :lang(id) .tracking-display {
+    letter-spacing: -0.02em;
+  }
 }
 
-/* @layer components {
-} */
+/**
+ * `prefers-reduced-motion`, handled once (#47, D23).
+ *
+ * Nothing in the codebase referenced this setting before. It matters most for the
+ * skeleton shimmer (#38), which is a *looping* animation and is precisely what the
+ * setting exists to stop — but a per-component opt-in would be re-litigated at every new
+ * component, so it is one global rule.
+ *
+ * Durations go to `0.01ms` rather than `0`: a transition that never fires also never
+ * emits `transitionend`, and any handler waiting on one would hang. This keeps the event
+ * and removes the motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
