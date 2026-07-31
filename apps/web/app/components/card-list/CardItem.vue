@@ -134,9 +134,15 @@ const count = computed(() => {
     <div class="relative flex aspect-400/559">
       <Dialog>
         <DialogTrigger class="w-full">
+          <!--
+            `alt` is the card's name (#38 §3, #48 §7). It was passing none at all, so
+            every tile's art was an unlabelled image — 34 of them on the fixture homepage
+            alone. It doubles as the fallback text when the image fails to load.
+          -->
           <SimpleImage
             class="rounded-lg overflow-hidden"
             :src="cardImage(item.image_key)"
+            :alt="item.name ?? item.card_number"
             :img-attributes="{ class: 'w-full' }"
           />
         </DialogTrigger>

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { vResizeObserver } from "@vueuse/components";
 import { useDebounceFn } from "@vueuse/core";
+import { RotateCcw, TriangleAlert } from "lucide-vue-next";
 import { RecycleScroller } from "vue-virtual-scroller";
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const filter = useFilter();
 const cardQuery = useCardQuery(); 
 
@@ -139,16 +140,35 @@ const scrollToTop = () => {
   virtualScroller.value?.scrollToItem?.(0);
 };
 
+/**
+ * A fresh result set starts at the top; an appended page does not (#38 §4).
+ *
+ * This replaces a watcher-on-`isLoading` that created a second watcher per filter change,
+ * tore it down inside a `nextTick`, and carried a 5-second safety timeout in case it
+ * never fired. All of that machinery existed to drive the full-screen overlay, which is
+ * gone (D17) — but `scrollToTop` was *inside* it and fixes a real bug, so it moves here.
+ *
+ * The transition is what matters, not the flag: entering `ready` from `loading` or
+ * `refiltering` means new results are in the DOM. An append never passes through either,
+ * so scroll position survives it by construction rather than by a flag someone must
+ * remember to clear.
+ */
+watch(
+  () => cardQuery.state.value.status,
+  (status, previous) => {
+    if (status === "ready" && (previous === "loading" || previous === "refiltering")) {
+      scrollToTop();
+    }
+  },
+);
+
 // Apply filters when filter changes - simplified
 watch(
   () => filter.filter.value,
   () => {
     // Reset pagination when filters change
     currentPage.value = 1;
-    // Use setTimeout to move execution out of current tick and prevent UI blocking
-    setTimeout(() => {
-      applyFiltersWithPreciseLoading();
-    }, 0);
+    applyFilters();
   },
   {
     deep: true,
@@ -162,99 +182,71 @@ watch(
   () => {
     // Reset pagination when locale changes
     currentPage.value = 1;
-    // Use setTimeout to prevent blocking
-    setTimeout(() => {
-      cardQuery.clearCache();
-      applyFiltersWithPreciseLoading();
-    }, 0);
+    cardQuery.clearCache();
+    applyFilters();
   }
 );
 
 // Initial filter application
 onMounted(() => {
-  // Initialize window height tracking
-  updateWindowHeight();
-  window.addEventListener("resize", updateWindowHeight);
-
-  // Use setTimeout to prevent blocking initial render
-  setTimeout(() => {
-    applyFiltersWithPreciseLoading();
-  }, 0);
+  applyFilters();
 });
 
-onUnmounted(() => {
-  window.removeEventListener("resize", updateWindowHeight);
-});
+/**
+ * What to render (D17, #38).
+ *
+ * One question, asked once, instead of `isLoading && !cards.length` assembled at four
+ * call sites in an order each had to get right.
+ */
+const state = cardQuery.state;
 
 // Use the filtered cards from the store
 const displayedCards = computed(() => cardQuery.cards.value);
 
-/**
- * The failure to report, if there is one (#45).
- *
- * Only shown when there is nothing to show: a `loadMore` that fails leaves the pages
- * already on screen intact, and replacing a working list with an error panel would be a
- * worse answer than leaving the list alone.
- */
-const queryError = computed(() =>
-  displayedCards.value.length === 0 ? cardQuery.error.value : null,
-);
-
 /** Ask again. The failed page was never cached, so this is a real retry. */
 const retry = () => {
-  applyFiltersWithPreciseLoading();
-};
-
-// Window size tracking for responsive design (simplified for virtual scroller)
-const windowHeight = ref(0);
-
-const updateWindowHeight = () => {
-  windowHeight.value = window.innerHeight;
-};
-
-// Loading state for better UX
-const showLoadingIndicator = computed(() => {
-  return cardQuery.isLoading.value && displayedCards.value.length === 0;
-});
-
-const showLoadMoreIndicator = computed(() => {
-  return cardQuery.isLoading.value && displayedCards.value.length > 0;
-});
-
-// Track if we're filtering (not just loading more)
-const isFiltering = ref(false);
-
-// Enhanced apply filters with precise loading control
-const applyFiltersWithPreciseLoading = () => {
-  isFiltering.value = true;
-
-  // Call the debounced function
   applyFilters();
-
-  // Watch for the loading state to change to track when API call completes
-  const stopWatching = watch(
-    () => cardQuery.isLoading.value,
-    (isLoading, wasLoading) => {
-      // When loading goes from true to false, the API call is done
-      if (wasLoading && !isLoading) {
-        // Add a small delay to ensure DOM has updated
-        nextTick(() => {
-          // After the new results are in the DOM, not before — scrolling a list that
-          // still holds the previous filter's items would be undone by the re-render.
-          scrollToTop();
-          isFiltering.value = false;
-          stopWatching(); // Stop watching
-        });
-      }
-    }
-  );
-
-  // Safety timeout in case something goes wrong
-  setTimeout(() => {
-    isFiltering.value = false;
-    stopWatching();
-  }, 5000);
 };
+
+/** Clear the filters for real, rather than telling the user to (#38 §2). */
+const resetFilters = () => {
+  filter.clear(undefined, true);
+};
+
+/**
+ * Roughly one screen of skeletons — enough to fill the viewport, not the whole list.
+ *
+ * Keyed off the live column count so the placeholder grid matches the real one at every
+ * width; a fixed count would be a short row on a wide display and a long scroll on a
+ * phone.
+ */
+const skeletonCount = computed(() => gridColCount.value * 4);
+
+/**
+ * What a screen reader is told about the list, once per state change.
+ *
+ * The skeletons are `aria-hidden` precisely so this can be the single announcement —
+ * twenty "loading placeholder"s is noise, and the outcome is the information. D4 leaves
+ * the states no colour to signal with, which makes the spoken channel load-bearing rather
+ * than a courtesy.
+ */
+const liveMessage = computed(() => {
+  const current = state.value;
+  switch (current.status) {
+    case "loading":
+      return t("Loading cards");
+    case "refiltering":
+      return t("Applying filters");
+    case "ready":
+      return t("{total} cards", { total: current.total });
+    case "empty":
+      return t("No cards found");
+    case "error":
+      return t(`errors.cards.${current.kind}.title`);
+    default:
+      return "";
+  }
+});
 
 // Computed property to check if virtual scroller should be rendered
 const shouldRenderScroller = computed(() => {
@@ -290,34 +282,41 @@ watch(
     sticky footer, with ~138px of the list hidden underneath them.
   -->
   <div class="flex h-full flex-col">
-    <!-- Filtering overlay - only when filtering, not when loading more -->
-    <div
-      v-if="isFiltering"
-      class="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 flex items-center justify-center"
-    >
-      <div class="flex flex-col items-center gap-2">
-        <div
-          class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
-        ></div>
-        <p class="text-sm text-muted-foreground">
-          {{ $t("Applying filters") }}...
-        </p>
-      </div>
+    <!--
+      A 2px indeterminate bar, and **nothing else** while refiltering (D17, #38 §2).
+
+      What was here was `fixed inset-0 bg-background/80 backdrop-blur-sm` — a full-screen
+      blur thrown over the exact results being refined, at the one moment the user most
+      wants to see them. With the rail (#36) it would also have covered the filters doing
+      the refining.
+
+      `--foreground` at low opacity, not a hue: D4 leaves the palette none, and progress
+      is not one of the things `--destructive` is for.
+    -->
+    <div v-if="state.status === 'refiltering'" class="h-0.5 shrink-0 overflow-hidden">
+      <div class="h-full w-1/3 animate-[loading-bar_1.2s_ease-in-out_infinite] bg-foreground/40"></div>
     </div>
 
-    <!-- Loading indicator for initial load -->
+    <!--
+      One live region for the whole list, so a screen reader hears the outcome once.
+
+      The skeletons are `aria-hidden` precisely because this exists: twenty announcements
+      of "loading placeholder" is noise, and the state change is the information.
+    -->
+    <p class="sr-only" role="status" aria-live="polite">{{ liveMessage }}</p>
+
+    <!--
+      First load: skeletons at the real geometry (#38 §2).
+
+      A spinner said "something is happening"; skeletons say *what* is coming and reserve
+      the space for it, so the arrival does not reflow the page.
+    -->
     <div
-      v-if="showLoadingIndicator && !isFiltering"
-      class="flex justify-center items-center min-h-[400px]"
+      v-if="state.status === 'loading'"
+      class="grid min-h-0 grow content-start gap-3 overflow-hidden p-2"
+      :style="{ gridTemplateColumns: `repeat(${gridColCount}, minmax(0, 1fr))` }"
     >
-      <div class="flex flex-col items-center gap-2">
-        <div
-          class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
-        ></div>
-        <p class="text-sm text-muted-foreground">
-          {{ $t("Loading cards") }}...
-        </p>
-      </div>
+      <CardTileSkeleton v-for="n in skeletonCount" :key="n" />
     </div>
 
     <!-- Virtual Scroller for cards grid -->
@@ -325,7 +324,17 @@ watch(
       v-else-if="displayedCards.length > 0"
       class="flex min-h-0 grow flex-col"
     >
-      <div class="min-h-0 grow">
+      <!--
+        Refiltering **dims** the previous results rather than covering them (D17).
+
+        `opacity-60` plus `pointer-events-none`: they stay readable, so a user can see
+        what is being narrowed and can tell the new set from the old one when it lands,
+        but cannot click a card that is about to be replaced.
+      -->
+      <div
+        class="min-h-0 grow transition-opacity"
+        :class="state.status === 'refiltering' ? 'pointer-events-none opacity-60' : ''"
+      >
         <!--
           The scroller's key carries **every input to the geometry**, not just the column
           count. `RecycleScroller` caches each item's position from the `itemSize` it was
@@ -383,19 +392,17 @@ watch(
         </div>
       </div>
 
-      <!-- Load more indicator for virtual scroller -->
+      <!--
+        Loading the next page appends skeletons **below** the results (#38 §2), leaving
+        everything already on screen untouched. This is the one loading treatment that
+        must not dim anything: the user is reading the rows above it.
+      -->
       <div
-        v-if="showLoadMoreIndicator"
-        class="flex justify-center items-center py-8"
+        v-if="cardQuery.isAppending.value"
+        class="grid shrink-0 gap-3 px-2 pb-2"
+        :style="{ gridTemplateColumns: `repeat(${gridColCount}, minmax(0, 1fr))` }"
       >
-        <div class="flex items-center gap-2">
-          <div
-            class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"
-          ></div>
-          <p class="text-sm text-muted-foreground">
-            {{ $t("Loading more cards") }}...
-          </p>
-        </div>
+        <CardTileSkeleton v-for="n in gridColCount" :key="`more-${n}`" />
       </div>
     </div>
 
@@ -406,17 +413,21 @@ watch(
       card list and only one of them is about the user's filters. Telling someone whose
       API is unreachable to "try adjusting your filters" sends them to a control that
       cannot possibly help, and reads as "this wiki has no cards".
+
+      No colour and no red icon: `--destructive` is reserved for destructive *actions*,
+      not for reporting that a fetch failed (D4, #38 §6). Weight and an icon carry it.
     -->
     <div
-      v-else-if="!showLoadingIndicator && queryError"
+      v-else-if="state.status === 'error'"
       class="flex grow justify-center items-center min-h-[200px]"
     >
       <div class="text-center">
+        <TriangleAlert class="mx-auto mb-2 size-6" aria-hidden="true" />
         <p class="text-lg font-medium">
-          {{ $t(`errors.cards.${queryError}.title`) }}
+          {{ $t(`errors.cards.${state.kind}.title`) }}
         </p>
         <p class="text-sm text-muted-foreground mt-1">
-          {{ $t(`errors.cards.${queryError}.detail`) }}
+          {{ $t(`errors.cards.${state.kind}.detail`) }}
         </p>
         <Button variant="outline" size="sm" class="mt-4" @click="retry">
           {{ $t("errors.retry") }}
@@ -424,18 +435,25 @@ watch(
       </div>
     </div>
 
-    <!-- No results message — a genuine zero-result, with filters worth adjusting. -->
+    <!--
+      A genuine zero-result — the only state where the filters really are the answer, and
+      the only one that should say so.
+
+      The button *clears* them rather than advising the user to (#38 §2). "Try adjusting
+      your filters" beside no control is advice; a Reset button is the adjustment.
+    -->
     <div
-      v-else-if="!showLoadingIndicator && displayedCards.length === 0"
+      v-else-if="state.status === 'empty'"
       class="flex grow justify-center items-center min-h-[200px]"
     >
       <div class="text-center">
-        <p class="text-lg font-medium text-muted-foreground">
-          {{ $t("No cards found") }}
-        </p>
+        <p class="text-lg font-medium">{{ $t("No cards found") }}</p>
         <p class="text-sm text-muted-foreground mt-1">
           {{ $t("Try adjusting your filters") }}
         </p>
+        <Button variant="outline" size="sm" class="mt-4" @click="resetFilters">
+          <RotateCcw aria-hidden="true" /> {{ $t("Reset") }}
+        </Button>
       </div>
     </div>
 
@@ -479,5 +497,24 @@ watch(
  */
 .scroller {
   height: 100%;
+}
+
+/*
+ * The refiltering bar's sweep (#38 §2).
+ *
+ * Indeterminate on purpose: the request's duration is unknown, and a bar that pretends to
+ * know is worse than one that admits it. It replaces a full-screen backdrop blur, so the
+ * results it reports on stay visible throughout.
+ *
+ * Overridden by the global `prefers-reduced-motion` rule in `tailwind.css`, which is why
+ * there is no media query here.
+ */
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
 }
 </style>

@@ -48,6 +48,7 @@ function onClick() {
       v-if="canOpen"
       class="rounded-lg overflow-hidden w-full"
       :src="cardImage(imageKey)"
+      :alt="name ?? cardNumber ?? id"
       :img-attributes="{ class: 'w-full' }"
     />
 

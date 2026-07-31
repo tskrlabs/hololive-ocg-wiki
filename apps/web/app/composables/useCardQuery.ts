@@ -50,6 +50,31 @@ export function setCardSource(next: CardSource) {
 export type QueryErrorKind = "offline" | "server" | "timeout";
 
 /**
+ * What the card list should render right now (D17, #38).
+ *
+ * The four legal situations, named — rather than inferred at each call site from
+ * `isLoading` and `cards.length`. Those two booleans-in-effect have more combinations
+ * than there are real states, and the illegal ones are reachable: `isLoading === false`
+ * with `cards === []` is *both* "matched nothing" and "the fetch failed", which is
+ * precisely the bug #45 fixed by adding `error` beside them.
+ *
+ * `error` stopped the two being the same *value*; this stops them being the same
+ * *question*. A template asks `state.status` once instead of assembling the answer from
+ * three refs in an order it has to get right.
+ *
+ * `refiltering` is deliberately distinct from `loading`: one has results to keep on
+ * screen and dim, the other has nothing to show but skeletons. Conflating them is what
+ * produced the full-screen blur over the very results being refined.
+ */
+export type QueryState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "refiltering"; cards: CardCollection; total: number }
+  | { status: "ready"; cards: CardCollection; total: number }
+  | { status: "empty" }
+  | { status: "error"; kind: QueryErrorKind };
+
+/**
  * Classify a thrown fetch failure.
  *
  * `$fetch` rejects with an `FetchError` carrying `statusCode` for an HTTP response and
@@ -80,13 +105,24 @@ export const useCardQuery = () => {
   /**
    * Why the last card fetch failed, or `null`. See `QueryErrorKind` (#45).
    *
-   * Kept beside `cards` rather than replacing it with a union, because a union would
-   * change every read of `cards.value` in the app and this fix is meant to stand alone
-   * ahead of the rework. Commit 5 of Phase 8 collapses the pair into the discriminated
-   * union #45 describes; what matters today is that "failed" and "matched nothing" stop
-   * being the same value.
+   * Still here beside `cards` rather than replaced by the union: `state` below is
+   * *derived* from these refs, so the many existing readers of `cards.value` keep
+   * working. The union is what a template should ask; these are what the fetch functions
+   * write.
    */
   const error = useState<QueryErrorKind | null>("cardsError", () => null);
+
+  /**
+   * Whether the request in flight is appending a page rather than replacing the list.
+   *
+   * The distinction the union needs and a lone `isLoading` cannot carry: appending must
+   * leave the visible results completely untouched, while replacing may dim them. Both
+   * set `isLoading`.
+   */
+  const isAppending = useState<boolean>("cardsAppending", () => false);
+
+  /** Has any query completed yet? Distinguishes "nothing asked" from "asked, none". */
+  const hasResolved = useState<boolean>("cardsResolved", () => false);
   const optionsError = useState<QueryErrorKind | null>("filterOptionsError", () => null);
 
   const byIdCache = useState<Map<string, Card>>("cardById", () => new Map());
@@ -141,10 +177,12 @@ export const useCardQuery = () => {
       total.value = cached.total ?? total.value;
       page.value = pageNumber;
       error.value = null;
+      hasResolved.value = true;
       return cached.cards;
     }
 
     isLoading.value = true;
+    isAppending.value = false;
     try {
       const result = await once(key, () =>
         source.filter(filters, locale, pageNumber, limit),
@@ -167,6 +205,9 @@ export const useCardQuery = () => {
       return [];
     } finally {
       isLoading.value = false;
+      // Set *after* the request settles, so an in-flight first query reads as `loading`
+      // rather than briefly as `empty`.
+      hasResolved.value = true;
     }
   }
 
@@ -194,6 +235,9 @@ export const useCardQuery = () => {
     }
 
     isLoading.value = true;
+    // Marks this load as an *append*, which is what keeps the visible results from being
+    // dimmed or replaced by skeletons while the next page is in flight (#38).
+    isAppending.value = true;
     try {
       const result = await once(key, () =>
         source.filter(filters, locale, nextPage, limit, true),
@@ -213,6 +257,7 @@ export const useCardQuery = () => {
       return [];
     } finally {
       isLoading.value = false;
+      isAppending.value = false;
     }
   }
 
@@ -292,6 +337,47 @@ export const useCardQuery = () => {
     }
   }
 
+  /**
+   * The one question a view should ask (D17, #38).
+   *
+   * Derived rather than stored, so it cannot disagree with the refs the fetch functions
+   * write — a second source of truth updated by hand is how `cards: []` came to mean two
+   * different things in the first place.
+   *
+   * Order matters and encodes the rules:
+   *
+   * 1. **An append never changes the state.** A failed or pending *next* page must leave
+   *    the pages already on screen exactly as they are, so `isAppending` short-circuits
+   *    to whatever the list already is.
+   * 2. **A failure outranks an empty list**, because the empty list *is* the failure's
+   *    residue. Reversed, every error would render "no cards match these filters" — the
+   *    lie #45 removed.
+   * 3. **Loading with results is `refiltering`**, which keeps them; loading without is
+   *    `loading`, which shows skeletons. Same boolean, two situations, and only the
+   *    presence of prior results tells them apart.
+   */
+  const state = computed<QueryState>(() => {
+    const visible = cards.value;
+
+    if (isLoading.value && !isAppending.value) {
+      return visible.length > 0
+        ? { status: "refiltering", cards: visible, total: total.value }
+        : { status: "loading" };
+    }
+
+    if (error.value && visible.length === 0) {
+      return { status: "error", kind: error.value };
+    }
+
+    if (visible.length > 0) {
+      return { status: "ready", cards: visible, total: total.value };
+    }
+
+    // Nothing on screen, nothing failed: either no query has run yet, or one ran and
+    // genuinely matched nothing. Only the second is the user's filters' fault.
+    return hasResolved.value ? { status: "empty" } : { status: "idle" };
+  });
+
   /** Drop every cache. Called when the locale changes — every entry is locale-scoped. */
   function clearCache() {
     pageCache.value.clear();
@@ -307,6 +393,9 @@ export const useCardQuery = () => {
     isLoading,
     error,
     optionsError,
+    /** What to render (D17). Prefer this over assembling the answer from the refs above. */
+    state,
+    isAppending,
 
     getFilteredCards,
     loadMore,

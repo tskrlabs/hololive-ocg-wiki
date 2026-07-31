@@ -42,6 +42,7 @@ function canOpen(item: StatusEntry, status: StatusKind) {
         <SimpleImage
           v-if="canOpen(item, status)"
           :src="cardImage(item.image_key)"
+          :alt="item.name ?? item.card_number ?? item.id"
           :img-attributes="{ class: 'w-full h-full object-cover' }"
         />
         <div

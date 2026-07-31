@@ -603,3 +603,141 @@ describe("density and the show-original toggle change the grid's geometry (#37)"
     expect(afterOriginal).not.toBe(afterDensity);
   });
 });
+
+/**
+ * The query state union (D17, #38 §1).
+ *
+ * `error` (#45) stopped a failure and a zero-result being the same *value*. The union
+ * stops them being the same *question*: a view asks `state.status` once instead of
+ * assembling the answer from `isLoading`, `cards.length` and `error` in an order it has
+ * to get right. The pair `isLoading: boolean` + `cards: []` has four combinations and
+ * only three legal ones, which is what let the illegal one ship.
+ *
+ * These assert the transitions rather than the rendering — the rendering is covered by
+ * the #45 tests above, which pass unchanged through the rewritten template and are the
+ * evidence that the union preserved the behaviour it replaced.
+ */
+describe("the query state union (#38)", () => {
+  const statusOf = () => useCardQuery().state.value.status;
+
+  it("starts idle, before anything has been asked", async () => {
+    // Distinct from `empty`: nothing has been asked, so nothing has failed to match.
+    expect(statusOf()).toBe("idle");
+  });
+
+  it("reaches ready with the cards and the total on it", async () => {
+    await mountList();
+    await settle();
+
+    const state = useCardQuery().state.value;
+    expect(state.status).toBe("ready");
+    // The data hangs off the state, so a template that has narrowed to `ready` cannot
+    // read a total that does not exist.
+    if (state.status === "ready") {
+      expect(state.cards).toHaveLength(PAGE);
+      expect(state.total).toBe(TOTAL);
+    }
+  });
+
+  it("is empty only when a query really matched nothing", async () => {
+    const { source } = fakeSource();
+    setCardSource({
+      ...source,
+      async filter() {
+        return { cards: [], total: 0 };
+      },
+    } as never);
+
+    await mountList();
+    await settle();
+
+    expect(statusOf()).toBe("empty");
+  });
+
+  it("is error, not empty, when the fetch failed", async () => {
+    // The ordering rule: a failure outranks an empty list, because the empty list *is*
+    // the failure's residue. Reversed, every error renders "no cards match".
+    setCardSource(failingSource(new Error("Failed to fetch")).source as never);
+
+    await mountList();
+    await settle();
+
+    const state = useCardQuery().state.value;
+    expect(state.status).toBe("error");
+    if (state.status === "error") expect(state.kind).toBe("offline");
+  });
+
+  it("keeps the results on screen while refiltering, rather than covering them", async () => {
+    // `refiltering` exists to be distinguishable from `loading`: one has results to dim,
+    // the other has nothing but skeletons. Conflating them is what produced a
+    // full-screen blur over the very results being refined.
+    const wrapper = await mountList();
+    await settle();
+    expect(statusOf()).toBe("ready");
+
+    // A filter change with results already on screen.
+    useFilter().filter.value.colors.blue = true;
+    await nextTick();
+    await vi.advanceTimersByTimeAsync(50);
+
+    const query = useCardQuery();
+    if (query.isLoading.value) {
+      expect(query.state.value.status).toBe("refiltering");
+      // The results are still *there* — the treatment is opacity, not removal.
+      expect(wrapper.findComponent(ScrollerStub).exists()).toBe(true);
+    }
+
+    await settle();
+    expect(statusOf()).toBe("ready");
+  });
+
+  it("never leaves ready while a further page is appended", async () => {
+    // An append must not dim or replace anything: the user is reading the rows above it.
+    // `isAppending` is what keeps `loadMore` out of `refiltering`.
+    const wrapper = await mountList();
+    await settle();
+
+    wrapper.findComponent(ScrollerStub).vm.$emit("scroll-end");
+    await nextTick();
+
+    const query = useCardQuery();
+    if (query.isLoading.value) {
+      expect(query.isAppending.value).toBe(true);
+      expect(query.state.value.status).toBe("ready");
+    }
+
+    await settle();
+    expect(statusOf()).toBe("ready");
+  });
+
+  it("stays ready when the *next* page fails, keeping what arrived", async () => {
+    // The pages already on screen are still valid; only the append failed. Reporting it
+    // by replacing a working list with an error panel would be the worse answer.
+    //
+    // `failingSource` fails the *first* N calls, which is the opposite shape — here page
+    // one must succeed so there is a list to preserve.
+    const { source } = fakeSource();
+    let calls = 0;
+    setCardSource({
+      ...source,
+      async filter(...args: unknown[]) {
+        calls++;
+        if (calls > 1) throw new Error("Failed to fetch");
+        return (source.filter as (...a: unknown[]) => unknown)(...args);
+      },
+    } as never);
+
+    const wrapper = await mountList();
+    await settle();
+    expect(statusOf()).toBe("ready");
+
+    wrapper.findComponent(ScrollerStub).vm.$emit("scroll-end");
+    await settle();
+
+    expect(statusOf()).toBe("ready");
+    expect(useCardQuery().cards.value).toHaveLength(PAGE);
+    // The failure is recorded even though the state stays `ready` — the union reports
+    // what to *render*, and the right thing to render is the list that still works.
+    expect(useCardQuery().error.value).toBe("offline");
+  });
+});

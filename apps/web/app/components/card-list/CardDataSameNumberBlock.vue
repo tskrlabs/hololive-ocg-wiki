@@ -107,6 +107,7 @@ const shouldShowComponent = computed(() => {
                     <SimpleImage
                       class="rounded-lg overflow-hidden"
                       :src="cardImage(card.image_key)"
+                      :alt="card.name ?? card.card_number"
                       :img-attributes="{ class: 'w-full h-full object-cover' }"
                     />
                   </DialogTrigger>
