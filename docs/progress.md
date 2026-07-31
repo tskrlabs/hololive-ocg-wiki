@@ -9,7 +9,7 @@ real card set. **Phase 6 (Workers Builds + fixtures + docs) is under way** — t
 docs are built and verified from a scratch clone; connecting the git integration is a
 dashboard step only the maintainer can take. See [Phase 6](#phase-6--push-to-deploy).
 
-🚧 **Phase 8 — the UI/UX rework — is designed and blocks launch.** Phase 5's D13 fenced
+🚧 **Phase 8 — the UI/UX rework — is under way and blocks launch.** Phase 5's D13 fenced
 the website to refactors, so v2's *inside* is new while its **outside is still v1's**: a
 stock shadcn theme, an art-only grid, and **no URL for a card**. Launch is a one-time SEO
 event and card URLs cannot be retrofitted without a second crawl, so the rework ships
@@ -17,6 +17,12 @@ first. Twenty-four decisions in [ADR 0009](adr/0009-ui-rework.md); the commit se
 [below](#phase-8--the-uiux-rework). Designed through
 [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31), which found **nine
 pre-existing bugs** along the way.
+
+✅ **All six prerequisites are landed** (`61b2793..77720d0`, on `develop`, not deployed) —
+and one of them, #44, *was* commit 3 of the sequence, so the rework resumes at **commit 1**
+with 3 already done. Fixing them surfaced a bug none of the nine had named: the app's
+`<Toaster />` was never mounted, so **22 `toast.*` calls across 8 components** have been
+silent since Phase 5 ([#57](https://github.com/tskrlabs/hololive-ocg-wiki/issues/57)).
 
 ⚠️ **Phase 5 needed a follow-up.** Visual QA of the live site found the homepage serving
 **200 of 2,448 cards** — infinite scroll had never fired, because `RecycleScroller` gates
@@ -80,7 +86,7 @@ copy and is authoritative if they disagree.
 | 5 | Website (new API/R2, 4 refactors) | ✅ done | [ADR 0006](adr/0006-website.md) · live |
 | 6 | Workers Builds + fixtures + docs | 🚧 **built — needs the dashboard step** | [ADR 0007](adr/0007-push-to-deploy.md) |
 | 7 | Launch | ⬜ **blocked by Phase 8** — the rework ships first | |
-| 8 | UI/UX rework | 🚧 **designed — ready to build** | [ADR 0009](adr/0009-ui-rework.md) · [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31) |
+| 8 | UI/UX rework | 🚧 **prerequisites done — building** | [ADR 0009](adr/0009-ui-rework.md) · [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31) |
 
 ## Working agreement
 
@@ -116,6 +122,8 @@ view; this table is the offline copy.
 | [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
 | [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
 | [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29) | The card list has no names, so the show-original toggle has nothing to act on | `ready-for-human` |
+| [#42](https://github.com/tskrlabs/hololive-ocg-wiki/issues/42) | `og:image` for card pages: the public bucket has WebP only | `needs-triage` |
+| [#57](https://github.com/tskrlabs/hololive-ocg-wiki/issues/57) | 22 toast messages went live at once and none has ever been seen | `needs-triage` |
 
 ✅ **#20 and #21 are closed** by the translation rework — see
 [ADR 0008](adr/0008-content-addressed-translations.md). ✅ **#26 is closed** (the tag
@@ -134,9 +142,9 @@ were fixed first — the escape hatch now drops the bad cards and ships the rest
 `holo-data transform` prints the source value — which is what made blocking cheap enough
 to choose. See [the pipeline section](#phase-1--the-pipeline).
 
-The remaining five are judgement calls with no deadline; two resolve at launch. Everything
-settled during phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which
-is closed.
+Of the rest, #29 is closed by Phase 8 commit 2 and #57 by commit 12; the others are
+judgement calls with no deadline, and two resolve at launch. Everything settled during
+phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which is closed.
 
 ## What exists now
 
@@ -331,19 +339,50 @@ Phase 5's D13 fenced the website work to refactors, so v2's *inside* is new and 
 **outside is still v1's** — stock shadcn slate, an art-only grid, a screen-covering filter
 sheet, and **no URL for a card at all**.
 
-### Prerequisites — independent bugs, land these first
+### ✅ Prerequisites — all six done
 
-Each is pre-existing, shippable today, and green on its own. The first three are
-prerequisites because the rework's geometry and read budget depend on them.
+Landed on `develop` as `61b2793..77720d0`, one commit each, **each green under
+`make check` checked out in isolation** — verified in a scratch worktree, not only
+cumulatively.
 
-| # | issue | why first |
-|---|---|---|
-| P1 | [#40](https://github.com/tskrlabs/hololive-ocg-wiki/issues/40) `EXISTS` rewrite | filtered queries read 4–8× more rows than needed; **66% → 15%** of the read tier |
-| P2 | [#43](https://github.com/tskrlabs/hololive-ocg-wiki/issues/43) grid ladder | widening the window shrinks the cards; the rail's column rule replaces it |
-| P3 | [#44](https://github.com/tskrlabs/hololive-ocg-wiki/issues/44) `100dvh` scroller | hides 138px of the list; the flex shell depends on this |
-| P4 | [#45](https://github.com/tskrlabs/hololive-ocg-wiki/issues/45) offline lies | "No cards found" on a network error |
-| P5 | [#49](https://github.com/tskrlabs/hololive-ocg-wiki/issues/49) silent partial add | `CardItem` discards `addCardToDeck`'s return |
-| P6 | [#51](https://github.com/tskrlabs/hololive-ocg-wiki/issues/51) unnamed buttons | 4 of 8 header controls have no accessible name |
+| # | issue | commit | what changed |
+|---|---|---|---|
+| P1 | [#40](https://github.com/tskrlabs/hololive-ocg-wiki/issues/40) `EXISTS` rewrite | `2998a8d` | filtered queries read 4–8× more rows than needed; **66% → 15%** of the read tier |
+| P2 | [#43](https://github.com/tskrlabs/hololive-ocg-wiki/issues/43) grid ladder | `4972b82` | widening the window shrank the cards; columns now derive from a target tile width |
+| P3 | [#44](https://github.com/tskrlabs/hololive-ocg-wiki/issues/44) `100dvh` scroller | `078b126` | hid 138px of the list; **this is D12, so commit 3 of the sequence is already done** |
+| P4 | [#45](https://github.com/tskrlabs/hololive-ocg-wiki/issues/45) offline lies | `b2de00c` | "No cards found" on a network error |
+| P5 | [#49](https://github.com/tskrlabs/hololive-ocg-wiki/issues/49) silent partial add | `51628c8` | `CardItem` discarded `addCardToDeck`'s return |
+| P6 | [#51](https://github.com/tskrlabs/hololive-ocg-wiki/issues/51) unnamed buttons | `77720d0` | 4 of 8 header controls had no accessible name |
+
+The four UI fixes were verified **in Chromium**, not only by unit test. Three of the six
+are precisely the class of bug pure-function tests cannot see, which is F-019's lesson;
+the browser was the check that mattered.
+
+#### What the prerequisites changed for the rework
+
+Three findings that alter commits already in the sequence below:
+
+- **`<Toaster />` was never mounted.** A `TODO(commit 3)` in `app.vue` outlived the Phase 5
+  commit it named, so **22 `toast.*` call sites across 8 components** had been silent since
+  the scaffold. #49's stated fix assumed vue-sonner worked "because it is used elsewhere" —
+  the *calls* existed, the renderer did not. Restoring it made twenty never-seen messages
+  live at once; [#57](https://github.com/tskrlabs/hololive-ocg-wiki/issues/57) tracks the
+  reading pass, and **commit 12 is where it belongs**.
+- **D11's `Math.round` does not hold its own band** — it peaks at a 284px tile. `floor`
+  plus a 150–240px clamp reproduces #43's measured table exactly, and is what shipped.
+  Commit 4 recomputes this for the 280px rail, so note the property to preserve: *strict*
+  tile monotonicity is unachievable for any integer-column grid, because crossing into
+  another column always shrinks the tile. What must hold is the **envelope** — the smallest
+  tile each column count produces must not fall as columns are added. The old ladder broke
+  that three times. (D13 is satisfied as-is: 2 columns at every width from 320–430px, a
+  180px tile at 375px against D13's measured 170px.)
+- **P3 changed the scroll contract for every page.** The shell no longer scrolls as a
+  document, so each page owns its scroll region and must mark it `min-h-0 overflow-y-auto`.
+  `min-h-0` is load-bearing — a flex child's default `min-height: auto` refuses to shrink
+  below its content and would push the footer off-screen, restoring the bug elsewhere.
+  Commits 3, 4 and 12 all touch this shell.
+
+Nothing is deployed. These are on `develop` only.
 
 Three more were ruled on by the maintainer and **closed as `wontfix`** — none blocks:
 
@@ -355,23 +394,24 @@ Three more were ruled on by the maintainer and **closed as `wontfix`** — none 
 
 ### The commit sequence
 
-Each row is independently green under `make check`.
+Each row is independently green under `make check`. **Start at commit 1**; commit 3 is
+already done.
 
 | # | commit | why here |
 |---|---|---|
 | 1 | tokens — variant D into `tailwind.css`, `--border-strong`, type + spacing scale, `fonts:` block, reduced-motion | everything downstream refers to these |
 | 2 | `useCardDensity` + tile: art + name + card number, density persisted | closes [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29); needs 1 |
-| 3 | flex-column shell; header/footer stop being sticky; drop `pb-[65vh]`, un-float the summary | needs P3 |
-| 4 | the filter rail from `lg`; search + count move in; per-group pending markers | needs 1, 3 |
-| 5 | query state as a discriminated union; skeletons; error + empty states; `SimpleImage` placeholder | needs 1; absorbs P4 |
+| ~~3~~ | ~~flex-column shell; header/footer stop being sticky; drop `pb-[65vh]`, un-float the summary~~ | ✅ **done in `078b126`** — this row *is* D12, and P3 could not fix #44 without doing all of it |
+| 4 | the filter rail from `lg`; search + count move in; per-group pending markers | needs 1, ~~3~~ |
+| 5 | query state as a discriminated union; skeletons; error + empty states; `SimpleImage` placeholder | needs 1; **P4 landed the error/empty split** (`b2de00c`) — the union itself is still this commit's job |
 | 6 | migration: unique index on `image_key` | before anything reads by key |
 | 7 | `GET /api/cards/by-key/:set/:stem` + `cardMetaTags()` + its golden test | needs 6 |
 | 8 | extract `CardDetail`; dialog becomes a thin wrapper | no behaviour change |
 | 9 | the card route + dialog pushes/pops history | needs 7, 8 |
 | 10 | `HTMLRewriter` head injection; `run_worker_first` extended to `/*/card/*`; real 404s | needs 7, 9 |
 | 11 | sitemap from a committed `card-urls.json`; pipeline emits it; `canonicalLowercase: false` | needs 9 |
-| 12 | deck drawer; editing mode; delete `DeckDetailCompactModeCardList` | needs 4; absorbs P5 |
-| 13 | header overflow menu, `.sr-only` labels, scroller focus, `alt` text | absorbs P6 |
+| 12 | deck drawer; editing mode; delete `DeckDetailCompactModeCardList` | needs 4; **P5 done** (`51628c8`); also absorb [#57](https://github.com/tskrlabs/hololive-ocg-wiki/issues/57), the 22 revived toasts |
+| 13 | header overflow menu, `.sr-only` labels, scroller focus, `alt` text | **P6 landed the labels** (`77720d0`); `alt` text is still open — `SimpleImage` accepts none, 34 unalt'd on the fixture homepage |
 | 14 | `/status` narrowed; delete the three status components | needs 1, 2 |
 | 15 | `apps/web/tests/smoke.sh` + `make check-site` | last — it asserts the finished composition |
 | 16 | delete `app/components/prototype/` and its route | the design has landed for real |
