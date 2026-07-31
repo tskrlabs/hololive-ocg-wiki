@@ -19,6 +19,7 @@ import {
   MIN_COLUMNS,
   MIN_TILE,
   TARGET_TILE,
+  textBlockHeight,
 } from "../app/composables/gridColumns";
 
 /** Every width a real viewport could plausibly report, phone to 4K. */
@@ -169,7 +170,10 @@ describe("the scroller geometry", () => {
   it("keeps the card's aspect ratio on both axes", () => {
     // RecycleScroller cannot measure its children, so a wrong ratio here shows up as
     // rows that overlap or as gaps between them.
-    const { itemSize, itemSecondarySize } = gridGeometry(1520);
+    //
+    // Compact mode is the pure-art case, so this is the ratio with no text block; the
+    // comfortable cases add a fixed height on top and are pinned separately below.
+    const { itemSize, itemSecondarySize } = gridGeometry(1520, { showsText: false });
     expect(itemSize / itemSecondarySize).toBeCloseTo((558 + 16) / (400 + 16), 2);
   });
 
@@ -187,5 +191,86 @@ describe("the scroller geometry", () => {
       expect(geometry.itemSize).toBeGreaterThan(0);
       expect(geometry.itemSecondarySize).toBeGreaterThan(0);
     }
+  });
+});
+
+/**
+ * The density model (#37, #52, D13, D14).
+ *
+ * The failure mode here is specific and silent: `RecycleScroller` positions every row
+ * from `itemSize`, so if the number does not match what the tile actually renders, rows
+ * overlap. Nothing throws and nothing logs — you get a grid that looks subtly wrong. That
+ * makes the *arithmetic* worth pinning even though the bug appears visually.
+ */
+describe("the text block", () => {
+  it("adds nothing at all in compact mode", () => {
+    // Compact is art alone, so it must reproduce the pre-density geometry exactly.
+    expect(textBlockHeight(false, false)).toBe(0);
+    // ...even with the toggle on: there is no name line to add a source name beneath.
+    expect(textBlockHeight(false, true)).toBe(0);
+  });
+
+  it("grows by exactly one line when show-original is on", () => {
+    // #37 §5's measurement: the original line adds 17-18px per item, which is why the
+    // toggle changes the geometry of every tile rather than the look of one card.
+    const plain = textBlockHeight(true, false);
+    const withOriginal = textBlockHeight(true, true);
+
+    expect(plain).toBe(40);
+    expect(withOriginal).toBe(58);
+    expect(withOriginal - plain).toBe(18);
+  });
+
+  it("is what separates the three item heights", () => {
+    const art = gridGeometry(1520, { showsText: false }).itemSize;
+    const comfortable = gridGeometry(1520, { showsText: true }).itemSize;
+    const withOriginal = gridGeometry(1520, {
+      showsText: true,
+      showsOriginal: true,
+    }).itemSize;
+
+    expect(comfortable).toBe(art + 40);
+    expect(withOriginal).toBe(art + 58);
+    // Strictly ordered — a mode that showed *more* must never be *shorter*.
+    expect(art).toBeLessThan(comfortable);
+    expect(comfortable).toBeLessThan(withOriginal);
+  });
+
+  it("defaults to comfortable with the toggle off", () => {
+    // The call shape that existed before density did must still mean what it meant:
+    // names shown, no source line.
+    expect(gridGeometry(1520).itemSize).toBe(
+      gridGeometry(1520, { showsText: true, showsOriginal: false }).itemSize,
+    );
+  });
+});
+
+describe("compact's extra column on a phone (#52)", () => {
+  it("gives 3 columns at 375px where comfortable gives 2", () => {
+    // The measurement that moved this from a preference to a necessity: 4 cards per
+    // screen against 9 at 375×812.
+    const comfortable = gridGeometry(375, { showsText: true, compactMobileBonus: true });
+    const compact = gridGeometry(375, { showsText: false, compactMobileBonus: true });
+
+    expect(comfortable.columns).toBe(2);
+    expect(compact.columns).toBe(3);
+  });
+
+  it("does not touch the desktop count in either mode", () => {
+    // The bonus is phone-only on purpose. Applying it at every width would reintroduce
+    // exactly the breakpoint special-casing #43 removed.
+    for (const width of [640, 768, 1280, 1512, 1920, 2560]) {
+      const comfortable = gridGeometry(width, { showsText: true, compactMobileBonus: true });
+      const compact = gridGeometry(width, { showsText: false, compactMobileBonus: true });
+
+      expect(compact.columns, `${width}px`).toBe(comfortable.columns);
+      expect(compact.columns, `${width}px`).toBe(columnsForWidth(width));
+    }
+  });
+
+  it("is opt-in, so the plain column rule is unchanged", () => {
+    // Without the flag, compact must not gain a column even on a phone — the rule stays
+    // a pure function of width, which is what the monotonicity sweeps above assert.
+    expect(gridGeometry(375, { showsText: false }).columns).toBe(columnsForWidth(375));
   });
 });

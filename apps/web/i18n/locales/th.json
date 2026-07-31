@@ -523,7 +523,9 @@
     },
     "addedPartial": "เพิ่มแล้ว {added} จาก {requested} ใบ — {section} เต็มแล้ว",
     "sectionFull": "{section} เต็มแล้ว",
-    "nothingToRemove": "ไม่มีการ์ดให้นำออก"
+    "nothingToRemove": "ไม่มีการ์ดให้นำออก",
+    "addCopies": "เพิ่ม {name} {count} ใบ",
+    "removeCopy": "นำ {name} ออก 1 ใบ"
   },
   "status": {
     "title": "สถานะข้อมูล",
@@ -591,5 +593,10 @@
   "Source code on GitHub": "ซอร์สโค้ดบน GitHub",
   "Join the Discord server": "เข้าร่วมเซิร์ฟเวอร์ Discord",
   "About this site": "เกี่ยวกับเว็บไซต์นี้",
-  "Filter (active)": "ตัวกรอง (กำลังใช้งาน)"
+  "Filter (active)": "ตัวกรอง (กำลังใช้งาน)",
+  "density": {
+    "label": "ความหนาแน่นของการ์ด",
+    "comfortable": "แสดงชื่อการ์ด",
+    "compact": "เฉพาะภาพ"
+  }
 }

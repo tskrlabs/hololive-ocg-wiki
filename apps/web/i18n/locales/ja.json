@@ -523,7 +523,9 @@
     },
     "addedPartial": "{requested} 枚中 {added} 枚を追加しました — {section}がいっぱいです",
     "sectionFull": "{section}がいっぱいです",
-    "nothingToRemove": "削除できるカードがありません"
+    "nothingToRemove": "削除できるカードがありません",
+    "addCopies": "{name}を{count}枚追加",
+    "removeCopy": "{name}を1枚削除"
   },
   "status": {
     "title": "データステータス",
@@ -591,5 +593,10 @@
   "Source code on GitHub": "GitHub のソースコード",
   "Join the Discord server": "Discord サーバーに参加する",
   "About this site": "このサイトについて",
-  "Filter (active)": "フィルター（適用中）"
+  "Filter (active)": "フィルター（適用中）",
+  "density": {
+    "label": "カード表示密度",
+    "comfortable": "カード名を表示",
+    "compact": "イラストのみ"
+  }
 }

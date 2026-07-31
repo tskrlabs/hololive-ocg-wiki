@@ -55,6 +55,13 @@ const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? ""
             <span class="sr-only">{{ $t("status.title") }}</span>
           </NuxtLink>
         </Button>
+        <!--
+          Density is visible at every width, deliberately (#52). It belongs beside the
+          other view controls, and on a phone it is the difference between 4 cards per
+          screen and 9 — so `hidden sm:` would hide the control that matters most exactly
+          where it matters most.
+        -->
+        <AppDensitySwitcher />
         <AppOriginalSwitcher />
         <AppLanguageSwitcher />
         <AppColorModeSwitcher />

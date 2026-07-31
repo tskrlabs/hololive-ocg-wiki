@@ -9,6 +9,13 @@ import { Languages } from "lucide-vue-next";
  *
  * Hidden on the `ja` locale: the source language *is* what is being shown, so
  * `card.original` is absent from every response and the button would toggle nothing.
+ *
+ * **No longer `hidden sm:inline-flex`.** It was one of the four controls #51 found
+ * unreachable on a phone, and the reason to restore it is now stronger than symmetry:
+ * [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29) was that this toggle had
+ * nothing to act on in the card list, and the tile's name line is what fixes that. Hiding
+ * the control on mobile would re-open the issue exactly where the screen is smallest and
+ * a familiar name is most useful.
  */
 const { enabled, toggle } = useShowOriginal();
 const { locale } = useI18n();
@@ -23,7 +30,6 @@ const isSourceLocale = computed(() => locale.value === "ja");
     size="icon"
     :title="$t('Show original names')"
     :aria-pressed="enabled"
-    class="hidden sm:inline-flex"
     @click="toggle"
   >
     <Languages class="w-5 h-5" :class="enabled ? '' : 'opacity-40'" />

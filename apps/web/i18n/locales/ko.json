@@ -523,7 +523,9 @@
     },
     "addedPartial": "{requested}장 중 {added}장을 추가했습니다 — {section}이(가) 가득 찼습니다",
     "sectionFull": "{section}이(가) 가득 찼습니다",
-    "nothingToRemove": "제거할 카드가 없습니다"
+    "nothingToRemove": "제거할 카드가 없습니다",
+    "addCopies": "{name} {count}장 추가",
+    "removeCopy": "{name} 1장 제거"
   },
   "status": {
     "title": "데이터 상태",
@@ -591,5 +593,10 @@
   "Source code on GitHub": "GitHub 소스 코드",
   "Join the Discord server": "Discord 서버 참여",
   "About this site": "사이트 정보",
-  "Filter (active)": "필터(적용 중)"
+  "Filter (active)": "필터(적용 중)",
+  "density": {
+    "label": "카드 표시 밀도",
+    "comfortable": "카드 이름 표시",
+    "compact": "일러스트만"
+  }
 }

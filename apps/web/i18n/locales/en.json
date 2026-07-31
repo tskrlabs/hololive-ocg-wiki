@@ -523,7 +523,9 @@
     },
     "addedPartial": "Added {added} of {requested} — {section} is full",
     "sectionFull": "{section} is full",
-    "nothingToRemove": "There is nothing to remove"
+    "nothingToRemove": "There is nothing to remove",
+    "addCopies": "Add {count} of {name}",
+    "removeCopy": "Remove one copy of {name}"
   },
   "status": {
     "title": "Data Status",
@@ -591,5 +593,10 @@
   "Source code on GitHub": "Source code on GitHub",
   "Join the Discord server": "Join the Discord server",
   "About this site": "About this site",
-  "Filter (active)": "Filter (filters active)"
+  "Filter (active)": "Filter (filters active)",
+  "density": {
+    "label": "Card density",
+    "comfortable": "Show card names",
+    "compact": "Art only"
+  }
 }

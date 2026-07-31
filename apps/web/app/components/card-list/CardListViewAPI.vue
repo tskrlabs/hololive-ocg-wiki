@@ -29,10 +29,37 @@ const hasMore = computed(() => {
  * than from a breakpoint ladder, which is what stops the cards shrinking as the window
  * grows (#43). `RecycleScroller` cannot measure its own children, so both axes are
  * computed here and passed as props.
+ *
+ * ⚠️ **The geometry now depends on two pieces of *state*, not only on width** (#37 §5).
+ * Compact mode drops the text block and gains a column on a phone; show-original adds a
+ * line to every tile. Both change `itemSize`, which is how the scroller positions rows —
+ * so a stale value does not degrade gracefully, it overlaps the whole grid.
  */
-const gridColCount = shallowRef(gridGeometry(1280).columns);
-const itemSize = shallowRef(gridGeometry(1280).itemSize);
-const itemSecondarySize = shallowRef(gridGeometry(1280).itemSecondarySize);
+const { density } = useCardDensity();
+const { enabled: showOriginal } = useShowOriginal();
+
+const geometryOptions = computed(() => ({
+  showsText: showsText(density.value),
+  showsOriginal: showOriginal.value,
+  compactMobileBonus: true,
+}));
+
+/** The last width the observer reported, kept so state changes can re-measure. */
+const observedWidth = shallowRef(1280);
+
+const gridColCount = shallowRef(gridGeometry(1280, { compactMobileBonus: true }).columns);
+const itemSize = shallowRef(gridGeometry(1280, { compactMobileBonus: true }).itemSize);
+const itemSecondarySize = shallowRef(
+  gridGeometry(1280, { compactMobileBonus: true }).itemSecondarySize,
+);
+
+function measure(width: number) {
+  const geometry = gridGeometry(width, geometryOptions.value);
+
+  gridColCount.value = geometry.columns;
+  itemSecondarySize.value = geometry.itemSecondarySize;
+  itemSize.value = geometry.itemSize;
+}
 
 function onResizeObserver(entries: ResizeObserverEntry[]) {
   const [entry] = entries;
@@ -41,12 +68,19 @@ function onResizeObserver(entries: ResizeObserverEntry[]) {
   const { width } = entry.contentRect;
   if (!width || width <= 0) return;
 
-  const geometry = gridGeometry(width);
-
-  gridColCount.value = geometry.columns;
-  itemSecondarySize.value = geometry.itemSecondarySize;
-  itemSize.value = geometry.itemSize;
+  observedWidth.value = width;
+  measure(width);
 }
+
+/**
+ * Re-measure when the mode changes, not only when the width does.
+ *
+ * Without this the observer is the only path to `itemSize`, and flipping a toggle resizes
+ * nothing — so the grid would keep the previous mode's row height until the next window
+ * resize. `tests/grid.test.ts` pins the heights themselves; this is the wiring that
+ * delivers them, which is the half a pure test cannot see (F-019).
+ */
+watch(geometryOptions, () => measure(observedWidth.value));
 
 // Debounced filter application - simplified
 const applyFilters = useDebounceFn(async () => {
@@ -292,10 +326,17 @@ watch(
       class="flex min-h-0 grow flex-col"
     >
       <div class="min-h-0 grow">
+        <!--
+          The scroller's key carries **every input to the geometry**, not just the column
+          count. `RecycleScroller` caches each item's position from the `itemSize` it was
+          constructed with, so a changed row height has to remount it — otherwise rows
+          keep the old spacing and overlap. Density and the show-original toggle both
+          change that height (#37 §5), and both were missing from this key.
+        -->
         <RecycleScroller
           v-if="shouldRenderScroller"
           ref="virtualScroller"
-          :key="`scroller-${gridColCount}-${locale}`"
+          :key="`scroller-${gridColCount}-${locale}-${density}-${showOriginal}`"
           class="scroller p-2"
           :items="displayedCards"
           :item-size="itemSize"
@@ -307,9 +348,14 @@ watch(
           @scroll-end="handleScrollEnd"
           v-resize-observer="onResizeObserver"
         >
+          <!--
+            No `aspect-400/559` on the tile any more: the tile is art *plus* text now, and
+            forcing the card's ratio onto the whole thing would crop the name it exists to
+            show. The ratio lives on the art element inside `CardItem`, where it belongs.
+          -->
           <template #default="{ item }">
             <div class="p-1">
-              <CardItem :item="item" class="aspect-400/559" />
+              <CardItem :item="item" />
             </div>
           </template>
         </RecycleScroller>
@@ -331,12 +377,8 @@ watch(
           v-else
           class="grid h-full grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 overflow-y-auto p-2"
         >
-          <div
-            v-for="item in displayedCards"
-            :key="item.id"
-            class="aspect-400/559"
-          >
-            <CardItem :item="item" class="aspect-400/559" />
+          <div v-for="item in displayedCards" :key="item.id">
+            <CardItem :item="item" />
           </div>
         </div>
       </div>

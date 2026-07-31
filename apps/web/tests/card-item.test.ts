@@ -64,7 +64,11 @@ vi.mock("vue-sonner", () => ({
 }));
 
 const { useDecks } = await import("../app/composables/decks-states");
-Object.assign(globalThis, { useDecks });
+// The tile reads density and the show-original toggle to decide what text to render, so
+// both are the real modules — their `useState` is the shim above.
+const { useCardDensity } = await import("../app/composables/useCardDensity");
+const { useShowOriginal } = await import("../app/composables/useShowOriginal");
+Object.assign(globalThis, { useDecks, useCardDensity, useShowOriginal });
 
 /* -------------------------------------------------------------------------- */
 
@@ -75,6 +79,8 @@ const card = (id: string): Card =>
     card_number: `hBP01-${id}`,
     card_type_code: "character",
     image_key: `hBP01/hBP01-${id}`,
+    name: "天音彼方",
+    original: { name: "天音かなた" },
   }) as unknown as Card;
 
 async function mountTile(item: Card = card("1")) {
@@ -110,14 +116,25 @@ function deckHolding(count: number) {
   return decks;
 }
 
-/** The three +N buttons, in the order the template renders them: 10, 4, 1. */
+/**
+ * The three +N buttons, in the order the template renders them: 10, 4, 1.
+ *
+ * Matched on the `.sr-only` label rather than on the visible digit. The digit alone is a
+ * quantity, not a name — the defect #37 §7 had these buttons fix — so the label is now
+ * the reliable identifier, and a button that loses it fails here rather than silently
+ * dropping out of this list.
+ */
 const addButtons = (wrapper: Awaited<ReturnType<typeof mountTile>>) =>
-  wrapper.findAll("button").filter((b) => /^\s*(10|4|1)\s*$/.test(b.text()));
+  wrapper.findAll("button").filter((b) => b.text().includes("deck.addCopies"));
 
 beforeEach(() => {
   stateStore.clear();
   toasts.length = 0;
   config.global.renderStubDefaultSlot = true;
+  // Both view preferences persist to `localStorage` (that is the point of them), and
+  // happy-dom keeps one store for the whole file — so without this a test that switches
+  // to compact silently sets the mode for every test after it.
+  localStorage.clear();
 });
 
 describe("adding to a nearly-full deck (#49)", () => {
@@ -203,13 +220,103 @@ describe("the tile's other guards", () => {
     decks.currentDeck.value!.mainCardIds = [];
     await nextTick();
 
+    // Found by its label, not by `bg-red-500` — the hardcoded red became
+    // `--destructive`, the palette's one semantic colour (D4), and a test that keys on a
+    // colour class breaks every time the theme moves.
     const removeButton = wrapper
       .findAll("button")
-      .find((b) => b.classes().some((c) => c.startsWith("bg-red-500")));
+      .find((b) => b.text().includes("deck.removeCopy"));
 
     if (removeButton) {
       await removeButton.trigger("click");
       expect(toasts[0]?.message).toContain("nothingToRemove");
     }
+  });
+});
+
+/**
+ * The tile's text block — and the close of
+ * [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29).
+ *
+ * The issue was never that the show-original toggle was broken; it worked, in the dialog.
+ * The complaint was that the **card list had no names at all**, so the toggle had nothing
+ * to act on in the one place a reader scanning 2,463 cards would want it. These assert
+ * the thing that was missing, not the toggle that already worked.
+ */
+describe("the tile shows what a card is (#29, D14)", () => {
+  /** The innermost element whose entire text is `value`. */
+  const lineWith = (
+    wrapper: Awaited<ReturnType<typeof mountTile>>,
+    value: string,
+  ) => wrapper.findAll("div").filter((n) => n.text() === value).at(-1);
+
+  it("renders the name and the card number", async () => {
+    const wrapper = await mountTile();
+
+    expect(wrapper.text()).toContain("天音彼方");
+    expect(wrapper.text()).toContain("hBP01-1");
+  });
+
+  it("hides the source name until the toggle asks for it", async () => {
+    const wrapper = await mountTile();
+
+    // Both names are on the card; only the translated one is on screen.
+    expect(wrapper.text()).toContain("天音彼方");
+    expect(wrapper.text()).not.toContain("天音かなた");
+  });
+
+  it("shows the source name on its own line when the toggle is on", async () => {
+    useShowOriginal().enabled.value = true;
+    const wrapper = await mountTile();
+    await nextTick();
+
+    expect(wrapper.text()).toContain("天音かなた");
+
+    // Its *own line* is the point (D14). Inline — as `OriginalText` renders it in the
+    // dialog — truncates 19% of tiles mid-comparison against under 1% stacked, and a
+    // comparison you cannot read defeats the toggle. So they must be separate elements,
+    // not one run of text.
+    expect(lineWith(wrapper, "天音彼方")).toBeDefined();
+    expect(lineWith(wrapper, "天音かなた")).toBeDefined();
+  });
+
+  it("marks the source name as Japanese so the right face renders it", async () => {
+    useShowOriginal().enabled.value = true;
+    const wrapper = await mountTile();
+    await nextTick();
+
+    expect(lineWith(wrapper, "天音かなた")?.attributes("lang")).toBe("ja");
+  });
+
+  it("says nothing extra for a card whose name matches its source", async () => {
+    // `original` only carries fields that actually differ, so this covers the `ja` locale
+    // and the untranslated card at once — and the absence is the whole check.
+    useShowOriginal().enabled.value = true;
+    const wrapper = await mountTile({
+      ...card("2"),
+      original: undefined,
+    } as unknown as Card);
+    await nextTick();
+
+    expect(wrapper.text()).toContain("天音彼方");
+    expect(wrapper.text()).not.toContain("天音かなた");
+  });
+
+  it("drops the whole block in compact mode", async () => {
+    useCardDensity().density.value = "compact";
+    const wrapper = await mountTile();
+    await nextTick();
+
+    // Art alone — which is what the site did before density existed.
+    expect(wrapper.text()).not.toContain("天音彼方");
+    expect(wrapper.text()).not.toContain("hBP01-1");
+  });
+
+  it("carries the full name in a title, since one line can truncate", async () => {
+    // Overflow is under 1% in every locale measured, but "rare" is not "never", and a
+    // truncated name with no way to read it is worse than no name at all.
+    const wrapper = await mountTile();
+
+    expect(lineWith(wrapper, "天音彼方")?.attributes("title")).toBe("天音彼方");
   });
 });

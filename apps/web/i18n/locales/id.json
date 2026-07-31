@@ -523,7 +523,9 @@
     },
     "addedPartial": "Menambahkan {added} dari {requested} — {section} sudah penuh",
     "sectionFull": "{section} sudah penuh",
-    "nothingToRemove": "Tidak ada yang bisa dihapus"
+    "nothingToRemove": "Tidak ada yang bisa dihapus",
+    "addCopies": "Tambah {count} {name}",
+    "removeCopy": "Hapus satu {name}"
   },
   "status": {
     "title": "Status Data",
@@ -591,5 +593,10 @@
   "Source code on GitHub": "Kode sumber di GitHub",
   "Join the Discord server": "Gabung server Discord",
   "About this site": "Tentang situs ini",
-  "Filter (active)": "Filter (sedang aktif)"
+  "Filter (active)": "Filter (sedang aktif)",
+  "density": {
+    "label": "Kepadatan kartu",
+    "comfortable": "Tampilkan nama kartu",
+    "compact": "Hanya gambar"
+  }
 }

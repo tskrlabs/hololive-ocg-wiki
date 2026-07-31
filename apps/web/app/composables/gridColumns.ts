@@ -39,6 +39,9 @@ export const MAX_TILE = 240;
 /** Two columns is the narrowest grid that still reads as a grid. */
 export const MIN_COLUMNS = 2;
 
+/** The viewport below which #52's compact column bonus applies. */
+export const MOBILE_GRID_MAX_WIDTH = 640;
+
 /**
  * The column count for a content width, in CSS pixels.
  *
@@ -71,6 +74,8 @@ export interface GridGeometry {
   itemSize: number;
   itemSecondarySize: number;
   padding: number;
+  /** The text block's height, in px. Zero in compact mode. */
+  textHeight: number;
 }
 
 /** Cards sit tighter on a phone, which is the one thing the old ladder got right. */
@@ -78,17 +83,72 @@ export function paddingForWidth(width: number): number {
   return width < 640 ? 4 : 8;
 }
 
-export function gridGeometry(width: number): GridGeometry {
-  const padding = paddingForWidth(width);
-  const columns = columnsForWidth(width);
-  const ratio = (558 + padding * 2) / (400 + padding * 2);
+/**
+ * The height the tile's text block adds below the art (#37 §5).
+ *
+ * ⚠️ **This is why `itemSize` takes the density and the toggle as arguments at all.**
+ * `RecycleScroller` positions every row from `itemSize` and cannot measure a child, so a
+ * height that does not match what the tile actually renders makes rows overlap or leaves
+ * gaps — and both are silent. Turning show-original on adds a line to *every* tile, so it
+ * changes the geometry of the whole grid, not the appearance of one card.
+ *
+ * The numbers are the rendered line boxes from the type scale commit 1 landed:
+ * `text-sm` is 12/18 and `text-xs` is 11/16, plus `pt-1.5` (6px) between art and text.
+ *
+ * | mode                        | lines            | height |
+ * |-----------------------------|------------------|--------|
+ * | compact                     | —                |   0    |
+ * | comfortable                 | name + number    |  40    |
+ * | comfortable + show-original | + original       |  58    |
+ */
+export const TEXT_BLOCK_GAP = 6;
+export const NAME_LINE = 18;
+export const ORIGINAL_LINE = 18;
+export const NUMBER_LINE = 16;
 
+export function textBlockHeight(showsText: boolean, showsOriginal: boolean): number {
+  if (!showsText) return 0;
+  return TEXT_BLOCK_GAP + NAME_LINE + NUMBER_LINE + (showsOriginal ? ORIGINAL_LINE : 0);
+}
+
+/**
+ * Options for a grid measurement. All optional, so the existing call shape still means
+ * "comfortable, toggle off" — the state the site was in before density existed.
+ */
+export interface GeometryOptions {
+  /** False in compact mode, where the tile is art alone. */
+  showsText?: boolean;
+  /** Whether the source-language name occupies its own line (#29, D14). */
+  showsOriginal?: boolean;
+  /**
+   * Compact on a phone earns an extra column (#52): 4 cards per screen against 9 is the
+   * difference between browsing and scrolling, and at 3 columns there is no text to lose.
+   */
+  compactMobileBonus?: boolean;
+}
+
+export function gridGeometry(width: number, options: GeometryOptions = {}): GridGeometry {
+  const { showsText = true, showsOriginal = false, compactMobileBonus = false } = options;
+
+  const padding = paddingForWidth(width);
+  let columns = columnsForWidth(width);
+
+  // #52's mobile rule. Deliberately additive and phone-only: on desktop the target-width
+  // rule already gives a good count in both modes, and overriding it there would
+  // reintroduce exactly the breakpoint special-casing #43 removed.
+  if (compactMobileBonus && !showsText && width < MOBILE_GRID_MAX_WIDTH) {
+    columns += 1;
+  }
+
+  const ratio = (558 + padding * 2) / (400 + padding * 2);
   const itemSecondarySize = Math.max(100, width / columns);
+  const textHeight = textBlockHeight(showsText, showsOriginal);
 
   return {
     columns,
     itemSecondarySize,
-    itemSize: Math.max(140, itemSecondarySize * ratio),
+    itemSize: Math.max(140, itemSecondarySize * ratio) + textHeight,
     padding,
+    textHeight,
   };
 }

@@ -78,8 +78,20 @@ Object.assign(globalThis, {
 // The real filter module — its `useState` is the shim above, so this is the production
 // module under test rather than a reimplementation of it.
 const { useFilter } = await import("../app/composables/filter-states");
-const { gridGeometry } = await import("../app/composables/gridColumns");
-Object.assign(globalThis, { useFilter, useCardQuery, gridGeometry });
+const { gridGeometry, textBlockHeight } = await import("../app/composables/gridColumns");
+// Density and show-original are real modules too, for the same reason: their `useState`
+// is the shim, and the geometry under test is the one the component actually computes.
+const { useCardDensity, showsText } = await import("../app/composables/useCardDensity");
+const { useShowOriginal } = await import("../app/composables/useShowOriginal");
+Object.assign(globalThis, {
+  useFilter,
+  useCardQuery,
+  gridGeometry,
+  textBlockHeight,
+  useCardDensity,
+  showsText,
+  useShowOriginal,
+});
 
 // happy-dom has no ResizeObserver, and `v-resize-observer` constructs one on mount.
 class ResizeObserverStub {
@@ -220,6 +232,10 @@ beforeEach(() => {
   stateStore.clear();
   locale.value = "tc";
   config.global.renderStubDefaultSlot = true;
+  // Density and show-original persist to `localStorage`, and happy-dom keeps one store
+  // for the whole file — so without this a test that switches to compact sets the mode
+  // for every test after it.
+  localStorage.clear();
 
   const fake = fakeSource();
   requests = fake.requests;
@@ -482,5 +498,108 @@ describe("the scroller's height (#44)", () => {
 
     expect(summary, "the results summary should render").toBeDefined();
     expect(summary!.classes()).not.toContain("fixed");
+  });
+});
+
+/**
+ * The scroller's geometry follows the density mode and the toggle (#37 §5).
+ *
+ * `grid.test.ts` pins the arithmetic — that a text block is 40px, or 58px with the source
+ * name. What it cannot see is whether the component ever *asks* for the right one, and
+ * that is the half where this class of bug lives: `RecycleScroller` takes `itemSize` as a
+ * prop and caches every row's position from it, so a component that computes the height
+ * correctly and then fails to re-measure renders a grid whose rows overlap. Nothing
+ * throws.
+ *
+ * This is F-019's shape exactly — a prop that was never passed, invisible to 44
+ * pure-function tests — which is why the issue asked for a mounted assertion here.
+ */
+describe("density and the show-original toggle change the grid's geometry (#37)", () => {
+  const itemSizeOf = (wrapper: Awaited<ReturnType<typeof mountList>>) =>
+    wrapper.findComponent(ScrollerStub).props("itemSize") as number;
+
+  const keyOf = (wrapper: Awaited<ReturnType<typeof mountList>>) =>
+    wrapper.findComponent(ScrollerStub).vm.$.vnode.key as string;
+
+  /**
+   * Both inputs, set explicitly.
+   *
+   * `useState` is shared by key across the whole file (that is what makes it Nuxt's
+   * `useState`), and `stateStore.clear()` in `beforeEach` drops the *refs* but not the
+   * ones a still-mounted component captured. Stating both every time is what keeps each
+   * assertion about the transition it names rather than about test order.
+   */
+  const setModes = async (density: "comfortable" | "compact", original: boolean) => {
+    useCardDensity().density.value = density;
+    useShowOriginal().enabled.value = original;
+    await settle();
+  };
+
+  it("grows every row by one line when the toggle goes on", async () => {
+    const wrapper = await mountList();
+    await setModes("comfortable", false);
+
+    const before = itemSizeOf(wrapper);
+
+    await setModes("comfortable", true);
+
+    // Exactly one line taller — the source name's own line (D14), on every tile at once.
+    expect(itemSizeOf(wrapper) - before).toBe(18);
+  });
+
+  it("drops the whole text block in compact mode", async () => {
+    const wrapper = await mountList();
+    await setModes("comfortable", false);
+
+    const comfortable = itemSizeOf(wrapper);
+
+    await setModes("compact", false);
+
+    expect(comfortable - itemSizeOf(wrapper)).toBe(40);
+  });
+
+  it("ignores the toggle in compact mode, where there is no name to pair", async () => {
+    const wrapper = await mountList();
+    await setModes("compact", false);
+
+    const plain = itemSizeOf(wrapper);
+
+    await setModes("compact", true);
+
+    // Art-only is art-only: a source name with no name above it is not a line.
+    expect(itemSizeOf(wrapper)).toBe(plain);
+  });
+
+  it("re-measures on a mode change, not only on a resize", async () => {
+    // The wiring that makes the assertions above possible. Before this, `itemSize` was
+    // written only by the resize observer, so flipping a toggle left the grid on the
+    // previous mode's row height until the window happened to resize.
+    const wrapper = await mountList();
+    await setModes("comfortable", false);
+
+    const start = itemSizeOf(wrapper);
+    await setModes("compact", false);
+
+    expect(itemSizeOf(wrapper)).not.toBe(start);
+  });
+
+  it("remounts the scroller, because a cached row position outlives a prop change", async () => {
+    // The key is the actual fix. `RecycleScroller` computes each item's offset once from
+    // the `itemSize` it was built with; handing it a new value does not reposition the
+    // rows already measured, so the grid overlaps until it is rebuilt.
+    const wrapper = await mountList();
+    await setModes("comfortable", false);
+
+    const before = keyOf(wrapper);
+
+    await setModes("compact", false);
+    const afterDensity = keyOf(wrapper);
+
+    await setModes("comfortable", true);
+    const afterOriginal = keyOf(wrapper);
+
+    expect(afterDensity).not.toBe(before);
+    expect(afterOriginal).not.toBe(before);
+    expect(afterOriginal).not.toBe(afterDensity);
   });
 });
