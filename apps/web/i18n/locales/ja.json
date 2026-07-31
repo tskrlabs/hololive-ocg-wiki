@@ -588,6 +588,12 @@
     "filterOptions": {
       "title": "フィルター項目を読み込めませんでした",
       "detail": "以下のリストは不完全な可能性があります。"
+    },
+    "card": {
+      "notFound": {
+        "title": "カードが見つかりません",
+        "detail": "このカードは存在しません。番号が変更されたか、リンクが誤っている可能性があります。"
+      }
     }
   },
   "Toggle theme": "テーマを切り替える",
@@ -605,5 +611,6 @@
     "modified": "変更あり",
     "clearGroup": "{group}をクリア"
   },
-  "{total} cards": "{total} 枚"
+  "{total} cards": "{total} 枚",
+  "Card not found": "カードが見つかりません"
 }

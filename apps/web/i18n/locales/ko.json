@@ -588,6 +588,12 @@
     "filterOptions": {
       "title": "필터 옵션을 불러오지 못했습니다",
       "detail": "아래 목록이 불완전할 수 있습니다."
+    },
+    "card": {
+      "notFound": {
+        "title": "카드를 찾을 수 없습니다",
+        "detail": "이 카드는 존재하지 않습니다. 번호가 변경되었거나 링크가 잘못되었을 수 있습니다."
+      }
     }
   },
   "Toggle theme": "테마 전환",
@@ -605,5 +611,6 @@
     "modified": "변경됨",
     "clearGroup": "{group} 지우기"
   },
-  "{total} cards": "{total}장"
+  "{total} cards": "{total}장",
+  "Card not found": "카드를 찾을 수 없습니다"
 }

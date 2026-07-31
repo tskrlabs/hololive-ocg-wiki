@@ -588,6 +588,12 @@
     "filterOptions": {
       "title": "Filter options couldn't be loaded",
       "detail": "The lists below may be incomplete."
+    },
+    "card": {
+      "notFound": {
+        "title": "Card not found",
+        "detail": "This card doesn't exist. It may have been renumbered, or the link may be wrong."
+      }
     }
   },
   "Toggle theme": "Toggle theme",
@@ -605,5 +611,6 @@
     "modified": "Modified",
     "clearGroup": "Clear {group}"
   },
-  "{total} cards": "{total} cards"
+  "{total} cards": "{total} cards",
+  "Card not found": "Card not found"
 }

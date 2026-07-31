@@ -102,6 +102,42 @@ export function createCardSource(transport: Transport = httpTransport) {
     },
 
     /**
+     * One card by its `image_key` — the lookup behind a card URL (ADR 0009 D6).
+     *
+     * `/{locale}/card/{set}/{stem}` is the key verbatim, so this is what a cold page load
+     * resolves through. The two segments are passed separately because that is how the
+     * route provides them, and joined here rather than by the caller so the URL shape
+     * lives in one place.
+     *
+     * Not `encodeURIComponent`-wrapped, and that is measured rather than assumed: across
+     * all 2,463 keys **zero** segments require percent-encoding. Encoding anyway would be
+     * harmless but would suggest a case that does not exist.
+     */
+    async byKey(set: string, stem: string, locale: Locales): Promise<Card | undefined> {
+      try {
+        const response = await transport<{ card: Card }>(
+          `/api/cards/by-key/${set}/${stem}`,
+          { locale },
+        );
+        return response?.card;
+      } catch (cause) {
+        // ⚠️ **A 404 is an answer, not a failure**, and only here can the two be told
+        // apart — `$fetch` rejects on any non-2xx, so without this a mistyped card URL
+        // reached the caller as a thrown error and rendered "cannot reach the card
+        // database — retry", which is wrong twice: the database answered, and retrying
+        // will never help. Caught in the running app, not reasoned about.
+        //
+        // Everything else still throws: offline, 500 and a timeout are genuinely
+        // retryable and the page says so.
+        const status =
+          (cause as { statusCode?: number; status?: number } | null)?.statusCode ??
+          (cause as { status?: number } | null)?.status;
+        if (status === 404) return undefined;
+        throw cause;
+      }
+    },
+
+    /**
      * Several cards by id, chunked.
      *
      * v1 joined every id into one URL. Phase 4 made an over-cap request a 400 instead of

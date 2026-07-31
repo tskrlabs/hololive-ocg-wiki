@@ -11,7 +11,17 @@ const props = defineProps<{
 
 const decks = useDecks();
 const { t } = useI18n();
+const localePath = useLocalePath();
 const isEditing = computed(() => decks.isEditing.value);
+
+/**
+ * Opening a card is a *navigation* now (D15, #39).
+ *
+ * The tile no longer owns a `Dialog`; it pushes the card's URL and the list renders the
+ * dialog for whichever card the route names. That is what makes a card linkable and what
+ * makes the back gesture close the dialog instead of leaving the site.
+ */
+const { openCard } = useCardRoute();
 
 /**
  * The tile's text block (D14, #37) — and the answer to
@@ -132,23 +142,32 @@ const count = computed(() => {
   -->
   <div class="flex flex-col">
     <div class="relative flex aspect-400/559">
-      <Dialog>
-        <DialogTrigger class="w-full">
-          <!--
-            `alt` is the card's name (#38 §3, #48 §7). It was passing none at all, so
-            every tile's art was an unlabelled image — 34 of them on the fixture homepage
-            alone. It doubles as the fallback text when the image fails to load.
-          -->
-          <SimpleImage
-            class="rounded-lg overflow-hidden"
-            :src="cardImage(item.image_key)"
-            :alt="item.name ?? item.card_number"
-            :img-attributes="{ class: 'w-full' }"
-          />
-        </DialogTrigger>
+      <!--
+        A real link, not a bare click handler (D15, #39).
 
-        <CardItemDialogContent :item="item" />
-      </Dialog>
+        The tile opens the dialog *and* pushes the card's URL, and making it an `<a>` is
+        what gives that for free: middle-click and ⌘-click open the card page in a new
+        tab, the status bar shows where it goes, and a crawler following the grid finds
+        2,463 real internal links rather than a wall of JavaScript. `@click.prevent`
+        keeps the in-page behaviour a dialog rather than a navigation.
+      -->
+      <NuxtLink
+        :to="localePath(`/card/${item.image_key}`)"
+        class="w-full"
+        @click.prevent="openCard(item)"
+      >
+        <!--
+          `alt` is the card's name (#38 §3, #48 §7). It was passing none at all, so
+          every tile's art was an unlabelled image — 34 of them on the fixture homepage
+          alone. It doubles as the fallback text when the image fails to load.
+        -->
+        <SimpleImage
+          class="rounded-lg overflow-hidden"
+          :src="cardImage(item.image_key)"
+          :alt="item.name ?? item.card_number"
+          :img-attributes="{ class: 'w-full' }"
+        />
+      </NuxtLink>
 
       <!--
         The add controls. Their visible "10"/"4"/"1" is a quantity, not a name — a screen

@@ -589,6 +589,12 @@
     "filterOptions": {
       "title": "無法載入篩選選項",
       "detail": "下方清單可能不完整。"
+    },
+    "card": {
+      "notFound": {
+        "title": "找不到此卡片",
+        "detail": "這張卡片不存在。可能編號已變更，或連結有誤。"
+      }
     }
   },
   "Toggle theme": "切換主題",
@@ -606,5 +612,6 @@
     "modified": "已修改",
     "clearGroup": "清除{group}"
   },
-  "{total} cards": "{total} 張卡片"
+  "{total} cards": "{total} 張卡片",
+  "Card not found": "找不到此卡片"
 }

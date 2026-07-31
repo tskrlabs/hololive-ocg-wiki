@@ -35,4 +35,14 @@ useHead({
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+
+  <!--
+    Above `<NuxtPage>` deliberately (D15, #39).
+
+    A tile click pushes the card's URL, which is a real route — so vue-router swaps the
+    list component out, and a dialog owned by the list would be unmounted by the very
+    navigation meant to open it. Mounted here it survives, and the card page defers to it
+    when the same card is already on screen.
+  -->
+  <CardRouteDialog />
 </template>

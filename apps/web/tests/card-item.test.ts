@@ -40,6 +40,9 @@ function useStateShim<T>(key: string, init: () => T) {
 const translate = (key: string, params?: Record<string, unknown>) =>
   params ? `${key}:${JSON.stringify(params)}` : key;
 
+/** The card URLs the tile links to and pushes (D15). Recorded, so a test can assert them. */
+const pushed: string[] = [];
+
 Object.assign(globalThis, {
   ref,
   computed,
@@ -51,6 +54,14 @@ Object.assign(globalThis, {
   useState: useStateShim,
   useI18n: () => ({ locale: ref("en"), t: translate }),
   useCardImage: () => (key: string) => `https://img.example/${key}.webp`,
+  // The tile is a link now, so it needs the locale-aware path helper and the composable
+  // that turns a click into a history push.
+  useLocalePath: () => (path: string) => `/en${path}`,
+  useCardRoute: () => ({
+    openKey: computed(() => null),
+    openCard: (card: Card) => pushed.push(`/en/card/${card.image_key}`),
+    closeCard: () => {},
+  }),
 });
 
 /** The toast surface, spied rather than rendered. */
@@ -89,9 +100,11 @@ async function mountTile(item: Card = card("1")) {
     props: { item },
     global: {
       stubs: {
-        Dialog: { template: "<div><slot /></div>" },
-        DialogTrigger: { template: "<div><slot /></div>" },
-        CardItemDialogContent: true,
+        // A real anchor, so the link's href and its click handler are both reachable.
+        NuxtLink: {
+          props: ["to"],
+          template: "<a :href='to'><slot /></a>",
+        },
         SimpleImage: true,
         CardCountBadge: true,
       },
@@ -130,6 +143,7 @@ const addButtons = (wrapper: Awaited<ReturnType<typeof mountTile>>) =>
 beforeEach(() => {
   stateStore.clear();
   toasts.length = 0;
+  pushed.length = 0;
   config.global.renderStubDefaultSlot = true;
   // Both view preferences persist to `localStorage` (that is the point of them), and
   // happy-dom keeps one store for the whole file — so without this a test that switches
@@ -318,5 +332,47 @@ describe("the tile shows what a card is (#29, D14)", () => {
     const wrapper = await mountTile();
 
     expect(lineWith(wrapper, "天音彼方")?.attributes("title")).toBe("天音彼方");
+  });
+});
+
+/**
+ * A card has a URL now (D15, #39).
+ *
+ * Two live bugs this closes, both verified in the running app: a card could not be
+ * linked (the dialog changed no URL, so sharing one meant describing it), and browser
+ * back exited the list entirely rather than closing the dialog — which on mobile is the
+ * natural close gesture, so it threw away scroll position and filter state.
+ */
+describe("the tile is a link to the card's URL (#39)", () => {
+  it("renders a real anchor at /{locale}/card/{set}/{stem}", async () => {
+    // A real `<a>`, not a click handler: middle-click and ⌘-click open the card page in
+    // a new tab, the status bar shows the destination, and a crawler walking the grid
+    // finds 2,463 internal links rather than a wall of JavaScript.
+    const wrapper = await mountTile();
+    const link = wrapper.find("a");
+
+    expect(link.exists()).toBe(true);
+    // `{set}/{stem}` is `image_key` verbatim (D6).
+    expect(link.attributes("href")).toBe("/en/card/hBP01/hBP01-1");
+  });
+
+  it("opens the dialog rather than navigating, on a plain click", async () => {
+    // `@click.prevent` is what keeps the in-page behaviour a dialog. Without it the tile
+    // would be a full navigation and the grid would unmount on every card view.
+    const wrapper = await mountTile();
+
+    await wrapper.find("a").trigger("click");
+
+    expect(pushed).toEqual(["/en/card/hBP01/hBP01-1"]);
+  });
+
+  it("does not own a dialog of its own", async () => {
+    // The dialog is hoisted to the list, driven by the route. A dialog owned here would
+    // be destroyed the moment `RecycleScroller` recycled this tile's node — and 2,463
+    // booleans the history API knows nothing about cannot answer to a back button.
+    const wrapper = await mountTile();
+    const markup = wrapper.html().replace(/<!--[\s\S]*?-->/g, "");
+
+    expect(markup).not.toMatch(/DialogTrigger|dialog-content/i);
   });
 });

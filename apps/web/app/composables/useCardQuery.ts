@@ -126,6 +126,8 @@ export const useCardQuery = () => {
   const optionsError = useState<QueryErrorKind | null>("filterOptionsError", () => null);
 
   const byIdCache = useState<Map<string, Card>>("cardById", () => new Map());
+  /** Cards resolved by `image_key` — the only handle a cold card-page load has. */
+  const byKeyCache = useState<Map<string, Card>>("cardByKey", () => new Map());
   const pageCache = useState<Map<string, CardPage>>("cardPages", () => new Map());
   const optionsCache = useState<Map<string, FilterOptionsResponse>>(
     "filterOptions",
@@ -274,6 +276,36 @@ export const useCardQuery = () => {
   }
 
   /**
+   * One card by its `image_key` — what a card URL resolves to (ADR 0009 D6).
+   *
+   * Shares `byIdCache` with `getCardById`, keyed by id once the card is known, so
+   * navigating from a card page into the grid and back does not refetch. The key→card
+   * lookup gets its own cache entry because a URL is the only thing a cold load has.
+   *
+   * Returns `undefined` for a key that names no card. The caller distinguishes that from
+   * a failure — a 404 is permanent and a fetch error is retryable, and the card page
+   * renders them differently (#38 §5).
+   */
+  async function getCardByKey(
+    set: string,
+    stem: string,
+    locale: Locales,
+  ): Promise<Card | undefined> {
+    const key = `key:${set}/${stem}:${locale}`;
+    const cached = byKeyCache.value.get(key);
+    if (cached) return cached;
+
+    const card = await once(key, () => source.byKey(set, stem, locale));
+    if (card) {
+      byKeyCache.value.set(key, card);
+      // Also fill the id cache: the dialog and the deck builder both look cards up that
+      // way, and this is the same card.
+      byIdCache.value.set(cardKey(card.id, locale), card);
+    }
+    return card;
+  }
+
+  /**
    * Several cards by id, in the order asked for.
    *
    * Only the ids not already cached are fetched; the result is assembled from the cache
@@ -382,6 +414,7 @@ export const useCardQuery = () => {
   function clearCache() {
     pageCache.value.clear();
     byIdCache.value.clear();
+    byKeyCache.value.clear();
     optionsCache.value.clear();
     inFlight.clear();
   }
@@ -400,6 +433,7 @@ export const useCardQuery = () => {
     getFilteredCards,
     loadMore,
     getCardById,
+    getCardByKey,
     getCardsByIds,
     getCardsByCardNumber,
     getCardsByCardNumbers,

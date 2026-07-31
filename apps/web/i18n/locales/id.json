@@ -588,6 +588,12 @@
     "filterOptions": {
       "title": "Opsi filter gagal dimuat",
       "detail": "Daftar di bawah mungkin tidak lengkap."
+    },
+    "card": {
+      "notFound": {
+        "title": "Kartu tidak ditemukan",
+        "detail": "Kartu ini tidak ada. Mungkin nomornya berubah, atau tautannya salah."
+      }
     }
   },
   "Toggle theme": "Ganti tema",
@@ -605,5 +611,6 @@
     "modified": "Diubah",
     "clearGroup": "Hapus {group}"
   },
-  "{total} cards": "{total} kartu"
+  "{total} cards": "{total} kartu",
+  "Card not found": "Kartu tidak ditemukan"
 }

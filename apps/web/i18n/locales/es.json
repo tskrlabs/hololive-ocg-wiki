@@ -588,6 +588,12 @@
     "filterOptions": {
       "title": "No se han podido cargar las opciones de filtro",
       "detail": "Las listas siguientes pueden estar incompletas."
+    },
+    "card": {
+      "notFound": {
+        "title": "Carta no encontrada",
+        "detail": "Esta carta no existe. Puede que se haya renumerado o que el enlace sea incorrecto."
+      }
     }
   },
   "Toggle theme": "Cambiar tema",
@@ -605,5 +611,6 @@
     "modified": "Modificado",
     "clearGroup": "Borrar {group}"
   },
-  "{total} cards": "{total} cartas"
+  "{total} cards": "{total} cartas",
+  "Card not found": "Carta no encontrada"
 }
