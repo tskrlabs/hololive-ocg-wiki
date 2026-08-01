@@ -14,13 +14,7 @@
   "Oshi": "推し",
   "Main Deck": "主牌組",
   "Yell Deck": "應援牌組",
-  "Please select a deck to continue.": "請選擇一副牌組以繼續。",
-  "Edit": "編輯",
   "Select one deck to edit": "請選擇一副牌組進行編輯",
-  "Clipboard is not supported in this browser.": "此瀏覽器不支援剪貼簿功能。",
-  "Copied deck code URL.": "已複製牌組代碼網址。",
-  "Deck detail page not found.": "找不到牌組詳細頁面。",
-  "Deck deleted successfully!": "牌組已成功刪除！",
   "Options": "選項",
   "Copy Deck Code URL": "複製牌組代碼網址",
   "Go to Detail Page": "前往詳細頁面",
@@ -33,8 +27,6 @@
   "Deck Name": "牌組名稱",
   "Author": "作者",
   "Create Deck": "建立牌組",
-  "No deck code provided.": "未提供牌組代碼。",
-  "Failed to import shared deck.": "匯入共享牌組失敗。",
   "Card List": "卡片列表",
   "Saved In Local Storage": "已儲存於本地端",
   "Can Import/Update This Deck": "可匯入／更新此牌組",
@@ -528,7 +520,22 @@
     "sectionFull": "{section}已滿",
     "nothingToRemove": "沒有可移除的卡片",
     "addCopies": "加入 {count} 張{name}",
-    "removeCopy": "移除一張{name}"
+    "removeCopy": "移除一張{name}",
+    "guard": {
+      "selectFirst": "請先選擇一副牌組。"
+    },
+    "deleted": "已刪除「{name}」。",
+    "editing": {
+      "on": "編輯中",
+      "off": "未編輯",
+      "toggle": "切換編輯模式"
+    },
+    "drawer": {
+      "open": "開啟牌組",
+      "close": "關閉牌組",
+      "empty": "尚未選擇牌組。請從「牌組」中選擇一副，或建立新的牌組。"
+    },
+    "removeAllCopies": "移除所有「{name}」"
   },
   "status": {
     "title": "資料狀態",
@@ -595,6 +602,12 @@
         "title": "找不到此卡片",
         "detail": "這張卡片不存在。可能編號已變更，或連結有誤。"
       }
+    },
+    "deck": {
+      "noCode": "未提供牌組代碼。",
+      "invalidCode": "此牌組代碼無效",
+      "invalidCodeDetail": "連結可能不完整或有誤。牌組代碼區分大小寫。",
+      "routeMissing": "找不到牌組詳細頁面。"
     }
   },
   "Toggle theme": "切換主題",
@@ -613,5 +626,11 @@
     "clearGroup": "清除{group}"
   },
   "{total} cards": "{total} 張卡片",
-  "Card not found": "找不到此卡片"
+  "Card not found": "找不到此卡片",
+  "Deck": "牌組",
+  "clipboard": {
+    "copied": "已複製牌組代碼網址。",
+    "unsupported": "此瀏覽器無法複製到剪貼簿。",
+    "failed": "複製失敗——請再試一次，或直接複製網址列。"
+  }
 }

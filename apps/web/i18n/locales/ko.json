@@ -13,13 +13,7 @@
   "Oshi": "오시",
   "Main Deck": "메인 덱",
   "Yell Deck": "옐 덱",
-  "Please select a deck to continue.": "계속하려면 덱을 선택하세요.",
-  "Edit": "편집",
   "Select one deck to edit": "편집할 덱을 하나 선택하세요",
-  "Clipboard is not supported in this browser.": "이 브라우저에서는 클립보드를 지원하지 않습니다.",
-  "Copied deck code URL.": "덱 코드 URL이 복사되었습니다.",
-  "Deck detail page not found.": "덱 상세 페이지를 찾을 수 없습니다.",
-  "Deck deleted successfully!": "덱이 성공적으로 삭제되었습니다!",
   "Options": "옵션",
   "Copy Deck Code URL": "덱 코드 URL 복사",
   "Go to Detail Page": "상세 페이지로 이동",
@@ -32,8 +26,6 @@
   "Deck Name": "덱 이름",
   "Author": "작성자",
   "Create Deck": "덱 생성",
-  "No deck code provided.": "덱 코드가 제공되지 않았습니다.",
-  "Failed to import shared deck.": "공유 덱 가져오기에 실패했습니다.",
   "Card List": "카드 목록",
   "Saved In Local Storage": "로컬 저장소에 저장됨",
   "Can Import/Update This Deck": "이 덱을 가져오기/업데이트할 수 있습니다",
@@ -527,7 +519,22 @@
     "sectionFull": "{section}이(가) 가득 찼습니다",
     "nothingToRemove": "제거할 카드가 없습니다",
     "addCopies": "{name} {count}장 추가",
-    "removeCopy": "{name} 1장 제거"
+    "removeCopy": "{name} 1장 제거",
+    "guard": {
+      "selectFirst": "먼저 덱을 선택하세요."
+    },
+    "deleted": "\"{name}\"을(를) 삭제했습니다.",
+    "editing": {
+      "on": "편집 중",
+      "off": "편집 중 아님",
+      "toggle": "편집 모드 전환"
+    },
+    "drawer": {
+      "open": "덱 열기",
+      "close": "덱 닫기",
+      "empty": "선택된 덱이 없습니다. 덱에서 선택하거나 새로 만드세요."
+    },
+    "removeAllCopies": "{name} 모두 제거"
   },
   "status": {
     "title": "데이터 상태",
@@ -594,6 +601,12 @@
         "title": "카드를 찾을 수 없습니다",
         "detail": "이 카드는 존재하지 않습니다. 번호가 변경되었거나 링크가 잘못되었을 수 있습니다."
       }
+    },
+    "deck": {
+      "noCode": "덱 코드가 없습니다.",
+      "invalidCode": "이 덱 코드는 유효하지 않습니다",
+      "invalidCodeDetail": "링크가 불완전하거나 잘못 입력되었을 수 있습니다. 덱 코드는 대소문자를 구분합니다.",
+      "routeMissing": "덱 상세 페이지를 찾을 수 없습니다."
     }
   },
   "Toggle theme": "테마 전환",
@@ -612,5 +625,11 @@
     "clearGroup": "{group} 지우기"
   },
   "{total} cards": "{total}장",
-  "Card not found": "카드를 찾을 수 없습니다"
+  "Card not found": "카드를 찾을 수 없습니다",
+  "Deck": "덱",
+  "clipboard": {
+    "copied": "덱 코드 URL이 복사되었습니다.",
+    "unsupported": "이 브라우저에서는 클립보드에 복사할 수 없습니다.",
+    "failed": "복사하지 못했습니다. 다시 시도하거나 주소창을 복사하세요."
+  }
 }

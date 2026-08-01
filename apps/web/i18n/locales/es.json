@@ -13,13 +13,7 @@
   "Oshi": "Oshi",
   "Main Deck": "Mazo Principal",
   "Yell Deck": "Mazo Yell",
-  "Please select a deck to continue.": "Por favor, selecciona un mazo para continuar.",
-  "Edit": "Editar",
   "Select one deck to edit": "Selecciona un mazo para editar",
-  "Clipboard is not supported in this browser.": "El portapapeles no es compatible con este navegador.",
-  "Copied deck code URL.": "URL del código de mazo copiada.",
-  "Deck detail page not found.": "Página de detalles del mazo no encontrada.",
-  "Deck deleted successfully!": "¡Mazo eliminado correctamente!",
   "Options": "Opciones",
   "Copy Deck Code URL": "Copiar URL del código de mazo",
   "Go to Detail Page": "Ir a la página de detalles",
@@ -32,8 +26,6 @@
   "Deck Name": "Nombre del Mazo",
   "Author": "Autor",
   "Create Deck": "Crear Mazo",
-  "No deck code provided.": "No se proporcionó código de mazo.",
-  "Failed to import shared deck.": "Error al importar el mazo compartido.",
   "Card List": "Lista de Cartas",
   "Saved In Local Storage": "Guardado en Almacenamiento Local",
   "Can Import/Update This Deck": "Puedes Importar/Actualizar Este Mazo",
@@ -527,7 +519,22 @@
     "sectionFull": "{section} está completo",
     "nothingToRemove": "No hay nada que quitar",
     "addCopies": "Añadir {count} de {name}",
-    "removeCopy": "Quitar una copia de {name}"
+    "removeCopy": "Quitar una copia de {name}",
+    "guard": {
+      "selectFirst": "Selecciona un mazo primero."
+    },
+    "deleted": "Se eliminó \"{name}\".",
+    "editing": {
+      "on": "Editando",
+      "off": "Sin editar",
+      "toggle": "Alternar modo de edición"
+    },
+    "drawer": {
+      "open": "Abrir mazo",
+      "close": "Cerrar mazo",
+      "empty": "No hay ningún mazo seleccionado. Elige uno en Mazos o crea uno nuevo."
+    },
+    "removeAllCopies": "Quitar todas las copias de {name}"
   },
   "status": {
     "title": "Estado de Datos",
@@ -594,6 +601,12 @@
         "title": "Carta no encontrada",
         "detail": "Esta carta no existe. Puede que se haya renumerado o que el enlace sea incorrecto."
       }
+    },
+    "deck": {
+      "noCode": "No se proporcionó ningún código de mazo.",
+      "invalidCode": "Este código de mazo no es válido",
+      "invalidCodeDetail": "Puede que el enlace esté incompleto o mal escrito. Los códigos de mazo distinguen mayúsculas y minúsculas.",
+      "routeMissing": "No se encontró la página de detalles del mazo."
     }
   },
   "Toggle theme": "Cambiar tema",
@@ -612,5 +625,11 @@
     "clearGroup": "Borrar {group}"
   },
   "{total} cards": "{total} cartas",
-  "Card not found": "Carta no encontrada"
+  "Card not found": "Carta no encontrada",
+  "Deck": "Mazo",
+  "clipboard": {
+    "copied": "URL del código de mazo copiada.",
+    "unsupported": "Este navegador no puede copiar al portapapeles.",
+    "failed": "No se pudo copiar: inténtalo de nuevo o copia la barra de direcciones."
+  }
 }

@@ -13,13 +13,7 @@
   "Oshi": "Oshi",
   "Main Deck": "Main Deck",
   "Yell Deck": "Yell Deck",
-  "Please select a deck to continue.": "Please select a deck to continue.",
-  "Edit": "Edit",
   "Select one deck to edit": "Select one deck to edit",
-  "Clipboard is not supported in this browser.": "Clipboard is not supported in this browser.",
-  "Copied deck code URL.": "Copied deck code URL.",
-  "Deck detail page not found.": "Deck detail page not found.",
-  "Deck deleted successfully!": "Deck deleted successfully!",
   "Options": "Options",
   "Copy Deck Code URL": "Copy Deck Code URL",
   "Go to Detail Page": "Go to Detail Page",
@@ -32,8 +26,6 @@
   "Deck Name": "Deck Name",
   "Author": "Author",
   "Create Deck": "Create Deck",
-  "No deck code provided.": "No deck code provided.",
-  "Failed to import shared deck.": "Failed to import shared deck.",
   "Card List": "Card List",
   "Saved In Local Storage": "Saved In Local Storage",
   "Can Import/Update This Deck": "Can Import/Update This Deck",
@@ -527,7 +519,22 @@
     "sectionFull": "{section} is full",
     "nothingToRemove": "There is nothing to remove",
     "addCopies": "Add {count} of {name}",
-    "removeCopy": "Remove one copy of {name}"
+    "removeCopy": "Remove one copy of {name}",
+    "guard": {
+      "selectFirst": "Select a deck first."
+    },
+    "deleted": "Deleted \"{name}\".",
+    "editing": {
+      "on": "Editing",
+      "off": "Not editing",
+      "toggle": "Toggle editing mode"
+    },
+    "drawer": {
+      "open": "Open deck",
+      "close": "Close deck",
+      "empty": "No deck selected. Choose one from Decks, or create a new one."
+    },
+    "removeAllCopies": "Remove all copies of {name}"
   },
   "status": {
     "title": "Data Status",
@@ -594,6 +601,12 @@
         "title": "Card not found",
         "detail": "This card doesn't exist. It may have been renumbered, or the link may be wrong."
       }
+    },
+    "deck": {
+      "noCode": "No deck code provided.",
+      "invalidCode": "This deck code isn't valid",
+      "invalidCodeDetail": "The link may be incomplete or mistyped. Deck codes are case-sensitive.",
+      "routeMissing": "Deck detail page not found."
     }
   },
   "Toggle theme": "Toggle theme",
@@ -612,5 +625,11 @@
     "clearGroup": "Clear {group}"
   },
   "{total} cards": "{total} cards",
-  "Card not found": "Card not found"
+  "Card not found": "Card not found",
+  "Deck": "Deck",
+  "clipboard": {
+    "copied": "Copied deck code URL.",
+    "unsupported": "This browser can't copy to the clipboard.",
+    "failed": "Couldn't copy — try again, or copy the address bar."
+  }
 }

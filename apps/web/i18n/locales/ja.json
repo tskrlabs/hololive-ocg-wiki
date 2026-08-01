@@ -13,13 +13,7 @@
   "Oshi": "推し",
   "Main Deck": "メインデッキ",
   "Yell Deck": "エールデッキ",
-  "Please select a deck to continue.": "続行するにはデッキを選択してください。",
-  "Edit": "編集",
   "Select one deck to edit": "編集するデッキを1つ選択してください",
-  "Clipboard is not supported in this browser.": "このブラウザはクリップボードをサポートしていません。",
-  "Copied deck code URL.": "デッキコードURLをコピーしました。",
-  "Deck detail page not found.": "デッキ詳細ページが見つかりません。",
-  "Deck deleted successfully!": "デッキを削除しました！",
   "Options": "オプション",
   "Copy Deck Code URL": "デッキコードURLをコピー",
   "Go to Detail Page": "詳細ページへ",
@@ -32,8 +26,6 @@
   "Deck Name": "デッキ名",
   "Author": "作成者",
   "Create Deck": "デッキを作成",
-  "No deck code provided.": "デッキコードが入力されていません。",
-  "Failed to import shared deck.": "共有デッキのインポートに失敗しました。",
   "Card List": "カードリスト",
   "Saved In Local Storage": "ローカルストレージに保存済み",
   "Can Import/Update This Deck": "このデッキをインポート／更新できます",
@@ -527,7 +519,22 @@
     "sectionFull": "{section}がいっぱいです",
     "nothingToRemove": "削除できるカードがありません",
     "addCopies": "{name}を{count}枚追加",
-    "removeCopy": "{name}を1枚削除"
+    "removeCopy": "{name}を1枚削除",
+    "guard": {
+      "selectFirst": "先にデッキを選択してください。"
+    },
+    "deleted": "「{name}」を削除しました。",
+    "editing": {
+      "on": "編集中",
+      "off": "編集していません",
+      "toggle": "編集モードを切り替える"
+    },
+    "drawer": {
+      "open": "デッキを開く",
+      "close": "デッキを閉じる",
+      "empty": "デッキが選択されていません。「デッキ」から選ぶか、新しく作成してください。"
+    },
+    "removeAllCopies": "「{name}」をすべて削除"
   },
   "status": {
     "title": "データステータス",
@@ -594,6 +601,12 @@
         "title": "カードが見つかりません",
         "detail": "このカードは存在しません。番号が変更されたか、リンクが誤っている可能性があります。"
       }
+    },
+    "deck": {
+      "noCode": "デッキコードがありません。",
+      "invalidCode": "このデッキコードは無効です",
+      "invalidCodeDetail": "リンクが不完全か、入力に誤りがある可能性があります。デッキコードは大文字と小文字を区別します。",
+      "routeMissing": "デッキ詳細ページが見つかりません。"
     }
   },
   "Toggle theme": "テーマを切り替える",
@@ -612,5 +625,11 @@
     "clearGroup": "{group}をクリア"
   },
   "{total} cards": "{total} 枚",
-  "Card not found": "カードが見つかりません"
+  "Card not found": "カードが見つかりません",
+  "Deck": "デッキ",
+  "clipboard": {
+    "copied": "デッキコードURLをコピーしました。",
+    "unsupported": "このブラウザではクリップボードにコピーできません。",
+    "failed": "コピーできませんでした。もう一度試すか、アドレスバーをコピーしてください。"
+  }
 }

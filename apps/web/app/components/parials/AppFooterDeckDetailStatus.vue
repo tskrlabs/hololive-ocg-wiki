@@ -30,14 +30,16 @@ const isImported = computed(() => {
 
 <template>
   <div class="flex items-center gap-2 md:gap-4">
+    <!--
+      Fill and weight, not hue (D4). This was emerald against gray — two hardcoded
+      colours for a state the palette has no accent hue for, and a distinction invisible
+      to a red-green colour-blind reader since the two badges also read as similar
+      lightness.
+    -->
     <Badge
-      variant="outline"
+      :variant="isImported ? 'default' : 'outline'"
       class="text-xs md:text-sm"
-      :class="
-        isImported
-          ? 'bg-emerald-500/15 border-emerald-500'
-          : 'bg-gray-500/15 border-gray-500'
-      "
+      :class="isImported ? 'font-semibold' : 'text-muted-foreground'"
     >
       {{
         isImported

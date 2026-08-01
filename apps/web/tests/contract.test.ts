@@ -138,4 +138,52 @@ describe("the filter UI can name every enum member it offers (#58)", () => {
       expect(missing).toEqual([]);
     });
   }
+
+  /**
+   * The same sweep for the strings commit 12 added (#57).
+   *
+   * These are not enum-derived, so the loop above cannot reach them — but they fail
+   * identically: a missing key renders as its own dotted path, in production, in one
+   * language, with `make check` green. That is exactly what #58 found for
+   * `cardTypes.supportStaff`, and toasts are *more* exposed to it than filter chips,
+   * because #57's whole point is that nobody had ever seen these messages.
+   *
+   * Listed explicitly rather than globbed from `en.json`: the point is that a key added
+   * for one locale must be added for all seven, and deriving the list from a locale file
+   * would make the test agree with whichever file it read.
+   */
+  const UI_KEYS = [
+    "deck.guard.selectFirst",
+    "deck.deleted",
+    "deck.editing.on",
+    "deck.editing.off",
+    "deck.editing.toggle",
+    "deck.drawer.open",
+    "deck.drawer.close",
+    "deck.drawer.empty",
+    "deck.removeAllCopies",
+    "clipboard.copied",
+    "clipboard.unsupported",
+    "clipboard.failed",
+    "errors.deck.noCode",
+    "errors.deck.invalidCode",
+    "errors.deck.invalidCodeDetail",
+    "errors.deck.routeMissing",
+  ];
+
+  it("names every deck and clipboard message in all seven locales (#57)", () => {
+    const missing: string[] = [];
+
+    for (const [path, strings] of Object.entries(LOCALE_STRINGS)) {
+      const locale = path.split("/").pop()!.replace(".json", "");
+      for (const key of UI_KEYS) {
+        const value = key
+          .split(".")
+          .reduce<unknown>((node, part) => (node as Record<string, unknown>)?.[part], strings);
+        if (typeof value !== "string" || !value) missing.push(`${locale}.${key}`);
+      }
+    }
+
+    expect(missing).toEqual([]);
+  });
 });

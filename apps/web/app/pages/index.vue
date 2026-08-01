@@ -64,25 +64,22 @@ useHead({
     -->
     <main class="relative min-w-0 grow min-h-0 overflow-hidden">
       <CardListViewAPI />
-
-      <!--
-        Inside the list region, not a sibling of the footer (#44). It anchors to the
-        bottom of this region, so "just above the footer" is a position rather than an
-        arithmetic guess about how tall the footer is.
-
-        Being inside `<main>` is also what keeps it off the rail (#36 §6): it was `fixed`
-        to the viewport's bottom-left, which above `lg` is exactly where the rail now is.
-        Anchoring to the grid column instead makes that overlap impossible rather than
-        merely unlikely.
-      -->
-      <FloatingDeck />
     </main>
   </div>
+
+  <!--
+    The deck is a right-anchored overlay drawer (D18), no longer a panel anchored inside
+    the grid region. `FloatingDeck` had to live inside `<main>` to avoid overlapping the
+    filter rail; an overlay has no such constraint, so it sits at page level with the
+    other chrome.
+  -->
+  <DeckDrawer />
 
   <AppFooter>
     <AppFooterCurrentDeck />
     <div class="ml-auto flex items-center gap-2">
       <AppFooterOptionsButton />
+      <AppFooterDeckDrawerButton />
       <AppFooterDeckButton />
     </div>
   </AppFooter>

@@ -13,13 +13,7 @@
   "Oshi": "Oshi",
   "Main Deck": "Main Deck",
   "Yell Deck": "Yell Deck",
-  "Please select a deck to continue.": "Silakan pilih deck untuk melanjutkan.",
-  "Edit": "Edit",
   "Select one deck to edit": "Pilih satu deck untuk diedit",
-  "Clipboard is not supported in this browser.": "Clipboard tidak didukung di browser ini.",
-  "Copied deck code URL.": "URL kode deck telah disalin.",
-  "Deck detail page not found.": "Halaman detail deck tidak ditemukan.",
-  "Deck deleted successfully!": "Deck berhasil dihapus!",
   "Options": "Opsi",
   "Copy Deck Code URL": "Salin URL Kode Deck",
   "Go to Detail Page": "Pergi ke Halaman Detail",
@@ -32,8 +26,6 @@
   "Deck Name": "Nama Deck",
   "Author": "Penulis",
   "Create Deck": "Buat Deck",
-  "No deck code provided.": "Tidak ada kode deck yang diberikan.",
-  "Failed to import shared deck.": "Gagal mengimpor deck yang dibagikan.",
   "Card List": "Daftar Kartu",
   "Saved In Local Storage": "Tersimpan di Penyimpanan Lokal",
   "Can Import/Update This Deck": "Bisa Impor/Perbarui Deck Ini",
@@ -527,7 +519,22 @@
     "sectionFull": "{section} sudah penuh",
     "nothingToRemove": "Tidak ada yang bisa dihapus",
     "addCopies": "Tambah {count} {name}",
-    "removeCopy": "Hapus satu {name}"
+    "removeCopy": "Hapus satu {name}",
+    "guard": {
+      "selectFirst": "Pilih deck terlebih dahulu."
+    },
+    "deleted": "Menghapus \"{name}\".",
+    "editing": {
+      "on": "Sedang mengedit",
+      "off": "Tidak mengedit",
+      "toggle": "Alihkan mode edit"
+    },
+    "drawer": {
+      "open": "Buka deck",
+      "close": "Tutup deck",
+      "empty": "Belum ada deck yang dipilih. Pilih dari Decks, atau buat yang baru."
+    },
+    "removeAllCopies": "Hapus semua salinan {name}"
   },
   "status": {
     "title": "Status Data",
@@ -594,6 +601,12 @@
         "title": "Kartu tidak ditemukan",
         "detail": "Kartu ini tidak ada. Mungkin nomornya berubah, atau tautannya salah."
       }
+    },
+    "deck": {
+      "noCode": "Kode deck tidak tersedia.",
+      "invalidCode": "Kode deck ini tidak valid",
+      "invalidCodeDetail": "Tautan mungkin tidak lengkap atau salah ketik. Kode deck membedakan huruf besar dan kecil.",
+      "routeMissing": "Halaman detail deck tidak ditemukan."
     }
   },
   "Toggle theme": "Ganti tema",
@@ -612,5 +625,11 @@
     "clearGroup": "Hapus {group}"
   },
   "{total} cards": "{total} kartu",
-  "Card not found": "Kartu tidak ditemukan"
+  "Card not found": "Kartu tidak ditemukan",
+  "Deck": "Deck",
+  "clipboard": {
+    "copied": "URL kode deck telah disalin.",
+    "unsupported": "Peramban ini tidak dapat menyalin ke papan klip.",
+    "failed": "Gagal menyalin — coba lagi, atau salin dari bilah alamat."
+  }
 }

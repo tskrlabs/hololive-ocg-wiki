@@ -1,6 +1,14 @@
 <script setup lang="ts">
+/**
+ * One deck section's cards, with the add/remove controls (ADR 0009 D18).
+ *
+ * Was `FloatingDeckCardList` until the floating panel became a drawer — renamed rather
+ * than left, because the name is how a reader finds the surface a component belongs to,
+ * and there is no longer anything floating. Older comments elsewhere still name the v1
+ * file; those are describing history and are left alone.
+ */
 import { CircleMinus, CirclePlus, Trash2 } from "lucide-vue-next";
-import type { Card, CardTypeCode } from "~/types/card";
+import type { CardTypeCode } from "~/types/card";
 
 const props = defineProps<{
   cardIds: string[];
@@ -67,34 +75,44 @@ const removeAll = (cardId: string, cardTypeCode: CardTypeCode) => {
 
         <!-- actions -->
         <div class="absolute bottom-0 left-0 w-full flex gap-1 p-1">
+          <!--
+            The labels were the literal English strings "Add card" / "Remove card" /
+            "Remove all cards" — untranslated in seven locales, and identical on every
+            tile, so a screen-reader user heard the same three names 40 times with no way
+            to tell which card they belonged to (#51's finding, one surface further in).
+          -->
           <button
             class="w-2/4 h-6 md:h-6 bg-secondary/95 rounded-sm"
             @click.prevent="add(card.id, card.card_type_code)"
-            aria-label="Add card"
+            :aria-label="$t('deck.addCopies', { count: 1, name: card.name ?? card.card_number })"
           >
             <div class="flex items-center justify-center text-xs">
-              <CirclePlus class="size-3 md:size-4" />
+              <CirclePlus class="size-3 md:size-4" aria-hidden="true" />
             </div>
           </button>
+          <!--
+            `--destructive` rather than a hardcoded red (D4): removing a copy is a
+            destructive action, which is the one thing that colour is reserved for.
+          -->
           <button
-            class="w-2/4 h-6 md:h-6 bg-red-500/95 rounded-sm"
+            class="w-2/4 h-6 md:h-6 bg-destructive/95 text-destructive-foreground rounded-sm"
             @click.prevent="remove(card.id, card.card_type_code)"
-            aria-label="Remove card"
+            :aria-label="$t('deck.removeCopy', { name: card.name ?? card.card_number })"
           >
             <div class="flex items-center justify-center text-xs">
-              <CircleMinus class="size-3 text-white md:size-4" />
+              <CircleMinus class="size-3 md:size-4" aria-hidden="true" />
             </div>
           </button>
         </div>
 
         <div class="absolute top-0 right-0 flex flex-col gap-1 p-1">
           <button
-            class="bg-red-500/90 rounded-sm size-7 md:size-8"
+            class="bg-destructive/90 text-destructive-foreground rounded-sm size-7 md:size-8"
             @click.prevent="removeAll(card.id, card.card_type_code)"
-            aria-label="Remove all cards"
+            :aria-label="$t('deck.removeAllCopies', { name: card.name ?? card.card_number })"
           >
             <div class="flex items-center justify-center text-xs">
-              <Trash2 class="size-3 text-white md:size-4" />
+              <Trash2 class="size-3 md:size-4" aria-hidden="true" />
             </div>
           </button>
         </div>

@@ -1,54 +1,50 @@
 <script setup lang="ts">
+/**
+ * Deck actions: copy the share URL, open the detail page, delete (#57).
+ *
+ * All three needed a deck and each carried its own copy of the guard and its toast; that
+ * is now `useDeckGuard`, which also stops two of them stacking the same message. The copy
+ * path is `useCopyLink`, which checks clipboard support *before* attempting the write —
+ * see there for the ordering bug this had.
+ */
 import { CircleEllipsis, Trash2, ClipboardCopy, Eye } from "lucide-vue-next";
 import { toast } from "vue-sonner";
-import { useClipboard } from "@vueuse/core";
 
 const { t } = useI18n();
 
 const localeRoute = useLocaleRoute();
 
 const decks = useDecks();
+const { requireDeck } = useDeckGuard();
+const { copyLink } = useCopyLink();
 const currentDeck = computed(() => decks.currentDeck.value);
 
-const source = ref("");
-const { text, copy, copied, isSupported } = useClipboard({ source });
-
-const shareDeck = () => {
-  if (currentDeck.value) {
-    source.value = decks.getDeckCode(currentDeck.value.id).fullUrl;
-    copy();
-    if (!isSupported.value) {
-      toast.error(t("Clipboard is not supported in this browser."));
-      return;
-    }
-    toast.success(t("Copied deck code URL."));
-  } else {
-    toast.warning(t("Please select a deck to continue."));
-  }
+const shareDeck = async () => {
+  if (!requireDeck()) return;
+  await copyLink(decks.getDeckCode(currentDeck.value!.id).fullUrl);
 };
 
 const goToDetailPage = () => {
-  if (!currentDeck.value) {
-    toast.warning(t("Please select a deck to continue."));
-    return;
-  }
-  const code = decks.getDeckCode(currentDeck.value.id).code;
+  if (!requireDeck()) return;
+
+  const code = decks.getDeckCode(currentDeck.value!.id).code;
   const route = localeRoute({ name: "deck-code", params: { code } });
   if (route) {
     navigateTo(route.fullPath);
   } else {
-    toast.error(t("Deck detail page not found."));
+    toast.error(t("errors.deck.routeMissing"));
   }
 };
 
 const deleteDeck = () => {
-  if (!currentDeck.value) {
-    toast.warning(t("Please select a deck to continue."));
-    return;
-  }
+  if (!requireDeck()) return;
 
-  decks.deleteDeck(currentDeck.value.id);
-  toast.success(t("Deck deleted successfully!"));
+  // Named, because the confirm dialog that precedes this says only "Sure?" — and after
+  // the fact the deck is gone from the list, so the name is the only way to be certain
+  // which one went.
+  const name = currentDeck.value!.name;
+  decks.deleteDeck(currentDeck.value!.id);
+  toast.success(t("deck.deleted", { name }));
 };
 </script>
 
@@ -75,7 +71,10 @@ const deleteDeck = () => {
           <DropdownMenuGroup>
             <AlertDialogTrigger as-child>
               <DropdownMenuItem>
-                <Trash2 class="text-red-500 size-4" /> {{ $t("Delete") }}
+                <!-- `--destructive`, not a hardcoded red: it is the one semantic colour
+                     D4 keeps, and it is reserved for exactly this — a destructive
+                     *action*, not a state or a failure report. -->
+                <Trash2 class="text-destructive size-4" /> {{ $t("Delete") }}
               </DropdownMenuItem>
             </AlertDialogTrigger>
           </DropdownMenuGroup>

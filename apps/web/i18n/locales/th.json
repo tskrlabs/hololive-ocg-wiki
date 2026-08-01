@@ -13,13 +13,7 @@
   "Oshi": "โอชิ",
   "Main Deck": "เมนเด็ค",
   "Yell Deck": "เยลเด็ค",
-  "Please select a deck to continue.": "กรุณาเลือกเด็คเพื่อดำเนินการต่อ",
-  "Edit": "แก้ไข",
   "Select one deck to edit": "เลือกเด็คหนึ่งกองเพื่อแก้ไข",
-  "Clipboard is not supported in this browser.": "เบราว์เซอร์นี้ไม่รองรับคลิปบอร์ด",
-  "Copied deck code URL.": "คัดลอก URL รหัสเด็คแล้ว",
-  "Deck detail page not found.": "ไม่พบหน้ารายละเอียดเด็ค",
-  "Deck deleted successfully!": "ลบเด็คสำเร็จ!",
   "Options": "ตัวเลือก",
   "Copy Deck Code URL": "คัดลอก URL รหัสเด็ค",
   "Go to Detail Page": "ไปที่หน้ารายละเอียด",
@@ -32,8 +26,6 @@
   "Deck Name": "ชื่อเด็ค",
   "Author": "ผู้สร้าง",
   "Create Deck": "สร้างเด็ค",
-  "No deck code provided.": "ไม่ได้ระบุรหัสเด็ค",
-  "Failed to import shared deck.": "นำเข้าเด็คที่แชร์ล้มเหลว",
   "Card List": "รายการการ์ด",
   "Saved In Local Storage": "บันทึกในที่จัดเก็บข้อมูลภายในเครื่อง",
   "Can Import/Update This Deck": "สามารถนำเข้า/อัปเดตเด็คนี้",
@@ -527,7 +519,22 @@
     "sectionFull": "{section} เต็มแล้ว",
     "nothingToRemove": "ไม่มีการ์ดให้นำออก",
     "addCopies": "เพิ่ม {name} {count} ใบ",
-    "removeCopy": "นำ {name} ออก 1 ใบ"
+    "removeCopy": "นำ {name} ออก 1 ใบ",
+    "guard": {
+      "selectFirst": "กรุณาเลือกเด็คก่อน"
+    },
+    "deleted": "ลบ “{name}” แล้ว",
+    "editing": {
+      "on": "กำลังแก้ไข",
+      "off": "ไม่ได้แก้ไข",
+      "toggle": "สลับโหมดแก้ไข"
+    },
+    "drawer": {
+      "open": "เปิดเด็ค",
+      "close": "ปิดเด็ค",
+      "empty": "ยังไม่ได้เลือกเด็ค เลือกจากเด็ค หรือสร้างใหม่"
+    },
+    "removeAllCopies": "ลบ {name} ทั้งหมด"
   },
   "status": {
     "title": "สถานะข้อมูล",
@@ -594,6 +601,12 @@
         "title": "ไม่พบการ์ดใบนี้",
         "detail": "การ์ดใบนี้ไม่มีอยู่ อาจมีการเปลี่ยนหมายเลข หรือลิงก์ไม่ถูกต้อง"
       }
+    },
+    "deck": {
+      "noCode": "ไม่ได้ระบุรหัสเด็ค",
+      "invalidCode": "รหัสเด็คนี้ไม่ถูกต้อง",
+      "invalidCodeDetail": "ลิงก์อาจไม่สมบูรณ์หรือพิมพ์ผิด รหัสเด็คแยกตัวพิมพ์ใหญ่เล็ก",
+      "routeMissing": "ไม่พบหน้ารายละเอียดเด็ค"
     }
   },
   "Toggle theme": "สลับธีม",
@@ -612,5 +625,11 @@
     "clearGroup": "ล้าง{group}"
   },
   "{total} cards": "{total} ใบ",
-  "Card not found": "ไม่พบการ์ดใบนี้"
+  "Card not found": "ไม่พบการ์ดใบนี้",
+  "Deck": "เด็ค",
+  "clipboard": {
+    "copied": "คัดลอก URL รหัสเด็คแล้ว",
+    "unsupported": "เบราว์เซอร์นี้ไม่รองรับการคัดลอกไปยังคลิปบอร์ด",
+    "failed": "คัดลอกไม่สำเร็จ — ลองอีกครั้ง หรือคัดลอกจากแถบที่อยู่"
+  }
 }
