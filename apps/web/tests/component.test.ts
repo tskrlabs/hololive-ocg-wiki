@@ -91,6 +91,11 @@ Object.assign(globalThis, {
   useCardDensity,
   showsText,
   useShowOriginal,
+  // Stubbed rather than imported: it attaches window listeners and repairs focus after
+  // `RecycleScroller` recycles a node, which needs real layout to mean anything. Its own
+  // behaviour is covered by `scroller-focus.test.ts`; here it only has to exist, because
+  // `CardListViewAPI` calls it on setup (#48 §6).
+  useScrollerFocus: () => ({ keyboardActive: ref(false) }),
 });
 
 // happy-dom has no ResizeObserver, and `v-resize-observer` constructs one on mount.

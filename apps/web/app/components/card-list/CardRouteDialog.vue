@@ -23,7 +23,7 @@ import type { Card, Locales } from "@/types/card";
 
 const { locale } = useI18n();
 const cardQuery = useCardQuery();
-const { openKey, closeCard, isOverlay } = useCardRoute();
+const { openKey, closeCard, isOverlay, restoreTileFocus } = useCardRoute();
 
 const card = ref<Card | null>(null);
 
@@ -49,6 +49,18 @@ watch(
 const onOpenChange = (open: boolean) => {
   if (!open) closeCard();
 };
+
+/**
+ * Return focus to the originating tile once the dialog is gone (#48 §6).
+ *
+ * Driven off `card` becoming null rather off `onOpenChange`, because the dialog also
+ * closes via browser back — where no open-change handler runs at all. Verified before
+ * this: closing a card dialog left focus on `<body>`, so a keyboard user was returned to
+ * the top of the document after viewing any card.
+ */
+watch(card, (now, before) => {
+  if (before && !now) restoreTileFocus();
+});
 </script>
 
 <template>

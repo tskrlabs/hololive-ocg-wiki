@@ -7,7 +7,16 @@ import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 
 const { locale, t } = useI18n();
 const filter = useFilter();
-const cardQuery = useCardQuery(); 
+const cardQuery = useCardQuery();
+
+/**
+ * Keyboard focus survives `RecycleScroller` reusing DOM nodes (#48 §6).
+ *
+ * Verified in Chromium before the fix: focus a tile, scroll 6000px, and focus is gone to
+ * `<body>` — so the next Tab restarts from the top of the document. The scroller has no
+ * concept of the focused node; it only knows which items are in view.
+ */
+useScrollerFocus();
 
 // Ref to the virtual scroller
 const virtualScroller = ref();

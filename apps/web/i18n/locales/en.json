@@ -631,5 +631,6 @@
     "copied": "Copied deck code URL.",
     "unsupported": "This browser can't copy to the clipboard.",
     "failed": "Couldn't copy — try again, or copy the address bar."
-  }
+  },
+  "More": "More"
 }

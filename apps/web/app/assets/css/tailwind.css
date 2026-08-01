@@ -244,6 +244,29 @@
   }
 
   /**
+   * The focus ring, everywhere (#48 §5, §6).
+   *
+   * `--border-strong` at 2px with a 2px offset. Three reasons it is stated globally
+   * rather than per component:
+   *
+   * - D4 leaves no accent hue, so focus is carried by a ring rather than a colour, and a
+   *   1.23:1 `--border` cannot legally carry it (WCAG 1.4.11 wants 3:1 for UI state).
+   *   `--border-strong` measures 3.10 light / 3.61 dark against the worst ground.
+   * - `:focus-visible` rather than `:focus`, so a mouse click does not paint a ring the
+   *   clicker did not ask for — the browser's own heuristic decides.
+   * - The card grid has ~40 focusable tiles on screen and recycles their DOM nodes, so a
+   *   keyboard user needs to *see* where focus landed after it is restored (#48 §6).
+   *   A per-component ring would have to be repeated on every one of them.
+   *
+   * `outline`, not `box-shadow`: it follows border-radius, survives `overflow-hidden`,
+   * and is the one focus indicator Windows High Contrast mode still renders.
+   */
+  :focus-visible {
+    outline: 2px solid var(--border-strong);
+    outline-offset: 2px;
+  }
+
+  /**
    * Card numbers are compared down a column, so their digits must share a width.
    *
    * `font-mono` is a Tailwind utility rather than a rule here; this adds the numeric

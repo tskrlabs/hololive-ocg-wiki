@@ -631,5 +631,6 @@
     "copied": "URL del código de mazo copiada.",
     "unsupported": "Este navegador no puede copiar al portapapeles.",
     "failed": "No se pudo copiar: inténtalo de nuevo o copia la barra de direcciones."
-  }
+  },
+  "More": "Más"
 }

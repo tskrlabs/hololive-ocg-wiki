@@ -22,6 +22,16 @@ import { Info } from "lucide-vue-next";
 
 const { locale } = useI18n();
 
+/**
+ * Whether this renders its own trigger button (ADR 0009 D21).
+ *
+ * The header collapses status, GitHub, Discord and info into one overflow menu, and a
+ * menu item cannot *be* a `DialogTrigger` — closing the menu unmounts the trigger and
+ * takes the dialog with it. So the menu opens this dialog by binding `open` instead, and
+ * turns the built-in trigger off.
+ */
+const props = defineProps<{ triggerless?: boolean }>();
+
 type InfoContent = {
   "discord-invite-url"?: string;
   contents?: string[];
@@ -30,7 +40,13 @@ type InfoContent = {
 
 type StatusSummary = { generated_at?: string; counts?: { total?: number } };
 
-const isOpen = ref(false);
+/**
+ * Open state, shared with the header's overflow menu.
+ *
+ * `useState` rather than a local ref so the menu item and this component address the same
+ * dialog — the menu is a sibling and unmounts as soon as it is used.
+ */
+const isOpen = useState("infoDialogOpen", () => false);
 
 const { data: info } = await useAsyncData<InfoContent>(
   "info",
@@ -75,7 +91,7 @@ const dataSummary = computed(() => {
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogTrigger as-child>
+    <DialogTrigger v-if="!props.triggerless" as-child>
       <Button variant="ghost" size="icon" :title="$t('About this site')">
         <Info />
         <span class="sr-only">{{ $t("About this site") }}</span>

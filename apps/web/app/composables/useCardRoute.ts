@@ -45,6 +45,15 @@ export const useCardRoute = () => {
   const localePath = useLocalePath();
 
   /**
+   * The `image_key` of the card whose tile opened the dialog, for returning focus to it.
+   *
+   * `useState` because the tile that sets it (`CardItem`, inside the list) and the dialog
+   * that reads it (`CardRouteDialog`, above `<NuxtPage>`) are in different trees — the
+   * same split that forced the dialog out of the list in the first place.
+   */
+  const lastOpenedKey = useState<string | null>("cardFocusReturnKey", () => null);
+
+  /**
    * Whether a card dialog should be open, and for which key.
    *
    * Derived from the path rather than stored, so it cannot disagree with the URL — the
@@ -73,9 +82,49 @@ export const useCardRoute = () => {
    * `push`, not `replace` — the whole point is a history entry to go back to.
    */
   const openCard = (card: Card) => {
+    // Remembered by *key* rather than by element (#48 §6). Reka restores focus to the
+    // node that opened the dialog, which fails here for the reason the whole scroller-
+    // focus problem exists: `RecycleScroller` may have reused that node for another card
+    // while the dialog was open, so restoring to it would focus the wrong card — and if
+    // it was recycled out entirely, focus lands on `<body>`. Verified in Chromium before
+    // this: closing a card dialog left focus on `<body>` every time.
+    lastOpenedKey.value = card.image_key;
+
     router.push({
       path: localePath(`/card/${card.image_key}`),
       state: { [OVERLAY_STATE]: true },
+    });
+  };
+
+  /**
+   * Put focus back on the tile the dialog was opened from, if it is still on screen.
+   *
+   * Looked up by `href` at the moment it is needed, so a recycled node cannot be
+   * mistaken for the original. When the tile is genuinely gone — the reader scrolled the
+   * card out of the list while the dialog was open — focus is left alone rather than
+   * moved somewhere arbitrary; `useScrollerFocus` handles the "lost to body" case.
+   */
+  const restoreTileFocus = () => {
+    const key = lastOpenedKey.value;
+    if (!key) return;
+
+    // ⚠️ This is the *first* attempt, not the only one, and the key is deliberately not
+    // cleared here.
+    //
+    // Traced in Chromium: Reka's `DialogContent` blurs the element it restored to as part
+    // of unmounting — ~300ms after close, with the node still connected — so whatever this
+    // focuses is undone shortly afterwards, and focus lands on `<body>`. Two frames of
+    // delay does not outrun it; the unmount is not on a frame boundary.
+    //
+    // `useScrollerFocus` is what catches that final blur, and it reads this same key to
+    // return to the right tile rather than merely the nearest one. So this sets focus
+    // optimistically (correct when nothing steals it) and leaves the key for the recovery
+    // path, which clears it.
+    requestAnimationFrame(() => {
+      const tile = document.querySelector<HTMLElement>(
+        `.scroller a[href$="/card/${CSS.escape(key)}"]`,
+      );
+      tile?.focus({ preventScroll: true });
     });
   };
 
@@ -99,5 +148,5 @@ export const useCardRoute = () => {
     router.replace(localePath("/"));
   };
 
-  return { openKey, openCard, closeCard, isOverlay };
+  return { openKey, openCard, closeCard, isOverlay, restoreTileFocus };
 };
