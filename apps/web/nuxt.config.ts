@@ -343,8 +343,14 @@ export default defineNuxtConfig({
    * ships, regardless of any runtime guard inside the component. A `.output`-level
    * gitignore does not help: the deploy reads the built directory, not git.
    *
-   * Prototype pages are dev-only by construction (see `app/components/prototype/`), so
-   * they are removed from the route table unless this is a dev server.
+   * **Nothing matches this today.** `app/components/prototype/` and
+   * `pages/prototype-identity.vue` were deleted once ADR 0009 recorded the identity
+   * decision they existed to make (#35), which is what the prototype's own NOTES asked
+   * for. It is kept anyway, as a standing rule rather than a fix: the next throwaway page
+   * is a `git checkout` away from shipping, this costs one array pass at build time, and
+   * the failure it prevents is silent — a prototype in production looks like a working
+   * build. `apps/web/tests/smoke.sh` asserts the build contains no such route, so the two
+   * are belt and braces.
    */
   hooks: {
     "pages:extend"(pages) {
