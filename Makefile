@@ -7,7 +7,7 @@
 # once per clone to have `make check` run automatically before each commit.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup hooks generate golden golden-meta fixtures check check-schema check-py check-ts check-api check-web typecheck dev dev-api dev-web preview clean
+.PHONY: help setup hooks generate golden golden-meta fixtures check check-schema check-py check-ts check-api check-web check-site typecheck dev dev-api dev-web preview clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -89,6 +89,17 @@ check-api: ## Run the Worker's unit tests and the endpoint smoke test
 
 check-web: ## Run the site's unit tests (the pure modules — ADR 0006)
 	@npm test --workspace @holo/web --silent
+
+check-site: ## Build the site and assert what `nuxt generate` actually emitted
+	@# Deliberately **not** part of `make check` (ADR 0009 D24). It generates the site
+	@# twice — once pre-launch, once with indexing on — and `nuxt generate` alone is ~11s
+	@# against `make check`'s ~46s total; the pre-commit hook should stay fast.
+	@#
+	@# What it covers is the build output, which no unit test can see: that the prototype
+	@# route did not ship, that the pre-launch build is still unindexable, that the fonts
+	@# were downloaded, and that the sitemap lists every card URL with its casing intact.
+	@# Each of those is a bug this repo has actually had.
+	@apps/web/tests/smoke.sh
 
 typecheck: ## Typecheck the generated TypeScript, the Worker and the site
 	@npm run typecheck --workspace @holo/schema --silent
