@@ -169,6 +169,13 @@ describe("the filter UI can name every enum member it offers (#58)", () => {
     "errors.deck.invalidCode",
     "errors.deck.invalidCodeDetail",
     "errors.deck.routeMissing",
+    // The narrowed status page (D19).
+    "status.validInDB",
+    "status.lastUpdated",
+    "status.builtAt",
+    "status.summary",
+    "errors.status.title",
+    "errors.status.detail",
   ];
 
   it("names every deck and clipboard message in all seven locales (#57)", () => {

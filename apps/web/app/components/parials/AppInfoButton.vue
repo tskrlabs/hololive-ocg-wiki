@@ -107,8 +107,16 @@ const dataSummary = computed(() => {
         -->
         <DialogTitle>Hololive OCG Wiki</DialogTitle>
         <DialogDescription>
+          <!--
+            `status.validInDB`, not `status.sourceTotal`. The number here is
+            `counts.total` — what *our database* holds — and "Source Total" named the
+            official site's count, which v2 does not report separately (the seeder writes
+            only what `build` validated, so the two were always one number). The key was
+            retired with the status page's tabs; this label was the last thing rendering
+            it, under the wrong name.
+          -->
           <span v-if="dataSummary" class="text-xs tabular-nums">
-            {{ $t("status.sourceTotal") }}: {{ dataSummary }}
+            {{ $t("status.validInDB") }}: {{ dataSummary }}
           </span>
 
           <!-- Same two links as the header, and the same naming rule (#51). -->

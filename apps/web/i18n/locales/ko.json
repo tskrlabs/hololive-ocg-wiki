@@ -539,42 +539,10 @@
   "status": {
     "title": "데이터 상태",
     "description": "카드 데이터베이스 상태 — 공식 소스에서 새로 추가, 업데이트되거나 누락된 카드를 확인할 수 있습니다.",
-    "sourceTotal": "소스 합계",
     "validInDB": "DB 등록",
-    "skippedCount": "건너뜀",
     "lastUpdated": "마지막 업데이트",
-    "tabs": {
-      "new": "새로운",
-      "changed": "업데이트됨",
-      "qaUpdated": "FAQ 업데이트",
-      "removed": "삭제됨",
-      "skipped": "건너뜀"
-    },
-    "badges": {
-      "new": "새로운",
-      "changed": "업데이트됨",
-      "qaUpdated": "FAQ",
-      "removed": "삭제됨",
-      "skipped": "건너뜀"
-    },
-    "views": {
-      "list": "목록",
-      "table": "테이블"
-    },
-    "sort": {
-      "label": "정렬 기준",
-      "cardNumber": "카드 번호",
-      "name": "이름"
-    },
-    "noChanges": "이 카테고리에는 변경 사항이 없습니다.",
-    "skippedReason": "필드 누락",
-    "removedNote": "이 카드들은 이전 데이터셋에 있었지만 현재 소스에는 존재하지 않습니다.",
-    "skippedNote": "이 카드들은 소스 데이터에 존재하지만 필수 필드가 누락되어 데이터베이스에 추가할 수 없습니다.",
-    "fullModeNote": "이 보고서는 전체 모드로 생성되었습니다. 새로운 / 업데이트됨 / FAQ / 삭제됨 열은 소스 간 차이를 반영하며 다음 증분 마이그레이션 실행까지 비어 있을 수 있습니다.",
-    "officialTotal": "공식 사이트에 카드 {total}개가 있습니다",
-    "dbTotal": "데이터베이스에 유효한 카드 {valid}개가 있습니다 (데이터 불완전으로 {skipped}개 건너뜀)",
-    "loadMore": "더 불러오기 ({loaded} / {total})",
-    "viewDetail": "카드 상세 보기"
+    "builtAt": "데이터 생성",
+    "summary": "카드 데이터는 공식 카드 목록에서 다시 생성되어 데이터베이스에 반영됩니다. 위 날짜는 마지막 실행 시점입니다."
   },
   "errors": {
     "retry": "다시 시도",
@@ -607,6 +575,10 @@
       "invalidCode": "이 덱 코드는 유효하지 않습니다",
       "invalidCodeDetail": "링크가 불완전하거나 잘못 입력되었을 수 있습니다. 덱 코드는 대소문자를 구분합니다.",
       "routeMissing": "덱 상세 페이지를 찾을 수 없습니다."
+    },
+    "status": {
+      "title": "상태를 불러올 수 없습니다",
+      "detail": "상태 보고서가 아직 게시되지 않았거나 연결할 수 없습니다."
     }
   },
   "Toggle theme": "테마 전환",

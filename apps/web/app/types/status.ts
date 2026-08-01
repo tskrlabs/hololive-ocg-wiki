@@ -52,8 +52,14 @@ export type StatusReport = {
   writes?: Record<string, number>;
 };
 
-/** The tabs the page offers. v1 also had `qaUpdated`, `removed` and `skipped`. */
-export type StatusTab = "new" | "changed";
-
-/** A per-entry badge. `skipped` is gone with the tab; the rest still occur. */
-export type StatusKind = "new" | "changed" | "qaUpdated" | "removed";
+/**
+ * `StatusTab` and `StatusKind` are **gone** (ADR 0009 D19).
+ *
+ * The page no longer has tabs or per-card badges to type. Production reports
+ * `changed: 2463, new: 0` — a full reseed marks every card changed — so one tab held all
+ * 2,463 entries and the other held none, in two view modes with a sort control and
+ * pagination over a list nobody can act on.
+ *
+ * The per-card arrays above are still typed and still parsed: `/api/status` returns them,
+ * and narrowing the *page* is not a reason to lie about the artifact's shape.
+ */

@@ -539,42 +539,10 @@
   "status": {
     "title": "Estado de Datos",
     "description": "Estado de la base de datos de cartas — qué cartas son nuevas, actualizadas o faltan en la fuente oficial.",
-    "sourceTotal": "Total de la Fuente",
     "validInDB": "En la Base de Datos",
-    "skippedCount": "Omitidas",
     "lastUpdated": "Última Actualización",
-    "tabs": {
-      "new": "Nuevas",
-      "changed": "Actualizadas",
-      "qaUpdated": "FAQ Actualizado",
-      "removed": "Eliminadas",
-      "skipped": "Omitidas"
-    },
-    "badges": {
-      "new": "Nuevo",
-      "changed": "Actualizado",
-      "qaUpdated": "FAQ",
-      "removed": "Eliminado",
-      "skipped": "Omitido"
-    },
-    "views": {
-      "list": "Lista",
-      "table": "Tabla"
-    },
-    "sort": {
-      "label": "Ordenar por",
-      "cardNumber": "Número de Carta",
-      "name": "Nombre"
-    },
-    "noChanges": "No hay cambios en esta categoría.",
-    "skippedReason": "Campos faltantes",
-    "removedNote": "Estas cartas estaban en el conjunto de datos anterior pero ya no están en la fuente.",
-    "skippedNote": "Estas cartas existen en los datos de la fuente pero les faltan campos obligatorios y no se pueden añadir a la base de datos.",
-    "fullModeNote": "Este informe fue generado en modo completo. Las columnas Nuevo / Actualizado / FAQ / Eliminado reflejan las diferencias entre fuentes y pueden estar vacías hasta la próxima ejecución de migración incremental.",
-    "officialTotal": "El sitio oficial reporta {total} cartas",
-    "dbTotal": "Nuestra base de datos tiene {valid} cartas válidas ({skipped} omitidas por datos incompletos)",
-    "loadMore": "Cargar más ({loaded} / {total})",
-    "viewDetail": "Ver detalles de la carta"
+    "builtAt": "Datos Generados",
+    "summary": "Los datos de las cartas se regeneran a partir de la lista oficial y se cargan en la base de datos. Estas fechas indican cuándo ocurrió por última vez."
   },
   "errors": {
     "retry": "Reintentar",
@@ -607,6 +575,10 @@
       "invalidCode": "Este código de mazo no es válido",
       "invalidCodeDetail": "Puede que el enlace esté incompleto o mal escrito. Los códigos de mazo distinguen mayúsculas y minúsculas.",
       "routeMissing": "No se encontró la página de detalles del mazo."
+    },
+    "status": {
+      "title": "El estado no está disponible",
+      "detail": "El informe de estado aún no se ha publicado o no se pudo obtener."
     }
   },
   "Toggle theme": "Cambiar tema",
