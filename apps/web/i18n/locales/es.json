@@ -31,7 +31,6 @@
   "Can Import/Update This Deck": "Puedes Importar/Actualizar Este Mazo",
   "Import This Deck": "Importar Este Mazo",
   "Official Site": "Sitio Oficial",
-  "Decks": "Mazos",
   "No cards to display": "No hay cartas para mostrar",
   "Invalid deck code": "Código de mazo inválido",
   "Deck updated successfully": "Mazo actualizado correctamente",
@@ -534,7 +533,8 @@
       "close": "Cerrar mazo",
       "empty": "No hay ningún mazo seleccionado. Elige uno en Mazos o crea uno nuevo."
     },
-    "removeAllCopies": "Quitar todas las copias de {name}"
+    "removeAllCopies": "Quitar todas las copias de {name}",
+    "myDecks": "Mis Mazos"
   },
   "status": {
     "title": "Estado de Datos",

@@ -32,7 +32,6 @@
   "Can Import/Update This Deck": "可匯入／更新此牌組",
   "Import This Deck": "匯入此牌組",
   "Official Site": "官方網站",
-  "Decks": "牌組",
   "No cards to display": "沒有可顯示的卡片",
   "Invalid deck code": "無效的牌組代碼",
   "Deck updated successfully": "牌組已成功更新",
@@ -535,7 +534,8 @@
       "close": "關閉牌組",
       "empty": "尚未選擇牌組。請從「牌組」中選擇一副，或建立新的牌組。"
     },
-    "removeAllCopies": "移除所有「{name}」"
+    "removeAllCopies": "移除所有「{name}」",
+    "myDecks": "我的牌組"
   },
   "status": {
     "title": "資料狀態",

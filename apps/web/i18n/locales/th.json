@@ -31,7 +31,6 @@
   "Can Import/Update This Deck": "สามารถนำเข้า/อัปเดตเด็คนี้",
   "Import This Deck": "นำเข้าเด็คนี้",
   "Official Site": "เว็บไซต์ทางการ",
-  "Decks": "เด็คทั้งหมด",
   "No cards to display": "ไม่มีการ์ดที่จะแสดง",
   "Invalid deck code": "รหัสเด็คไม่ถูกต้อง",
   "Deck updated successfully": "อัปเดตเด็คสำเร็จแล้ว",
@@ -534,7 +533,8 @@
       "close": "ปิดเด็ค",
       "empty": "ยังไม่ได้เลือกเด็ค เลือกจากเด็ค หรือสร้างใหม่"
     },
-    "removeAllCopies": "ลบ {name} ทั้งหมด"
+    "removeAllCopies": "ลบ {name} ทั้งหมด",
+    "myDecks": "เด็คของฉัน"
   },
   "status": {
     "title": "สถานะข้อมูล",

@@ -14,12 +14,35 @@ import { Rows3, Grid3x3 } from "lucide-vue-next";
  * The icon reports the *current* mode rather than the destination, matching
  * `AppColorModeSwitcher` beside it; `aria-pressed` carries the state for a screen reader,
  * which is the part D4 leaves no colour to say.
+ *
+ * ⚠️ **The card list is the only thing density controls, so this renders only there.**
+ * `useCardDensity` is read by `CardListViewAPI`, `CardItem` and `CardTileSkeleton` —
+ * every one of them inside the grid, which exists on `index` alone. On the card page and
+ * the deck page the button sat in the header and toggled a value nothing on screen read:
+ * a control that visibly changes state and changes nothing, which is worse than an absent
+ * one because it teaches that the control does not work.
+ *
+ * The deck page is included deliberately. It *has* a compact mode, but a local
+ * `compactModeState` ref with its own toggle in the page body — unrelated to this
+ * composable, so this button never drove it there either. Unifying the two is a separate
+ * question about whether one preference should span both surfaces; this only stops the
+ * header claiming to own something it does not.
+ *
+ * The guard is `useRouteBaseName`, the same mechanism `AppFooterCurrentDeck` uses to keep
+ * the Edit badge off the detail pages — one way of asking "which page is this", not two.
  */
 const { density, toggle, isCompact } = useCardDensity();
+
+const route = useRoute();
+const getRouteBaseName = useRouteBaseName();
+
+/** The card grid's page, and so the only page this control acts on. */
+const isCardList = computed(() => getRouteBaseName(route) === "index");
 </script>
 
 <template>
   <Button
+    v-if="isCardList"
     variant="ghost"
     size="icon"
     :title="$t('density.label')"

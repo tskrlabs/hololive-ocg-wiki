@@ -31,7 +31,6 @@
   "Can Import/Update This Deck": "이 덱을 가져오기/업데이트할 수 있습니다",
   "Import This Deck": "이 덱 가져오기",
   "Official Site": "공식 사이트",
-  "Decks": "덱 목록",
   "No cards to display": "표시할 카드가 없습니다",
   "Invalid deck code": "잘못된 덱 코드입니다",
   "Deck updated successfully": "덱이 성공적으로 업데이트되었습니다",
@@ -534,7 +533,8 @@
       "close": "덱 닫기",
       "empty": "선택된 덱이 없습니다. 덱에서 선택하거나 새로 만드세요."
     },
-    "removeAllCopies": "{name} 모두 제거"
+    "removeAllCopies": "{name} 모두 제거",
+    "myDecks": "내 덱"
   },
   "status": {
     "title": "데이터 상태",

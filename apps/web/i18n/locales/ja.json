@@ -31,7 +31,6 @@
   "Can Import/Update This Deck": "このデッキをインポート／更新できます",
   "Import This Deck": "このデッキをインポート",
   "Official Site": "公式サイト",
-  "Decks": "デッキ一覧",
   "No cards to display": "表示するカードがありません",
   "Invalid deck code": "無効なデッキコードです",
   "Deck updated successfully": "デッキが正常に更新されました",
@@ -534,7 +533,8 @@
       "close": "デッキを閉じる",
       "empty": "デッキが選択されていません。「デッキ」から選ぶか、新しく作成してください。"
     },
-    "removeAllCopies": "「{name}」をすべて削除"
+    "removeAllCopies": "「{name}」をすべて削除",
+    "myDecks": "マイデッキ"
   },
   "status": {
     "title": "データステータス",

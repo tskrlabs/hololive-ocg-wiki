@@ -9,12 +9,13 @@ const switchLocalePath = useSwitchLocalePath();
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
       <!--
-        Named, and it needs to be (#51). This carries the *same* Languages icon as
-        `AppOriginalSwitcher` next to it, so without names the two are indistinguishable
-        even to a sighted user — and a screen reader heard "button" for both.
+        Named, and it needs to be (#51) — a screen reader heard "button" here.
+        `Languages` now belongs to this control alone: `AppOriginalSwitcher` beside it
+        carried the same glyph, which left the two indistinguishable to a *sighted* user
+        no matter how well named they were. It takes `Type` instead; see its own note.
       -->
       <Button variant="ghost" size="icon" :title="$t('Change language')">
-        <Languages />
+        <Languages aria-hidden="true" />
         <span class="sr-only">{{ $t("Change language") }}</span>
       </Button>
     </DropdownMenuTrigger>

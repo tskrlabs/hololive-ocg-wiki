@@ -31,7 +31,6 @@
   "Can Import/Update This Deck": "Can Import/Update This Deck",
   "Import This Deck": "Import This Deck",
   "Official Site": "Official Site",
-  "Decks": "Decks",
   "No cards to display": "No cards to display",
   "Invalid deck code": "Invalid deck code",
   "Deck updated successfully": "Deck updated successfully",
@@ -534,7 +533,8 @@
       "close": "Close deck",
       "empty": "No deck selected. Choose one from Decks, or create a new one."
     },
-    "removeAllCopies": "Remove all copies of {name}"
+    "removeAllCopies": "Remove all copies of {name}",
+    "myDecks": "My Decks"
   },
   "status": {
     "title": "Data Status",

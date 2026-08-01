@@ -31,7 +31,6 @@
   "Can Import/Update This Deck": "Bisa Impor/Perbarui Deck Ini",
   "Import This Deck": "Impor Deck Ini",
   "Official Site": "Situs Resmi",
-  "Decks": "Decks",
   "No cards to display": "Tidak ada kartu untuk ditampilkan",
   "Invalid deck code": "Kode deck tidak valid",
   "Deck updated successfully": "Deck berhasil diperbarui",
@@ -534,7 +533,8 @@
       "close": "Tutup deck",
       "empty": "Belum ada deck yang dipilih. Pilih dari Decks, atau buat yang baru."
     },
-    "removeAllCopies": "Hapus semua salinan {name}"
+    "removeAllCopies": "Hapus semua salinan {name}",
+    "myDecks": "Dek Saya"
   },
   "status": {
     "title": "Status Data",

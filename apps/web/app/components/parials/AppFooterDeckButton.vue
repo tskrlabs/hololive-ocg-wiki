@@ -1,5 +1,24 @@
 <script setup lang="ts">
-import { PackagePlus, Trash2, Layers, Pencil, Eye } from "lucide-vue-next";
+/**
+ * The saved-decks picker: choose one, create one, view or delete (D18).
+ *
+ * ⚠️ **Not to be confused with `AppFooterDeckPanelButton` beside it**, which opens the
+ * panel showing the *current* deck. The two sat in the same footer labelled "Decks" and
+ * "Deck" — one letter apart in English, and in **`tc` the identical string**: both read
+ * 牌組, so on Traditional Chinese the footer carried two differently-icon'd buttons with
+ * the same word. `ja`, `ko` and `th` had already distinguished them (デッキ一覧 against
+ * デッキ); `en`, `id` and `es` differed only by a plural.
+ *
+ * So this is named for what it holds rather than pluralised: **"My Decks"**, with
+ * `Library` for a shelf of saved things. The panel button keeps "Deck" and `PanelRight`,
+ * which describes a surface rather than a collection. `Layers` went with the rename — it
+ * reads as "stacked cards", which is what a *deck* is, not what a list of decks is.
+ *
+ * The old top-level `Decks` key is deleted rather than left: it had no other caller, and
+ * a translated string sitting unused in seven locales is one a later component reaches
+ * for by name without knowing it was retired.
+ */
+import { PackagePlus, Trash2, Library, Pencil, Eye } from "lucide-vue-next";
 import type { Deck } from "@/types/deck";
 import { toast } from "vue-sonner";
 
@@ -74,9 +93,16 @@ const onNewDeckButtonClick = () => {
   <Dialog v-model:open="isCreateDeckDialogOpen">
     <Popover v-model:open="isActive">
       <PopoverTrigger as-child>
+        <!--
+          The label stays visible at every width, unlike the panel button's, which is
+          `hidden md:inline-flex`. That asymmetry is useful rather than untidy: on a phone
+          the panel button is an icon alone, so the only labelled deck control is this
+          one — and "My Decks" beside a bare `PanelRight` is easier to tell apart than two
+          unlabelled icons would be.
+        -->
         <Button>
-          <Layers />
-          {{ $t("Decks") }}
+          <Library aria-hidden="true" />
+          {{ $t("deck.myDecks") }}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" class="w-auto min-w-50 p-3 md:p-3">
