@@ -24,10 +24,52 @@
  * `useState` because the value has to outlive the component that produced it; that is the
  * whole point. It is deliberately *not* persisted beyond the session — a scroll offset
  * from yesterday means nothing against a result set that may have been refiltered since.
+ *
+ * ---
+ *
+ * **Two kinds of memory, because there are two kinds of remount** (D18, amended).
+ *
+ * A card view remounts the list *unchanged*: same width, same columns, same rows. A pixel
+ * offset is exactly right there, and is what the scroller can be trusted to reproduce.
+ *
+ * Opening the deck panel remounts it **reflowed**. The panel takes 384px, so the grid
+ * drops columns — 6 → 4 at 1512px — and `RecycleScroller`'s key carries the column count,
+ * so it rebuilds. A pixel offset survives that guard (`itemCount` is unchanged: the
+ * *list* did not change, only its shape) and is nonetheless wrong:
+ *
+ * | | columns | rows | itemSize | 3000px lands on |
+ * |---|---|---|---|---|
+ * | panel closed | 6 | 411 | ~327px | item ~55 |
+ * | panel open   | 4 | 616 | ~337px | item ~35 |
+ *
+ * Twenty cards backwards, silently. What is stable across a reflow is **which card you
+ * were looking at**, so the panel path remembers a first-visible *index* and restores it
+ * through `scrollToItem`. The card path keeps pixels, because there the pixel is the
+ * finer answer and nothing invalidates it.
  */
 
-/** Scroll offsets are only meaningful against the same result set. */
-type ScrollMemory = { top: number; itemCount: number } | null;
+/**
+ * What was remembered, and how to put it back.
+ *
+ * `itemCount` guards both: an offset *or* an index means nothing against a different
+ * result set. The discriminant is the anchor kind, so a caller cannot restore an index as
+ * if it were pixels.
+ */
+type ScrollMemory =
+  | { kind: "offset"; top: number; itemCount: number }
+  | { kind: "index"; index: number; itemCount: number }
+  | null;
+
+/**
+ * A scroller that can be positioned by item rather than by pixel.
+ *
+ * `RecycleScroller`'s own API. Typed structurally rather than imported: the composable is
+ * unit-tested without the component, and a structural type is what lets a test supply a
+ * stub that behaves like the real thing.
+ */
+export interface ItemScroller {
+  scrollToItem?: (index: number) => void;
+}
 
 export const useGridScrollMemory = () => {
   const memory = useState<ScrollMemory>("gridScrollMemory", () => null);
@@ -35,7 +77,35 @@ export const useGridScrollMemory = () => {
   /** Called as a card opens, while the scroller still exists to be read. */
   const remember = (element: HTMLElement | null | undefined, itemCount: number) => {
     if (!element || element.scrollTop <= 0) return;
-    memory.value = { top: element.scrollTop, itemCount };
+    memory.value = { kind: "offset", top: element.scrollTop, itemCount };
+  };
+
+  /**
+   * Called as the deck panel opens or closes, before the reflow (D18, amended).
+   *
+   * Remembers *which card is at the top of the viewport* rather than how far down the
+   * pixels are, because the reflow changes what a pixel means. The index is derived here,
+   * where the outgoing geometry is still true — after the remount the column count has
+   * already changed and the sum cannot be reconstructed.
+   *
+   * `itemSize` is the row height and `columns` the current column count, both from
+   * `gridGeometry`. Guarded because a zero would divide into infinity, and the grid can
+   * legitimately be mid-measurement when the panel is toggled.
+   */
+  const rememberIndex = (
+    element: HTMLElement | null | undefined,
+    itemSize: number,
+    columns: number,
+    itemCount: number,
+  ) => {
+    if (!element || itemSize <= 0 || columns <= 0) return;
+    if (element.scrollTop <= 0) return;
+
+    const firstVisibleRow = Math.floor(element.scrollTop / itemSize);
+    const index = firstVisibleRow * columns;
+    if (index <= 0 || index >= itemCount) return;
+
+    memory.value = { kind: "index", index, itemCount };
   };
 
   /**
@@ -68,13 +138,33 @@ export const useGridScrollMemory = () => {
    * caller retries across a few frames — the scroller does not exist at `nextTick`, since
    * `shouldRenderScroller` gates on a width that arrives from a `ResizeObserver`.
    */
-  const restore = (element: HTMLElement | null | undefined, itemCount: number): boolean => {
+  const restore = (
+    element: HTMLElement | null | undefined,
+    itemCount: number,
+    scroller?: ItemScroller | null,
+  ): boolean => {
     const saved = memory.value;
     if (!element || !saved) return false;
     if (saved.itemCount !== itemCount) {
-      // A different result set: the offset is meaningless and must not be retried.
+      // A different result set: the anchor is meaningless and must not be retried.
       memory.value = null;
       return false;
+    }
+
+    // An index anchor goes back through the scroller's own API, which is the only thing
+    // that knows where item N *now* is — the whole point of remembering an index across a
+    // reflow is that the caller cannot compute the pixel itself.
+    //
+    // Success is still measured rather than assumed, for the same reason as below: called
+    // before the rows exist, `scrollToItem` positions into a scroller with no height and
+    // the result is clamped away.
+    if (saved.kind === "index") {
+      if (!scroller?.scrollToItem) return false;
+      scroller.scrollToItem(saved.index);
+      if (element.scrollTop <= 0) return false;
+
+      memory.value = null;
+      return true;
     }
 
     // ⚠️ **Success is measured, not assumed**, and that is the whole subtlety here.
@@ -99,5 +189,5 @@ export const useGridScrollMemory = () => {
     memory.value = null;
   };
 
-  return { remember, restore, forget, isPending };
+  return { remember, rememberIndex, restore, forget, isPending };
 };

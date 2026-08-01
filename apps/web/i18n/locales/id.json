@@ -529,7 +529,7 @@
       "off": "Tidak mengedit",
       "toggle": "Alihkan mode edit"
     },
-    "drawer": {
+    "panel": {
       "open": "Buka deck",
       "close": "Tutup deck",
       "empty": "Belum ada deck yang dipilih. Pilih dari Decks, atau buat yang baru."

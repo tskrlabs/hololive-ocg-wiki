@@ -2,16 +2,16 @@
 /**
  * Which deck is being edited, and the toggle for whether it is (ADR 0009 D4, D18).
  *
- * **The Edit toggle is now breakpoint-dependent, by decision.** Above `lg` the deck
- * drawer implies editing — opening it is the statement — so this reports state rather
- * than being the way to change it. Below `lg` the drawer occludes the grid, so the two
- * decouple and this stays the control. `useDeckDrawer` owns that rule; this renders it.
+ * **The Edit toggle is breakpoint-dependent, by decision.** Above `xl` the deck panel is
+ * pushed beside the grid and implies editing — opening it is the statement — so this
+ * reports state rather than being the way to change it. Below `xl` the panel is a modal
+ * sheet that occludes the grid, so the two decouple and this stays the control.
+ * `useDeckPanel` owns that rule; this renders it.
  */
 const route = useRoute();
 const getRouteBaseName = useRouteBaseName();
 
 const decks = useDecks();
-const drawer = useDeckDrawer();
 const { requireDeck } = useDeckGuard();
 
 const isEditing = computed(() => decks.isEditing.value);

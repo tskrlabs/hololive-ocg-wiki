@@ -529,7 +529,7 @@
       "off": "Not editing",
       "toggle": "Toggle editing mode"
     },
-    "drawer": {
+    "panel": {
       "open": "Open deck",
       "close": "Close deck",
       "empty": "No deck selected. Choose one from Decks, or create a new one."

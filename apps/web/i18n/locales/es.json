@@ -529,7 +529,7 @@
       "off": "Sin editar",
       "toggle": "Alternar modo de edición"
     },
-    "drawer": {
+    "panel": {
       "open": "Abrir mazo",
       "close": "Cerrar mazo",
       "empty": "No hay ningún mazo seleccionado. Elige uno en Mazos o crea uno nuevo."

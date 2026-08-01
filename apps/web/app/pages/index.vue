@@ -2,6 +2,14 @@
 const { t, locale } = useI18n();
 const { siteUrl } = useRuntimeConfig().public;
 
+/**
+ * Which container renders the deck, and whether it pushes (D18, amended).
+ *
+ * The page reads it because *it* owns the two containers — the panel's contents are the
+ * same either way, so `DeckPanel` has no reason to know.
+ */
+const panel = useDeckPanel();
+
 // SEO Meta tags for the main page
 useSeoMeta({
   title: t("Card List"),
@@ -59,27 +67,70 @@ useHead({
     <FilterRail />
 
     <!--
-      The card list takes whatever the rail and the chrome leave. The scroller itself does
-      the scrolling — this is `overflow-hidden` so nothing can scroll twice. See #44.
+      The card list takes whatever the rail, the deck panel and the chrome leave. The
+      scroller itself does the scrolling — this is `overflow-hidden` so nothing can scroll
+      twice. See #44.
+
+      When the deck panel opens beside it, this shrinks and the grid re-derives its
+      columns from the width it has left. That needs no code: `CardListViewAPI` already
+      observes its own width, and #43's rule turns a narrower box into fewer columns
+      rather than smaller cards.
     -->
     <main class="relative min-w-0 grow min-h-0 overflow-hidden">
       <CardListViewAPI />
     </main>
+
+    <!--
+      The deck panel, **pushed** (D18, amended).
+
+      A plain flex sibling — not a portal, not a dialog, no overlay and no focus trap — so
+      the grid beside it stays visible *and* clickable. That is what makes "the panel is
+      open" mean "I am building a deck": you pick cards from a live grid with the deck
+      beside it, rather than opening a surface to check what you just added.
+
+      Only from `xl`. Below that the rail and a 384px panel would leave the grid under two
+      columns, so the sheet below takes over — `useDeckPanel` states the arithmetic.
+
+      `v-if` rather than a hidden element: an `<aside>` that is only `hidden` still exists
+      for the accessibility tree and for `useDeckCards`, which would fetch the deck's cards
+      into a surface nobody can see.
+    -->
+    <aside
+      v-if="panel.isOpen.value && panel.isPushed.value"
+      id="deck-panel"
+      class="hidden w-96 shrink-0 border-l bg-background xl:flex"
+      :aria-label="$t('Deck')"
+    >
+      <DeckPanel />
+    </aside>
   </div>
 
   <!--
-    The deck is a right-anchored overlay drawer (D18), no longer a panel anchored inside
-    the grid region. `FloatingDeck` had to live inside `<main>` to avoid overlapping the
-    filter rail; an overlay has no such constraint, so it sits at page level with the
-    other chrome.
+    The same panel, **modal**, below `xl` (D18, amended).
+
+    Here it does occlude the grid, so it is a real dialog and `useDeckPanel` stops
+    coupling it to editing. One `DeckPanel`, two containers — D15's pattern, for the same
+    reason: the containers differ in how they present the surface, not in what it is.
   -->
-  <DeckDrawer />
+  <Sheet
+    v-if="!panel.isPushed.value"
+    :open="panel.isOpen.value"
+    @update:open="panel.setOpen"
+  >
+    <SheetContent side="right" class="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+      <SheetHeader class="sr-only">
+        <SheetTitle>{{ $t("Deck") }}</SheetTitle>
+      </SheetHeader>
+
+      <DeckPanel />
+    </SheetContent>
+  </Sheet>
 
   <AppFooter>
     <AppFooterCurrentDeck />
     <div class="ml-auto flex items-center gap-2">
       <AppFooterOptionsButton />
-      <AppFooterDeckDrawerButton />
+      <AppFooterDeckPanelButton />
       <AppFooterDeckButton />
     </div>
   </AppFooter>

@@ -274,3 +274,112 @@ describe("compact's extra column on a phone (#52)", () => {
     expect(gridGeometry(375, { showsText: false }).columns).toBe(columnsForWidth(375));
   });
 });
+
+/**
+ * The grid, with the deck panel pushed beside it (ADR 0009 D18, amended).
+ *
+ * The panel takes a fixed 384px out of the row the filter rail and the grid already
+ * share, so from `xl` the grid's width is `viewport - 280 - 384`. Whether that is a
+ * *usable* grid is arithmetic, and it is the arithmetic that chose 1280 as the threshold
+ * — below it, the rail plus the panel leave less than three columns' worth of room.
+ *
+ * These sweep, like everything else in this file, because the property is about the whole
+ * range rather than a chosen width: the point of pushing rather than overlaying is that
+ * *no* width above the threshold produces a grid outside the band. A handful of examples
+ * cannot say that, and the failure it guards against — a tile squeezed under `MIN_TILE` —
+ * is silent on screen.
+ */
+describe("the grid beside a pushed deck panel (D18)", () => {
+  /** The panel's fixed width. Stated once; `useDeckPanel` documents why it is fixed. */
+  const PANEL = 384;
+  /** The filter rail, permanent from `lg` and therefore always present above `xl`. */
+  const RAIL = 280;
+  /** The threshold `useDeckPanel` switches on. */
+  const PUSH_MIN_WIDTH = 1280;
+
+  /** What the grid actually gets once both chrome columns have taken their share. */
+  const gridWidth = (viewport: number) => viewport - RAIL - PANEL;
+
+  /** Every width at or above the threshold, to 4K. */
+  const PUSHED_WIDTHS = Array.from(
+    { length: 3841 - PUSH_MIN_WIDTH },
+    (_, i) => PUSH_MIN_WIDTH + i,
+  );
+
+  it("keeps every tile inside the 150–240px band", () => {
+    for (const viewport of PUSHED_WIDTHS) {
+      const width = gridWidth(viewport);
+      const tile = width / columnsForWidth(width);
+
+      expect(tile, `${viewport}px viewport`).toBeGreaterThanOrEqual(MIN_TILE);
+      expect(tile, `${viewport}px viewport`).toBeLessThanOrEqual(MAX_TILE);
+    }
+  });
+
+  it("keeps at least three columns, so the grid still reads as one", () => {
+    // Two columns is `MIN_COLUMNS` — the point at which `columnsForWidth` stops being
+    // able to protect the tile size at all, because it has nothing left to give back.
+    for (const viewport of PUSHED_WIDTHS) {
+      expect(columnsForWidth(gridWidth(viewport)), `${viewport}px viewport`)
+        .toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  /**
+   * The discriminator, in the spirit of `oldLadder` above — and the measurement that
+   * says how much slack the threshold has.
+   *
+   * A threshold test that a *wrong* threshold also passes is not a regression net. `lg`
+   * was the obvious candidate: it is where the rail appears, and it is what the original
+   * D18 switched on. It fails, but **not everywhere in the band**, and the shape of the
+   * failure is the useful part:
+   *
+   * | viewport | grid | columns | tile |
+   * |----------|------|---------|------|
+   * | 1024     | 360  | 2       | 180px |
+   * | 1144     | 480  | 2       | 240px ← last two-column width |
+   * | 1145     | 481  | 3       | 160px ← three columns, barely |
+   * | 1280     | 616  | 3       | 205px |
+   *
+   * So the hard floor is **1145**, in one contiguous run, and `xl` sits 135px above it.
+   * That gap is deliberate rather than incidental: 1145 is not a breakpoint any stylesheet
+   * has, and a 160px tile is 10px off `MIN_TILE` — a threshold placed there would be one
+   * padding change away from breaking. `xl` is the nearest real breakpoint that clears it
+   * with room, which is what makes it a decision instead of a rounding.
+   */
+  it("has a hard floor at 1145px, and `xl` clears it with room", () => {
+    const failures = [];
+    for (let viewport = 1024; viewport < PUSH_MIN_WIDTH; viewport++) {
+      const width = gridWidth(viewport);
+      const columns = columnsForWidth(width);
+      const tile = width / columns;
+      if (columns < 3 || tile < MIN_TILE || tile > MAX_TILE) failures.push(viewport);
+    }
+
+    // One contiguous run from the bottom of the band — not a scattering, which would mean
+    // the rule was non-monotonic and no single threshold could exist.
+    expect(failures[0]).toBe(1024);
+    expect(failures.at(-1)).toBe(1144);
+    expect(failures.length).toBe(1145 - 1024);
+
+    // And `lg` really is inside it, so the original constant was not merely untidy.
+    expect(failures).toContain(1024);
+  });
+
+  it("costs columns rather than tile size, which is #43's rule paying off", () => {
+    // The whole case for pushing: the cards you can still see are the same size as
+    // before. Measured at the widths the ADR quotes.
+    for (const viewport of [1280, 1512, 1920]) {
+      const browsing = gridGeometry(viewport - RAIL);
+      const building = gridGeometry(gridWidth(viewport));
+
+      expect(building.columns, `${viewport}px`).toBeLessThan(browsing.columns);
+      // Within 40px of the browsing tile — the tile is preserved, the count is not.
+      expect(
+        Math.abs(building.itemSecondarySize - browsing.itemSecondarySize),
+        `${viewport}px`,
+      ).toBeLessThan(40);
+    }
+  });
+});
+

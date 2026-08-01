@@ -7,6 +7,17 @@ const { t } = useI18n();
 
 const decks = useDecks();
 
+/**
+ * Choosing a deck opens the panel and starts editing (D18).
+ *
+ * Every path out of this component that sets the current deck goes through `openFor`,
+ * because all three are the same statement of intent: create a deck, click its name, or
+ * click the pencil. Setting the deck and stopping there left the user with a shut panel,
+ * editing off, and a grid whose add controls do not render — three more actions to reach
+ * the state their first click already meant.
+ */
+const panel = useDeckPanel();
+
 // popover
 const isActive = ref(false);
 
@@ -25,7 +36,9 @@ const createDeck = () => {
   const newDeck: Deck = decks.createNewDeck(name.value, author.value);
 
   decks.addDeck(newDeck);
-  decks.setCurrentDeck(newDeck);
+  // Not `setCurrentDeck`: creating a deck is the strongest statement of intent there is,
+  // so it lands in the state that intent implies — panel open, editing on.
+  panel.openFor(newDeck);
 
   // Close the dialog
   isCreateDeckDialogOpen.value = false;
@@ -35,6 +48,20 @@ const createDeck = () => {
   author.value = "";
 
   toast.success(t("Deck created successfully!"));
+};
+
+/**
+ * Pick a deck from the list, and get on with editing it.
+ *
+ * The name and the pencil both land here — they were two copies of the same comma
+ * expression, `decks.setCurrentDeck(deck), (isActive = false)`, which is also why the
+ * pencil (the *edit* affordance) did not turn editing on. Closing the popover is part of
+ * the action: the deck panel is what the user asked for, and leaving a popover open on
+ * top of it would cover the thing it just revealed.
+ */
+const selectDeck = (deck: Deck) => {
+  panel.openFor(deck);
+  isActive.value = false;
 };
 
 const onNewDeckButtonClick = () => {
@@ -75,7 +102,7 @@ const onNewDeckButtonClick = () => {
                   <div class="pr-2 max-w-[50vw] grow">
                     <button
                       class="w-full text-left"
-                      @click="decks.setCurrentDeck(deck), (isActive = false)"
+                      @click="selectDeck(deck)"
                     >
                       {{ deck.name }}
                     </button>
@@ -97,7 +124,7 @@ const onNewDeckButtonClick = () => {
                       variant="ghost"
                       size="icon"
                       class="size-8"
-                      @click="decks.setCurrentDeck(deck), (isActive = false)"
+                      @click="selectDeck(deck)"
                     >
                       <Pencil class="size-4" />
                     </Button>

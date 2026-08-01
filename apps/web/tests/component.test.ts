@@ -100,6 +100,7 @@ Object.assign(globalThis, {
   // (#59). Its rules are covered by `scroll-memory.test.ts`.
   useGridScrollMemory: () => ({
     remember: () => {},
+    rememberIndex: () => {},
     restore: () => false,
     forget: () => {},
     isPending: () => false,
@@ -111,6 +112,15 @@ Object.assign(globalThis, {
     isTabbable: () => true,
     focusIndex: () => {},
     clampTo: () => {},
+  }),
+  // The list watches the deck panel so a reflow does not lose the reader's place (D18).
+  // Closed and unpushed here: these tests are about paging and query state, and the
+  // anchoring itself is covered by `scroll-memory.test.ts`.
+  useDeckPanel: () => ({
+    isOpen: ref(false),
+    isPushed: ref(false),
+    setOpen: () => {},
+    toggle: () => {},
   }),
 });
 

@@ -246,6 +246,104 @@ watch(
 );
 
 /**
+ * Put the scroll back, retrying until it sticks (#59, and D18's reflow).
+ *
+ * A single deferred attempt is not enough and neither is a frame or two. The scroller
+ * only exists once `shouldRenderScroller` is true, which waits on a width from a
+ * `ResizeObserver`; and even then it renders one viewport of rows before it knows its
+ * full height, so a position set too early is clamped to 0 and lost. Measured in
+ * Chromium, the whole sequence settles within ~200ms of the list remounting.
+ *
+ * **Giving up must `forget()`**: a memory left behind keeps `isPending()` true, which
+ * would suppress the scroll-to-top on every later filter change.
+ *
+ * Shared by both remount paths, because both need exactly this. Returning from a card
+ * remounts *this component* and is driven from `onMounted`; opening the deck panel
+ * remounts only the **scroller** — via its `:key`, which carries the column count — so
+ * `onMounted` never runs and the panel watcher drives it instead. The element and the
+ * component instance are both passed: an offset is restored by writing `scrollTop`, an
+ * index by the scroller's own `scrollToItem`.
+ */
+const scheduleScrollRestore = () => {
+  let attempts = 0;
+  const tryRestore = () => {
+    if (!scrollMemory.isPending()) return;
+    if (
+      scrollMemory.restore(
+        virtualScroller.value?.$el as HTMLElement | undefined,
+        displayedCards.value.length,
+        virtualScroller.value,
+      )
+    ) {
+      return;
+    }
+    if (++attempts > 20) {
+      scrollMemory.forget();
+      return;
+    }
+    requestAnimationFrame(tryRestore);
+  };
+  nextTick(tryRestore);
+};
+
+/**
+ * Opening or closing the deck panel reflows the grid; the card being looked at must not
+ * move (D18, amended).
+ *
+ * The panel takes 384px, so `<main>` shrinks and the column count drops — 6 → 4 at
+ * 1512px. `gridColCount` is in the scroller's `:key`, so the scroller **remounts** and
+ * lands back at offset 0. The same loss as #59, from a different cause: there the whole
+ * page navigated, here only the grid's shape changed.
+ *
+ * It cannot reuse #59's pixel offset. The reflow changes how far down the list a given
+ * card sits while leaving `itemCount` — the guard — untouched, so a pixel restore would
+ * pass every check and still land ~20 cards away. What survives a reflow is *which card*,
+ * so this remembers an index.
+ *
+ * ⚠️ `flush: "pre"` is load-bearing: the default runs after the DOM has updated, by which
+ * point the reflow has happened and `scrollTop`/`itemSize` describe the *new* layout —
+ * the very numbers this exists to capture before they change.
+ */
+const deckPanel = useDeckPanel();
+
+watch(
+  () => deckPanel.isOpen.value && deckPanel.isPushed.value,
+  () => {
+    scrollMemory.rememberIndex(
+      virtualScroller.value?.$el as HTMLElement | undefined,
+      itemSize.value,
+      gridColCount.value,
+      displayedCards.value.length,
+    );
+  },
+  { flush: "pre" },
+);
+
+/**
+ * Restore when the geometry actually changes — **not** when the panel toggles.
+ *
+ * ⚠️ These are two different moments, and restoring at the wrong one loses the position
+ * in a way that looks exactly like not having tried. The reflow is driven by a
+ * `ResizeObserver`, which fires asynchronously *after* `<main>` has been narrowed, so at
+ * the toggle the scroller still has its old column count and its old rows. A restore
+ * scheduled there finds a perfectly working scroller, succeeds against the **old**
+ * geometry, and consumes the memory — and then the observer arrives, the column count
+ * changes, the `:key` changes, and the scroller remounts at offset 0 with nothing left to
+ * put it back.
+ *
+ * So the capture is keyed on the panel (before the reflow, while the old numbers are
+ * still true) and the restore on `gridColCount` (after it, once the remount is certain).
+ *
+ * This watcher is the same signal the scroller's `:key` is built from, so it cannot
+ * disagree about whether a remount happened. It runs on any column change, including a
+ * window resize — harmless, because `isPending()` is false unless something asked for a
+ * restore.
+ */
+watch(gridColCount, () => {
+  if (scrollMemory.isPending()) scheduleScrollRestore();
+});
+
+/**
  * On mount: apply the filters, and put the scroll back if we are returning from a card.
  *
  * Both happen here because both are "the list just appeared". `applyFilters` is debounced
@@ -259,42 +357,7 @@ watch(
  */
 onMounted(() => {
   applyFilters();
-
-  // The component instance, not its element: the restore goes through the scroller's own
-  // `scrollToPosition`, because assigning `scrollTop` on a scroller that has not laid out
-  // its virtual height yet is silently clamped to 0.
-  // The element, not the component: `scrollToPosition` reports success without moving
-  // anything on a scroller that has not laid out yet, so the restore assigns `scrollTop`
-  // and reads it back to see whether it took.
-  const restoreScroll = () =>
-    scrollMemory.restore(
-      virtualScroller.value?.$el as HTMLElement | undefined,
-      displayedCards.value.length,
-    );
-
-  /**
-   * Keep trying until the offset sticks, then stop (#59).
-   *
-   * A single deferred attempt is not enough and neither is a frame or two. The scroller
-   * only exists once `shouldRenderScroller` is true, which waits on a width from a
-   * `ResizeObserver`; and even then it renders one viewport of rows before it knows its
-   * full height, so an assignment made too early is clamped to 0 and lost. Measured in
-   * Chromium, the whole sequence settles within ~200ms of the list remounting.
-   *
-   * **Giving up must `forget()`**: a memory left behind keeps `isPending()` true, which
-   * would suppress the scroll-to-top on every later filter change.
-   */
-  let attempts = 0;
-  const tryRestore = () => {
-    if (!scrollMemory.isPending()) return;
-    if (restoreScroll()) return;
-    if (++attempts > 20) {
-      scrollMemory.forget();
-      return;
-    }
-    requestAnimationFrame(tryRestore);
-  };
-  nextTick(tryRestore);
+  scheduleScrollRestore();
 });
 
 /**
