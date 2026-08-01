@@ -5,6 +5,10 @@ import { RotateCcw, TriangleAlert } from "lucide-vue-next";
 import { RecycleScroller } from "vue-virtual-scroller";
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 
+// A pure function rather than an auto-import: it is the arrow-key arithmetic, and
+// `tests/roving-focus.test.ts` exercises it over every geometry without a DOM.
+import { targetIndex } from "~/composables/useGridRovingFocus";
+
 const { locale, t } = useI18n();
 const filter = useFilter();
 const cardQuery = useCardQuery();
@@ -25,6 +29,20 @@ useScrollerFocus();
  * composable for why the offset is restored rather than the component kept alive.
  */
 const scrollMemory = useGridScrollMemory();
+
+/**
+ * The grid is one tab stop, and the arrows move within it (#60, #48 §6).
+ *
+ * Measured before this: the grid was ~40 tab stops, so tabbing past it to the footer was
+ * not realistically possible. The list owns the movement because moving focus needs the
+ * live column count *and* the scroller — a target tile may not be mounted at all, so it
+ * has to be scrolled into existence before it can be focused.
+ *
+ * The composable is called up here with the other state because `scrollToTop` reads it;
+ * the handlers that need `displayedCards` and `gridColCount` are defined further down,
+ * after those exist.
+ */
+const roving = useGridRovingFocus();
 
 // Ref to the virtual scroller
 const virtualScroller = ref();
@@ -154,6 +172,10 @@ const handleScrollEnd = useDebounceFn(() => {
 const scrollToTop = () => {
   shouldPreserveScroll.value = false;
   scrollPosition.value = 0;
+  // The roving tabindex goes back to the first card with the scroll (#60). Left where it
+  // was, it could point past the end of a smaller result set — and then *no* tile would
+  // be tabbable, silently dropping the grid out of the tab order.
+  roving.activeIndex.value = 0;
   // A remembered offset belongs to the *previous* result set (#59). The count guard in
   // `restore` would usually catch that, but two different filters can match the same
   // number of cards — so the offset is dropped where the intent is known rather than
@@ -285,6 +307,23 @@ const state = cardQuery.state;
 
 // Use the filtered cards from the store
 const displayedCards = computed(() => cardQuery.cards.value);
+
+const onGridMove = (key: string, from: number) => {
+  const next = targetIndex(key, from, gridColCount.value, displayedCards.value.length);
+  if (next === null || next === from) return;
+  roving.focusIndex(next, virtualScroller.value);
+};
+
+/**
+ * Never let the tabbable index point past the end of the list.
+ *
+ * `scrollToTop` covers the filter path, but the result set can also shrink without one —
+ * a retry landing on fewer cards, or a locale switch. If the index outran the list, no
+ * tile would carry `tabindex="0"` and the grid would drop out of the tab order entirely,
+ * which is a worse bug than the one this feature fixes.
+ */
+watch(() => displayedCards.value.length, roving.clampTo);
+
 
 /** Ask again. The failed page was never cached, so this is a real retry. */
 const retry = () => {
@@ -445,9 +484,14 @@ watch(
             forcing the card's ratio onto the whole thing would crop the name it exists to
             show. The ratio lives on the art element inside `CardItem`, where it belongs.
           -->
-          <template #default="{ item }">
+          <!--
+            `index` comes from the scroller's own slot, so it is the item's position in
+            the result set rather than in the mounted window — which is what the roving
+            tabindex has to key on (#60).
+          -->
+          <template #default="{ item, index }">
             <div class="p-1">
-              <CardItem :item="item" />
+              <CardItem :item="item" :index="index" @move="onGridMove" />
             </div>
           </template>
         </RecycleScroller>

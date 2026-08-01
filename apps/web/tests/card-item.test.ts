@@ -74,6 +74,14 @@ Object.assign(globalThis, {
   // Read only for the result-set length that guards the scroll restore (#59) — the tile
   // itself asks the store nothing.
   useCardQuery: () => ({ cards: ref([]) }),
+  // Only the active tile is tabbable (#60); its arithmetic is covered by
+  // `roving-focus.test.ts`. Here it only has to exist.
+  useGridRovingFocus: () => ({
+    activeIndex: ref(0),
+    isTabbable: () => true,
+    focusIndex: () => {},
+    clampTo: () => {},
+  }),
 });
 
 /** The toast surface, spied rather than rendered. */

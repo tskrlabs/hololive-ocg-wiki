@@ -7,6 +7,14 @@ import { sectionForCardType } from "@/composables/deckSections";
 
 const props = defineProps<{
   item: Card;
+  /**
+   * This tile's position in the result set, for the grid's roving tabindex (#60).
+   *
+   * Optional because the fallback grid (rendered before the resize observer reports a
+   * width) has no virtualisation and no need for one — every tile there is tabbable, as
+   * they all exist.
+   */
+  index?: number;
 }>();
 
 const decks = useDecks();
@@ -26,6 +34,24 @@ const scrollMemory = useGridScrollMemory();
 const cardQuery = useCardQuery();
 
 /**
+ * The grid is one tab stop; the arrows move within it (#60).
+ *
+ * Only the active tile is tabbable, so `tabindex` is `0` on one card and `-1` on the
+ * other ~39 the scroller has mounted. Without this the grid was forty tab stops and
+ * reaching the footer by keyboard was not realistically possible.
+ *
+ * ⚠️ Declared before `open()` reads it. `<script setup>` runs top to bottom and a `const`
+ * is in its temporal dead zone until evaluated, so a handler defined above one it closes
+ * over throws `Cannot access before initialization` during setup — which surfaces as a
+ * blank 500 page with no component stack, not as a build error.
+ */
+const roving = useGridRovingFocus();
+
+const isTabbable = computed(
+  () => props.index === undefined || roving.isTabbable(props.index),
+);
+
+/**
  * Open a card, remembering where the grid was first (#59).
  *
  * This has to happen *here*, at the click, because by the time the route changes the
@@ -37,7 +63,51 @@ const cardQuery = useCardQuery();
 const open = () => {
   const scroller = document.querySelector<HTMLElement>(".scroller");
   scrollMemory.remember(scroller, cardQuery.cards.value.length);
+  // Clicking a tile also moves the roving tabindex to it (#60), so Tab resumes from the
+  // card just looked at rather than from wherever the keyboard last was.
+  if (props.index !== undefined) roving.activeIndex.value = props.index;
   openCard(props.item);
+};
+
+/**
+ * An arrow press is reported upward, not acted on here.
+ *
+ * Moving focus needs the column count and the scroller's `scrollToItem`, both of which
+ * belong to the list. A tile that reached for them — through a `querySelector` or a
+ * component internal — would be a child depending on its parent's private shape, and it
+ * is the kind of coupling that survives exactly until the list is refactored.
+ */
+const emit = defineEmits<{ move: [key: string, index: number] }>();
+
+/**
+ * The keys the grid consumes. Anything else falls through to the browser.
+ *
+ * Declared before the handler that reads it: `const` in a module scope is in its temporal
+ * dead zone until evaluated, and `<script setup>` runs top to bottom — so a handler
+ * defined above a `const` it closes over throws `Cannot access before initialization` at
+ * setup time, which renders as a 500 with no component stack.
+ */
+const MOVEMENT_KEYS = new Set([
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "Home",
+  "End",
+  "PageUp",
+  "PageDown",
+]);
+
+const onTileKeydown = (event: KeyboardEvent) => {
+  if (props.index === undefined) return;
+  // A modified arrow is a browser or OS gesture, never ours.
+  if (event.metaKey || event.ctrlKey || event.altKey) return;
+  if (!MOVEMENT_KEYS.has(event.key)) return;
+
+  // Only movement keys are swallowed — Tab above all must keep working, since it is how
+  // the roving tabindex is entered and left.
+  event.preventDefault();
+  emit("move", event.key, props.index);
 };
 
 /**
@@ -168,10 +238,19 @@ const count = computed(() => {
         2,463 real internal links rather than a wall of JavaScript. `@click.prevent`
         keeps the in-page behaviour a dialog rather than a navigation.
       -->
+      <!--
+        `tabindex` is the roving one (#60): `0` on exactly one tile, `-1` on the rest, so
+        the grid is a single tab stop and the arrows move within it. `data-card-index` is
+        how the list finds a tile again after scrolling it into existence — the element
+        cannot be held onto, because `RecycleScroller` recycles the node.
+      -->
       <NuxtLink
         :to="localePath(`/card/${item.image_key}`)"
         class="w-full"
+        :tabindex="isTabbable ? 0 : -1"
+        :data-card-index="index"
         @click.prevent="open"
+        @keydown="onTileKeydown"
       >
         <!--
           `alt` is the card's name (#38 §3, #48 §7). It was passing none at all, so

@@ -104,6 +104,14 @@ Object.assign(globalThis, {
     forget: () => {},
     isPending: () => false,
   }),
+  // Only the active tile is tabbable (#60); its arithmetic is covered by
+  // `roving-focus.test.ts`. Here it only has to exist.
+  useGridRovingFocus: () => ({
+    activeIndex: ref(0),
+    isTabbable: () => true,
+    focusIndex: () => {},
+    clampTo: () => {},
+  }),
 });
 
 // happy-dom has no ResizeObserver, and `v-resize-observer` constructs one on mount.

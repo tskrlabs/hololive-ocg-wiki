@@ -101,6 +101,15 @@ export const useScrollerFocus = () => {
       const scroller = document.querySelector(".scroller");
       if (!scroller) return;
 
+      // ⚠️ A roving move is in flight — leave it alone (#60).
+      //
+      // Arrow, Home and End all scroll a tile into existence and then focus it, and the
+      // scroll recycles rows for a few hundred milliseconds afterwards. Focus legitimately
+      // passes through `<body>` during that, and this recovery would grab it and drop it
+      // on the *nearest* tile — so `End` landed six cards from where it was asked to go.
+      // The roving move knows its own target; this one only knows the viewport.
+      if (useState<boolean>("gridRovingMoving").value) return;
+
       // The card dialog knows which tile the reader came from, and that beats geometry:
       // returning to the card you just looked at is what "close" should mean. Only when
       // that tile is genuinely gone — scrolled out while the dialog was open — does the
