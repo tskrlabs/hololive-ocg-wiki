@@ -18,6 +18,9 @@
 
 import tailwindcss from "@tailwindcss/vite";
 
+import cardUrls from "@holo/schema/card-urls" with { type: "json" };
+import { cardSitemapUrls } from "./lib/cardUrls";
+
 /**
  * The public origin.
  *
@@ -43,6 +46,30 @@ const SITE_URL = process.env.NUXT_PUBLIC_SITE_URL
  */
 const IS_PUBLIC = process.env.NUXT_PUBLIC_LAUNCHED === "true";
 
+/**
+ * The locales, declared once.
+ *
+ * `i18n.locales` below and the sitemap's card URLs must agree — a locale in one and not
+ * the other means either 2,463 sitemap entries pointing at a prefix that does not route,
+ * or a whole language missing from the sitemap. The set is the contract's `LOCALES`, and
+ * a locale added there must be added here.
+ *
+ * `as const` is load-bearing: `@nuxtjs/i18n` types `locales` against the literal union of
+ * its own codes, so without it every `code` widens to `string` and the array stops being
+ * assignable. That the typecheck rejects a widened list is the property worth keeping —
+ * it is what makes a typo here a build failure rather than a locale silently missing from
+ * the sitemap.
+ */
+const LOCALES = [
+  { code: "tc", name: "繁體中文", language: "zh-TW", file: "tc.json" },
+  { code: "ja", name: "日本語", language: "ja-JP", file: "ja.json" },
+  { code: "en", name: "English", language: "en-US", file: "en.json" },
+  { code: "id", name: "Bahasa Indonesia", language: "id-ID", file: "id.json" },
+  { code: "ko", name: "한국어", language: "ko-KR", file: "ko.json" },
+  { code: "th", name: "ภาษาไทย", language: "th-TH", file: "th.json" },
+  { code: "es", name: "Español", language: "es-ES", file: "es.json" },
+] as const;
+
 export default defineNuxtConfig({
   compatibilityDate: "2026-07-26",
   devtools: { enabled: false },
@@ -64,8 +91,57 @@ export default defineNuxtConfig({
     indexable: IS_PUBLIC,
   },
 
-  seo: { fallbackTitle: false },
-  sitemap: { autoLastmod: true, enabled: IS_PUBLIC },
+  /**
+   * `nuxt-seo-utils`. Its config key is `seo`, not `seoUtils` — worth stating, because
+   * the wrong key is accepted silently by Nuxt and the defaults simply stay in force.
+   *
+   * `canonicalLowercase` is **off** (ADR 0009 D6, #33 §4).
+   *
+   * Card URLs are `image_key` verbatim and case-sensitive — `hSD01/hSD01-001_OSR` — and
+   * the Worker 301s a wrong-case URL to the stored form. A lowercased canonical would
+   * therefore point at a URL that redirects, on all 2,463 card pages.
+   *
+   * ⚠️ This is **defusing a latent conflict, not fixing a live bug**, and the difference
+   * matters if you are deciding whether to keep the line. Verified in Chromium and in the
+   * Worker's served bytes: the canonical is already case-correct today, because
+   * `app.vue`'s `useHead` sets one and `nuxt-seo-utils` sets its own at
+   * `tagPriority: "low"` — so ours wins and the lowercasing never reaches the tag.
+   *
+   * The setting is still `true` in the shipped runtime config, is read separately by
+   * `useShareLinks`, and becomes live the moment anyone removes that `useHead` — at which
+   * point every card canonical silently starts pointing at a redirect. One line to make
+   * the config say what the site actually does.
+   */
+  seo: { fallbackTitle: false, canonicalLowercase: false },
+
+  /**
+   * The sitemap (#33 §5).
+   *
+   * `enabled: IS_PUBLIC` is the pre-launch invisibility guarantee and predates this: with
+   * the flag unset, no sitemap is emitted at all.
+   *
+   * **Where the card URLs come from is the whole problem this solves.** `nuxt generate`
+   * runs on Cloudflare's builder with no D1 binding and no credentials, and the site never
+   * loads `cards.json` (21 MB — D8 moved querying to D1), so the list cannot be queried at
+   * build time. `holo-data build` emits a committed `card-urls.json` instead — 2,463
+   * entries, ~190 KB, verified by `make check` — and it is a static import here. No D1, no
+   * credentials, no network during the build.
+   *
+   * **Splitting is per locale, and it is free.** 17,241 URLs at ~116 bytes is ~1.9 MB in
+   * one file, inside both sitemap.org limits (50,000 URLs, 50 MB) — so this is for
+   * legibility in Search Console, not necessity. `@nuxtjs/sitemap` already derives one
+   * sitemap per locale from `@nuxtjs/i18n` and indexes them in `sitemap_index.xml`;
+   * `cardSitemapUrls` routes each URL into its locale's file. Chunking stays off, so each
+   * is one ~0.3 MB file of 2,464 URLs.
+   *
+   * See `lib/cardUrls.ts` for why the URLs are absolute — it is what keeps the module from
+   * inlining hreflang alternates into every entry and taking this to ~12.3 MB.
+   */
+  sitemap: {
+    autoLastmod: true,
+    enabled: IS_PUBLIC,
+    urls: () => cardSitemapUrls(cardUrls, LOCALES, SITE_URL),
+  },
 
   runtimeConfig: {
     public: {
@@ -245,15 +321,8 @@ export default defineNuxtConfig({
 
   i18n: {
     baseUrl: SITE_URL,
-    locales: [
-      { code: "tc", name: "繁體中文", language: "zh-TW", file: "tc.json" },
-      { code: "ja", name: "日本語", language: "ja-JP", file: "ja.json" },
-      { code: "en", name: "English", language: "en-US", file: "en.json" },
-      { code: "id", name: "Bahasa Indonesia", language: "id-ID", file: "id.json" },
-      { code: "ko", name: "한국어", language: "ko-KR", file: "ko.json" },
-      { code: "th", name: "ภาษาไทย", language: "th-TH", file: "th.json" },
-      { code: "es", name: "Español", language: "es-ES", file: "es.json" },
-    ],
+    // Spread because `LOCALES` is `as const` (readonly) and this option is mutable.
+    locales: [...LOCALES],
     // `tc` is the default and still carries a prefix, matching v1's URLs exactly. The
     // locale set is the contract's LOCALES, and a locale added there must be added here.
     defaultLocale: "tc",

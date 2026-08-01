@@ -24,12 +24,15 @@ hooks: ## Enable the pre-commit hook (run once per clone)
 	@echo "✓ pre-commit hook enabled — 'make check' now runs before each commit"
 	@echo "  disable with: git config --unset core.hooksPath"
 
-generate: ## Regenerate JSON Schema, TypeScript, D1 DDL, fixtures.sql and the fixture artifacts
+generate: ## Regenerate JSON Schema, TypeScript, D1 DDL, fixtures.sql, the fixture artifacts and the card URLs
 	uv run python packages/schema/scripts/generate.py
 	uv run python packages/schema/scripts/generate_ddl.py
 	uv run python packages/schema/scripts/generate_fixtures_sql.py
 	uv run python packages/schema/scripts/generate_i18n.py
 	uv run python fixtures/build_local_artifacts.py
+	@# The sitemap's URL list. Rewritten only when `pipeline/build/cards.json` exists —
+	@# it describes all 2,463 real cards, not the 34 fixtures, so it has no other source.
+	uv run python packages/schema/scripts/check_card_urls.py
 
 fixtures: ## Re-select the fixture card set (needs `holo-data build` output)
 	uv run python packages/schema/scripts/build_fixtures.py
@@ -72,6 +75,7 @@ check-schema: ## Fail if the committed generated files are stale
 	@uv run python packages/schema/scripts/generate_fixtures_sql.py --check
 	@uv run python packages/schema/scripts/generate_i18n.py --check
 	@uv run python fixtures/build_local_artifacts.py --check
+	@uv run python packages/schema/scripts/check_card_urls.py --check
 
 check-py: ## Run the Python tests (schema + pipeline)
 	@uv run pytest packages/schema/tests pipeline/tests -q

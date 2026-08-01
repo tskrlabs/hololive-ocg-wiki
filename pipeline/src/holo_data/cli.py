@@ -521,6 +521,17 @@ def build(
         f"{sum(options.values()) / 1024:.0f} KB total"
     )
 
+    # The sitemap's URL list (#33 §5). Written here for the same reason as the filter
+    # options — beside the data it describes — but into `packages/schema/`, because it is
+    # **committed**: the site's build has no D1 and no credentials, so this is the only
+    # way `nuxt generate` can know which cards exist.
+    urls_size = build_module.save_card_urls(collection)
+    typer.echo(
+        f"✓ wrote {paths.card_urls_json()} — {report.valid} card URLs, "
+        f"{urls_size / 1024:.0f} KB"
+    )
+    typer.echo("  commit it — `make check` fails if it is stale")
+
 
 # --- verify ------------------------------------------------------------------
 
