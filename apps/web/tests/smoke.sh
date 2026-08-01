@@ -176,6 +176,83 @@ else
   FAILURES=$((FAILURES + 1))
 fi
 
+echo ""
+echo "every component a template names actually exists (#61)"
+# The bug this exists for shipped dead for a month and nothing could see it.
+#
+# `nuxt.config` sets `pathPrefix: false`, so `card-list/OriginalText.vue` registered as
+# `OriginalText` while five call sites asked for `CardListOriginalText`. Vue renders an
+# unknown name as an inert custom element and **warns to the console** rather than
+# failing, so the build succeeded, the page rendered, and the source names were simply
+# absent — on the detail page and in every dialog.
+#
+# So: every PascalCase tag a template writes must be either auto-imported (present in the
+# registry `nuxt prepare` generates) or explicitly imported in that same file. That
+# comparison is what found #61, and it covers the whole class — a typo'd name anywhere
+# fails here, not just this one component.
+#
+# ⚠️ Deliberately **not** grepping the built bundle for `resolveComponent`. That was tried
+# first and does not work: the minifier renames it to a per-chunk alias (`oe`, which is
+# separately `new`, `Object.freeze` and a plain local in other chunks), so anchoring on
+# the call shape matched 73 unrelated i18n keys and reka-ui internals against the 1 real
+# hit. Source-vs-registry has no such ambiguity.
+#
+# `.nuxt/components.d.ts` is generated, so it is regenerated rather than trusted — a stale
+# copy would assert against the previous build's component list.
+npx nuxt prepare >/dev/null 2>&1
+
+registry="$(mktemp)"
+trap 'rm -f "$registry"' EXIT
+grep -oE '^export const [A-Za-z0-9_]+' .nuxt/components.d.ts \
+  | sed 's/export const //' | sort -u > "$registry"
+
+# Vue's own built-ins are never in the registry and always resolve.
+BUILTINS='^(Transition|TransitionGroup|Teleport|Suspense|KeepAlive|Component)$'
+
+# `app/components/ui/` is **excluded**: it is vendored shadcn-vue, whose reka-ui
+# primitives (`DialogPortal`, `SelectViewport`, …) register through a plugin this check
+# cannot see. 23 of them trip it; none is ours. Everything hand-written here is covered.
+unresolved=""
+while IFS= read -r file; do
+  case "$file" in app/components/ui/*) continue ;; esac
+
+  # The template half only. A `<script>` block names types (`CardCollection`) that are not
+  # components, and a comment can name a component it does not render.
+  template="$(awk '/^<template/,0' "$file")"
+  [[ -z "$template" ]] && continue
+  script="$(awk '/^<script/,/^<\/script>/' "$file")"
+
+  while IFS= read -r tag; do
+    [[ -z "$tag" ]] && continue
+    grep -qE "$BUILTINS" <<<"$tag" && continue
+    grep -qx "$tag" "$registry" && continue
+    # Explicitly imported or defined in this same file — lucide icons and the like.
+    grep -qE "(\\b$tag\\b.*from|import .*\\b$tag\\b|const $tag)" <<<"$script" && continue
+    unresolved+="$file: $tag"$'\n'
+  done < <(grep -oE '<[A-Z][A-Za-z0-9]*' <<<"$template" | sed 's/<//' | sort -u)
+done < <(find app/components app/pages app/layouts -name '*.vue')
+
+if [[ -z "$unresolved" ]]; then
+  printf '  ✓ %-54s\n' "no template names a component that does not exist"
+else
+  printf '  ✗ %-54s\n' "a template names a component that does not exist"
+  printf '%s' "$unresolved" | sed 's/^/      /'
+  FAILURES=$((FAILURES + 1))
+fi
+
+# The control, and the reason the check above cannot pass vacuously: it searches for
+# *zero* leftovers, which is also what an empty registry produces. If `components.d.ts`
+# moved or changed format, the loop would find nothing and go green having compared
+# nothing. Verified the other way too — renaming the component back to `OriginalText.vue`
+# makes the check fail, naming both files that reference it.
+if [[ -s "$registry" ]]; then
+  printf '  ✓ %-54s %s known\n' "  (control: the registry was read)" \
+    "$(wc -l < "$registry" | tr -d ' ')"
+else
+  printf '  ✗ %-54s components.d.ts came back empty\n' "  (control: the registry was read)"
+  FAILURES=$((FAILURES + 1))
+fi
+
 # --------------------------------------------------------------------------------------
 # 2. The launched build — what Phase 7 will ship. Built second so the working tree is
 #    left holding the pre-launch output, which is what `make preview` and `make check-api`
