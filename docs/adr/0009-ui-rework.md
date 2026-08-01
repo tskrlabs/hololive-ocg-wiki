@@ -1,7 +1,7 @@
 # ADR 0009 — The UI/UX rework
 
 **Status:** accepted
-**Date:** 2026-07-31
+**Date:** 2026-07-31 · **D18 amended 2026-08-01**
 **Amends:** [ADR 0006](0006-website.md)'s D13 — deliberately, not as a correction
 **Blocks:** Phase 7 (launch)
 **Tracked in:** [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31) — the
@@ -144,11 +144,137 @@ filters"*, blaming the user for a network error.
 
 ### Deck building
 
-**D18. The deck becomes a right-anchored overlay drawer.** A permanent third column costs a
+**D18. The deck panel pushes the grid from `xl`, and is a modal sheet below it.**
+*Amended 2026-08-01; the original decision is kept below, because what it got right is
+most of it.*
+
+The rule is unchanged and is the reason the amendment is small: *the deck surface implies
+editing only where it does not occlude the grid.*
+
+| width | surface | occludes the grid | editing |
+|---|---|---|---|
+| ≥ 1280 | pushed column, 384px | no | follows the panel |
+| 1024–1280 | modal sheet | yes | decoupled |
+| < 1024 | modal sheet | yes | decoupled |
+
+**What the original got wrong was not the reasoning but the primitive.** It called for "an
+overlay beside a still-visible grid" and was built on `SheetContent`, which mounts a
+`bg-black/80` overlay and reka-ui's focus-trapping `DialogContent`. So at *every* width the
+grid was blacked out and inert while the deck was open — and the deck-open ⇒ `isEditing`
+coupling, whose whole premise is that you can click a tile while the deck is up, was
+coupling editing to a surface you could not use. The design was never actually built. A
+non-modal drawer would have fixed the modality and left the rightmost columns permanently
+covered, so the panel **pushes** instead: `<main>` shrinks and the grid re-derives its
+columns from the width it has left.
+
+**Pushing costs columns, not tile size** — which is D11/#43 paying off. `columnsForWidth`
+re-derives from the new width, so the cards you can still see are the size they were:
+
+| viewport | browsing | building | tile |
+|---|---|---|---|
+| 1280 | 5 @200px | **3** | 205px |
+| 1512 | 6 @205px | **4** | 212px |
+| 1920 | 8 @205px | **6** | 209px |
+
+**Why `xl` and not `lg`.** The rail is 280px and the panel 384px, so a pushed grid is
+`width - 664`. Measured over every width: the hard floor is **1145px**, below which the
+grid falls under three columns or outside the 150–240px band, in one contiguous run from
+1024. `xl` sits 135px above that floor — 1145 is not a breakpoint any stylesheet has, and
+its 160px tile is 10px off `MIN_TILE`, one padding change from breaking. So the threshold
+is the nearest real breakpoint that clears the floor with room. The consequence is
+accepted knowingly: **between 1024 and 1280 the deck is still a sheet you open and close**,
+because the alternative there is a two-column grid.
+
+**One `DeckPanel`, two containers** — D15's pattern, for D15's reason: the containers
+differ in how they present the surface, not in what it is. Above `xl` a plain `<aside>`
+flex sibling; below, a `Sheet`. The panel cannot be one component that changes mode,
+because reka-ui portals dialog content to `<body>` and a portalled element cannot be a
+flex sibling of the thing it is meant to push.
+
+**The panel's own grid is 3 columns, fixed.** It was `grid-cols-4 md:grid-cols-10`, and
+`md:` reads the *viewport* while the grid lives in a 384px panel — so on any desktop it
+packed ten columns into ~326px and rendered **30px tiles under 32px control buttons**. The
+panel's width is a constant, so a responsive prefix there can only ever be wrong. Three
+columns is what 326px affords: 102×142px.
+
+**Opening the panel must not lose the reader's place.** The column count is in
+`RecycleScroller`'s key, so a reflow remounts it at offset 0 — the same loss as #59 from a
+different cause. #59's pixel offset cannot be reused: the reflow leaves `itemCount` (its
+guard) untouched while changing what a pixel means, so a pixel restore passes every check
+and lands ~20 cards away — at 1512px, 3,000px is item ~54 at 6 columns and ~32 at 4. What
+survives a reflow is *which card*, so the panel path remembers a first-visible **index**
+and restores it through `scrollToItem`. The card path keeps pixels.
+
+**Choosing a deck opens the panel and starts editing, at every width.** Creating a deck,
+clicking its name, and clicking the pencil are one statement of intent, and all three used
+to do only `setCurrentDeck` — so the panel stayed shut, editing stayed off, and the next
+click on a card did nothing, because the add controls only render while editing. `openFor`
+does all three. It deliberately does **not** defer to `setOpen`: that applies the rule
+above, which is right for *toggling a surface* and wrong for *choosing a deck*, since
+below `xl` it would leave editing off and the user closing the sheet to reach the cards
+would find they still could not add any. The rule survives, because it governs what
+opening the panel implies, not what every path to an open panel implies.
+
+That exposed a latent bug in the #57 delete guard, which routed through `setOpen(false)`
+and therefore left `isEditing` true whenever the panel occluded the grid — unreachable
+before, because nothing turned editing on at those widths; one click away after. The guard
+now clears editing directly: with no deck there is nothing editing could refer to.
+
+**The mobile sheet gets a full-width Close button.** `SheetContent`'s built-in close is a
+bare 16px `X` in the top-right — under WCAG 2.5.8's 24px minimum, and in the hardest corner
+of a phone to reach one-handed. The new one is pinned below the scroll region, so it is
+reachable without scrolling past 71 cards. Sheet only: where the panel is pushed there is
+nothing to close out of, and the footer's Deck button is the toggle.
+
+**And the capture and the restore key on different events**, which is not a detail. The
+reflow is asynchronous: `<main>` narrows, *then* a `ResizeObserver` reports it, *then* the
+column count changes, *then* the scroller remounts. A restore scheduled at the toggle finds
+a working scroller with the **old** geometry, succeeds against it, and consumes the memory
+— and the remount that follows lands at the top with nothing left to put it back. The
+position is lost in a way indistinguishable from never having tried. So the index is
+captured on the panel (before the reflow, while the old numbers are true) and restored on
+`gridColCount` (after it, once the remount is certain) — the same signal the scroller's
+`:key` is built from, so the two cannot disagree about whether a remount happened.
+
+<details>
+<summary>The original D18, superseded</summary>
+
+**The deck becomes a right-anchored overlay drawer.** A permanent third column costs a
 full grid column at 1512px (6 → 5), paid even while browsing; today's `FloatingDeck` sits
 directly over where the rail now is. Deck-open replaces `isEditing` — **except on mobile**,
 where the sheet occludes the grid, so the two decouple. The rule: *the deck surface implies
 editing only where it does not occlude the grid.*
+
+Its objection to a permanent column stands and is *why the panel is not permanent*: the
+column is paid only while the deck is open, and closed is the default on every load.
+
+</details>
+
+**D25. Scrollbars are themed globally, and the thumb is `--border-strong`.**
+*Added 2026-08-02.*
+
+The site had **two** scrollbar systems and styled only one. Five surfaces use reka-ui's
+`ScrollArea`, which draws its own thumb; every other scroll region — the card grid, the
+filter rail, the deck panel, the card page, `/status` — is a plain `overflow-y-auto` and
+rendered the browser default. In a palette whose whole premise is that nothing on screen
+competes with card art (D3), a 15px OS-grey trough was the last piece of unthemed chrome.
+
+`--border-strong`, not `--border`, because **D5 already decided this**: a scrollbar reports
+position within 2,463 cards, which makes it a UI component conveying state, and WCAG 1.4.11
+wants 3:1. `--border` measures 1.23:1. `ScrollBar.vue`'s scaffold default was `bg-border`
+and moves onto the same token, so the two systems agree.
+
+The track occupies layout width rather than overlaying, which makes a CSS choice an input
+to D11's column rule — `ResizeObserver`'s `contentRect` excludes a classic
+`::-webkit-scrollbar`. Swept over 320–3840px in every rail/panel combination: the 10px
+shifts *where* thresholds land (260 widths above `xl` drop one column) but **cannot push a
+tile outside the 150–240px band** — 300 out-of-band widths with and without it, all from
+the `MIN_COLUMNS` clamp in combinations the app never renders. Pinned in `grid.test.ts`.
+
+Two mechanisms, because they are not one feature: `::-webkit-scrollbar` for Chrome and
+Safari, `scrollbar-width`/`scrollbar-color` for Firefox, whose `thin` is ~11px and not
+settable. The two are near-identical rather than pixel-identical; the alternative is a
+JS-drawn scrollbar on every region, which is what `ScrollArea` already is.
 
 ### Supporting surfaces
 
@@ -207,6 +333,13 @@ is 46s today and `nuxt generate` alone is 11s.
   [#56](https://github.com/tskrlabs/hololive-ocg-wiki/issues/56).
 - **D4 constrains everything downstream.** A future contributor reaching for a colour to
   mean "active" is reaching for something this palette does not have.
+- **D18's amendment found two bugs that had shipped inside the rework itself**, both
+  invisible to `make check` and both of the same kind — a value crossing a boundary that
+  no pure test could see (D24). The deck drawer was modal at every width, so the decision
+  it implemented was never the decision that ran; and the panel's card grid was keyed on
+  the viewport while living in a fixed-width panel, so it rendered 30px tiles under 32px
+  buttons. Two mounted tests now cover them, and the second is verified to fail against
+  the original markup.
 
 ## Alternatives considered
 

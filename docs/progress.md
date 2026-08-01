@@ -11,10 +11,19 @@ dashboard step only the maintainer can take. See [Phase 6](#phase-6--push-to-dep
 
 ✅ **Phase 8 — the UI/UX rework — is done, and Phase 7 is unblocked.** All six
 prerequisites (`61b2793..77720d0`) and all sixteen commits (`95c75fc..441c885`) are on
-`develop`, `make check` green after each. Phase 5's D13 had fenced the website to
+`develop`, `make check` green after each.
+
+🔄 **D18 was amended on 2026-08-01: the deck is a *pushed* panel from `xl`, not an overlay
+drawer.** Building it revealed the original had never actually run — `DeckDrawer` was a
+`Sheet` at every width, so the "overlay beside a still-visible grid" was a modal over a
+blacked-out one, and the deck-open ⇒ editing coupling applied to a grid you could not
+click. It now pushes: `<main>` shrinks and #43's rule turns the narrower box into fewer
+columns rather than smaller cards (6 → 4 at 1512px, tile 205 → 212px). Two bugs found and
+fixed, both invisible to `make check` and both wiring rather than logic — see
+[ADR 0009 D18](adr/0009-ui-rework.md#deck-building). Phase 5's D13 had fenced the website to
 refactors, so v2's *inside* was new while its **outside was still v1's** — a stock shadcn
 theme, an art-only grid, and **no URL for a card**. Every card now has one, the sitemap
-lists all 17,241, and a bad key returns a real 404. Twenty-four decisions in
+lists all 17,241, and a bad key returns a real 404. Twenty-five decisions in
 [ADR 0009](adr/0009-ui-rework.md); the sequence and what it found are
 [below](#phase-8--the-uiux-rework).
 
