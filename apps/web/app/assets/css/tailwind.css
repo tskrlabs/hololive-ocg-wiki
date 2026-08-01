@@ -277,6 +277,87 @@
   }
 
   /**
+   * Scrollbars, everywhere — stated globally for the same reason the focus ring is.
+   *
+   * The site has **two** scrollbar systems and only one of them was ever styled. Five
+   * surfaces use reka-ui's `ScrollArea` (the card dialog, the filter sheet, the Decks
+   * popover), which draws its own thumb. Every other scroll region — the card grid, the
+   * filter rail, the deck panel, the card page, `/status` — is a plain
+   * `overflow-y-auto` and got the browser default: a 15px grey trough that belongs to no
+   * palette and is the one piece of unthemed chrome left on screen.
+   *
+   * `--border-strong`, not `--border`, and D5 is the reason. A scrollbar reports position
+   * within 2,463 cards, which makes it a UI component conveying state — WCAG 1.4.11 wants
+   * 3:1, and `--border` measures **1.23:1** light / 1.27 dark. `--border-strong` measures
+   * 3.39 / 4.13 on the ground and 3.10 / 3.61 on `--muted`, the worst surface either is
+   * drawn against. `ScrollBar.vue` is moved onto the same token so the two systems agree.
+   *
+   * ⚠️ **The track occupies layout width, and the card grid derives its columns from
+   * that number.** `ResizeObserver`'s `contentRect` excludes a classic
+   * `::-webkit-scrollbar`, so this 10px is subtracted from the width `columnsForWidth`
+   * measures. Swept over every width from 320 to 3840 in all four rail/panel
+   * combinations:
+   *
+   * - At the widths the ADR quotes, nothing moves: 1512px with the panel open goes
+   *   848 → 838px, still 4 columns, tile 212 → 210px.
+   * - **260 widths above `xl` do drop a column**, and that is fine — they are the widths
+   *   already sitting within 10px of a threshold, the change is never more than one
+   *   column, and the resulting tile stays inside the 150–240px band.
+   * - The band holds identically with and without the scrollbar: 300 out-of-band widths
+   *   either way, all of them from the `MIN_COLUMNS` clamp in rail+panel combinations
+   *   below the push threshold, which the app never renders. In every configuration it
+   *   *does* render above `xl`, zero widths fall out of band.
+   *
+   * So the scrollbar shifts where the thresholds land, and cannot push a tile out of the
+   * band. `tests/grid.test.ts` pins the second claim, which is the one that matters.
+   *
+   * Two mechanisms, because they are not the same feature: `::-webkit-scrollbar` in
+   * Chrome and Safari, `scrollbar-width`/`scrollbar-color` in Firefox. Firefox's `thin`
+   * is ~11px and not settable, so the two are near-identical rather than pixel-identical
+   * — the alternative is a JS-drawn scrollbar on every region, which is what `ScrollArea`
+   * already is and why it is not the default here.
+   */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* Transparent rather than `--muted`: the regions this runs in sit on four different
+     surfaces, and a track with its own fill would be a rectangle of the wrong colour on
+     three of them. */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /**
+   * `border-radius` plus a transparent border is the standard way to inset a webkit
+   * thumb: the border is drawn in the track's colour under `background-clip: padding-box`,
+   * so the visible thumb is 6px inside a 10px gutter. It matches `ScrollArea`'s
+   * `w-2.5 p-px rounded-full`, which is the look this is converging on.
+   */
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--border-strong);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted-foreground);
+  }
+
+  /* The corner where two scrollbars meet renders as a grey square by default — the one
+     remaining piece of unthemed chrome if left out. */
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /**
    * Two script-specific rules, from measured data rather than taste (#47).
    *
    * They key off `<html lang>`, which `@nuxtjs/i18n` sets per locale — verified at

@@ -383,3 +383,65 @@ describe("the grid beside a pushed deck panel (D18)", () => {
   });
 });
 
+
+/**
+ * The scrollbar's 10px, and what it may and may not do to the grid.
+ *
+ * The card grid's scroller is a native `overflow-y-auto`, and its scrollbar is styled as
+ * a **classic gutter** rather than an overlay (`tailwind.css`). A classic
+ * `::-webkit-scrollbar` is excluded from `ResizeObserver`'s `contentRect`, so the width
+ * `columnsForWidth` measures is 10px short of the region — which makes a CSS choice an
+ * input to the column rule, and that is worth a test rather than a comment.
+ *
+ * What it *is* allowed to do is move a threshold: a width already within 10px of a column
+ * boundary drops a column, which is the rule working correctly on a narrower box. What it
+ * must never do is push a tile outside the band, because that is the property #43 exists
+ * to guarantee and the one a user would actually see.
+ */
+describe("the scrollbar gutter's effect on the grid", () => {
+  /** The gutter set in `tailwind.css`. */
+  const SCROLLBAR = 10;
+  const RAIL = 280;
+  const PANEL = 384;
+
+  it("never pushes a tile outside the 150–240px band, at any real width", () => {
+    // Every configuration the app actually renders above the push threshold: rail always
+    // present from `lg`, panel present only when open.
+    for (let viewport = 1280; viewport <= 3840; viewport++) {
+      for (const panel of [0, PANEL]) {
+        const width = viewport - RAIL - panel - SCROLLBAR;
+        const tile = width / columnsForWidth(width);
+
+        expect(tile, `${viewport}px, panel ${panel}`).toBeGreaterThanOrEqual(MIN_TILE);
+        expect(tile, `${viewport}px, panel ${panel}`).toBeLessThanOrEqual(MAX_TILE);
+      }
+    }
+  });
+
+  it("costs at most one column, never more", () => {
+    // A 10px loss is smaller than any column's worth of width, so it can only ever move a
+    // width across one threshold. More than one would mean the rule was not monotonic.
+    for (let viewport = 320; viewport <= 3840; viewport++) {
+      for (const rail of [0, RAIL]) {
+        for (const panel of [0, PANEL]) {
+          const width = viewport - rail - panel;
+          if (width < 200) continue;
+
+          const delta = Math.abs(columnsForWidth(width) - columnsForWidth(width - SCROLLBAR));
+          expect(delta, `${viewport}px`).toBeLessThanOrEqual(1);
+        }
+      }
+    }
+  });
+
+  it("leaves the widths the ADR quotes unchanged", () => {
+    // The three worked examples in D18's table. If these move, the ADR is wrong and the
+    // table has to be rewritten — which is exactly the kind of drift a test should catch.
+    const expected: Record<number, number> = { 1280: 3, 1512: 4, 1920: 6 };
+
+    for (const [viewport, columns] of Object.entries(expected)) {
+      const width = Number(viewport) - RAIL - PANEL - SCROLLBAR;
+      expect(columnsForWidth(width), `${viewport}px with the panel open`).toBe(columns);
+    }
+  });
+});
