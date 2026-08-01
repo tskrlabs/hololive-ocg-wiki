@@ -18,6 +18,14 @@ const cardQuery = useCardQuery();
  */
 useScrollerFocus();
 
+/**
+ * Where the grid was before a card was opened (#59).
+ *
+ * The list unmounts when a card URL is pushed (D15), so this survives outside it. See the
+ * composable for why the offset is restored rather than the component kept alive.
+ */
+const scrollMemory = useGridScrollMemory();
+
 // Ref to the virtual scroller
 const virtualScroller = ref();
 
@@ -146,6 +154,11 @@ const handleScrollEnd = useDebounceFn(() => {
 const scrollToTop = () => {
   shouldPreserveScroll.value = false;
   scrollPosition.value = 0;
+  // A remembered offset belongs to the *previous* result set (#59). The count guard in
+  // `restore` would usually catch that, but two different filters can match the same
+  // number of cards — so the offset is dropped where the intent is known rather than
+  // left for a heuristic.
+  scrollMemory.forget();
   virtualScroller.value?.scrollToItem?.(0);
 };
 
@@ -165,9 +178,23 @@ const scrollToTop = () => {
 watch(
   () => cardQuery.state.value.status,
   (status, previous) => {
-    if (status === "ready" && (previous === "loading" || previous === "refiltering")) {
-      scrollToTop();
-    }
+    if (status !== "ready" || (previous !== "loading" && previous !== "refiltering")) return;
+
+    // ⚠️ Returning from a card is a `loading → ready` pass that must **not** reset the
+    // scroll (#59).
+    //
+    // Opening a card unmounts this component (D15), so coming back re-runs `onMounted`'s
+    // `applyFilters()` — and even though that resolves from `useState` with no request, it
+    // still moves the query through `loading` to `ready`. This watcher then read that as
+    // "new results are in the DOM" and scrolled to the top, undoing the restore that had
+    // already happened. Traced in Chromium: the offset was written correctly and then
+    // overwritten a tick later.
+    //
+    // A pending memory is the signal that this transition is a *return*, not a new result
+    // set. `onMounted` consumes it, so this only sees one while the restore is in flight.
+    if (scrollMemory.isPending()) return;
+
+    scrollToTop();
   },
 );
 
@@ -196,9 +223,56 @@ watch(
   }
 );
 
-// Initial filter application
+/**
+ * On mount: apply the filters, and put the scroll back if we are returning from a card.
+ *
+ * Both happen here because both are "the list just appeared". `applyFilters` is debounced
+ * and resolves from `useState` when nothing changed, so returning from a card costs no
+ * request — measured: closing a card dialog makes **zero** API calls.
+ *
+ * The restore waits for the scroller to actually exist and have its rows. `nextTick`
+ * alone is not enough: `shouldRenderScroller` gates on a measured width, which arrives
+ * from a `ResizeObserver` a frame later, so at `nextTick` the element is often still the
+ * fallback grid.
+ */
 onMounted(() => {
   applyFilters();
+
+  // The component instance, not its element: the restore goes through the scroller's own
+  // `scrollToPosition`, because assigning `scrollTop` on a scroller that has not laid out
+  // its virtual height yet is silently clamped to 0.
+  // The element, not the component: `scrollToPosition` reports success without moving
+  // anything on a scroller that has not laid out yet, so the restore assigns `scrollTop`
+  // and reads it back to see whether it took.
+  const restoreScroll = () =>
+    scrollMemory.restore(
+      virtualScroller.value?.$el as HTMLElement | undefined,
+      displayedCards.value.length,
+    );
+
+  /**
+   * Keep trying until the offset sticks, then stop (#59).
+   *
+   * A single deferred attempt is not enough and neither is a frame or two. The scroller
+   * only exists once `shouldRenderScroller` is true, which waits on a width from a
+   * `ResizeObserver`; and even then it renders one viewport of rows before it knows its
+   * full height, so an assignment made too early is clamped to 0 and lost. Measured in
+   * Chromium, the whole sequence settles within ~200ms of the list remounting.
+   *
+   * **Giving up must `forget()`**: a memory left behind keeps `isPending()` true, which
+   * would suppress the scroll-to-top on every later filter change.
+   */
+  let attempts = 0;
+  const tryRestore = () => {
+    if (!scrollMemory.isPending()) return;
+    if (restoreScroll()) return;
+    if (++attempts > 20) {
+      scrollMemory.forget();
+      return;
+    }
+    requestAnimationFrame(tryRestore);
+  };
+  nextTick(tryRestore);
 });
 
 /**

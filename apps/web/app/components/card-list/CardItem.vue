@@ -22,6 +22,23 @@ const isEditing = computed(() => decks.isEditing.value);
  * makes the back gesture close the dialog instead of leaving the site.
  */
 const { openCard } = useCardRoute();
+const scrollMemory = useGridScrollMemory();
+const cardQuery = useCardQuery();
+
+/**
+ * Open a card, remembering where the grid was first (#59).
+ *
+ * This has to happen *here*, at the click, because by the time the route changes the
+ * scroller is already gone — opening a card unmounts the list (D15). The element is found
+ * by class rather than passed down: the tile is inside the scroller it needs to measure,
+ * and threading a ref through `RecycleScroller`'s recycled slot would be worse than one
+ * query at click time.
+ */
+const open = () => {
+  const scroller = document.querySelector<HTMLElement>(".scroller");
+  scrollMemory.remember(scroller, cardQuery.cards.value.length);
+  openCard(props.item);
+};
 
 /**
  * The tile's text block (D14, #37) — and the answer to
@@ -154,7 +171,7 @@ const count = computed(() => {
       <NuxtLink
         :to="localePath(`/card/${item.image_key}`)"
         class="w-full"
-        @click.prevent="openCard(item)"
+        @click.prevent="open"
       >
         <!--
           `alt` is the card's name (#38 §3, #48 §7). It was passing none at all, so

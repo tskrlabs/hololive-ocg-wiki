@@ -62,6 +62,18 @@ Object.assign(globalThis, {
     openCard: (card: Card) => pushed.push(`/en/card/${card.image_key}`),
     closeCard: () => {},
   }),
+  // Opening a card records where the grid was, so the offset survives the remount the
+  // navigation causes (#59). Stubbed rather than imported — its own rules are covered by
+  // `scroll-memory.test.ts`, and here it only has to exist.
+  useGridScrollMemory: () => ({
+    remember: () => {},
+    restore: () => false,
+    forget: () => {},
+    isPending: () => false,
+  }),
+  // Read only for the result-set length that guards the scroll restore (#59) — the tile
+  // itself asks the store nothing.
+  useCardQuery: () => ({ cards: ref([]) }),
 });
 
 /** The toast surface, spied rather than rendered. */

@@ -96,6 +96,14 @@ Object.assign(globalThis, {
   // behaviour is covered by `scroller-focus.test.ts`; here it only has to exist, because
   // `CardListViewAPI` calls it on setup (#48 §6).
   useScrollerFocus: () => ({ keyboardActive: ref(false) }),
+  // Same reasoning: the list reads this on mount to put the scroll back after a card view
+  // (#59). Its rules are covered by `scroll-memory.test.ts`.
+  useGridScrollMemory: () => ({
+    remember: () => {},
+    restore: () => false,
+    forget: () => {},
+    isPending: () => false,
+  }),
 });
 
 // happy-dom has no ResizeObserver, and `v-resize-observer` constructs one on mount.
