@@ -59,24 +59,47 @@ const handleCancel = () => {
       </Button>
     </SheetTrigger>
 
-    <SheetContent side="top" hide-top-right-close>
+    <!--
+      **The cap is on the sheet, not on the groups inside it.**
+
+      `side="top"` is `h-auto` — it takes its height from its content and has no cap of its
+      own — so `max-h-[85dvh]` on the inner div capped only the *scrolling part* and the
+      footer's height was then added on top of it. Measured before the fix: a 656px sheet
+      in a 568px viewport, with Close ending at 639px. Off-screen and unclickable on every
+      mobile viewport tested (320→414), not only the small ones.
+
+      That made it a trap rather than a blemish: `side="top"` at this height covers the
+      whole screen, so no overlay is exposed to tap outside, and the page behind does not
+      scroll (#44). Escape still closes it — but Escape is a keyboard, and this component
+      is `lg:hidden`. On a phone the only ways out were to apply the filters or reload.
+
+      `max-h-[85dvh]` here bounds the whole sheet, footer included, and `dvh` is
+      deliberate: it tracks mobile browser chrome as it collapses, which `vh` does not.
+    -->
+    <SheetContent side="top" hide-top-right-close class="max-h-[85dvh]">
       <DialogHeader class="h-0 overflow-hidden">
         <DialogTitle>{{ $t("Filter") }}</DialogTitle>
         <DialogDescription>{{ $t("Filter") }}</DialogDescription>
       </DialogHeader>
 
       <!--
-        The sheet caps itself at 85% of the viewport and scrolls inside that (#44).
+        The groups scroll; the footer below does not (#44, and D10's rule for the rail).
 
-        It was `max-h-[calc(100dvh-96px-16px-16px)]`, where 96px was a hardcoded estimate
-        of chrome that is a real 69px — and the estimate had no referent in any case: the
-        sheet is `fixed top-0`, so it does not sit between the header and the footer and
-        never needed to subtract them. A fraction states the intent ("leave some page
-        visible behind it") without encoding anyone's height.
+        `min-h-0` is load-bearing here for the same reason it is everywhere else under a
+        flex column: a flex child defaults to `min-height: auto` and refuses to shrink
+        below its content, so without it seven filter groups push the footer out of the
+        sheet — which is the bug this block previously *contained*, having capped itself
+        rather than letting the sheet cap it.
+
+        The cap moved to `SheetContent` (above). It was `max-h-[85dvh]` on this inner div,
+        which bounded the scrolling part while the footer was added underneath it; before
+        that it was `max-h-[calc(100dvh-96px-16px-16px)]`, where 96px was a hardcoded
+        estimate of chrome that is a real 69px — and had no referent either way, since a
+        `fixed top-0` sheet does not sit between the header and the footer.
       -->
-      <div class="flex grow">
-        <ScrollArea>
-          <div class="w-full max-h-[85dvh] p-4">
+      <div class="flex min-h-0 grow">
+        <ScrollArea class="w-full">
+          <div class="w-full p-4">
             <FilterPanel />
           </div>
         </ScrollArea>
@@ -87,14 +110,28 @@ const handleCancel = () => {
           <!--
             Apply closes the sheet; in the rail the same component closes nothing, which
             is the one behavioural difference between the two containers.
+
+            The 44px touch sizing is applied *here* rather than inside `FilterActions`,
+            because that component is shared with the desktop rail where a pointer is the
+            input and 36px is the house height. The container states the ergonomics of its
+            own surface — the same split that lets one set of controls live in two places.
           -->
-          <FilterActions @applied="isOpen = false" />
+          <FilterActions
+            class="[&_button]:h-11"
+            @applied="isOpen = false"
+          />
 
           <!--
             `Close` stays *here* and only here (D10). It is meaningless in a panel that
             never closes, which is why `FilterActions` does not carry it.
+
+            `h-11` (44px), matching `DeckPanel`'s close for the same reason: this is a
+            touch-only surface (`lg:hidden`), and the default 36px clears WCAG 2.5.8's
+            24px minimum but is under a comfortable target. It is also the *only* way out
+            of this sheet on a phone — the sheet covers the screen, so there is no overlay
+            to tap, and Escape needs a keyboard.
           -->
-          <Button variant="outline" @click="handleCancel">
+          <Button variant="outline" class="h-11" @click="handleCancel">
             <PanelTopClose aria-hidden="true" /> {{ $t("Close") }}
           </Button>
         </div>
