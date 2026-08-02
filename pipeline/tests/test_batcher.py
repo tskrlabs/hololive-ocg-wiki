@@ -205,14 +205,144 @@ class TestCollectResult:
         assert result.ok == 0
         assert "expected a string" in result.failures[0]
 
-    def test_structured_units_pass_through_unmasked(self, table, restorer):
-        """Q&A is a dict; there is no string to unmask."""
+    def test_structured_units_with_no_names_pass_straight_through(self, table, restorer):
+        """A Q&A entry that mentions no glossary name has nothing to restore."""
         qa = {"title": "Q1", "question": "q", "answer": "a"}
         batch = build_batches([unit(kind="qa", value=qa)], "en", table)[0]
 
         result = collect_result(batch, {"0": {"title": "Q1", "answer": "A"}}, restorer)
 
         assert result.ok == 1
+
+
+class TestStructuredMasking:
+    """Q&A goes through the masker like everything else (#28).
+
+    It did not, for the whole of the rework. `build_batches` masked `str` units only, so
+    a Q&A dict was handed to the model with its card names in plain Japanese — in the one
+    field where names are *most* common, because a ruling cites the card it is about.
+
+    Measured on the shipped cache: **863 Japanese names inside `〈…〉` in English Q&A,
+    133 distinct, 132 already carrying a curated glossary translation**. Every other
+    locale within 20% of that. So this was #20's defect surviving in the field the
+    mechanism that fixed #20 never touched.
+    """
+
+    QA = {
+        "title": "Q527（2026.06.26）",
+        "question": "〈白上フブキ〉のアーツは使えますか？",
+        "answer": "はい、白上フブキは使えます。",
+        "related_cards": {
+            "card_number": ["hSD14-009"],
+            "raw_html": "[hSD14-009 ： 白上フブキ]",
+        },
+    }
+
+    def test_the_model_never_sees_the_japanese_name(self, table):
+        batch = build_batches([unit(kind="qa", value=self.QA)], "en", table)[0]
+
+        payload = batch.payload()
+
+        assert "白上フブキ" not in json.loads(payload)["0"]["question"]
+        assert "[[N" in json.loads(payload)["0"]["question"]
+
+    def test_the_glossary_name_comes_back(self, table, restorer):
+        batch = build_batches([unit(kind="qa", value=self.QA)], "en", table)[0]
+        sent = json.loads(batch.payload())["0"]
+
+        result = collect_result(
+            batch,
+            {"0": {**sent, "question": sent["question"], "answer": sent["answer"]}},
+            restorer,
+        )
+
+        assert result.ok == 1
+        restored = result.translations[batch.items[0].unit.key]
+        assert "Shirakami Fubuki" in restored["question"]
+        assert "Shirakami Fubuki" in restored["answer"]
+
+    def test_related_cards_and_title_are_left_alone(self, table):
+        """`raw_html` is source data the site parses, not prose.
+
+        Its Japanese is the official list's own rendering beside the card number the UI
+        links on. Masking it would put a placeholder into structured data — and unlike
+        prose, nothing downstream would restore it in a form the parser expects.
+        """
+        batch = build_batches([unit(kind="qa", value=self.QA)], "en", table)[0]
+
+        sent = json.loads(batch.payload())["0"]
+
+        assert sent["related_cards"] == self.QA["related_cards"]
+        assert sent["title"] == self.QA["title"]
+
+    def test_a_dropped_placeholder_fails_the_whole_entry(self, table, restorer):
+        """Half a Q&A pair is worse than none: it reads as correct.
+
+        The string path drops a unit whose tokens did not survive; this asserts the
+        structured path does the same rather than caching a question with the name and
+        an answer without it.
+        """
+        batch = build_batches([unit(kind="qa", value=self.QA)], "en", table)[0]
+        sent = json.loads(batch.payload())["0"]
+
+        result = collect_result(
+            batch,
+            {"0": {**sent, "answer": "Yes, Shirakami Fubuki can."}},
+            restorer,
+        )
+
+        assert result.ok == 0
+        assert "dropped" in result.failures[0]
+
+    def test_a_non_object_reply_for_a_structured_unit_is_rejected(
+        self, table, restorer
+    ):
+        batch = build_batches([unit(kind="qa", value=self.QA)], "en", table)[0]
+
+        result = collect_result(batch, {"0": "a bare string"}, restorer)
+
+        assert result.ok == 0
+        assert "expected an object" in result.failures[0]
+
+    def test_the_fields_of_one_entry_never_share_a_token_number(self, table):
+        """Found while building this, and it is the reason the numbering is continuous.
+
+        Masking each field from `[[N0]]` independently is the obvious implementation. It
+        gives one token two meanings inside a single unit whenever the question and the
+        answer name different cards — which is common, because an answer restates what it
+        is about. A reply that moved text between the fields would then restore a
+        confidently wrong name and raise nothing, since each token is individually valid.
+        """
+        two_names = {
+            **self.QA,
+            "question": "〈白上フブキ〉は？",
+            "answer": "〈3期生〉です。",
+        }
+        batch = build_batches([unit(kind="qa", value=two_names)], "en", table)[0]
+        masks = batch.items[0].field_masks
+
+        assert set(masks["question"].tokens) & set(masks["answer"].tokens) == set()
+
+    def test_text_moved_between_fields_fails_rather_than_restoring_the_wrong_name(
+        self, table, restorer
+    ):
+        """The payoff of the numbering: the bad case is now loud instead of silent."""
+        two_names = {
+            **self.QA,
+            "question": "〈白上フブキ〉は？",
+            "answer": "〈3期生〉です。",
+        }
+        batch = build_batches([unit(kind="qa", value=two_names)], "en", table)[0]
+        sent = json.loads(batch.payload())["0"]
+
+        result = collect_result(
+            batch,
+            {"0": {**sent, "question": sent["answer"], "answer": sent["question"]}},
+            restorer,
+        )
+
+        assert result.ok == 0
+        assert "dropped" in result.failures[0]
 
 
 class TestPlan:
