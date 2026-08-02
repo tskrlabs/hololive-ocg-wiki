@@ -1,33 +1,33 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0–5 done. The site is **live** at
-`hololive-ocg-wiki.tskrlabs.com` — one Worker serving nine API endpoints and the static
-site from one origin (D2), against 2,448 cards in D1 and images on R2.
+**Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
+`hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
+origin (D2), against **2,463 cards** in D1 and images on R2.
 
-Deployed 2026-07-27; every number Phases 3 and 4 measured came back exactly against the
-real card set. **Phase 6 (Workers Builds + fixtures + docs) is under way** — the code and
-docs are built and verified from a scratch clone; connecting the git integration is a
-dashboard step only the maintainer can take. See [Phase 6](#phase-6--push-to-deploy).
+**Phase 8 went live 2026-08-02** (version `82c4ad6b`, 390 assets), together with ADR 0009
+D26. Both migrations are applied, the seed has run, and every number Phases 3 and 4
+measured came back exactly — see [the deploy record](#-phase-8--d26-deployed-2026-08-02).
+The site remains **`noindex`**: Phase 7 is the launch, and it has not happened.
 
-✅ **Phase 8 — the UI/UX rework — is done, and Phase 7 is unblocked.** All six
-prerequisites (`61b2793..77720d0`) and all sixteen commits (`95c75fc..441c885`) are on
-`develop`, `make check` green after each.
+**Phase 6 (Workers Builds + fixtures + docs) is still under way** — the code and docs are
+built and verified from a scratch clone; connecting the git integration is a dashboard step
+only the maintainer can take, so deploys are still `wrangler deploy` by hand. See
+[Phase 6](#phase-6--push-to-deploy).
 
-🔄 **D26 was added on 2026-08-02: `/status` reports what the *official card list* did, not
-just what our database did.** `content_hash` covers all seven locales' text, so the
-translation rework marks every card `changed` while the official site published nothing —
-a true number telling a false story, and the only number the page had. A third column,
-`source_hash`, hashes the JP source alone (minus Q&A, mirroring `qa_hash`'s split), so the
-page can lead with `source_added` / `source_changed` / `faq_changed` and keep the 2,463 as
-a self-explaining footnote. The write plan is untouched; the report sets are independent,
-which also fixes `qa_updated` reading 0 whenever a card was edited *and* re-FAQ'd. The
-artifact drops **329 KB → 10.3 KB** (its lists are capped at 100, counts stay true), which
-the about dialog also pays. See [ADR 0009 D26](adr/0009-ui-rework.md#supporting-surfaces).
+✅ **Phase 8 — the UI/UX rework — is done.** All six prerequisites (`61b2793..77720d0`) and
+all sixteen commits (`95c75fc..441c885`) are on `develop`, `make check` green after each.
 
-⚠️ **D26 adds migration `0003-source-hash.sql`, and it must be applied *before* the next
-seed** — `seed` refuses with instructions if it is not, because a D1 batch is atomic but a
-run is not. Apply it in the same session as the still-pending `0002`, then seed: that seed
-doubles as the silent backfill, so `/status` is comparable from the run after.
+✅ **D26 was added and deployed on 2026-08-02: `/status` reports what the *official card
+list* did, not just what our database did.** `content_hash` covers all seven locales' text,
+so the translation rework marks every card `changed` while the official site published
+nothing — a true number telling a false story, and the only number the page had. A third
+column, `source_hash`, hashes the JP source alone (minus Q&A, mirroring `qa_hash`'s split),
+so the page leads with `source_added` / `source_changed` / `faq_changed` and keeps the
+re-seed count as a self-explaining footnote. The write plan is untouched; the report sets
+are independent, which also fixes `qa_updated` reading 0 whenever a card was edited *and*
+re-FAQ'd. The artifact dropped **329 KB → 644 bytes** in production (lists capped at 100,
+counts stay true), which the about dialog also pays.
+See [ADR 0009 D26](adr/0009-ui-rework.md#supporting-surfaces).
 
 🔄 **D18 was amended on 2026-08-01: the deck is a *pushed* panel from `xl`, not an overlay
 drawer.** Building it revealed the original had never actually run — `DeckDrawer` was a
@@ -43,10 +43,12 @@ lists all 17,241, and a bad key returns a real 404. Twenty-five decisions in
 [ADR 0009](adr/0009-ui-rework.md); the sequence and what it found are
 [below](#phase-8--the-uiux-rework).
 
-⚠️ **Nothing is deployed, and one migration is unapplied** —
-`0002-phase8-image-key-unique.sql` needs the maintainer's D1 token, and without it every
-card page is a 2,463-row scan. See
-[Phase 8's done-when](#-done-when--all-four-met).
+✅ **Both migrations are applied** (2026-08-02). `0002-phase8-image-key-unique.sql` wrote
+2,464 rows building the index, which is also proof no duplicate `image_key` existed;
+`EXPLAIN QUERY PLAN` on a card lookup now reports
+`SEARCH cards USING INDEX idx_cards_image_key` rather than the 2,463-row scan it would
+otherwise be. `0003-source-hash.sql` followed. See
+[the deploy record](#-phase-8--d26-deployed-2026-08-02).
 
 ⚠️ **Phase 5 needed a follow-up.** Visual QA of the live site found the homepage serving
 **200 of 2,448 cards** — infinite scroll had never fired, because `RecycleScroller` gates
@@ -66,7 +68,7 @@ rule flips to `Allow` too. See [F-017](./archive/findings.md#f-017).
 [ADR 0006](adr/0006-website.md). **Phase 6's** is fifteen decisions, in
 [ADR 0007](adr/0007-push-to-deploy.md).
 
-## ✅ The translation rework is done — not yet deployed
+## ✅ The translation rework is done, and live
 
 All six locales are re-translated through a content-addressed cache. **Divergence is
 zero** on every name field in every locale — not reduced, but *unrepresentable*: one
@@ -82,15 +84,16 @@ supersedes ADR 0002's cache key. Execution tracked in
 Cost: 1,493,321 tokens, ~356k points, **0 failures**. 204 API calls for a full cold run
 against 14,778 under the old per-card scheme.
 
-⚠️ **Nothing is published or seeded.** `cards.json` carries the new translations; R2 and
-D1 still serve the old ones. The live site is unchanged until `holo-data publish` and
-`holo-data seed --confirm` run.
+✅ **Published and seeded.** The seed ran 2026-07-30 (2,463 cards); production serves the
+new translations. This section said "nothing is published or seeded" until 2026-08-02,
+when it was checked against the live API and found stale — a reminder that a claim about
+production is worth re-verifying rather than reading.
 
-⚠️ **The tag filter is broken in production and fixed only locally.** `filter-options`
-shipped `#`-prefixed values against a junction table holding unprefixed ones, so **every
-tag returned zero cards, in every locale**
-([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)). The corrected artifact
-reaches production on the next publish.
+✅ **The tag filter is fixed in production**, verified 2026-08-02: `tag=0期生` returns 165
+cards. `filter-options` had shipped `#`-prefixed values against a junction table holding
+unprefixed ones, so **every tag returned zero cards, in every locale**
+([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)); the corrected artifact
+reached production with the same publish.
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -109,8 +112,8 @@ copy and is authoritative if they disagree.
 | 4 | Worker rewrite (Hono + Zod) | ✅ done — deploys with Phase 5 | [ADR 0005](adr/0005-worker-api.md) |
 | 5 | Website (new API/R2, 4 refactors) | ✅ done | [ADR 0006](adr/0006-website.md) · live |
 | 6 ✅ `49bb856` | Workers Builds + fixtures + docs | 🚧 **built — needs the dashboard step** | [ADR 0007](adr/0007-push-to-deploy.md) |
-| 7 ✅ `2a10d57` | Launch | ⬜ **unblocked** — Phase 8 is done and not yet deployed | |
-| 8 | UI/UX rework | ✅ **done** — 16 commits, not deployed | [ADR 0009](adr/0009-ui-rework.md) · [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31) |
+| 7 ✅ `2a10d57` | Launch | ⬜ **unblocked, not taken** — the site is deployed but still `noindex` | |
+| 8 | UI/UX rework | ✅ **done and live** — 16 commits + D26, deployed 2026-08-02 | [ADR 0009](adr/0009-ui-rework.md) · [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31) |
 
 ## Working agreement
 
@@ -412,8 +415,6 @@ Three findings that alter commits already in the sequence below:
   below its content and would push the footer off-screen, restoring the bug elsewhere.
   Commits 3, 4 and 12 all touch this shell.
 
-Nothing is deployed. These are on `develop` only.
-
 Three more were ruled on by the maintainer and **closed as `wontfix`** — none blocks:
 
 | issue | ruling |
@@ -425,7 +426,8 @@ Three more were ruled on by the maintainer and **closed as `wontfix`** — none 
 ### ✅ The commit sequence is done
 
 All sixteen landed on `develop` as `95c75fc..441c885`, one commit each, `make check` green
-after every one. **Nothing is deployed.**
+after every one. **Deployed 2026-08-02** with D26 — see
+[the deploy record](#-phase-8--d26-deployed-2026-08-02).
 
 Each row is independently green under `make check`.
 
@@ -461,33 +463,57 @@ Verified 2026-08-01, on `develop`:
 | the sitemap lists card URLs | ✅ 2,465 per locale × 7, 1.8 MB total |
 | the prototype is gone | ✅ deleted; no file emitted, and the route renders the app's 404 |
 
-**Phase 7 is unblocked.** Nothing here is deployed — see
-[the deploy steps](#the-deploy--maintainer-steps), and note the Phase 8 migration below.
+**Phase 7 is unblocked**, and Phase 8 is deployed — see the record below.
 
-### ⚠️ Two migrations are written but not applied
+### ✅ Phase 8 + D26 — deployed 2026-08-02
 
-Both need the maintainer's D1 token, and both should be taken in one session — the seed
-that follows wants each of them.
+Version `82c4ad6b` on `hololive-ocg-wiki-tskrlabs-com`, 390 assets (52 unchanged),
+644 KiB / 104 KiB gzipped, 20 ms startup. **The site is still `noindex`**: this shipped the
+rebuild behind the pre-launch guard, not the launch.
 
-- **`0002-phase8-image-key-unique.sql`** — the unique index on `image_key` that every card
-  page reads through. Without it each card page is a 2,463-row scan.
-- **`0003-source-hash.sql`** (D26) — the column `/status` compares against to tell an
-  official update from one of ours. **`seed` refuses to run without it**, naming this file,
-  because a D1 batch is atomic while a run is not: discovering the missing column mid-run
-  would leave earlier batches committed.
+**Order was forced, and it is not the obvious one.** The migrations went first. Deploying
+the Worker before `0002` would have made every card page a 2,463-row scan — and card pages
+are billable invocations with 17,241 sitemap URLs aimed at them, against the read tier this
+site has already breached once (F-014).
 
-```bash
-cd apps/api
-npx wrangler d1 execute hololive-ocg-wiki-db --remote \
-    --file=../../packages/schema/sql/migrations/0002-phase8-image-key-unique.sql
-npx wrangler d1 execute hololive-ocg-wiki-db --remote \
-    --file=../../packages/schema/sql/migrations/0003-source-hash.sql
-```
+| step | result |
+|---|---|
+| `0002` unique index | 2,464 rows written — which is also proof no duplicate `image_key` existed |
+| `0003` source_hash | applied; column present |
+| `seed --confirm` | **0 cards rewritten**, 2,463 pure backfills. Estimate 2,463, actual 2,463 |
+| baseline check | 0 rows left with a NULL `source_hash`; a second `--dry` reports "already up to date" |
+| `EXPLAIN QUERY PLAN` on a card lookup | `SEARCH cards USING INDEX idx_cards_image_key` |
 
-**Then seed.** The pending translation reseed rewrites every row anyway, so it doubles as
-`source_hash`'s backfill — no extra write pass, and `/status` is comparable from the next
-run on. Ordering matters only in that the migrations come first; running them the other
-way round costs a second seed to establish the baseline.
+The seed is the first real exercise of D26's backfill path, and it behaved as designed:
+`unchanged 2463` with a separate backfill line, and the source report reading 0/0/0 under
+the honest note that no baseline existed yet. The run after it drops that note.
+
+**Verified against the real 2,463 cards** — every Phase 3/4 number came back exactly:
+
+| check | expected | actual |
+|---|---|---|
+| `フブキ` search | 73 | **73** |
+| `name=白上フブキ&locale=en` | 44 | **44** |
+| `filter-options.names` | 296 | **296** |
+| `status.counts.total` | 2,463 | **2,463** |
+| `info.contents` | 3 | **3** |
+| `a AND` (FTS5 syntax error) | 200 | **200** |
+| 51-id batch / 50-id batch | 400 / 50 cards | **400 / 50** |
+| `tag=0期生` (#26) | non-zero | **165** |
+| `colors=blue` includes fused | ~329 | **331** (the set grew 2,448 → 2,463) |
+
+And the four things that were **broken before this deploy**, because production was still
+running Phase 5's Worker:
+
+| check | before | after |
+|---|---|---|
+| `/api/cards/by-key/hSD01/hSD01-001_OSR` | 404 | **200** |
+| a bad card key (`/tc/card/hSD01/NOPE`) | 200 | **404** |
+| injected `og:title` on a card page | absent | **present in the served bytes** |
+| `/api/status` source vocabulary | absent | **present**, artifact 329 KB → **644 bytes** |
+
+The pre-launch guard is intact: `noindex` present on `/tc/`, `robots.txt` disallowing, and
+`NUXT_PUBLIC_LAUNCHED` unset at build time.
 
 ### What the rework found
 
