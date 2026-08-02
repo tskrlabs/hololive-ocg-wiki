@@ -4,25 +4,26 @@
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
 origin (D2), against **2,463 cards** in D1 and images on R2.
 
-⚠️ **Set-code filtering and two search fixes are on `develop`, awaiting a merge to
-`main`** (2026-08-02, [ADR 0010](adr/0010-set-code-and-search.md)). The D1 half is
-**already applied to production** — migration 0004 and a full reseed (52,060 rows) ran
-on 2026-08-02, and the artifacts are republished — because search had to be rebuilt
-before its ranking could change. The deployed Worker keeps working across that migration
-(`text` still exists, verified live), so what waits on the merge is the *code*: until
-then `/api/cards/filter?search=hBP03` still returns **HTTP 500** in production, the
-ranking is still the old one, and the set-code picker is not yet in the UI.
-
-**Merging is the maintainer's step**, and it doubles as the Workers Builds check below —
-the pipeline token can reach D1 but not the Workers service, so `wrangler deploy` is not
-available to an agent. If no build fires within ~2 minutes of the merge, Workers Builds is
-*not* connected and a manual `wrangler deploy` is needed.
+✅ **Set-code filtering and the two search fixes are merged and live** (2026-08-02,
+[ADR 0010](adr/0010-set-code-and-search.md)). Merged as `b2ed102`; verified in production
+— `/api/cards/filter?search=hBP03` returns **HTTP 200**, where it was a 500. Migration
+0004 and the full reseed (52,060 rows) had already been applied, so the code was the last
+piece.
 
 What it does: a set code (`hBP03`) becomes a filter dimension of its own, typing one into
 the search box applies it, and `?set_code=hBP03` is the first filter with a URL. What it
 fixed on the way: every search matching >100 cards was a 500 ([#66](https://github.com/tskrlabs/hololive-ocg-wiki/issues/66)),
 and Q&A text was 88% of the search index, so a ruling outranked the card it cited
 ([#67](https://github.com/tskrlabs/hololive-ocg-wiki/issues/67)).
+
+🚀 **Phase 7 is the next action, and its three blocking questions are settled** —
+[ADR 0011](adr/0011-launch-posture.md), 2026-08-02. Analytics, crawler policy and social
+previews each went live with the launch switch and each is now decided rather than
+inherited: GA4 `G-LCSL88VF1N` runs Consent Mode v2 with every storage type denied, so it
+sets no cookies and needs no banner; `robots.txt` is ours alone again (the zone's managed
+block is off) and allows every crawler including AI ones, deliberately; `og:image` stays
+WebP. **What remains is the maintainer's**: flip `NUXT_PUBLIC_LAUNCHED=true` and
+`workers_dev: false`, merge to `main`, make the repo public, archive v1.
 
 **Phase 8 went live 2026-08-02** together with ADR 0009 D26, and
 [#63](https://github.com/tskrlabs/hololive-ocg-wiki/pull/63) merged it to `main`. Both
@@ -91,10 +92,14 @@ and `make dev`'s 34-card fixture set is too small to ever produce a second page.
 now include a mounted component; local QA of pagination still requires pointing the dev
 server at the deployed Worker. See [F-019](./archive/findings.md#f-019).
 
-ℹ️ **`noindex` is the sole indexing guard until Phase 7**, by decision. Cloudflare's
-zone-level managed `robots.txt` prepends `Allow: /` above ours; the maintainer accepted
-that rather than change a zone setting mid-phase. It resolves itself at Phase 7 when our
-rule flips to `Allow` too. See [F-017](./archive/findings.md#f-017).
+✅ **The site is double-guarded again** (2026-08-02). Cloudflare's zone-level managed
+`robots.txt` used to prepend `Allow: /` above ours, leaving `noindex` as the sole indexing
+guard by acceptance rather than design. The maintainer turned the managed block off, and
+`curl` now returns our `Disallow: /` alone — so ADR 0006 Q10's two independent guards are
+back, and `robots.txt` is version-controlled again. That also unblocks `workers_dev: false`,
+which was held open only so the two origins could be compared.
+Closes [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17); see
+[ADR 0011 D2](adr/0011-launch-posture.md) and [F-017](./archive/findings.md#f-017).
 
 **Phase 5's design is recorded.** Sixteen decisions, in
 [ADR 0006](adr/0006-website.md). **Phase 6's** is fifteen decisions, in
@@ -173,17 +178,26 @@ copy and is authoritative if they disagree.
 Tracked as **GitHub issues**, not in this repo. `gh issue list --state open` is the live
 view; this table is the offline copy.
 
+Triaged against launch on 2026-08-02. **Everything still open is post-launch** — nothing
+below blocks the flip.
+
 | # | what | label |
 |---|---|---|
-| [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) | Cloudflare's managed `robots.txt` inverts our `Disallow` | `ready-for-human` `phase-7` |
-| [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface — *proper nouns now have one; arbitrary fields do not* | `ready-for-human` `phase-7` |
+| [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface — *proper nouns now have one; arbitrary fields do not* | `ready-for-human` |
 | [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
 | [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
 | [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
-| [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29) | The card list has no names, so the show-original toggle has nothing to act on | `ready-for-human` |
-| [#42](https://github.com/tskrlabs/hololive-ocg-wiki/issues/42) | `og:image` for card pages: the public bucket has WebP only | `needs-triage` |
-| [#59](https://github.com/tskrlabs/hololive-ocg-wiki/issues/59) | closing a card dialog loses the grid's scroll position | `ready-for-agent` |
-| [#60](https://github.com/tskrlabs/hololive-ocg-wiki/issues/60) | the card grid is ~40 tab stops, not one — #48 §6's roving tabindex | `ready-for-agent` |
+| [#62](https://github.com/tskrlabs/hololive-ocg-wiki/issues/62) | `original.tags` is rendered nowhere, and the deck panel has no source names | `ready-for-human` |
+
+**#18 lost its `phase-7` label.** It does not close with launch — launch creates the
+contributors who hit it. The proper-noun half is closed by `pipeline/glossary/`; an
+arbitrary *field* correction still has no committed home, and `corrections_file()` in
+`paths.py` is a dead helper called by nothing.
+
+**#27 and #28 are one pipeline run, and should be done as one.** Both are deterministic
+string rewrites needing no API call, but shipping either means cache edit → R2 publish →
+D1 reseed, so they are worth batching. #28's Thai `เอール` — a mixed-script non-word, 120
+identical occurrences — is the one a reader actually notices.
 
 ✅ **#20 and #21 are closed** by the translation rework — see
 [ADR 0008](adr/0008-content-addressed-translations.md). ✅ **#26 is closed** (the tag
@@ -203,12 +217,37 @@ were fixed first — the escape hatch now drops the bad cards and ships the rest
 to choose. See [the pipeline section](#phase-1--the-pipeline).
 
 ✅ **#29 is closed** by Phase 8 commit 2 (the grid has names to toggle now) and ✅ **#57 by
-commit 12** — the reading pass found four real defects, not just stale copy. ✅ **#58 is
-closed**, with a coverage test now guarding 4 enums × 7 locales plus every new UI string.
+commit 12** — the reading pass found four real defects, not just stale copy. ✅ **#59 and
+#60** closed with Phase 8 (dialog scroll position; the grid's ~40 tab stops).
 
-Of the rest, #59 and #60 came out of Phase 8 and neither blocks launch; the others are
-judgement calls with no deadline, and two resolve at launch. Everything settled during
-phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which is closed.
+### The pre-launch triage — six closed, 2026-08-02
+
+✅ **#58** — `cardTypes.supportStaff` *and* `rarity.HR` were missing from all seven locales.
+`contract.test.ts:105` now sweeps 4 generated enums × 7 locale files. The lesson is the
+by-hand audit: it declared three enums complete and missed `rarity.HR`, the exact bug
+ADR 0001 exists to catch, live in production in every language. The automated check found
+what the careful human pass did not.
+
+✅ **#61** — the show-original toggle had never rendered on the detail page or dialog:
+`pathPrefix: false` registered the component as `OriginalText` while five call sites asked
+for `CardListOriginalText`. Shipped broken from day one, because an unresolved component
+is a console *warning*. Guarded twice now — a mounted test pinning the auto-import name,
+and a `smoke.sh` sweep comparing every PascalCase tag against the generated registry. The
+bundle-grep the issue proposed was tried and rejected with evidence: the minifier renames
+`resolveComponent` to a per-chunk alias, matching 73 false positives against 1 real hit.
+
+✅ **#65** — a literal `@` in a locale value blanks *every* key in that language, silently.
+Now guarded in `smoke.sh`. **The fix as proposed did not work**: `generateJSON` does not
+throw on a bad value — it reports through an `onError` callback and otherwise returns
+normally, so the obvious try/catch implementation passes on the exact input it exists to
+reject. Verified by injecting the real bug and watching it fail by name.
+
+✅ **#17, #42, #64** — the launch-posture three, decided together in
+[ADR 0011](adr/0011-launch-posture.md): cookieless GA4 with no banner, `robots.txt` ours
+alone and allowing every crawler, `og:image` stays WebP.
+
+Everything settled during phases 0–6 is in
+[`docs/archive/findings.md`](./archive/findings.md), which is closed.
 
 ## What exists now
 
@@ -1171,12 +1210,18 @@ Was two; the rehearsal added a third.
 | switch | where | why it is off now |
 |---|---|---|
 | `NUXT_PUBLIC_LAUNCHED=true` | build variable | flips indexing **and** analytics together |
-| `workers_dev: false` | `wrangler.jsonc` | kept while [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) is open — comparing the two origins is the only way that bug is visible |
+| `workers_dev: false` | `wrangler.jsonc` | ✅ **unblocked** — was kept only to compare origins while [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) was open; that is closed, so this can flip |
 | repo public + v1 archived | GitHub | v2-plan §7 |
 
-Two open issues are gated on this phase and close with it:
-[#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) (the managed `robots.txt`
-conflict resolves itself once our own rule flips to `Allow`) and
-[#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) (a translation fix needs a
-reviewable surface once the repo is public and outside contributors exist). Archiving v1
-also retires [F-014](./archive/findings.md#f-014)'s standing read-tier failure mode.
+**Neither issue this section used to gate is still gating.**
+[#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) is **closed** — fixed at the
+zone rather than resolving itself at launch, which is the better outcome:
+`robots.txt` is back under version control instead of merely agreeing with Cloudflare's
+copy. [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) stays **open** and
+lost its `phase-7` label — launch does not build the correction mechanism, it creates the
+contributors who need it.
+
+What the launch switch now carries is settled in
+[ADR 0011](adr/0011-launch-posture.md): indexing on, cookieless analytics on, and nothing
+else. Archiving v1 also retires [F-014](./archive/findings.md#f-014)'s standing read-tier
+failure mode.
