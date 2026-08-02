@@ -120,6 +120,16 @@ FTS_WRITE_MULTIPLIER = 2
 # argue with (D4, D10).
 SHRINK_REFUSAL_RATIO = 0.10
 
+# How many cards any one `status.json` list carries (ADR 0009 D26). The counts beside
+# them stay true, so a reader is told "and N more" rather than shown a wrong total.
+#
+# 100 because a card entry is ~98 bytes: six capped lists cost ~59 KB worst case against
+# a 353-byte core, and in practice far less — a set release is one list of ~60. The
+# uncapped artifact was 329 KB, of which 328 KB was a `changed` list no reader ever saw.
+# Above ~100 rows a reader is scanning, not reading, and D19 already ruled that the
+# answer to a long list is not pagination.
+LIST_CAP = 100
+
 
 class NonNumericCardId(ValueError):
     """A card id that cannot be an FTS rowid.
@@ -195,6 +205,45 @@ def card_payloads(card: Card) -> tuple[str, str]:
     return _canonical(payload), _canonical(qa)
 
 
+def source_payload(card: Card) -> str:
+    """The card as the **official site** published it — JP only, minus Q&A.
+
+    The baseline behind `source_hash` (ADR 0009 D26), and the reason `/status` can say
+    "the official site changed eleven cards" instead of "we rewrote all 2,463".
+
+    `card_payloads` above hashes all seven locales, so anything we do downstream of the
+    source — a re-translation, a corrections pass, a new locale — moves it. That is
+    correct for deciding what to write and useless for describing what *happened*. This
+    keeps only what the scrape produced:
+
+    - `translations['ja']`, which **is** the JP source. `transform` writes it from the
+      scraped HTML and `apply_translations` only ever adds other locales beside it, so
+      nothing in here has passed through the translation cache.
+    - the language-independent nested blobs, which are structure the source dictates
+      (an art's cost types and damage, a keyword's type) rather than anything we chose.
+
+    `qa_items` is dropped for the reason `qa_hash` exists: a new FAQ is a different event
+    from an errata, and the page reports them separately. The caller pairs this with the
+    columns, which is where `card_sets` lives — the field the Selection Cup update moved
+    on ~660 cards, and exactly the kind of official change that must not go quiet.
+    """
+    dumped = card.model_dump(mode="json", exclude_none=True)
+
+    japanese = dict((dumped.get("translations") or {}).get(SOURCE_LOCALE) or {})
+    japanese.pop("qa_items", None)
+
+    source = {
+        "arts": dumped.get("arts"),
+        "keyword": dumped.get("keyword"),
+        "oshi_skill": dumped.get("oshi_skill"),
+        "sp_oshi_skill": dumped.get("sp_oshi_skill"),
+        "color_codes": dumped.get("color_codes"),
+        "card_sets": dumped.get("card_sets"),
+        SOURCE_LOCALE: japanese,
+    }
+    return _canonical({key: value for key, value in source.items() if value is not None})
+
+
 def search_text(card: Card) -> str:
     """Everything searchable about a card, all 7 locales concatenated.
 
@@ -245,6 +294,8 @@ class CardRow:
     qa_payload: str
     content_hash: str
     qa_hash: str
+    # Reporting only — no write decision reads this. See `source_payload`.
+    source_hash: str
     junction_values: dict[str, list[str]]
     search_text: str
 
@@ -272,6 +323,11 @@ def to_row(card: Card) -> CardRow:
         _canonical([columns, payload]).encode("utf-8")
     ).hexdigest()
     qa_hash = hashlib.sha256(qa_payload.encode("utf-8")).hexdigest()
+    # Same `[columns, …]` pairing as content_hash, over the JP-only payload. The columns
+    # are language-independent — that is why they belong in both.
+    source_hash = hashlib.sha256(
+        _canonical([columns, source_payload(card)]).encode("utf-8")
+    ).hexdigest()
 
     return CardRow(
         id=card.id,
@@ -280,6 +336,7 @@ def to_row(card: Card) -> CardRow:
         qa_payload=qa_payload,
         content_hash=content_hash,
         qa_hash=qa_hash,
+        source_hash=source_hash,
         junction_values={
             table: list(getattr(card, field_name) or [])
             for field_name, table, _value_column in JUNCTIONS
@@ -300,11 +357,11 @@ def statements_for(row: CardRow, seeded_at: str) -> list[d1.Statement]:
     most 17 sets and typically 1-3 of anything else, so computing a minimal delta would
     cost more code than it saves writes.
     """
-    placeholders = ", ".join("?" for _ in range(len(CARD_COLUMNS) + 5))
+    placeholders = ", ".join("?" for _ in range(len(CARD_COLUMNS) + 6))
     statements = [
         d1.Statement(
             f"INSERT INTO cards ({', '.join(CARD_COLUMNS)}, payload, qa_payload, "
-            f"content_hash, qa_hash, seeded_at) VALUES ({placeholders}) "
+            f"content_hash, qa_hash, source_hash, seeded_at) VALUES ({placeholders}) "
             "ON CONFLICT(id) DO UPDATE SET "
             + ", ".join(
                 f"{name} = excluded.{name}"
@@ -314,6 +371,10 @@ def statements_for(row: CardRow, seeded_at: str) -> list[d1.Statement]:
                     "qa_payload",
                     "content_hash",
                     "qa_hash",
+                    # Written on every card this run touches, including one written only
+                    # because its translation moved — the value is the same either way,
+                    # and that is what backfills the NULLs left by migration 0003.
+                    "source_hash",
                     "seeded_at",
                 )
             ),
@@ -323,6 +384,7 @@ def statements_for(row: CardRow, seeded_at: str) -> list[d1.Statement]:
                 row.qa_payload,
                 row.content_hash,
                 row.qa_hash,
+                row.source_hash,
                 seeded_at,
             ),
         )
@@ -374,9 +436,36 @@ def estimate_writes(rows: Sequence[CardRow]) -> int:
     return total
 
 
+@dataclass(frozen=True)
+class StoredHashes:
+    """One card's baseline, as D1 holds it.
+
+    A named triple rather than a tuple because `source` is genuinely optional and
+    `existing[2] is None` reads like a bug at the call site.
+    """
+
+    content: str
+    qa: str
+    #: `None` means *no baseline recorded* — a row written before migration 0003 — which
+    #: is a different claim from "the source did not change". See `diff`.
+    source: str | None = None
+
+
 @dataclass
 class SeedPlan:
-    """What `seed` intends to do, computed before it does any of it."""
+    """What `seed` intends to do, computed before it does any of it.
+
+    Two groups of fields that must not be confused (ADR 0009 D26). `new`/`changed`/
+    `qa_updated` are the **write plan**: mutually exclusive, priority-ordered, and the
+    input to batching and the write estimate. `source_*`/`faq_changed`/`backfill` are
+    **report-only**: independent of each other, overlapping freely, and read by nothing
+    but `build_status`.
+
+    They are separate because the same card is legitimately in two of them. A card the
+    official site errata'd *and* re-FAQ'd is one write and two facts; collapsing that into
+    the write plan's `elif` chain is what made `counts.qa_updated` report 0 while the
+    source was adding FAQs.
+    """
 
     new: list[CardRow] = field(default_factory=list)
     changed: list[CardRow] = field(default_factory=list)
@@ -386,6 +475,17 @@ class SeedPlan:
     stored_count: int = 0
     incoming_count: int = 0
 
+    #: Cards D1 has never seen. The same rows as `new` — a card id exists only once the
+    #: official list publishes it — held separately because `--full` overwrites the write
+    #: plan wholesale and the report must survive that.
+    source_added: list[CardRow] = field(default_factory=list)
+    #: Cards whose JP text or columns moved. The official site edited these.
+    source_changed: list[CardRow] = field(default_factory=list)
+    #: Cards whose Q&A moved, whether or not anything else did.
+    faq_changed: list[CardRow] = field(default_factory=list)
+    #: Otherwise-unchanged cards carrying a NULL `source_hash`, needing one UPDATE each.
+    backfill: list[CardRow] = field(default_factory=list)
+
     @property
     def to_write(self) -> list[CardRow]:
         return [*self.new, *self.changed, *self.qa_updated]
@@ -394,32 +494,60 @@ class SeedPlan:
     def estimated_writes(self) -> int:
         # A pruned card costs one delete per table it appears in; approximated as one
         # per junction plus the card row and its FTS row.
-        return estimate_writes(self.to_write)
+        #
+        # A backfill is one UPDATE touching one unindexed column: 1 row, no junctions,
+        # no FTS. Counted because a first run after 0003 can queue thousands of them.
+        return estimate_writes(self.to_write) + len(self.backfill)
 
     @property
     def is_empty(self) -> bool:
-        return not self.to_write and not self.missing_ids
+        return not self.to_write and not self.missing_ids and not self.backfill
 
 
-def diff(
-    rows: Sequence[CardRow], stored: dict[str, tuple[str, str]]
-) -> SeedPlan:
+def diff(rows: Sequence[CardRow], stored: dict[str, StoredHashes]) -> SeedPlan:
     """Compare the build against what D1 already holds.
 
-    `stored` maps card id to (content_hash, qa_hash) as read back from the database.
+    `stored` maps card id to its `StoredHashes`, as read back from the database.
+
+    **Two comparisons, not one.** The `elif` chain decides what to *write* and is
+    unchanged — it is the measured path behind the write estimate, and a changed card
+    rewrites both payloads anyway, so refining it would buy nothing. The three `if`
+    statements after it decide what to *report*, independently, because a card can
+    honestly belong to more than one (ADR 0009 D26).
+
+    A `None` stored `source` is read as **unchanged**, not changed. Every row is in that
+    state on the first run after migration 0003, and reporting 2,463 official updates
+    because we added a column would be worse than reporting none. The card is queued for
+    backfill instead, so the silence lasts exactly one run.
     """
     plan = SeedPlan(stored_count=len(stored), incoming_count=len(rows))
 
     for row in rows:
         existing = stored.get(row.id)
+
+        # --- the write plan: exclusive, ordered, unchanged ---
         if existing is None:
             plan.new.append(row)
-        elif existing[0] != row.content_hash:
+        elif existing.content != row.content_hash:
             plan.changed.append(row)
-        elif existing[1] != row.qa_hash:
+        elif existing.qa != row.qa_hash:
             plan.qa_updated.append(row)
         else:
             plan.unchanged += 1
+
+        # --- the report: independent, overlapping ---
+        if existing is None:
+            plan.source_added.append(row)
+        elif existing.source is None:
+            # Unknown baseline. Say nothing, and record it so we can say something next
+            # time — but only if no upsert is already going to write the hash for us.
+            if existing.content == row.content_hash and existing.qa == row.qa_hash:
+                plan.backfill.append(row)
+        elif existing.source != row.source_hash:
+            plan.source_changed.append(row)
+
+        if existing is not None and existing.qa != row.qa_hash:
+            plan.faq_changed.append(row)
 
     incoming_ids = {row.id for row in rows}
     plan.missing_ids = sorted(id_ for id_ in stored if id_ not in incoming_ids)
@@ -529,19 +657,79 @@ def check_gates(
     return refusals
 
 
+class MissingSourceHashColumn(RuntimeError):
+    """D1 has not had migration 0003 applied.
+
+    Raised from `read_stored_hashes`, which is the first thing a seed does after loading
+    the build and therefore before a single write — the one place this can be caught
+    while the database is still guaranteed untouched.
+
+    Not a `Refusal`: those are computed from a `SeedPlan`, and there is no plan yet
+    because building one requires the very column that is missing. The CLI catches this
+    and prints it in the same shape as a refusal.
+
+    Letting the seed proceed instead is the bad option, and specifically it is worse than
+    it looks. A D1 *batch* is atomic but a *run* is not — the write loop commits batch by
+    batch — so an unknown-column error surfaces after earlier batches have already landed,
+    leaving the database half-migrated to the new payload with no way to tell how far.
+    """
+
+
 def read_stored_hashes(
     http: Any, config: d1.D1Config
-) -> dict[str, tuple[str, str]]:
+) -> dict[str, StoredHashes]:
     """Read every card's hashes back from D1 — the diff baseline.
 
     2,448 rows read per seed. Against a 5M/day budget that is 0.05%, and it buys a
     baseline that cannot disagree with the database.
+
+    `source_hash` stays `None` when D1 holds NULL — a row last written before migration
+    0003. That is *unknown*, not *unchanged*, and `diff` handles the difference.
+
+    Raises `MissingSourceHashColumn` when the column does not exist at all, which is the
+    same query failing for an entirely different reason: 0003 has not been applied.
     """
-    rows = d1.query(http, config, "SELECT id, content_hash, qa_hash FROM cards")
+    try:
+        rows = d1.query(
+            http, config, "SELECT id, content_hash, qa_hash, source_hash FROM cards"
+        )
+    except d1.D1Error as exc:
+        # SQLite's wording, surfaced verbatim through D1's error body. Matched on the
+        # column name too, so an unrelated typo elsewhere is not silently reported as a
+        # missing migration.
+        message = str(exc)
+        if "no such column" in message and "source_hash" in message:
+            raise MissingSourceHashColumn(message) from exc
+        raise
     return {
-        str(row["id"]): (str(row["content_hash"]), str(row["qa_hash"]))
+        str(row["id"]): StoredHashes(
+            content=str(row["content_hash"]),
+            qa=str(row["qa_hash"]),
+            source=None if row["source_hash"] is None else str(row["source_hash"]),
+        )
         for row in rows
     }
+
+
+def backfill_statement(row: CardRow) -> d1.Statement:
+    """Give one already-current card its missing `source_hash`.
+
+    Only reached for a card that is otherwise **unchanged**, so the ordinary upsert never
+    runs for it and the NULL that migration 0003 left would survive every future seed.
+
+    That NULL is harmless for *this* run's report — `source_payload`'s inputs are a strict
+    subset of `content_hash`'s, so a card whose content is unchanged cannot have changed at
+    the source — but it is not harmless later: the first run in which the official site
+    *does* touch that card would compare against NULL, read "unknown", and stay quiet about
+    a real update. One column, one row, ~1 write, and the hole is closed permanently.
+
+    `AND source_hash IS NULL` rather than a bare id match, so a concurrent or re-run seed
+    cannot overwrite a hash that is already correct.
+    """
+    return d1.Statement(
+        "UPDATE cards SET source_hash = ? WHERE id = ? AND source_hash IS NULL",
+        (row.source_hash, row.id),
+    )
 
 
 def prune_statements(ids: Iterable[str]) -> list[list[d1.Statement]]:
@@ -576,6 +764,17 @@ def build_status(
 
     Entry shape follows v1's so the Phase 5 status page needs no reshaping, minus
     `imagePath` — D9 replaced it with `image_key`, and the page composes the URL.
+
+    **Two vocabularies, deliberately.** `new`/`changed`/`qa_updated` describe what the
+    *database* did — they are the write plan, and `changed: 2463` after a re-translation
+    is a true statement about our rows. `source_*`/`faq_changed` describe what the
+    *official site* did (ADR 0009 D26). The page reads the second set for its headline
+    and the first for the honest footnote about a full re-seed.
+
+    **The lists are capped** at `LIST_CAP`, with the true totals kept in `counts`. This
+    artifact was 329 KB and 99.9% of it was a 2,463-entry `changed` list that nothing
+    read — the page dropped it at D19 and the maintainer has the seeder's stdout — while
+    the about dialog downloaded all of it to read two fields.
     """
     by_id = {card.id: card for card in collection.cards}
 
@@ -598,6 +797,14 @@ def build_status(
     def by_number(item: dict[str, Any]) -> tuple[str, str]:
         return (item.get("card_number") or f"~{item['id']}", item["id"])
 
+    def entries(rows: Sequence[CardRow]) -> list[dict[str, Any]]:
+        """Up to `LIST_CAP` entries, lowest card number first.
+
+        Sorted before slicing, not after: the cap must yield the *same* first hundred
+        cards every run, or a reader refreshing the page sees the list reshuffle.
+        """
+        return sorted((entry(row) for row in rows), key=by_number)[:LIST_CAP]
+
     status: dict[str, Any] = {
         "generated_at": datetime.now(timezone.utc)
         .isoformat(timespec="seconds")
@@ -606,16 +813,32 @@ def build_status(
         "mode": mode,
         "counts": {
             "total": plan.incoming_count,
+            # What the database did.
             "new": len(plan.new),
             "changed": len(plan.changed),
             "qa_updated": len(plan.qa_updated),
             "unchanged": plan.unchanged,
             "removed": len(pruned),
             "missing_from_build": len(plan.missing_ids),
+            # What the official site did (D26). `source_added` equals `new` by
+            # construction — a card id appears only when the source publishes it — and is
+            # named separately because the page speaks the source vocabulary, and because
+            # `--full` rewrites the write plan while leaving these alone.
+            "source_added": len(plan.source_added),
+            "source_changed": len(plan.source_changed),
+            "faq_changed": len(plan.faq_changed),
         },
-        "new": sorted((entry(row) for row in plan.new), key=by_number),
-        "changed": sorted((entry(row) for row in plan.changed), key=by_number),
-        "qa_updated": sorted((entry(row) for row in plan.qa_updated), key=by_number),
+        #: The number of entries each list is truncated to. Readers compare a list's
+        #: length against its count to decide whether to render "and N more".
+        "list_cap": LIST_CAP,
+        "new": entries(plan.new),
+        "changed": entries(plan.changed),
+        "qa_updated": entries(plan.qa_updated),
+        "source_added": entries(plan.source_added),
+        "source_changed": entries(plan.source_changed),
+        "faq_changed": entries(plan.faq_changed),
+        # Uncapped: an id is ~10 bytes, and a prune large enough to matter is a fact the
+        # maintainer wants in full.
         "removed": [{"id": card_id} for card_id in sorted(pruned)],
     }
 
