@@ -62,8 +62,32 @@ test("the MATCH branch always binds a quoted phrase", () => {
 test("the LIKE branch declares its ESCAPE clause", () => {
   const built = searchSql("そら", 50);
   // Without ESCAPE the backslashes added by escapeLikePattern would be literal text.
-  assert.ok(built.sql.includes("LIKE ? ESCAPE '\\'"), built.sql);
+  // Every occurrence needs its own clause, including the one in the ORDER BY.
+  assert.ok(built.sql.includes("LIKE ?1 ESCAPE '\\'"), built.sql);
   assert.equal(built.params[0], "%そら%");
+});
+
+test("a short query searches Q&A too, with card matches first", () => {
+  // Under 3 characters trigram cannot match, so this branch is the *only* thing a 1–2
+  // character query has — `そら` is 2 characters and matches 27 cards. Q&A was part of
+  // `text` until issue #67, so searching only `text` here would quietly shrink what a
+  // short query can find while the MATCH branch still searched everything.
+  const built = searchSql("そら");
+  assert.match(built.sql, /text LIKE \?1 ESCAPE '\\' OR qa LIKE \?1 ESCAPE '\\'/);
+  // Card text still wins: the ORDER BY sorts rows whose `text` matched to the front.
+  assert.match(built.sql, /ORDER BY text LIKE \?1 ESCAPE '\\' DESC/);
+  // One pattern, bound once — `?1` is reused rather than repeated. Verified against
+  // D1's binding layer, which is stricter than node:sqlite about the mix.
+  assert.equal(built.params.length, 1);
+});
+
+test("the MATCH branch ranks card text above rulings", () => {
+  // `ORDER BY rank` weights every column 1.0, and Q&A is 88% of the indexed volume — so
+  // a card merely *cited* in a ruling outranked the card itself (issue #67). The weights
+  // mirror the models' `FullText`: a name is 3.0, a Q&A field 0.5.
+  const built = searchSql("白上フブキ");
+  assert.match(built.sql, /ORDER BY bm25\(cards_fts, 2\.0, 1\.0, 0\.1\)/);
+  assert.doesNotMatch(built.sql, /ORDER BY rank/);
 });
 
 test("an omitted limit binds no LIMIT at all, on either branch", () => {

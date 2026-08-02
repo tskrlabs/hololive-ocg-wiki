@@ -245,15 +245,15 @@ def source_payload(card: Card) -> str:
 
 
 def search_text(card: Card) -> str:
-    """Everything searchable about a card, all 7 locales concatenated.
+    """What the *card* says, all 7 locales concatenated. Q&A is `qa_text`.
 
     One FTS row per card rather than one per card-locale: measured at 2,448 rows / 36 MB
     against 17,136 rows / 39.9 MB, and v1 searched across all locales anyway
     (worker.ts:469) despite paying for the partition. See ADR 0004.
 
-    Field weights are recorded on the models via `FullText`, but a trigram index over a
-    single concatenated column cannot apply per-field weights — the annotation survives
-    as documentation of intent and as the list of what belongs in here at all.
+    Field weights are recorded on the models via `FullText`, and a trigram index cannot
+    apply them *within* a column — so the one weight that can act is the one that decides
+    which column a field lands in. Everything here is card text; `qa_text` is the rest.
     """
     parts: list[str] = [card.card_number]
     if card.illustrator:
@@ -278,6 +278,28 @@ def search_text(card: Card) -> str:
                 parts.extend([skill.name, skill.effect])
         if translation.keyword:
             parts.extend([translation.keyword.name, translation.keyword.effect])
+
+    return " ".join(part for part in parts if part)
+
+
+def qa_text(card: Card) -> str:
+    """The card's rulings, all 7 locales concatenated — the `qa` FTS column.
+
+    Separate from `search_text` because a ruling is not the card it cites (issue #67).
+    Folded together, Q&A was 88% of the indexed volume, so a card number quoted inside an
+    answer matched exactly as loudly as the card carrying that number: `hSD01` returned
+    65 cards of which 39 were hSD01, and searching a character's name returned ~40% cards
+    that merely mention them.
+
+    It stays indexed rather than dropped — someone looking up a ruling by its wording is
+    a real user — but in a column `bm25()` can weight down. The `FullText(weight=0.5)` on
+    these fields is what says so, and this split is the first time that number can act.
+    """
+    parts: list[str] = []
+    for locale in LOCALE_VALUES:
+        translation = card.translations.get(locale)
+        if translation is None:
+            continue
         for item in translation.qa_items or []:
             parts.extend([item.title, item.question, item.answer])
 
@@ -298,6 +320,7 @@ class CardRow:
     source_hash: str
     junction_values: dict[str, list[str]]
     search_text: str
+    qa_text: str
 
 
 def to_row(card: Card) -> CardRow:
@@ -342,6 +365,7 @@ def to_row(card: Card) -> CardRow:
             for field_name, table, _value_column in JUNCTIONS
         },
         search_text=search_text(card),
+        qa_text=qa_text(card),
     )
 
 
@@ -409,8 +433,8 @@ def statements_for(row: CardRow, seeded_at: str) -> list[d1.Statement]:
     statements.append(d1.Statement("DELETE FROM cards_fts WHERE rowid = ?", (rowid_for(row.id),)))
     statements.append(
         d1.Statement(
-            "INSERT INTO cards_fts (rowid, card_number, text) VALUES (?, ?, ?)",
-            (rowid_for(row.id), row.columns[1], row.search_text),
+            "INSERT INTO cards_fts (rowid, card_number, text, qa) VALUES (?, ?, ?, ?)",
+            (rowid_for(row.id), row.columns[1], row.search_text, row.qa_text),
         )
     )
 
@@ -673,6 +697,39 @@ class MissingSourceHashColumn(RuntimeError):
     batch — so an unknown-column error surfaces after earlier batches have already landed,
     leaving the database half-migrated to the new payload with no way to tell how far.
     """
+
+
+class MissingQaColumn(RuntimeError):
+    """D1's `cards_fts` has not had migration 0004 applied.
+
+    The same hazard as `MissingSourceHashColumn` and for the same reason — a run is not
+    atomic, so discovering this mid-write leaves the database half-seeded — but it needs
+    its own probe: the missing column is on the FTS virtual table, which carries no
+    hashes and is therefore untouched by the baseline read.
+
+    It also cannot be fixed the way 0003 was. FTS5 virtual tables reject `ALTER`
+    (`virtual tables may not be altered`), so 0004 drops and recreates `cards_fts`,
+    leaving it **empty**. That is what makes this probe load-bearing rather than
+    defensive: between the migration and the reseed the site has no search index at all,
+    and the seed that refills it must be the one that fails loudly if it is talking to
+    the old shape.
+    """
+
+
+def assert_fts_has_qa_column(http: Any, config: d1.D1Config) -> None:
+    """Fail before the first write if `cards_fts` is still the pre-0004 shape.
+
+    Probed with a zero-row query rather than by reading `sqlite_master`: the column list
+    is what the seeder actually depends on, and asking for it directly is one round trip
+    that cannot be fooled by a differently-formatted DDL string.
+    """
+    try:
+        d1.query(http, config, "SELECT qa FROM cards_fts LIMIT 0")
+    except d1.D1Error as exc:
+        message = str(exc)
+        if "no such column" in message and "qa" in message:
+            raise MissingQaColumn(message) from exc
+        raise
 
 
 def read_stored_hashes(

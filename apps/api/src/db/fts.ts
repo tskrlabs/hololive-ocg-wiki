@@ -48,6 +48,23 @@ export function searchStrategy(query: string): "match" | "like" {
 }
 
 /**
+ * Per-column `bm25()` weights, in the column order `cards_fts` declares.
+ *
+ * `ORDER BY rank` is `bm25()` with every column weighted 1.0, which is why a card that
+ * merely *cites* another in a ruling used to outrank the card itself — Q&A is 88% of the
+ * indexed text, so it dominated by sheer volume (issue #67).
+ *
+ * The ratios mirror the `FullText(weight=…)` values on the models: a name is 3.0 against
+ * a Q&A field's 0.5. They could never act while both lived in one column, because a
+ * trigram index cannot weight fields *inside* a column — the split is what makes the
+ * declared intent executable.
+ *
+ * A lower `bm25()` score is better, so these are relevance multipliers, not penalties:
+ * `qa` at 0.1 still returns its matches, it just cannot outrank card text.
+ */
+const BM25_WEIGHTS = "2.0, 1.0, 0.1"; // card_number, text, qa
+
+/**
  * Card ids matching a query, most relevant first.
  *
  * Both branches return `cards_fts.rowid`, which *is* the card id — an FTS5 column
@@ -55,8 +72,10 @@ export function searchStrategy(query: string): "match" | "like" {
  *
  * The LIKE branch scans all 2,448 rows. That is accepted rather than hidden: it only
  * fires under 3 characters, it is bounded by the table size, the result is capped, and
- * the response is cached for an hour. `cards_fts.text` is also the only place the
- * all-locale concatenation exists, so there is nothing cheaper to scan.
+ * the response is cached for an hour. It searches `text` **and** `qa`, ordering card
+ * matches first: they were one column until issue #67, so restricting it to `text` would
+ * quietly narrow what a 1–2 character query can find while the MATCH branch above it
+ * still searched everything.
  */
 export function searchSql(
   query: string,
@@ -74,13 +93,21 @@ export function searchSql(
 
   if (searchStrategy(query) === "match") {
     return {
-      sql: `SELECT rowid AS id FROM cards_fts WHERE cards_fts MATCH ? ORDER BY rank${bound}`,
+      sql:
+        `SELECT rowid AS id FROM cards_fts WHERE cards_fts MATCH ? ` +
+        `ORDER BY bm25(cards_fts, ${BM25_WEIGHTS})${bound}`,
       params: [escapeFtsPhrase(query), ...extra],
     };
   }
 
+  // The pattern is bound twice — once per column — because SQLite has no way to reuse a
+  // parameter across two predicates in the same statement.
+  const pattern = `%${escapeLikePattern(query)}%`;
   return {
-    sql: `SELECT rowid AS id FROM cards_fts WHERE text LIKE ? ESCAPE '\\'${bound}`,
-    params: [`%${escapeLikePattern(query)}%`, ...extra],
+    sql:
+      `SELECT rowid AS id FROM cards_fts ` +
+      `WHERE text LIKE ?1 ESCAPE '\\' OR qa LIKE ?1 ESCAPE '\\' ` +
+      `ORDER BY text LIKE ?1 ESCAPE '\\' DESC${bound}`,
+    params: [pattern, ...extra],
   };
 }
