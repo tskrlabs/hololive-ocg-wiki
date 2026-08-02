@@ -1,7 +1,7 @@
 # ADR 0009 — The UI/UX rework
 
 **Status:** accepted
-**Date:** 2026-07-31 · **D18 amended 2026-08-01**
+**Date:** 2026-07-31 · **D18 amended 2026-08-01** · **D25–D26 added 2026-08-02**
 **Amends:** [ADR 0006](0006-website.md)'s D13 — deliberately, not as a correction
 **Blocks:** Phase 7 (launch)
 **Tracked in:** [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31) — the
@@ -276,12 +276,97 @@ Safari, `scrollbar-width`/`scrollbar-color` for Firefox, whose `thin` is ~11px a
 settable. The two are near-identical rather than pixel-identical; the alternative is a
 JS-drawn scrollbar on every region, which is what `ScrollArea` already is.
 
+**D26. `/status` gains a source-side diff, and the re-seed number is told rather than
+hidden.** *Added 2026-08-02.*
+
+D19 deleted the per-card lists on the strength of one observation: production reports
+`changed: 2463, new: 0`, so a list of "changed" cards is a list of every card, and nobody
+can act on it. That reasoning was correct and **is not reversed here**. What it missed is
+that `changed` was measuring the wrong thing to begin with.
+
+`content_hash` covers the card's columns and its *translated* payload — all seven locales.
+So the translation rework, which rewrote every locale's text, marks all 2,463 cards
+changed while the official card list did nothing at all. The number is real; the story it
+tells a reader is false. Two different events were sharing one word.
+
+They separate cleanly, because the pipeline already holds both baselines. `translations['ja']`
+inside `cards.json` **is** the JP source — `transform` writes it and `apply_translations`
+only ever adds other locales beside it — so a hash over the JP text plus the
+language-independent columns measures *the official site changed this card*, independently
+of anything we did to it downstream. That is **`source_hash`**, a third column beside
+`content_hash` and `qa_hash`.
+
+Its scope mirrors `content_hash`'s own split exactly: **JP text and columns, minus Q&A**.
+The schema went out of its way to separate `qa_hash` so that a new FAQ does not rewrite a
+card's rules text, and that split is worth just as much in a report — "the official site
+added FAQs to eleven cards" is a different sentence from "the official site errata'd
+eleven cards". Columns are in scope, not only prose: `card_sets` is a column, and the
+Selection Cup update moved it on ~660 cards, which is exactly the kind of official change
+that must not go quiet.
+
+**The write plan does not change.** `SeedPlan`'s `new`/`changed`/`qa_updated` are an
+`elif` chain — mutually exclusive, priority-ordered — and that is correct for deciding
+what to write, because a changed card rewrites both payloads anyway. It is wrong for
+*reporting*: a card with both a text edit and a new FAQ lands in `changed` alone, so
+`qa_updated` reads 0 even when the source added FAQs. The fix is not to rework a measured
+write path. Three **report-only sets** — `source_added`, `source_changed`, `faq_changed` —
+are computed independently, each by its own predicate with no priority between them, and
+`build_status` reads those. Writes stay byte-identical to today's.
+
+**A missing baseline means *unknown*, not *changed*.** The first seed after this ships
+finds `source_hash` NULL on every row; a naive comparison would report 2,463 source
+changes, which is the precise false alarm the whole decision exists to remove. NULL is
+therefore treated as source-unchanged and silently backfilled. It follows that the report
+is truthful only from the *second* run — so this ships **before the pending translation
+reseed**, letting that one D1 write pass do both jobs. The first `/status` a reader sees
+then says "2,463 cards rebuilt, nothing changed at the source", which is both true and the
+whole point.
+
+**The lists come back for source changes only.** `source_added` and `faq_changed` are
+usually 0–100 entries, specific, and every row links to a card the reader can open. The
+re-seed list stays a single number with a sentence — that is D19's 2,463, and restoring it
+would restore the pagination and view modes D19 deleted. Lists are capped at 100 with the
+true count retained, so a large set release cannot regress into that.
+
+The cap applies to the **artifact**, not just the page. `status.json` is 329 KB and 99.9%
+of it is the unrendered 2,463-entry `changed` list; the about dialog downloads all of it
+to read two fields. Capped, the artifact is ~15 KB — the core report is 353 bytes and a
+card entry is 98. Nothing read the full lists: the page dropped them at D19 and the
+maintainer has the seeder's own stdout.
+
+**The explanatory sentence is derived, never authored.** The seeder can see *that* 2,463
+rows were rewritten with no source change; it cannot know *why* — a re-translation, a
+schema fix and a plain re-run look identical from there. So the page picks its copy from
+the shape of the data (`source_changed == 0 && changed > 0` → "we rebuilt every card's
+data; the cards themselves did not change at the source"), which translates through the
+existing seven-locale sweep and cannot go stale. A hand-written note in `info.json` was
+rejected for being v1's bug wearing a new hat: v1 embedded "Our database has 2448 cards
+(June 19, 2026)" in editorial prose, permanently wrong the day after it was written, and
+`/api/status` exists to kill exactly that.
+
+**The seed refuses on an unmigrated database.** `0003` must be applied before any seed
+writes the column, or every batch fails on an unknown column name — mid-run, after
+earlier batches have committed. `check_gates` already refuses with a written reason and a
+command to run; this is one more `Refusal`, probing for the column before anything is
+written.
+
+Two things this deliberately does not do. **There is no history**: `status.json` stays
+overwritten per run, so the page says "the latest update" and means it — a seed run for an
+unrelated reason overwrites the interesting report, and that is accepted rather than
+solved with a changelog nobody has asked for yet. And **there is no release date**, because
+`Card` carries none; "cards added since our last seed" is answerable and "cards released
+this month" is not. Note that `counts.new` was *already* the honest answer to the first —
+a card id appears only when the official list publishes it — so that number needed
+rendering, not machinery.
+
 ### Supporting surfaces
 
 **D19. `/status` keeps its stat tiles and loses its tabs.** Production reports
 `changed: 2463, new: 0` — the tabs hold everything or nothing. Deletes 311 of 580 lines and
 three hardcoded `bg-green-500`. It moves into the header's overflow menu, reachable on
 mobile for the first time.
+
+*Extended by D26, which does not restore the tabs.*
 
 **D20. `/how-to-use` is deleted.** Its link had been commented out, so it shipped
 unreachable, and it documented a UI this rework replaces. Done in `7171e7c`.
@@ -362,3 +447,18 @@ assets are free and unlimited.
 **A headless browser for end-to-end tests.** ~200 MB and a browser download, to cover what
 `cardMetaTags()` covers by construction — against a working agreement that forbids GitHub
 Actions and keeps verification local.
+
+**A committed JP fingerprint file, or dated raw-scrape snapshots in R2** (D26). Both were
+real options for the source baseline. The file is the artifact that can desynchronise from
+the database — which is the argument `schema.sql` already makes for keeping the hashes in
+a column — and it makes every scrape a commit. The R2 snapshot is 8.5 MB per run and buys
+field-level attribution ("the ability text changed") that nothing on the page would show.
+A column rides the read-back the seeder already performs.
+
+**Independent buckets in `SeedPlan` itself** (D26), rather than separate report sets. Fewer
+concepts, but it changes the meaning of `counts.changed` and `counts.qa_updated` that have
+already shipped, and `to_write` would have to dedupe or write a card twice.
+
+**A maintainer-written update note** (D26). It could say "re-translated through a
+content-addressed cache" in words no derivation will produce. Rejected as v1's stale-prose
+bug: it is correct only until the next seed nobody remembers to annotate.
