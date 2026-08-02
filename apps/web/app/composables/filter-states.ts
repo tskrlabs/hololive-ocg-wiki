@@ -31,7 +31,7 @@ import type { FilterOptions } from "~/types/filter";
 
 /** The checkbox sections, as opposed to the free-text ones. */
 const FLAG_SECTIONS = ["colors", "cardTypes", "rarity", "bloomLevel"] as const;
-const TEXT_SECTIONS = ["search", "name", "tag", "set"] as const;
+const TEXT_SECTIONS = ["search", "name", "tag", "set", "setCode"] as const;
 
 export type FilterSection =
   | (typeof FLAG_SECTIONS)[number]
@@ -62,6 +62,7 @@ export function createEmpty(): FilterOptions {
     name: "",
     tag: "",
     set: "",
+    setCode: "",
     colors: flags(COLORS),
     // FILTERABLE_CARD_TYPES, not CARD_TYPES: the latter includes non-card entries
     // (rules notices, F-020), which are never in an /api/cards response. A checkbox for
@@ -76,6 +77,9 @@ export function createEmpty(): FilterOptions {
 export const FILTER_SECTIONS: readonly FilterSection[] = [
   "name",
   "tag",
+  // Above `set`, so the two set dimensions sit together with the code first — the code
+  // is what a card prints and what users type, the product name is the elaboration.
+  "setCode",
   "set",
   "colors",
   "cardTypes",
@@ -109,6 +113,32 @@ export function pendingSections(
   });
 }
 
+/**
+ * The set code a query names, or `undefined` — the search box's routing rule.
+ *
+ * Users type `hBP03` into the search box, which is what prompted this whole feature, and
+ * free text is the wrong way to answer it: the FTS index also matches every ruling that
+ * *cites* an hBP03 card, so the result is a mix rather than a set. Recognising the query
+ * as a set code and applying the facet instead answers exactly what was asked.
+ *
+ * **Exact match against the known codes, not a pattern.** `hBP` is a prefix of nine codes
+ * and `hBP3` of none; both stay free-text searches, so a partial typing keeps behaving
+ * the way it does today rather than becoming a confident empty result. Verified against
+ * production that no code collides with any card name or tag, so nothing that was
+ * findable by name becomes unreachable.
+ *
+ * Case-insensitive because the index already is — `hbp03` matches `hBP03` today — and
+ * the canonical spelling is returned so the chip and the URL show the printed form.
+ */
+export function matchSetCode(
+  query: string,
+  codes: readonly string[],
+): string | undefined {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return undefined;
+  return codes.find((code) => code.toLowerCase() === needle);
+}
+
 /** Is anything set? Drives the "filters are active" dot in the UI. */
 export function isActive(filter: FilterOptions): boolean {
   return (
@@ -116,6 +146,15 @@ export function isActive(filter: FilterOptions): boolean {
     FLAG_SECTIONS.some((key) => active(filter[key]).length > 0)
   );
 }
+
+/**
+ * Sections whose query-string name differs from their field name.
+ *
+ * Only one, and only because the two sides have different conventions: the query string
+ * is snake_case throughout, the filter shape camelCase throughout. A lookup rather than
+ * a branch inside the loop, so a second such section is a line of data.
+ */
+const API_PARAM: Partial<Record<FilterSection, string>> = { setCode: "set_code" };
 
 /**
  * The filter as `/api/cards/filter` query parameters.
@@ -135,7 +174,7 @@ export function toApiParams(
 
   for (const key of TEXT_SECTIONS) {
     const value = filter[key].trim();
-    if (value) params[key] = value;
+    if (value) params[API_PARAM[key] ?? key] = value;
   }
   for (const key of FLAG_SECTIONS) {
     const values = active(filter[key]);

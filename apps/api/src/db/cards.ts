@@ -82,11 +82,35 @@ export function expandColors(colors: readonly string[]): string[] {
  */
 const idSetClause = "id IN (SELECT value FROM json_each(?))";
 
+/**
+ * The `card_number` range covering one set code — `hBP03` → `hBP03-` … `hBP03.`.
+ *
+ * A set code is the prefix of a card number and nothing else is stored: no column, no
+ * junction. It does not need to be. `idx_cards_card_number` already exists, and a range
+ * predicate over it is a seek — measured on production, `SEARCH cards USING INDEX
+ * idx_cards_card_number` for the page and `SEARCH … USING COVERING INDEX` for the count.
+ * A dedicated `set_code` column would produce the same plan while costing a migration, a
+ * reseed and a seventh index write per card.
+ *
+ * `LIKE 'hBP03-%'` was rejected for the same query at a worse plan: SQLite degrades it to
+ * `SCAN cards USING INDEX` rather than a seek, because the pattern is a bound parameter
+ * it cannot prove is prefix-shaped.
+ *
+ * The upper bound is `.` because it is the next codepoint after `-`, so the range covers
+ * every `hBP03-…` and stops before anything else. It cannot collide with a longer code:
+ * `hSD1` would end at `hSD1.` and `hSD10-001` sorts above that — but the exact-match
+ * recognition upstream means only whole, known codes ever reach here anyway.
+ */
+export function setCodeRange(code: string): { from: string; to: string } {
+  return { from: `${code}-`, to: `${code}.` };
+}
+
 export interface CardFilters {
   search?: string;
   name?: string;
   tag?: string;
   set?: string;
+  setCode?: string;
   colors?: string[];
   cardTypes?: string[];
   rarity?: string[];
@@ -163,6 +187,16 @@ export function buildWhere(filters: CardFilters, searchIds?: readonly string[]):
   if (filters.colors?.length) junction("card_colors", "color_code", expandColors(filters.colors));
   if (filters.tag) junction("card_tags", "tag", [filters.tag]);
   if (filters.set) junction("card_sets", "set_name", [filters.set]);
+
+  // A range over the existing card_number index, not a stored column — see
+  // `setCodeRange`. AND'd against `set` rather than replacing it: the two are different
+  // taxonomies, and asking for hBP03 cards *that shipped in the Twin Wafers product* is
+  // a coherent question both dimensions are needed to answer.
+  if (filters.setCode) {
+    const range = setCodeRange(filters.setCode);
+    conditions.push("card_number >= ? AND card_number < ?");
+    params.push(range.from, range.to);
+  }
 
   if (filters.cardTypes?.length) inClause("card_type_code", filters.cardTypes);
   if (filters.rarity?.length) inClause("rarity_code", filters.rarity);

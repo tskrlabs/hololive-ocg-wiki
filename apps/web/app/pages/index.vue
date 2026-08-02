@@ -10,6 +10,17 @@ const { siteUrl } = useRuntimeConfig().public;
  */
 const panel = useDeckPanel();
 
+/**
+ * `?set_code=hBP03` (ADR 0010) — read once on load, then kept in step.
+ *
+ * Here rather than in the rail or the search box because both of those are rendered
+ * twice (mobile header and desktop rail), and a URL sync running in two places would
+ * race itself. The page is the one thing that exists once.
+ */
+const setCodeUrl = useSetCodeUrl();
+setCodeUrl.applyFromUrl();
+setCodeUrl.syncToUrl();
+
 // SEO Meta tags for the main page
 useSeoMeta({
   title: t("Card List"),

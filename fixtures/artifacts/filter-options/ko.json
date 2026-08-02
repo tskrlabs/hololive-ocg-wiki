@@ -282,5 +282,55 @@
       "value": "ライブスタートデッキ 白上フブキ",
       "label": "라이브 스타트 덱 시라카미 후부키"
     }
+  ],
+  "set_codes": [
+    {
+      "value": "hBP01",
+      "label": "hBP01"
+    },
+    {
+      "value": "hBP03",
+      "label": "hBP03"
+    },
+    {
+      "value": "hBP05",
+      "label": "hBP05"
+    },
+    {
+      "value": "hBP07",
+      "label": "hBP07"
+    },
+    {
+      "value": "hBP08",
+      "label": "hBP08"
+    },
+    {
+      "value": "hSD01",
+      "label": "hSD01"
+    },
+    {
+      "value": "hSD03",
+      "label": "hSD03"
+    },
+    {
+      "value": "hSD04",
+      "label": "hSD04"
+    },
+    {
+      "value": "hSD05",
+      "label": "hSD05"
+    },
+    {
+      "value": "hSYN",
+      "label": "hSYN"
+    },
+    {
+      "value": "hY01",
+      "label": "hY01"
+    },
+    {
+      "value": "hYS01",
+      "label": "hYS01"
+    }
   ]
 }

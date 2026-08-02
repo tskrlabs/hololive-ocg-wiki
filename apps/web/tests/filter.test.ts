@@ -24,6 +24,7 @@ import {
   FILTER_SECTIONS,
   FILTERABLE_COLORS,
   isActive,
+  matchSetCode,
   pendingSections,
   toApiParams,
 } from "../app/composables/filter-states";
@@ -220,6 +221,68 @@ describe("pendingSections", () => {
       }
       expect(pendingSections(draft, applied), section).toEqual([section]);
     }
-    expect(FILTER_SECTIONS).toHaveLength(7);
+    // name, tag, setCode, set, colors, cardTypes, rarity, bloomLevel. The loop above is
+    // what proves each one works; this is the canary that says a section was *added*, so
+    // whoever adds the next one is made to check it renders a group too.
+    expect(FILTER_SECTIONS).toHaveLength(8);
+  });
+
+  it("set code and product set are independent sections", () => {
+    // They are different taxonomies over the same word "set": `setCode` is the card
+    // number's prefix (hBP03, 283 cards), `set` is the product a card shipped in
+    // ("Elite Spark", 244 cards, overlapping in 229). Setting one must not touch the
+    // other — a single control answering both questions is what this rules out.
+    const applied = createEmpty();
+    const draft = createEmpty();
+    draft.setCode = "hBP03";
+
+    expect(pendingSections(draft, applied)).toEqual(["setCode"]);
+    expect(draft.set).toBe("");
+  });
+
+  it("the set code is sent as set_code, the API's spelling", () => {
+    // The query string is snake_case and the filter shape is camelCase; sending `setCode`
+    // would be silently ignored by the Worker, which is the worst shape — a filter that
+    // looks applied and constrains nothing.
+    const filter = createEmpty();
+    filter.setCode = "hBP03";
+
+    const params = toApiParams(filter);
+    expect(params.set_code).toBe("hBP03");
+    expect(params.setCode).toBeUndefined();
+  });
+});
+
+describe("recognising a typed set code", () => {
+  const CODES = ["hBP01", "hBP03", "hSD01", "hPR", "hY01"];
+
+  it("matches a whole code, whatever the casing", () => {
+    // The index is already case-insensitive — `hbp03` finds hBP03 cards today — so the
+    // routing rule must be too, or typing lowercase would behave differently from
+    // typing it in the printed form.
+    expect(matchSetCode("hBP03", CODES)).toBe("hBP03");
+    expect(matchSetCode("hbp03", CODES)).toBe("hBP03");
+    expect(matchSetCode("  hBP03  ", CODES)).toBe("hBP03");
+  });
+
+  it("leaves a partial or unknown code to free-text search", () => {
+    // `hBP` is a prefix of nine codes and `hBP3` of none. Routing either would turn a
+    // half-typed query into a confident empty result; as searches they keep behaving
+    // exactly as they do today.
+    expect(matchSetCode("hBP", CODES)).toBeUndefined();
+    expect(matchSetCode("hBP3", CODES)).toBeUndefined();
+    expect(matchSetCode("hBP99", CODES)).toBeUndefined();
+    expect(matchSetCode("", CODES)).toBeUndefined();
+  });
+
+  it("does not route a full card number", () => {
+    // `hBP03-004` is a card, not a set — it stays a search, which finds that card.
+    expect(matchSetCode("hBP03-004", CODES)).toBeUndefined();
+  });
+
+  it("routes nothing when the artifact has no codes", () => {
+    // An artifact published before set codes existed. Every query stays a search rather
+    // than the rule silently matching nothing in a way that looks like a broken filter.
+    expect(matchSetCode("hBP03", [])).toBeUndefined();
   });
 });

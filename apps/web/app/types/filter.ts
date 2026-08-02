@@ -36,6 +36,15 @@ export type FilterOptions = {
   name: string;
   tag: string;
   set: string;
+  /**
+   * The set code — `hBP03`. A *different* dimension from `set`, not a spelling of it.
+   *
+   * `set` filters on the product a card shipped in (`ブースターパック「エリートスパーク」`);
+   * this filters on the prefix of its card number. They overlap without agreeing —
+   * hBP03 is 283 cards, Elite Spark is 244, and only 229 are both — so collapsing them
+   * would make one control give two different answers.
+   */
+  setCode: string;
   colors: ColorFilter;
   cardTypes: CardTypeFilter;
   rarity: RarityFilter;
@@ -55,4 +64,12 @@ export type FilterOptionsResponse = {
   names: FilterOption[];
   tags: FilterOption[];
   sets: FilterOption[];
+  /**
+   * The set codes, where `value` and `label` are both the code.
+   *
+   * Optional because the site may be served against an artifact built before set codes
+   * existed — R2 holds whatever the last publish wrote, and a Worker deploy does not
+   * republish it. The picker renders nothing rather than `undefined.length` throwing.
+   */
+  set_codes?: FilterOption[];
 };

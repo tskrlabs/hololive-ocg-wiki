@@ -18,6 +18,7 @@ import {
   filterCountSql,
   filterPageSql,
   firstCardPerNumberSql,
+  setCodeRange,
   type CardFilters,
 } from "../src/db/cards.ts";
 
@@ -92,6 +93,38 @@ test("filter groups are OR within and AND across", () => {
     topLevel = flat.replace(/\([^()]*\)/g, "…");
   }
   assert.equal(topLevel.split(" AND ").length, 3);
+});
+
+test("a set code filters by card_number range, not LIKE", () => {
+  // The range is what makes the existing `idx_cards_card_number` a *seek*. Measured on
+  // production: `SEARCH cards USING INDEX idx_cards_card_number` for the page and
+  // `SEARCH … USING COVERING INDEX` for the count. `LIKE 'hBP03-%'` degrades to a scan,
+  // because SQLite cannot prove a bound parameter is prefix-shaped.
+  const where = buildWhere({ ...base, setCode: "hBP03" });
+  assert.match(where.sql, /card_number >= \? AND card_number < \?/);
+  assert.doesNotMatch(where.sql, /LIKE/);
+  assert.deepEqual(where.params, ["hBP03-", "hBP03."]);
+});
+
+test("the set-code range stops before the next card number", () => {
+  // `.` is the codepoint after `-`, so the range covers every `hBP03-…` and nothing
+  // else. Pinned because an off-by-one here is silent: a wider bound would fold a
+  // neighbouring set in, and every count on the page would be quietly wrong.
+  const { from, to } = setCodeRange("hBP03");
+  assert.ok(from < "hBP03-001" && "hBP03-999" < to);
+  // The set beneath it in sort order is excluded at both ends.
+  assert.ok("hBP02-999" < from);
+  assert.ok(to < "hBP04-001");
+});
+
+test("set code and product set are AND'd, not alternatives", () => {
+  // Two taxonomies over one word: hBP03 is 283 cards, the "Elite Spark" product 244,
+  // overlapping in 229. "hBP03 cards that shipped in Twin Wafers" is a real question,
+  // and only both dimensions together can answer it.
+  const where = buildWhere({ ...base, setCode: "hBP03", set: "ツインウエハース" });
+  assert.match(where.sql, /card_number >= \?/);
+  assert.match(where.sql, /EXISTS \(SELECT 1 FROM card_sets/);
+  assert.match(where.sql, / AND /);
 });
 
 test("the name filter matches the source-locale column", () => {

@@ -101,7 +101,14 @@ cards.get("/filter", async (c) => {
     searchIds = matched.results.map((row) => String(row.id));
   }
 
-  const filters = { ...query, page: query.page, limit: query.limit };
+  // `set_code` is renamed on the way in: the query string is snake_case like every other
+  // parameter here, while `CardFilters` is camelCase like every other field there.
+  const filters = {
+    ...query,
+    setCode: query.set_code,
+    page: query.page,
+    limit: query.limit,
+  };
   const page = filterPageSql(filters, searchIds);
   const found = await fetchCards(c.env, page, query.locale as Locale);
 
