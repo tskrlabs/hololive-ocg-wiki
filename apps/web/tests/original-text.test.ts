@@ -239,3 +239,97 @@ describe("the source names render where the toggle promises them (#61)", () => {
     expect(wrapper.find("span[lang='ja']").exists()).toBe(false);
   });
 });
+
+/**
+ * Tags, which are the one label that does *not* go through `CardListOriginalText` (#62).
+ *
+ * `original.tags` shipped in the payload for a month and no component read it — a quieter
+ * version of the same failure as #61: the data arrives, the reader never sees it. It is
+ * not a rare field either, so it is worth a test rather than an eyeball: **16 of 34 golden
+ * fixture cards (~47%)** carry it in `en`/`es`/`id`/`ko`/`th`, 15 of 34 in `tc`.
+ *
+ * These mount the real block rather than asserting on the composable, because the whole
+ * class of bug here is markup that is never reached.
+ */
+const tagCard = {
+  ...card,
+  tags: ["#JP", "#0th Gen", "#Singing"],
+  original: { ...card.original, tags: ["#JP", "#0期生", "#歌"] },
+} as unknown as Card;
+
+async function mountRowsBlock(item: Card) {
+  const component = (await import("../app/components/card-list/CardDataRowsBlock.vue"))
+    .default;
+  return mount(component, {
+    props: { item },
+    global: {
+      components: autoImports,
+      stubs: {
+        ...stubs,
+        // `UseClipboard` is a renderless component from `@vueuse/components`: it calls its
+        // default slot with `{ copy, copied }`. Stubbed with those bound, so the tag
+        // buttons render — without it the whole row is empty and every assertion below
+        // would pass or fail for the wrong reason.
+        UseClipboard: {
+          template: "<div><slot :copy=\"() => {}\" :copied=\"false\" /></div>",
+        },
+      },
+      mocks: { $t: translate },
+    },
+  });
+}
+
+describe("the source tag list renders as its own line (#62)", () => {
+  it("shows every source tag when the toggle is on", async () => {
+    useShowOriginal().enabled.value = true;
+    const wrapper = await mountRowsBlock(tagCard);
+    await nextTick();
+
+    const source = wrapper.find("div[lang='ja']");
+    expect(source.exists()).toBe(true);
+    for (const tag of ["#JP", "#0期生", "#歌"]) {
+      expect(source.text()).toContain(tag);
+    }
+  });
+
+  /**
+   * The contract, asserted rather than assumed: `localize()` emits the **whole** source
+   * list or none of it, because a partially-shown tag list reads as a data error. So the
+   * two rows are index-aligned and the same length, and `#JP` appearing on both sides is
+   * correct output rather than a duplicate to suppress — 39% of tag pairs in `en` and 60%
+   * in `tc` are identical, which is why this renders stacked instead of inline.
+   */
+  it("renders the source list at full length, including tags identical to their translation", async () => {
+    useShowOriginal().enabled.value = true;
+    const wrapper = await mountRowsBlock(tagCard);
+    await nextTick();
+
+    const source = wrapper.find("div[lang='ja']");
+    expect(source.findAll("span")).toHaveLength(tagCard.original!.tags!.length);
+    expect(source.text()).toContain("#JP");
+  });
+
+  it("stays hidden while the toggle is off", async () => {
+    const wrapper = await mountRowsBlock(tagCard);
+    await nextTick();
+
+    expect(wrapper.text()).toContain("#0th Gen");
+    expect(wrapper.find("div[lang='ja']").exists()).toBe(false);
+  });
+
+  /**
+   * `original.tags` is `[]` — not absent — when the source and translation lists match,
+   * which is what `localize()` emits for a card whose tags need no translating. An empty
+   * row would draw a blank line under the tags for those cards.
+   */
+  it("draws nothing when the tags did not differ", async () => {
+    useShowOriginal().enabled.value = true;
+    const wrapper = await mountRowsBlock({
+      ...tagCard,
+      original: { ...tagCard.original, tags: [] },
+    } as unknown as Card);
+    await nextTick();
+
+    expect(wrapper.find("div[lang='ja']").exists()).toBe(false);
+  });
+});
