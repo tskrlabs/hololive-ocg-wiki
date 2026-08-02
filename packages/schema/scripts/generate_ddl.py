@@ -186,6 +186,24 @@ CREATE TABLE IF NOT EXISTS cards (
     content_hash TEXT NOT NULL,
     qa_hash TEXT NOT NULL,
 
+    -- The *source* baseline (ADR 0009 D26) — and the one column here that decides
+    -- nothing about writes.
+    --
+    -- content_hash covers the translated payload, all seven locales, so a re-translation
+    -- marks every card changed while the official card list did nothing. That is a true
+    -- statement about our database and a false one about the game. This hash covers the
+    -- JP text and the language-independent columns only, so it moves when — and only
+    -- when — the official site changed the card.
+    --
+    -- Q&A is excluded for the reason qa_hash exists: "they errata'd eleven cards" and
+    -- "they added FAQs to eleven cards" are different sentences, and a reader wants both.
+    --
+    -- Nullable, unlike its two neighbours, because NULL is a meaningful third state:
+    -- *unknown*, on a row written before this column existed. The seeder reads that as
+    -- source-unchanged and backfills silently — treating it as "changed" would report
+    -- every card as an official update on the first run after the migration.
+    source_hash TEXT,
+
     -- The run that last wrote this row, for status.json and for debugging.
     seeded_at TEXT NOT NULL
 );
