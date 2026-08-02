@@ -282,12 +282,14 @@ const makerLinks = [
           </p>
 
           <p>
-            <strong class="font-medium text-foreground">Analytics.</strong>
+            <strong class="font-medium text-foreground">Analytics, without cookies.</strong>
             We use Google Analytics to count visits and see which pages get read, which is
-            how we decide what to work on. It sets cookies and records the usual technical
-            details: a rough location, your browser and device, and the pages you visit.
-            We use it in aggregate; we are not trying to identify anyone. You can block it
-            with any content blocker, or with your browser's
+            how we decide what to work on. It runs with every storage permission switched
+            off, so <strong class="font-medium text-foreground">it sets no cookies and
+            gives you no identifier</strong> — we can see that a page was read, roughly
+            from where, on what kind of browser, but not that two visits were the same
+            person. That is why there is no cookie banner: there is nothing to consent to.
+            You can still block it with any content blocker, or with your browser's
             <a
               href="https://support.google.com/analytics/answer/181881"
               target="_blank"
@@ -298,9 +300,9 @@ const makerLinks = [
 
           <p>
             <strong class="font-medium text-foreground">Things loaded from elsewhere.</strong>
-            Typefaces are requested from Google Fonts, so Google receives the request. Card
-            images come from our own CDN. Both see your IP address, as any web request
-            does.
+            Typefaces are served from this site, not from Google — they are downloaded when
+            the site is built, so your browser never asks Google for them. Card images come
+            from our own CDN, which sees your IP address, as any web request does.
           </p>
 
           <p>

@@ -311,10 +311,51 @@ export default defineNuxtConfig({
   // `ogImage:` through `useSeoMeta`, which is a plain meta tag pointing at a static
   // `icon.png` — exactly what v1 shipped, minus the rasteriser it never invoked.
 
+  /**
+   * Analytics, cookieless by construction (ADR 0011).
+   *
+   * Two guards, and they are independent. `enabled: IS_PUBLIC` is the pre-launch
+   * invisibility guarantee: with the flag unset nothing loads at all. `initCommands` is
+   * the one that matters *after* launch.
+   *
+   * **Consent Mode v2 with everything denied, permanently.** There is no banner and no
+   * code path that grants consent — `denied` is the final state, not a default waiting to
+   * be updated. GA4 still loads and still sends pings, but sets no `_ga` cookie and no
+   * persistent identifier, so no consent is required to collect them under GDPR/ePrivacy.
+   * The site ships Spanish among its seven locales, which makes EU traffic expected
+   * rather than hypothetical (#64).
+   *
+   * What that buys: pageviews, referrers, geography, which cards get read. What it costs:
+   * returning-visitor counts and session identity. For a fan wiki that is the right side
+   * of the trade — the numbers are for knowing whether anyone reads it, not for
+   * remarketing.
+   *
+   * ⚠️ **Do not add a consent banner to "improve" this.** A banner is only worth building
+   * if consent can be granted, and granting it re-introduces the cookies this avoids. The
+   * cheaper, more honest answer was to stop needing consent at all. If richer analytics
+   * ever justify a banner, that is a decision to record in an ADR, not a config tweak.
+   *
+   * `wait_for_update` is deliberately absent: it exists to hold pings while a banner
+   * resolves, and there is no banner to wait for.
+   */
   gtag: {
-    id: "GTM-MZHVHBGQ",
+    // GA4 measurement ID. Replaced the `GTM-MZHVHBGQ` container in ADR 0011 —
+    // `nuxt-gtag` is built around a GA4 property, which is what this now is.
+    id: "G-LCSL88VF1N",
     // Configured but silent until launch — see IS_PUBLIC.
     enabled: IS_PUBLIC,
+    initCommands: [
+      [
+        "consent",
+        "default",
+        {
+          ad_storage: "denied",
+          ad_user_data: "denied",
+          ad_personalization: "denied",
+          analytics_storage: "denied",
+        },
+      ],
+    ],
   },
 
   colorMode: { preference: "system", classSuffix: "" },
