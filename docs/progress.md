@@ -4,6 +4,26 @@
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
 origin (D2), against **2,463 cards** in D1 and images on R2.
 
+⚠️ **Set-code filtering and two search fixes are on `develop`, awaiting a merge to
+`main`** (2026-08-02, [ADR 0010](adr/0010-set-code-and-search.md)). The D1 half is
+**already applied to production** — migration 0004 and a full reseed (52,060 rows) ran
+on 2026-08-02, and the artifacts are republished — because search had to be rebuilt
+before its ranking could change. The deployed Worker keeps working across that migration
+(`text` still exists, verified live), so what waits on the merge is the *code*: until
+then `/api/cards/filter?search=hBP03` still returns **HTTP 500** in production, the
+ranking is still the old one, and the set-code picker is not yet in the UI.
+
+**Merging is the maintainer's step**, and it doubles as the Workers Builds check below —
+the pipeline token can reach D1 but not the Workers service, so `wrangler deploy` is not
+available to an agent. If no build fires within ~2 minutes of the merge, Workers Builds is
+*not* connected and a manual `wrangler deploy` is needed.
+
+What it does: a set code (`hBP03`) becomes a filter dimension of its own, typing one into
+the search box applies it, and `?set_code=hBP03` is the first filter with a URL. What it
+fixed on the way: every search matching >100 cards was a 500 ([#66](https://github.com/tskrlabs/hololive-ocg-wiki/issues/66)),
+and Q&A text was 88% of the search index, so a ruling outranked the card it cited
+([#67](https://github.com/tskrlabs/hololive-ocg-wiki/issues/67)).
+
 **Phase 8 went live 2026-08-02** together with ADR 0009 D26, and
 [#63](https://github.com/tskrlabs/hololive-ocg-wiki/pull/63) merged it to `main`. Both
 migrations are applied, the seed has run, and every number Phases 3 and 4 measured came
