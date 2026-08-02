@@ -56,8 +56,13 @@ const isCardList = computed(() => getRouteBaseName(route) === "index");
       screen-reader user unable to tell which of the two they are in, and D4 denies the
       button a colour to say it with.
     -->
+    <!--
+      A colon rather than a dash, and it is read aloud: this is the one string here a
+      screen reader speaks, so the separator wants to be the one that announces a value
+      following a label.
+    -->
     <span class="sr-only">
-      {{ $t("density.label") }} — {{ $t(`density.${density}`) }}
+      {{ $t("density.label") }}: {{ $t(`density.${density}`) }}
     </span>
   </Button>
 </template>

@@ -516,7 +516,7 @@
       "descriptionWithAuthor": "Hololive OCG deck \"{deckName}\" created by {author}. View deck composition with {mainCount} main deck cards, {yellCount} yell cards, and {oshiCount} oshi card(s).",
       "description": "Hololive OCG deck \"{deckName}\". View deck composition with {mainCount} main deck cards, {yellCount} yell cards, and {oshiCount} oshi card(s)."
     },
-    "addedPartial": "Added {added} of {requested} — {section} is full",
+    "addedPartial": "Added {added} of {requested}; {section} is full",
     "sectionFull": "{section} is full",
     "nothingToRemove": "There is nothing to remove",
     "addCopies": "Add {count} of {name}",
@@ -540,7 +540,7 @@
   },
   "status": {
     "title": "Data Status",
-    "description": "Card database status — which cards are new, updated, or missing from the official source.",
+    "description": "Card database status: which cards are new, updated, or missing from the official source.",
     "validInDB": "In Database",
     "lastUpdated": "Last Updated",
     "builtAt": "Data Built",
@@ -555,7 +555,7 @@
     },
     "reseed": {
       "none": "No card data was rewritten in this update.",
-      "ours": "We rebuilt {count} cards' data in this update — a change on our side, such as re-translating them. The cards themselves are unchanged at the official source.",
+      "ours": "We rebuilt {count} cards' data in this update. That is a change on our side, such as re-translating them; the cards themselves are unchanged at the official source.",
       "mixed": "{count} cards' data was rewritten in this update, which includes the changes above as well as any rebuild on our side."
     }
   },
@@ -617,12 +617,12 @@
   "clipboard": {
     "copied": "Copied deck code URL.",
     "unsupported": "This browser can't copy to the clipboard.",
-    "failed": "Couldn't copy — try again, or copy the address bar."
+    "failed": "Couldn't copy. Try again, or copy the address bar."
   },
   "More": "More",
   "about": {
     "title": "About",
-    "description": "A fan-made wiki for the Hololive Official Card Game — card database, search, and deck builder.",
+    "description": "A fan-made wiki for the Hololive Official Card Game: card database, search, and deck builder.",
     "theSite": "The site",
     "theLab": "Part of tskr/labs",
     "labBlurb": "A small lab building sharp, no-bloat tools for the web.",

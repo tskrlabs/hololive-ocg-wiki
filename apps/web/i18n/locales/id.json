@@ -516,7 +516,7 @@
       "descriptionWithAuthor": "Deck Hololive OCG \"{deckName}\" dibuat oleh {author}. Lihat komposisi deck dengan {mainCount} kartu main deck, {yellCount} kartu yell, dan {oshiCount} kartu oshi.",
       "description": "Deck Hololive OCG \"{deckName}\". Lihat komposisi deck dengan {mainCount} kartu main deck, {yellCount} kartu yell, dan {oshiCount} kartu oshi."
     },
-    "addedPartial": "Menambahkan {added} dari {requested} — {section} sudah penuh",
+    "addedPartial": "Menambahkan {added} dari {requested}; {section} sudah penuh",
     "sectionFull": "{section} sudah penuh",
     "nothingToRemove": "Tidak ada yang bisa dihapus",
     "addCopies": "Tambah {count} {name}",
@@ -540,7 +540,7 @@
   },
   "status": {
     "title": "Status Data",
-    "description": "Status basis data kartu — kartu mana yang baru, diperbarui, atau tidak ada dari sumber resmi.",
+    "description": "Status basis data kartu: kartu mana yang baru, diperbarui, atau tidak ada dari sumber resmi.",
     "validInDB": "Dalam Database",
     "lastUpdated": "Terakhir Diperbarui",
     "builtAt": "Data Dibangun",
@@ -555,7 +555,7 @@
     },
     "reseed": {
       "none": "Tidak ada data kartu yang ditulis ulang pada pembaruan ini.",
-      "ours": "Kami membangun ulang data {count} kartu pada pembaruan ini — perubahan dari sisi kami, seperti menerjemahkan ulang. Kartunya sendiri tidak berubah di sumber resmi.",
+      "ours": "Kami membangun ulang data {count} kartu pada pembaruan ini. Itu perubahan dari sisi kami, seperti menerjemahkan ulang; kartunya sendiri tidak berubah di sumber resmi.",
       "mixed": "Data {count} kartu ditulis ulang pada pembaruan ini, mencakup perubahan di atas serta pembangunan ulang dari sisi kami."
     }
   },
@@ -617,12 +617,12 @@
   "clipboard": {
     "copied": "URL kode deck telah disalin.",
     "unsupported": "Peramban ini tidak dapat menyalin ke papan klip.",
-    "failed": "Gagal menyalin — coba lagi, atau salin dari bilah alamat."
+    "failed": "Gagal menyalin. Coba lagi, atau salin dari bilah alamat."
   },
   "More": "Lainnya",
   "about": {
     "title": "Tentang",
-    "description": "Wiki buatan penggemar untuk Hololive OCG — basis data kartu, pencarian, dan perakit dek.",
+    "description": "Wiki buatan penggemar untuk Hololive OCG: basis data kartu, pencarian, dan perakit dek.",
     "theSite": "Tentang situs ini",
     "theLab": "Bagian dari tskr/labs",
     "labBlurb": "Lab kecil yang membuat perkakas web yang ringkas dan tanpa bloat.",

@@ -516,7 +516,7 @@
       "descriptionWithAuthor": "Mazo de Hololive OCG \"{deckName}\" creado por {author}. Ver composición del mazo con {mainCount} cartas del mazo principal, {yellCount} cartas yell y {oshiCount} carta(s) oshi.",
       "description": "Mazo de Hololive OCG \"{deckName}\". Ver composición del mazo con {mainCount} cartas del mazo principal, {yellCount} cartas yell y {oshiCount} carta(s) oshi."
     },
-    "addedPartial": "Se han añadido {added} de {requested} — {section} está completo",
+    "addedPartial": "Se han añadido {added} de {requested}; {section} está completo",
     "sectionFull": "{section} está completo",
     "nothingToRemove": "No hay nada que quitar",
     "addCopies": "Añadir {count} de {name}",
@@ -540,7 +540,7 @@
   },
   "status": {
     "title": "Estado de Datos",
-    "description": "Estado de la base de datos de cartas — qué cartas son nuevas, actualizadas o faltan en la fuente oficial.",
+    "description": "Estado de la base de datos de cartas: qué cartas son nuevas, actualizadas o faltan en la fuente oficial.",
     "validInDB": "En la Base de Datos",
     "lastUpdated": "Última Actualización",
     "builtAt": "Datos Generados",
@@ -555,7 +555,7 @@
     },
     "reseed": {
       "none": "No se reescribió ningún dato de cartas en esta actualización.",
-      "ours": "Reconstruimos los datos de {count} cartas en esta actualización — un cambio de nuestro lado, como volver a traducirlas. Las cartas en sí no han cambiado en la fuente oficial.",
+      "ours": "Reconstruimos los datos de {count} cartas en esta actualización. Es un cambio de nuestro lado, como volver a traducirlas; las cartas en sí no han cambiado en la fuente oficial.",
       "mixed": "Se reescribieron los datos de {count} cartas en esta actualización, lo que incluye los cambios anteriores y cualquier reconstrucción de nuestro lado."
     }
   },

@@ -277,7 +277,7 @@ const makerLinks = [
             Decks, and your display preferences, are saved in this browser's local storage
             and are never sent to a server. Clearing your browser data deletes them, and
             they do not follow you to another device. A deck you choose to share is encoded
-            into the link itself — sharing that link is what publishes it, and nothing is
+            into the link itself, so sharing that link is what publishes it, and nothing is
             stored on our side when you do.
           </p>
 
@@ -285,7 +285,7 @@ const makerLinks = [
             <strong class="font-medium text-foreground">Analytics.</strong>
             We use Google Analytics to count visits and see which pages get read, which is
             how we decide what to work on. It sets cookies and records the usual technical
-            details — a rough location, your browser and device, and the pages you visit.
+            details: a rough location, your browser and device, and the pages you visit.
             We use it in aggregate; we are not trying to identify anyone. You can block it
             with any content blocker, or with your browser's
             <a
