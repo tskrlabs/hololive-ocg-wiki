@@ -132,6 +132,39 @@ unprefixed ones, so **every tag returned zero cards, in every locale**
 ([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)); the corrected artifact
 reached production with the same publish.
 
+### ✅ Thai `エール` normalised — published and seeded 2026-08-02
+
+The game's cheer resource was rendered **four** ways in Thai rules text
+([#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) reported three; the cache
+had moved on). `holo-data normalise-cache` rewrites such cases deterministically, with no
+API call — the model produced the inconsistency, so re-translating has no reason to fix
+it.
+
+| step | result |
+|---|---|
+| `normalise-cache --write` | 360 replacements across 263 entries, `th` only |
+| `build` | 2,463 cards, 100% coverage in all seven locales |
+| `publish --artifacts-only` | 9 objects (`cards.json`, 7 filter-options, `notices.json`); **0 images** |
+| `seed --confirm` | 578 cards, **13,284 rows written — exactly the estimate** |
+| live check | 100 `th` cards: 0 bad variants, `เยล` correct |
+
+**D26 earned its keep here.** The seed reported `added 0, edited 0` for the official card
+list beside 511 changed cards — so the diff said plainly "this churn is ours", which is
+the distinction that column was added to make.
+
+⚠️ **The near-miss is the part worth keeping.** #28's suggested one-line rewrite
+(`เอล` → `เยล`) would have corrupted **Shirogane Noel**: `โนเอล` contains the variant, 9
+times, and the glossary says `白銀ノエル` → `ชิโรกาเนะ โนเอล`. Verified in production
+after the seed that she still renders correctly. Two other things the tests caught are in
+[#28's thread](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) and in
+`normalise.py` — including that "longest-first" is the *wrong* invariant for this table.
+
+🔄 **Q&A masking is fixed in code but not yet in the data.** `batcher` masked strings
+only, so Q&A units — dicts — reached the model unmasked, leaving **~5,900 Japanese card
+names across six locales** in text where 99% of them had a curated glossary translation
+waiting. The fix changes what is *sent*, so it takes effect only on a re-translation:
+`translate-units --include-qa`, which is an API spend and a separate decision.
+
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
 execution. Progress is mirrored to GitHub issue
