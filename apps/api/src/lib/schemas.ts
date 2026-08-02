@@ -81,11 +81,32 @@ export const searchQuerySchema = z.object({
   limit: positiveInt(200, 100),
 });
 
+/**
+ * A set code — `hBP03`, `hSD01`, `hPR`.
+ *
+ * Constrained by shape rather than to a list of the 36 that exist today: the codes live
+ * in the build artifact, not in the contract, so a new set would otherwise mean editing
+ * the Worker to accept cards it is already serving. The pattern is tight enough that
+ * anything reaching `setCodeRange` is a plausible code, and an implausible one returns
+ * an empty page rather than an error — which is the same thing an unknown `tag` or `set`
+ * does.
+ *
+ * Anchored and length-capped so it cannot be used to smuggle a range bound.
+ */
+const setCode = z
+  .string()
+  .trim()
+  .regex(/^[A-Za-z]{1,6}\d{0,3}$/)
+  .max(9)
+  .optional()
+  .transform((value) => (value ? value : undefined));
+
 export const filterQuerySchema = z.object({
   search: text(MAX_QUERY),
   name: text(200),
   tag: text(100),
   set: text(500),
+  set_code: setCode,
   colors: csv(COLORS),
   cardTypes: csv(CARD_TYPES),
   rarity: csv(RARITIES),

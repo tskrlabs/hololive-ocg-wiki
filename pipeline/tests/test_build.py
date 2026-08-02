@@ -89,6 +89,49 @@ class TestFilterOptions:
         expected_sets = {name for card in collection.cards for name in card.card_sets}
         assert {entry["value"] for entry in options["sets"]} == expected_sets
 
+    def test_set_codes_are_the_card_number_prefix(self, collection):
+        options = build_module.filter_options(collection, "ja")
+        expected = {
+            card.card_number.split("-", 1)[0] for card in collection.cards
+        }
+        assert {entry["value"] for entry in options["set_codes"]} == expected
+
+    def test_every_card_number_yields_a_set_code(self, collection):
+        """The prefix rule has no exceptions, which is why it needs no fallback.
+
+        Verified across all 2,463 production cards: every number is `PREFIX-DIGITS`.
+        If the scraper ever emits something else, this is where it shows up — a code
+        equal to the whole card number, rather than a silently wrong grouping.
+        """
+        for card in collection.cards:
+            code = build_module.set_code_of(card.card_number)
+            assert code != card.card_number, card.card_number
+            assert card.card_number.startswith(f"{code}-"), card.card_number
+
+    def test_set_codes_are_not_translated(self, collection):
+        """The code is the label, in every locale.
+
+        Deriving a product name was rejected: hBP07's most common product is the
+        Selection Cup rather than Diva Fever, and the cheer codes have no majority
+        product at all. A code that read differently per locale would also stop being
+        the thing the user typed.
+        """
+        for locale in ("ja", "en", "ko"):
+            for entry in build_module.filter_options(collection, locale)["set_codes"]:
+                assert entry["label"] == entry["value"], locale
+
+    def test_a_set_code_is_not_a_product_set(self, collection):
+        """The two dimensions are independent, and must not be collapsed.
+
+        Measured on the full 2,463: hBP03 is 283 cards while the "Elite Spark" product
+        is 244, overlapping in 229. The fixture set is smaller but the property holds —
+        the two vocabularies are drawn from different fields.
+        """
+        options = build_module.filter_options(collection, "ja")
+        codes = {entry["value"] for entry in options["set_codes"]}
+        products = {entry["value"] for entry in options["sets"]}
+        assert not (codes & products) or codes != products
+
     def test_tags_key_on_the_identity_not_the_display_text(self, collection):
         """`Card.tags` is what the junction holds; `Translation.tags` carries the `#`.
 
@@ -137,7 +180,7 @@ class TestFilterOptions:
 
     def test_entries_are_sorted(self, collection):
         options = build_module.filter_options(collection, "tc")
-        for key in ("names", "tags", "sets"):
+        for key in ("names", "tags", "sets", "set_codes"):
             values = [entry["value"] for entry in options[key]]
             assert values == sorted(values), f"{key} is not sorted"
 

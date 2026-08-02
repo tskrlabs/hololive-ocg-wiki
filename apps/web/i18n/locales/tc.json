@@ -51,6 +51,7 @@
   "Change name": "更改名稱",
   "Change tag": "更改標籤",
   "Change set": "更改卡包",
+  "Change set code": "更改編號",
   "Apply Filters": "套用篩選器",
   "No Changes": "無變更",
   "Same Number Cards": "同號卡片",
@@ -64,6 +65,7 @@
     "hp": "HP",
     "rarity": "稀有度",
     "set": "卡包",
+    "setCode": "編號",
     "illustrator": "插畫家",
     "bloomLevel": "綻放等級",
     "tags": "標籤",
@@ -618,5 +620,24 @@
     "unsupported": "此瀏覽器無法複製到剪貼簿。",
     "failed": "複製失敗——請再試一次，或直接複製網址列。"
   },
-  "More": "更多"
+  "More": "更多",
+  "about": {
+    "title": "關於",
+    "description": "一個由粉絲製作的 Hololive OCG 維基——卡片資料庫、搜尋與牌組編輯器。",
+    "theSite": "關於本站",
+    "theLab": "隸屬於 tskr/labs",
+    "labBlurb": "一個打造俐落、無冗餘網頁工具的小型工作室。",
+    "madeBy": "製作者",
+    "contactBlurb": "如有疑問或商務合作，歡迎透過以下任一方式聯絡。",
+    "privacy": "隱私權",
+    "disclaimer": "免責聲明",
+    "supportKofi": "在 Ko-fi 上支持",
+    "englishOnlyNote": "本節僅提供英文版本，以確保語意精確。",
+    "links": {
+      "website": "lichingchester.dev",
+      "instagram": "Instagram",
+      "email": "電子郵件",
+      "kofi": "在 Ko-fi 上支持"
+    }
+  }
 }

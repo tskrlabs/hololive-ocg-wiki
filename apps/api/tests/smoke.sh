@@ -178,6 +178,13 @@ check "operator input: -x"         200 "/api/cards/search?q=-x" "'cards' in d"
 check "operator input: bare quote" 200 "/api/cards/search?q=%22" "'cards' in d"
 check "operator input: fub*"       200 "/api/cards/search?q=fub*" "'cards' in d"
 check "short query uses LIKE"      200 "/api/cards/search?q=%E3%81%9D%E3%82%89" "'cards' in d"
+# A broad match, over HTTP, through json_each (issue #66). The 34-card fixture set cannot
+# reach the 100-parameter cap that caused the production 500 — `ホロメン` matches 29 here
+# and >100 there — so this proves the round trip and the unit tests prove the count.
+check "broad match round-trips"    200 "/api/cards/search?q=%E3%83%9B%E3%83%AD%E3%83%A1%E3%83%B3" \
+  "len(d['cards']) > 20"
+check "broad match inside filter"  200 "/api/cards/filter?search=%E3%83%9B%E3%83%AD%E3%83%A1%E3%83%B3&limit=5" \
+  "len(d['cards']) == 5 and d['total'] > 20"
 
 echo ""
 echo "filter"
@@ -192,6 +199,20 @@ check "colour groups OR"           200 "/api/cards/filter?colors=blue,purple&lim
 check "groups AND"                 200 "/api/cards/filter?cardTypes=oshiCharacter&rarity=OSR&limit=1" \
   "d['total'] == 2"
 check "invalid colour"             400 "/api/cards/filter?colors=chartreuse"
+# Set code — a card_number prefix range, over real HTTP (ADR 0010). The fixture set has
+# 10 hSD01 cards; every one of them must come back and nothing else.
+check "set code filters"           200 "/api/cards/filter?set_code=hSD01&limit=50" \
+  "d['total'] == 10 and all(c['card_number'].startswith('hSD01-') for c in d['cards'])"
+# The range must not spill into a neighbouring set: hSD01 and hSD03/hSD04/hSD05 are all
+# present in the fixtures, so a too-wide upper bound shows up here as a wrong total.
+check "set code excludes siblings" 200 "/api/cards/filter?set_code=hSD03&limit=50" \
+  "d['total'] == 1 and d['cards'][0]['card_number'].startswith('hSD03-')"
+# AND'd with the product-set dimension rather than replacing it.
+check "set code ANDs with colour"  200 "/api/cards/filter?set_code=hSD01&colors=white&limit=50" \
+  "0 < d['total'] < 10"
+check "unknown set code is empty"  200 "/api/cards/filter?set_code=hZZ99&limit=5" \
+  "d['total'] == 0"
+check "malformed set code"         400 "/api/cards/filter?set_code=hBP03-004"
 # One ja key returns every card for the character (F-015).
 #
 # This used to assert *two different* `en` spellings — the F-015 defect pinned as a

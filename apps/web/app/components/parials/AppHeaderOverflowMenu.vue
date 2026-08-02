@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Status, GitHub, Discord and About, in one menu (ADR 0009 D21, #48 §2).
+ * Status, GitHub, Discord, About and Ko-fi, in one menu (ADR 0009 D21, D27, #48 §2).
  *
  * **This is a mobile bug fix, not a tidy-up.** Those four were `hidden sm:inline-flex`,
  * so a phone silently lost the data-status page, the source link and the Discord invite
@@ -9,10 +9,17 @@
  * shrinks the header from eight controls to four plus this.
  *
  * What stays outside the menu is deliberate (#48 §2): density, show-original, locale and
- * colour mode are *view* controls, used repeatedly while browsing. These four are
- * destinations, used once.
+ * colour mode are *view* controls, used repeatedly while browsing. These are destinations,
+ * used once.
+ *
+ * **Ko-fi is here rather than in the header (D27).** The support link is a destination
+ * like the rest, and D21's whole point was cutting the header from eight controls to five
+ * — re-adding one for a monetisation ask would reverse that on the surface D21 was about.
+ * It is last, under the separator, so it reads as an aside rather than an interruption.
  */
-import { Database, Ellipsis, Info } from "lucide-vue-next";
+import { Database, Ellipsis, Heart, Info } from "lucide-vue-next";
+
+const localePath = useLocalePath();
 
 // `$fetch<Info>` rather than a bare `$fetch`: without the explicit type argument,
 // TypeScript tries to resolve "/api/info" against the generated route table and blows the
@@ -26,15 +33,6 @@ const { data: info } = await useAsyncData<Info>(
 );
 
 const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? "");
-
-/**
- * The about dialog's open state, shared with `AppInfoButton` (which renders the dialog).
- *
- * A `DialogTrigger` cannot live inside a menu item: choosing it closes the menu, which
- * unmounts the trigger and takes the dialog down with it. Setting shared state instead
- * means the menu closes and the dialog opens, which is what a reader expects.
- */
-const infoOpen = useState("infoDialogOpen", () => false);
 </script>
 
 <template>
@@ -47,8 +45,13 @@ const infoOpen = useState("infoDialogOpen", () => false);
     </DropdownMenuTrigger>
 
     <DropdownMenuContent align="end">
+      <!--
+        `localePath`, not a bare `/status`. `strategy: "prefix"` gives every locale its own
+        prefixed route, so the unprefixed path this used to carry is not a route in any
+        locale — it left the reader's language on a link that looks like navigation.
+      -->
       <DropdownMenuItem as-child>
-        <NuxtLink to="/status">
+        <NuxtLink :to="localePath('/status')">
           <Database aria-hidden="true" /> {{ $t("status.title") }}
         </NuxtLink>
       </DropdownMenuItem>
@@ -71,8 +74,24 @@ const infoOpen = useState("infoDialogOpen", () => false);
 
       <DropdownMenuSeparator />
 
-      <DropdownMenuItem @click="infoOpen = true">
-        <Info aria-hidden="true" /> {{ $t("About this site") }}
+      <!--
+        A link now, not a dialog trigger (D27).
+
+        This item used to set shared state that `AppInfoButton` watched, because a
+        `DialogTrigger` cannot survive inside a menu item — choosing it closes the menu,
+        which unmounts the trigger and takes the dialog with it. `/about` is a page, so the
+        indirection and the state key both go: a destination is a link.
+      -->
+      <DropdownMenuItem as-child>
+        <NuxtLink :to="localePath('/about')">
+          <Info aria-hidden="true" /> {{ $t("About this site") }}
+        </NuxtLink>
+      </DropdownMenuItem>
+
+      <DropdownMenuItem as-child>
+        <a href="https://ko-fi.com/lichingchester" target="_blank" rel="noopener">
+          <Heart aria-hidden="true" /> {{ $t("about.supportKofi") }}
+        </a>
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

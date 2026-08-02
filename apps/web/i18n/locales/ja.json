@@ -50,6 +50,7 @@
   "Change name": "名前を変更",
   "Change tag": "タグを変更",
   "Change set": "セットを変更",
+  "Change set code": "型番を変更",
   "Apply Filters": "フィルターを適用",
   "No Changes": "変更なし",
   "Same Number Cards": "同じ番号のカード",
@@ -63,6 +64,7 @@
     "hp": "HP",
     "rarity": "レアリティ",
     "set": "収録商品",
+    "setCode": "型番",
     "illustrator": "イラストレーター",
     "bloomLevel": "Bloomレベル",
     "tags": "タグ",
@@ -617,5 +619,24 @@
     "unsupported": "このブラウザではクリップボードにコピーできません。",
     "failed": "コピーできませんでした。もう一度試すか、アドレスバーをコピーしてください。"
   },
-  "More": "その他"
+  "More": "その他",
+  "about": {
+    "title": "このサイトについて",
+    "description": "ホロライブOCGのファンメイドwiki——カードデータベース、検索、デッキビルダー。",
+    "theSite": "このサイトについて",
+    "theLab": "tskr/labs の一員",
+    "labBlurb": "洗練された、無駄のないウェブツールをつくる小さなラボです。",
+    "madeBy": "制作者",
+    "contactBlurb": "ご質問やお仕事のご相談は、以下のいずれかからご連絡ください。",
+    "privacy": "プライバシー",
+    "disclaimer": "免責事項",
+    "supportKofi": "Ko-fi で支援する",
+    "englishOnlyNote": "この項目は正確を期すため英語のみでの提供となります。",
+    "links": {
+      "website": "lichingchester.dev",
+      "instagram": "Instagram",
+      "email": "メール",
+      "kofi": "Ko-fi で支援する"
+    }
+  }
 }

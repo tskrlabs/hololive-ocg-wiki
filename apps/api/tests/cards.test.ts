@@ -13,10 +13,12 @@ import {
   buildWhere,
   cardByImageKeySql,
   cardKeyByLowercaseSql,
+  cardsByIdsSql,
   expandColors,
   filterCountSql,
   filterPageSql,
   firstCardPerNumberSql,
+  setCodeRange,
   type CardFilters,
 } from "../src/db/cards.ts";
 
@@ -93,6 +95,38 @@ test("filter groups are OR within and AND across", () => {
   assert.equal(topLevel.split(" AND ").length, 3);
 });
 
+test("a set code filters by card_number range, not LIKE", () => {
+  // The range is what makes the existing `idx_cards_card_number` a *seek*. Measured on
+  // production: `SEARCH cards USING INDEX idx_cards_card_number` for the page and
+  // `SEARCH … USING COVERING INDEX` for the count. `LIKE 'hBP03-%'` degrades to a scan,
+  // because SQLite cannot prove a bound parameter is prefix-shaped.
+  const where = buildWhere({ ...base, setCode: "hBP03" });
+  assert.match(where.sql, /card_number >= \? AND card_number < \?/);
+  assert.doesNotMatch(where.sql, /LIKE/);
+  assert.deepEqual(where.params, ["hBP03-", "hBP03."]);
+});
+
+test("the set-code range stops before the next card number", () => {
+  // `.` is the codepoint after `-`, so the range covers every `hBP03-…` and nothing
+  // else. Pinned because an off-by-one here is silent: a wider bound would fold a
+  // neighbouring set in, and every count on the page would be quietly wrong.
+  const { from, to } = setCodeRange("hBP03");
+  assert.ok(from < "hBP03-001" && "hBP03-999" < to);
+  // The set beneath it in sort order is excluded at both ends.
+  assert.ok("hBP02-999" < from);
+  assert.ok(to < "hBP04-001");
+});
+
+test("set code and product set are AND'd, not alternatives", () => {
+  // Two taxonomies over one word: hBP03 is 283 cards, the "Elite Spark" product 244,
+  // overlapping in 229. "hBP03 cards that shipped in Twin Wafers" is a real question,
+  // and only both dimensions together can answer it.
+  const where = buildWhere({ ...base, setCode: "hBP03", set: "ツインウエハース" });
+  assert.match(where.sql, /card_number >= \?/);
+  assert.match(where.sql, /EXISTS \(SELECT 1 FROM card_sets/);
+  assert.match(where.sql, / AND /);
+});
+
 test("the name filter matches the source-locale column", () => {
   // The ja name is the stable per-character identity; 41% of characters are spelled
   // inconsistently in at least one locale (F-015).
@@ -106,6 +140,38 @@ test("a search matching nothing yields no cards, not every card", () => {
   // turn "no results" into "the whole table".
   const where = buildWhere(base, []);
   assert.equal(where.sql, "WHERE 1 = 0");
+});
+
+test("a search binds one parameter however many cards it matched", () => {
+  // D1 caps a query at 100 bound parameters, so `id IN (?, ?, …)` turned every popular
+  // search into a 500 — `hBP03`, `hBP01`, `ホロメン` and `エール` all failed in production
+  // while `hSD01` (65 matches) worked (issue #66). The count, not the shape, was the
+  // bug, so this asserts the count.
+  for (const size of [1, 100, 101, 2463]) {
+    const ids = Array.from({ length: size }, (_, i) => String(i + 1));
+    const where = buildWhere(base, ids);
+    assert.equal(where.params.length, 1, `${size} ids must bind 1 parameter`);
+    assert.deepEqual(JSON.parse(where.params[0] as string), ids);
+  }
+});
+
+test("the search id set is passed to json_each, not correlated against it", () => {
+  // `IN (SELECT …)` here, though #40 replaced exactly that form with EXISTS for the
+  // junctions. A junction has an index to correlate against; `json_each` has none, so
+  // the EXISTS form rescans the array per card — measured on production over the 283
+  // hBP03 ids, 169,940 rows read against 1,132 for this form.
+  const where = buildWhere(base, ["1", "2"]);
+  assert.match(where.sql, /id IN \(SELECT value FROM json_each\(\?\)\)/);
+  assert.doesNotMatch(where.sql, /EXISTS \(SELECT 1 FROM json_each/);
+});
+
+test("a batch id lookup binds one parameter too", () => {
+  // The same cap through the other door: `/api/cards/search` re-fetches the ids the
+  // index returned, so `limit=101` was a 500 where `limit=100` was not.
+  const ids = Array.from({ length: 200 }, (_, i) => String(i + 1));
+  const built = cardsByIdsSql(ids);
+  assert.equal(built.params.length, 1);
+  assert.match(built.sql, /id IN \(SELECT value FROM json_each\(\?\)\)/);
 });
 
 test("count and page queries share exactly one WHERE clause", () => {

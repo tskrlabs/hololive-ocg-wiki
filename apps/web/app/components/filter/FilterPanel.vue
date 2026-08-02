@@ -26,6 +26,7 @@ const icon = useGameIcon();
 const name = computed(() => filter.draftFilter.value.name);
 const tag = computed(() => filter.draftFilter.value.tag);
 const set = computed(() => filter.draftFilter.value.set);
+const setCode = computed(() => filter.draftFilter.value.setCode);
 const colors = computed(() => filter.draftFilter.value.colors);
 const cardTypes = computed(() => filter.draftFilter.value.cardTypes);
 const rarities = computed(() => filter.draftFilter.value.rarity);
@@ -44,6 +45,7 @@ const pending = filter.pending;
 const isNameOpen = ref(false);
 const isTagOpen = ref(false);
 const isSetOpen = ref(false);
+const isSetCodeOpen = ref(false);
 
 // Dropdown values, fetched through the one interface (Candidate 01).
 //
@@ -57,6 +59,7 @@ const cardQuery = useCardQuery();
 const nameFilterOptions = ref<FilterOption[]>([]);
 const tagFilterOptions = ref<FilterOption[]>([]);
 const setFilterOptions = ref<FilterOption[]>([]);
+const setCodeFilterOptions = ref<FilterOption[]>([]);
 const isLoadingFilterOptions = ref(false);
 
 const loadAllFilterOptions = async () => {
@@ -67,6 +70,9 @@ const loadAllFilterOptions = async () => {
     nameFilterOptions.value = options.names;
     tagFilterOptions.value = options.tags;
     setFilterOptions.value = options.sets;
+    // `?? []` — an artifact published before set codes existed has no such key, and the
+    // site is served against whatever R2 currently holds.
+    setCodeFilterOptions.value = options.set_codes ?? [];
   } finally {
     isLoadingFilterOptions.value = false;
   }
@@ -241,6 +247,81 @@ const headingClass = (section: FilterSection) =>
                   @select="() => { isTagOpen = false; }"
                 >
                   {{ getTranslatedText("tags", tagOption.value, tagOption.label) }}
+                </CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+
+    <!--
+      set code — the printed code (`hBP03`), above the product-set group.
+
+      A separate group from `set` rather than an option inside it, because they are
+      different taxonomies: hBP03 is 283 cards, the "Elite Spark" product is 244, and
+      only 229 are both. One control returning two different answer shapes would be
+      impossible to explain.
+
+      No `getTranslatedText`: the code *is* the label in every locale.
+    -->
+    <div>
+      <div class="flex items-center gap-2 mb-2" :class="headingClass('setCode')">
+        {{ $t("fields.setCode") }}
+        <span v-if="pending.has('setCode')" aria-hidden="true">•</span>
+        <span v-if="pending.has('setCode')" class="sr-only">
+          {{ $t("filter.modified") }}
+        </span>
+
+        <button
+          class="ml-auto"
+          :title="$t('filter.clearGroup', { group: $t('fields.setCode') })"
+          @click="filter.clear('setCode')"
+        >
+          <RotateCcw class="size-4" aria-hidden="true" />
+          <span class="sr-only">
+            {{ $t("filter.clearGroup", { group: $t("fields.setCode") }) }}
+          </span>
+        </button>
+      </div>
+
+      <Popover v-model:open="isSetCodeOpen">
+        <PopoverTrigger as-child>
+          <Button variant="outline" size="sm" class="w-full justify-start">
+            <template v-if="setCode">{{ setCode }}</template>
+            <template v-else> + {{ $t("fields.setCode") }} </template>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent class="p-0" side="bottom" align="start" avoid-collisions>
+          <div
+            v-if="isLoadingFilterOptions && !optionsLoaded"
+            class="p-2 text-center text-sm text-muted-foreground"
+          >
+            <div
+              class="animate-spin h-4 w-4 border border-primary rounded-full inline-block mr-2 border-t-transparent"
+            />
+            {{ $t("Loading") }}...
+          </div>
+          <!--
+            Guarded on the list being non-empty, not just on `optionsLoaded`: R2 may still
+            hold an artifact published before set codes existed, and an empty picker with
+            a working search box beside it is the same silent lie #45 fixed.
+          -->
+          <Command
+            v-else-if="setCodeFilterOptions.length"
+            v-model="filter.draftFilter.value.setCode"
+          >
+            <CommandInput :placeholder="$t('Change set code') + '...'" />
+            <CommandList>
+              <CommandEmpty>{{ $t("No results found.") }}</CommandEmpty>
+              <CommandGroup>
+                <CommandItem
+                  v-for="option in setCodeFilterOptions"
+                  :key="option.value"
+                  :value="option.value"
+                  @select="() => { isSetCodeOpen = false; }"
+                >
+                  {{ option.label }}
                 </CommandItem>
               </CommandGroup>
             </CommandList>

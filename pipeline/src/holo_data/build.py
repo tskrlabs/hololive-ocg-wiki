@@ -355,8 +355,24 @@ def _best_label(ja_name: str, labels: dict[str, int]) -> str:
     )[0]
 
 
+def set_code_of(card_number: str) -> str:
+    """The set code a card number belongs to — the part before the dash.
+
+    `hBP03-004` → `hBP03`. Verified across all 2,463 cards: every card number matches
+    `PREFIX-DIGITS` with no exceptions, so this never has to guess.
+
+    A set code is **not** the same thing as a product set (`card_sets`), and conflating
+    them is the trap this function exists to avoid. hBP03 is 283 cards; the "Elite Spark"
+    product is 244, and only 229 are in both — the rest are `hY0x` cheer cards bundled
+    into the product, while 54 hBP03-numbered cards appear only in PR, Wafers or the
+    Selection Cup. The official card list and the other fan databases both filter on the
+    *code*, which is also the thing users type.
+    """
+    return card_number.split("-", 1)[0]
+
+
 def filter_options(collection: CardCollection, locale: str) -> dict[str, Any]:
-    """The dropdown values for one locale: names, tags and sets.
+    """The dropdown values for one locale: names, tags, sets and set codes.
 
     Each entry is `{value, label}` — `value` is what the API filters on, `label` is what
     the dropdown shows.
@@ -386,6 +402,14 @@ def filter_options(collection: CardCollection, locale: str) -> dict[str, Any]:
     Sets are language-independent, so identity and label coincide unless the glossary
     supplies a translation.
 
+    **Set codes are their own dimension, and are deliberately not translated.** The code
+    *is* the label — it is what the printed card says, what the official card list keys
+    its `?expansion=` on, and what users type into the search box. Deriving a product
+    name for it was rejected because the data does not support one: hBP07's most common
+    product is "[Usable Cards] Selection Cup" rather than "Diva Fever", and every `hY0x`
+    cheer code spans 11–15 products with no majority (top share 18–42%). Two of the 36
+    codes — `hBD24` and `hPR` — have no entry in the official picker at all.
+
     **Labels come from the glossary first.** It is the curated, committed source of truth
     for proper nouns; `_best_label` is the fallback for keys it has no decision for.
     """
@@ -393,12 +417,14 @@ def filter_options(collection: CardCollection, locale: str) -> dict[str, Any]:
     label_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     tag_labels: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     sets: set[str] = set()
+    set_codes: set[str] = set()
 
     for card in collection.cards:
         source = card.translations[SOURCE_LOCALE]
         translation = card.translations.get(locale) or source
         label_counts[source.name][translation.name] += 1
         sets.update(card.card_sets)
+        set_codes.add(set_code_of(card.card_number))
 
         # `Card.tags` and `Translation.tags` are positional pairs — verified across all
         # 2,463 cards in all 7 locales, zero length mismatches. A card that somehow
@@ -440,6 +466,15 @@ def filter_options(collection: CardCollection, locale: str) -> dict[str, Any]:
             labelled("tags", key, counts) for key, counts in sorted(tag_labels.items())
         ],
         "sets": [labelled("sets", key, None) for key in sorted(sets)],
+        # Plain `sorted()` is already the right order: the numbers are zero-padded
+        # (`hBP01`, not `hBP1`), so lexicographic and numeric agree, and it groups the
+        # families — hBD, hBP, hPR, hSD, hY, hYS — as a side effect.
+        #
+        # No `labelled()` call: the code is the label, so there is no glossary key and
+        # nothing to translate. Sent as `{value, label}` anyway, because it feeds the
+        # same picker component as the other three and a second shape would be a second
+        # code path in the UI for no gain.
+        "set_codes": [{"value": code, "label": code} for code in sorted(set_codes)],
     }
 
 

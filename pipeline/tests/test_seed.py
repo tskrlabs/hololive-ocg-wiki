@@ -305,6 +305,73 @@ class TestSchema:
         )
 
 
+    def test_a_ruling_does_not_rank_as_the_card_it_cites(self, db):
+        """issue #67 — the reason `qa` is its own column.
+
+        Q&A was concatenated into `text`, where it was 88% of the indexed volume. A card
+        number quoted inside an answer therefore matched exactly as loudly as the card
+        carrying that number: `hSD01` returned 65 cards of which only 39 were hSD01, the
+        rest being cards whose FAQ merely cites `hSD01-001`.
+
+        Both still match — a ruling is worth finding — but `bm25()` can only tell them
+        apart because they are in different columns.
+        """
+        db.execute(
+            "INSERT INTO cards_fts (rowid, card_number, text, qa) VALUES (?, ?, ?, ?)",
+            (1, "hBP07-068", "AZKi", "hSD01-001〈ときのそら〉について"),
+        )
+        db.execute(
+            "INSERT INTO cards_fts (rowid, card_number, text, qa) VALUES (?, ?, ?, ?)",
+            (2, "hSD01-001", "hSD01-001 ときのそら", ""),
+        )
+
+        ranked = [
+            row[0]
+            for row in db.execute(
+                "SELECT rowid FROM cards_fts WHERE cards_fts MATCH ? "
+                "ORDER BY bm25(cards_fts, 2.0, 1.0, 0.1)",
+                ("hSD01",),
+            ).fetchall()
+        ]
+        # Both are found; the card itself leads, and the ruling that cites it follows.
+        assert ranked == [2, 1], ranked
+
+    def test_the_weights_are_what_order_the_results(self, db):
+        """Why the weights are passed explicitly rather than left to `ORDER BY rank`.
+
+        `rank` is `bm25()` with every column at 1.0, so the ordering is decided by term
+        frequency alone — and a ruling that repeats a card number beats the one card
+        actually numbered that. Inverting the weights inverts the answer, which is what
+        makes this a test of the weights rather than of the data: a future change that
+        drops them fails here instead of silently restoring #67.
+        """
+        # The citing card repeats the number in its rulings; the cited card says it once.
+        db.execute(
+            "INSERT INTO cards_fts (rowid, card_number, text, qa) VALUES (?, ?, ?, ?)",
+            (1, "hBP07-068", "AZKi", "hSD01-001 hSD01-001 hSD01-001"),
+        )
+        db.execute(
+            "INSERT INTO cards_fts (rowid, card_number, text, qa) VALUES (?, ?, ?, ?)",
+            (2, "hSD01-001", "hSD01-001 ときのそら", ""),
+        )
+
+        def ranked(weights: str) -> list[int]:
+            return [
+                row[0]
+                for row in db.execute(
+                    "SELECT rowid FROM cards_fts WHERE cards_fts MATCH ? "
+                    f"ORDER BY bm25(cards_fts, {weights})",
+                    ("hSD01",),
+                ).fetchall()
+            ]
+
+        # Card text weighted above rulings: the card itself leads.
+        assert ranked("2.0, 1.0, 0.1")[0] == 2
+        # Rulings weighted above card text: the citing card leads. Same rows, same query,
+        # opposite answer — so the ordering is the weights' doing.
+        assert ranked("0.1, 0.1, 2.0")[0] == 1
+
+
 class TestRowMapping:
     def test_every_fixture_card_round_trips(self, db, collection):
         rows = [seed_module.to_row(card) for card in collection.cards]

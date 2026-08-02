@@ -50,11 +50,67 @@ export function expandColors(colors: readonly string[]): string[] {
   return [...expanded].sort();
 }
 
+/**
+ * A set of card ids as **one** bound parameter, not one placeholder each.
+ *
+ * D1 caps a query at 100 bound parameters. Expanding an id list into `id IN (?, ?, …)`
+ * therefore breaks the moment a search matches more than 100 cards — and the popular
+ * queries are all above that line. Production returned a 500 for `hBP03`, `hBP01`,
+ * `ホロメン` and `エール` while `hSD01` (65 matches) and `白上フブキ` (73) worked, which is
+ * the parameter cap showing through as a search feature that fails on common words
+ * (issue #66). Passing the ids as a JSON array makes the count irrelevant.
+ *
+ * **`IN (SELECT …)` here, even though #40 replaced exactly that form with `EXISTS`.**
+ * The two cases are opposites, and the reason is what can be indexed. A junction table
+ * has `idx_card_*_card_id`, so a correlated `EXISTS` probes it per card and the walk
+ * stops at `LIMIT`. `json_each` has no index at all, so the same correlation re-parses
+ * and rescans the whole array for every card considered. Measured on production over
+ * the 283 `hBP03` ids:
+ *
+ * | form | page (LIMIT 50) | count(*) |
+ * |---|---|---|
+ * | `IN (SELECT value FROM json_each(?))` | 1,132 rows | 849 rows |
+ * | `EXISTS (SELECT 1 FROM json_each(?) …)` | 169,940 rows | 659,306 rows |
+ *
+ * 150× and 776× worse respectively — so the rule from #40 is "correlate against
+ * something indexed", not "always use EXISTS".
+ *
+ * The cost scales with the id set rather than the page (100 ids read 300 rows, 283 read
+ * 1,132), which is the same materialise-then-sort shape #40 measured. It is accepted
+ * here because the alternative is a broken endpoint: the id set is bounded by the card
+ * count, and a search is one query per keystroke-debounce rather than the default view.
+ */
+const idSetClause = "id IN (SELECT value FROM json_each(?))";
+
+/**
+ * The `card_number` range covering one set code — `hBP03` → `hBP03-` … `hBP03.`.
+ *
+ * A set code is the prefix of a card number and nothing else is stored: no column, no
+ * junction. It does not need to be. `idx_cards_card_number` already exists, and a range
+ * predicate over it is a seek — measured on production, `SEARCH cards USING INDEX
+ * idx_cards_card_number` for the page and `SEARCH … USING COVERING INDEX` for the count.
+ * A dedicated `set_code` column would produce the same plan while costing a migration, a
+ * reseed and a seventh index write per card.
+ *
+ * `LIKE 'hBP03-%'` was rejected for the same query at a worse plan: SQLite degrades it to
+ * `SCAN cards USING INDEX` rather than a seek, because the pattern is a bound parameter
+ * it cannot prove is prefix-shaped.
+ *
+ * The upper bound is `.` because it is the next codepoint after `-`, so the range covers
+ * every `hBP03-…` and stops before anything else. It cannot collide with a longer code:
+ * `hSD1` would end at `hSD1.` and `hSD10-001` sorts above that — but the exact-match
+ * recognition upstream means only whole, known codes ever reach here anyway.
+ */
+export function setCodeRange(code: string): { from: string; to: string } {
+  return { from: `${code}-`, to: `${code}.` };
+}
+
 export interface CardFilters {
   search?: string;
   name?: string;
   tag?: string;
   set?: string;
+  setCode?: string;
   colors?: string[];
   cardTypes?: string[];
   rarity?: string[];
@@ -124,12 +180,23 @@ export function buildWhere(filters: CardFilters, searchIds?: readonly string[]):
   // card, which is what an omitted condition would do.
   if (searchIds !== undefined) {
     if (searchIds.length === 0) return { sql: "WHERE 1 = 0", params: [] };
-    inClause("id", searchIds);
+    conditions.push(idSetClause);
+    params.push(JSON.stringify(searchIds));
   }
 
   if (filters.colors?.length) junction("card_colors", "color_code", expandColors(filters.colors));
   if (filters.tag) junction("card_tags", "tag", [filters.tag]);
   if (filters.set) junction("card_sets", "set_name", [filters.set]);
+
+  // A range over the existing card_number index, not a stored column — see
+  // `setCodeRange`. AND'd against `set` rather than replacing it: the two are different
+  // taxonomies, and asking for hBP03 cards *that shipped in the Twin Wafers product* is
+  // a coherent question both dimensions are needed to answer.
+  if (filters.setCode) {
+    const range = setCodeRange(filters.setCode);
+    conditions.push("card_number >= ? AND card_number < ?");
+    params.push(range.from, range.to);
+  }
 
   if (filters.cardTypes?.length) inClause("card_type_code", filters.cardTypes);
   if (filters.rarity?.length) inClause("rarity_code", filters.rarity);
@@ -214,12 +281,18 @@ export function cardKeyByLowercaseSql(imageKey: string): { sql: string; params: 
   };
 }
 
+/**
+ * Several cards by id.
+ *
+ * Takes the same one-parameter id set as `buildWhere` — see `idSetClause`. This is the
+ * second half of issue #66: `/api/cards/search` re-fetches the ids the index returned,
+ * so it hit the 100-parameter cap too, and `limit=101` was a 500 where `limit=100` was
+ * not.
+ */
 export function cardsByIdsSql(ids: readonly string[]): { sql: string; params: unknown[] } {
   return {
-    sql: `SELECT ${CARD_COLUMNS} FROM cards WHERE id IN (${ids
-      .map(() => "?")
-      .join(", ")}) ORDER BY card_number, id`,
-    params: [...ids],
+    sql: `SELECT ${CARD_COLUMNS} FROM cards WHERE ${idSetClause} ORDER BY card_number, id`,
+    params: [JSON.stringify(ids)],
   };
 }
 

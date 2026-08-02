@@ -119,9 +119,9 @@ def statements(collection: CardCollection) -> list[str]:
 
         # rowid, not a card_id column — see the FTS note in schema.sql.
         lines.append(
-            "INSERT INTO cards_fts (rowid, card_number, text) VALUES "
+            "INSERT INTO cards_fts (rowid, card_number, text, qa) VALUES "
             f"({seed_module.rowid_for(row.id)}, {quote(row.columns[1])}, "
-            f"{quote(row.search_text)});"
+            f"{quote(row.search_text)}, {quote(row.qa_text)});"
         )
 
     return lines

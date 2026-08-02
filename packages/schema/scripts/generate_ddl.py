@@ -117,11 +117,15 @@ def junction_tables() -> list[tuple[str, str, str]]:
 def fulltext_fields() -> list[str]:
     """Fields carrying `FullText`, ordered by descending weight.
 
-    Recorded as a comment in the DDL rather than as FTS5 columns. The search text is a
-    concatenation across all 7 locales and every nested translation, which no single
-    column holds — so the index has one `text` column and the weights inform how the
-    seeder builds it, not the table shape. See ADR 0004 on why per-locale FTS rows were
-    rejected.
+    Recorded as a comment in the DDL rather than as one FTS5 column each. The search text
+    is a concatenation across all 7 locales and every nested translation, which no single
+    column holds — so the weights mostly inform how the seeder builds the text, not the
+    table shape. See ADR 0004 on why per-locale FTS rows were rejected.
+
+    The one place a weight now *acts* is the `text` / `qa` split (issue #67): Q&A carries
+    `weight=0.5` against a name's `3.0`, and since a trigram index cannot weight fields
+    inside a column, that ordering only becomes real once the two live in separate
+    columns and `bm25()` can be given per-column weights.
     """
     weighted: list[tuple[float, str]] = []
     for name in Card.model_fields:
@@ -243,10 +247,23 @@ CREATE TABLE IF NOT EXISTS cards (
 -- Trigram cannot match a query shorter than 3 characters; it returns no rows rather
 -- than erroring. The Phase 4 worker falls back to LIKE below that threshold.
 --
--- One row per card, all 7 locales concatenated into `text`. Measured: 2,448 rows at
+-- One row per card, all 7 locales concatenated. Measured: 2,448 rows at
 -- 36 MB, against 17,136 rows at 39.9 MB for a per-card-locale index — nearly the same
 -- size for 7x the rows. v1 partitioned by locale and then searched across all locales
 -- anyway (worker.ts:469), so the partition was never used.
+--
+-- **`text` and `qa` are separate columns, because a ruling is not the card it cites.**
+-- Q&A was folded into `text` until issue #67, where it was 88% of the indexed volume —
+-- so a card-number citation inside a ruling matched as loudly as the card itself.
+-- `hSD01` returned 65 cards of which only 39 were hSD01, and the rest were hBP01/02/03/
+-- 04/07 cards whose FAQ merely mentions `hSD01-001`. Names diluted the same way: 29 of
+-- 73 `白上フブキ` hits were cards that only mention her.
+--
+-- Splitting the column is what lets `bm25(cards_fts, 2.0, 1.0, 0.1)` rank card text
+-- above rules text. The `FullText(weight=…)` values on the models — 3.0 for a name, 0.5
+-- for a Q&A field — had never been able to act, because per-field weights need per-field
+-- columns; now the ordering they describe is the ordering the query applies. Q&A stays
+-- searchable, which is the point of keeping it here rather than dropping it.
 --
 -- Standalone rather than external-content: the indexed text is a concatenation no
 -- single column holds. No triggers — the seeder is the only writer, and a trigger's
@@ -270,6 +287,7 @@ CREATE TABLE IF NOT EXISTS cards (
 CREATE VIRTUAL TABLE IF NOT EXISTS cards_fts USING fts5(
     card_number,
     text,
+    qa,
     tokenize='trigram'
 );
 """

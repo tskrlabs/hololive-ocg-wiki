@@ -50,6 +50,7 @@
   "Change name": "이름 변경",
   "Change tag": "태그 변경",
   "Change set": "세트 변경",
+  "Change set code": "세트 코드 변경",
   "Apply Filters": "필터 적용",
   "No Changes": "변경 없음",
   "Same Number Cards": "같은 번호 카드",
@@ -63,6 +64,7 @@
     "hp": "HP",
     "rarity": "레어리티",
     "set": "수록 상품",
+    "setCode": "세트 코드",
     "illustrator": "일러스트레이터",
     "bloomLevel": "Bloom 레벨",
     "tags": "태그",
@@ -617,5 +619,24 @@
     "unsupported": "이 브라우저에서는 클립보드에 복사할 수 없습니다.",
     "failed": "복사하지 못했습니다. 다시 시도하거나 주소창을 복사하세요."
   },
-  "More": "더 보기"
+  "More": "더 보기",
+  "about": {
+    "title": "사이트 소개",
+    "description": "홀로라이브 OCG 팬메이드 위키 — 카드 데이터베이스, 검색, 덱 빌더.",
+    "theSite": "사이트 소개",
+    "theLab": "tskr/labs의 일부",
+    "labBlurb": "군더더기 없는 웹 도구를 만드는 작은 랩입니다.",
+    "madeBy": "만든 사람",
+    "contactBlurb": "문의나 비즈니스 제안은 아래 방법 중 하나로 연락해 주세요.",
+    "privacy": "개인정보",
+    "disclaimer": "면책 조항",
+    "supportKofi": "Ko-fi에서 후원하기",
+    "englishOnlyNote": "이 섹션은 의미를 정확히 전달하기 위해 영어로만 제공됩니다.",
+    "links": {
+      "website": "lichingchester.dev",
+      "instagram": "Instagram",
+      "email": "이메일",
+      "kofi": "Ko-fi에서 후원하기"
+    }
+  }
 }

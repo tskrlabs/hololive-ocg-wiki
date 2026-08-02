@@ -90,16 +90,25 @@ cards.get("/filter", async (c) => {
   // A search term inside a filter is resolved against FTS first and intersected, rather
   // than joined: `cards_fts` cannot be joined to `cards` without dragging the whole
   // index into the plan.
+  // No limit: the count under the search box is the whole point of this endpoint's
+  // `total`, and a capped id set makes it report the cap (issue #66).
   let searchIds: string[] | undefined;
   if (query.search) {
-    const built = searchSql(query.search, 500);
+    const built = searchSql(query.search);
     const matched = await c.env.DB.prepare(built.sql)
       .bind(...built.params)
       .all<{ id: string }>();
     searchIds = matched.results.map((row) => String(row.id));
   }
 
-  const filters = { ...query, page: query.page, limit: query.limit };
+  // `set_code` is renamed on the way in: the query string is snake_case like every other
+  // parameter here, while `CardFilters` is camelCase like every other field there.
+  const filters = {
+    ...query,
+    setCode: query.set_code,
+    page: query.page,
+    limit: query.limit,
+  };
   const page = filterPageSql(filters, searchIds);
   const found = await fetchCards(c.env, page, query.locale as Locale);
 

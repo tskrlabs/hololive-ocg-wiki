@@ -50,6 +50,7 @@
   "Change name": "Change name",
   "Change tag": "Change tag",
   "Change set": "Change set",
+  "Change set code": "Change set code",
   "Apply Filters": "Apply Filters",
   "No Changes": "No Changes",
   "Same Number Cards": "Same Number Cards",
@@ -63,6 +64,7 @@
     "hp": "HP",
     "rarity": "Rarity",
     "set": "Set",
+    "setCode": "Set code",
     "illustrator": "Illustrator",
     "bloomLevel": "Bloom Level",
     "tags": "Tags",
@@ -617,5 +619,24 @@
     "unsupported": "This browser can't copy to the clipboard.",
     "failed": "Couldn't copy — try again, or copy the address bar."
   },
-  "More": "More"
+  "More": "More",
+  "about": {
+    "title": "About",
+    "description": "A fan-made wiki for the Hololive Official Card Game — card database, search, and deck builder.",
+    "theSite": "The site",
+    "theLab": "Part of tskr/labs",
+    "labBlurb": "A small lab building sharp, no-bloat tools for the web.",
+    "madeBy": "Made by",
+    "contactBlurb": "For questions or business enquiries, reach out any of these ways.",
+    "privacy": "Privacy",
+    "disclaimer": "Disclaimer",
+    "supportKofi": "Support on Ko-fi",
+    "englishOnlyNote": "This section is available in English only, so its meaning stays exact.",
+    "links": {
+      "website": "lichingchester.dev",
+      "instagram": "Instagram",
+      "email": "Email",
+      "kofi": "Support on Ko-fi"
+    }
+  }
 }

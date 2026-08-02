@@ -924,6 +924,22 @@ def seed(
             )
             raise typer.Exit(1)
 
+        try:
+            seed_module.assert_fts_has_qa_column(http, config)
+        except seed_module.MissingQaColumn:
+            typer.echo("", err=True)
+            typer.echo("✗ D1's `cards_fts` is missing the `qa` column", err=True)
+            typer.echo(
+                "  Migration 0004 has not been applied. Apply it from apps/api/ with:\n"
+                "    npx wrangler d1 execute hololive-ocg-wiki-db --remote \\\n"
+                "        --file=../../packages/schema/sql/migrations/0004-fts-qa-column.sql\n"
+                "  ⚠️ That migration leaves the index EMPTY — FTS5 rejects ALTER, so it "
+                "drops and recreates the table. Search is dead until this seed runs, so "
+                "run it straight after, with --full.",
+                err=True,
+            )
+            raise typer.Exit(1)
+
         typer.echo("→ reading the diff baseline from D1")
         try:
             stored = seed_module.read_stored_hashes(http, config)
