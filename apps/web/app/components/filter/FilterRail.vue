@@ -17,6 +17,29 @@
 const filter = useFilter();
 const cardQuery = useCardQuery();
 
+/**
+ * Whether there is a count worth stating.
+ *
+ * Read from `state` rather than from `total > 0`, which conflated "no cards match" with
+ * "no query has run" and suppressed the line for both. The union already separates them
+ * (D17): `idle` is the boot state and has nothing to report, and `loading` is the first
+ * query still in flight. `empty` is the case this exists for — its number is zero, and
+ * zero is the answer.
+ *
+ * **`error` is excluded, and that is #45's rule, not an omission.** A failed fetch also
+ * writes `total = 0`, so rendering the count there would say "0 cards" — indistinguishable
+ * from "your filters match nothing" and pointing the user at filters that cannot fix an
+ * unreachable API. The grid reports the failure; the rail stays quiet rather than
+ * contradicting it.
+ *
+ * `refiltering` keeps the previous count on screen deliberately, matching the grid beside
+ * it: those results are still the ones being displayed until the new ones land.
+ */
+const showCount = computed(() => {
+  const status = cardQuery.state.value.status;
+  return status === "ready" || status === "refiltering" || status === "empty";
+});
+
 onMounted(() => {
   filter.initializeDraftFilters();
 });
@@ -47,12 +70,17 @@ onMounted(() => {
         It is query feedback and the rail is where the query lives. `role="status"` so a
         change is announced rather than only drawn — the count is the one thing that says
         an Apply did something when the grid is scrolled away from the top.
+
+        **Zero is a count, and it was the one being withheld.** The guard was
+        `total > 0`, so a search matching nothing rendered no line at all — the single
+        surface that reports what a query did went silent in exactly the case where the
+        user most needs telling, and the grid's empty state is off to the right where a
+        reader watching what they typed is not looking. `hasQuery` distinguishes it from
+        the boot state, which genuinely has nothing to report yet.
+
+        It also stops the rail's height changing under the pointer as results come and go.
       -->
-      <p
-        v-if="cardQuery.total.value > 0"
-        class="text-xs text-muted-foreground"
-        role="status"
-      >
+      <p v-if="showCount" class="text-xs text-muted-foreground" role="status">
         {{ $t("{total} cards", { total: cardQuery.total.value }) }}
       </p>
 

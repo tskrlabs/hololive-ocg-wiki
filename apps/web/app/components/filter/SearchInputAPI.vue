@@ -10,6 +10,16 @@
  *
  * Search stays outside the draft → apply flow deliberately (#36 §5). It is already
  * debounced and applies as you type; routing it through Apply would be a regression.
+ *
+ * **The root carries no `grow`, and that is load-bearing** — it is a sizing decision that
+ * belongs to whoever places this. The header lays out in a *row*, where `grow` means "take
+ * the width the icon buttons leave"; the rail lays out in a *column*, where the same
+ * declaration means "take the height the filter groups leave". It did, and the `h-9` input
+ * inside did not follow, leaving a band of dead space between the field and the result
+ * count. `index.vue` states the header's stretch on the wrapper it already owns.
+ *
+ * The tell was that it came and went: `flex-grow` only acts on *free* space, so a short
+ * viewport whose groups overflowed showed nothing wrong at all.
  */
 const filter = useFilter();
 
@@ -49,7 +59,7 @@ watch(
 </script>
 
 <template>
-  <div class="relative grow">
+  <div class="relative">
     <label :for="inputId" class="sr-only">{{ $t("Search cards") }}</label>
     <Input
       :id="inputId"
