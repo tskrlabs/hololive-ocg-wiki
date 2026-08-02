@@ -4,15 +4,27 @@
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
 origin (D2), against **2,463 cards** in D1 and images on R2.
 
-**Phase 8 went live 2026-08-02** (version `82c4ad6b`, 390 assets), together with ADR 0009
-D26. Both migrations are applied, the seed has run, and every number Phases 3 and 4
-measured came back exactly — see [the deploy record](#-phase-8--d26-deployed-2026-08-02).
-The site remains **`noindex`**: Phase 7 is the launch, and it has not happened.
+**Phase 8 went live 2026-08-02** together with ADR 0009 D26, and
+[#63](https://github.com/tskrlabs/hololive-ocg-wiki/pull/63) merged it to `main`. Both
+migrations are applied, the seed has run, and every number Phases 3 and 4 measured came
+back exactly — see [the deploy record](#-phase-8--d26-deployed-2026-08-02). The site
+remains **`noindex`**: Phase 7 is the launch, and it has not happened.
 
-**Phase 6 (Workers Builds + fixtures + docs) is still under way** — the code and docs are
-built and verified from a scratch clone; connecting the git integration is a dashboard step
-only the maintainer can take, so deploys are still `wrangler deploy` by hand. See
-[Phase 6](#phase-6--push-to-deploy).
+🔎 **The merge appears to have triggered a build — which means Workers Builds may already
+be connected.** `82c4ad6b` was the manual `wrangler deploy` at 03:02; #63 merged at
+03:13:59; version **`6922d991`** appeared at **03:15:28** and is now serving 100%. Nobody
+ran `wrangler deploy` in between. That is 90 seconds after a merge to `main`, which is what
+push-to-deploy looks like.
+
+**Not confirmed, and worth confirming**: `wrangler versions list` reports `Source: Unknown
+(version_upload)` for both, and the seeder token is scoped to D1 so it cannot read the
+Workers service to see a build trigger. **A maintainer should check the dashboard.** If it
+is connected, Phase 6's remaining step is done and this file's "needs the dashboard step"
+is stale; if it is not, something else uploaded a version and *that* is worth knowing.
+
+What *is* verified: the version serving now is byte-identical to the audited local build —
+`_nuxt/DlbQCJnW.js` matches on sha256 — and it carries D26's copy. So whatever produced it
+produced the right bytes.
 
 ✅ **Phase 8 — the UI/UX rework — is done.** All six prerequisites (`61b2793..77720d0`) and
 all sixteen commits (`95c75fc..441c885`) are on `develop`, `make check` green after each.
@@ -111,7 +123,7 @@ copy and is authoritative if they disagree.
 | 3 | D1 redesign + seeder | ✅ done | [ADR 0004](adr/0004-d1-schema-and-seeder.md) · live |
 | 4 | Worker rewrite (Hono + Zod) | ✅ done — deploys with Phase 5 | [ADR 0005](adr/0005-worker-api.md) |
 | 5 | Website (new API/R2, 4 refactors) | ✅ done | [ADR 0006](adr/0006-website.md) · live |
-| 6 ✅ `49bb856` | Workers Builds + fixtures + docs | 🚧 **built — needs the dashboard step** | [ADR 0007](adr/0007-push-to-deploy.md) |
+| 6 ✅ `49bb856` | Workers Builds + fixtures + docs | 🔎 **built — the dashboard step may already be done**, see the note at the top | [ADR 0007](adr/0007-push-to-deploy.md) |
 | 7 ✅ `2a10d57` | Launch | ⬜ **unblocked, not taken** — the site is deployed but still `noindex` | |
 | 8 | UI/UX rework | ✅ **done and live** — 16 commits + D26, deployed 2026-08-02 | [ADR 0009](adr/0009-ui-rework.md) · [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31) |
 
@@ -514,6 +526,34 @@ running Phase 5's Worker:
 
 The pre-launch guard is intact: `noindex` present on `/tc/`, `robots.txt` disallowing, and
 `NUXT_PUBLIC_LAUNCHED` unset at build time.
+
+#### Re-verified after #63 merged (version `6922d991`)
+
+The merge produced a *second* version, so everything above was checked again against it —
+a build nobody on this side ran is a build whose environment nobody on this side chose.
+
+| | |
+|---|---|
+| core API | `フブキ` 73 · `白上フブキ` 44 · names 296 · total 2,463 · info 3 · `tag=0期生` 165 |
+| card identity | `by-key` 200 · card URL 200 · **bad key 404** · `og:title` injected |
+| D26 artifact | source vocabulary present · `list_cap` 100 · **644 bytes** |
+| pages | `/tc/` · `/tc/status` · SPA fallback · sitemap index — all 200 |
+| **`noindex`** | **present on `/tc/` *and* on a card page**; `robots.txt` still disallowing |
+
+`noindex` was the one worth checking hardest: a Workers Builds run does not inherit the
+local environment, so `NUXT_PUBLIC_LAUNCHED` being unset here guarantees nothing about
+what a remote build sets. It came back correct.
+
+**The strongest evidence is a checksum, not a status code.** `_nuxt/DlbQCJnW.js` — the
+chunk holding D26's copy — is **sha256-identical** to the locally built, `make check`-green
+artifact, and the deployed copy contains the new strings (`最近一次更新`, `官方卡表新增`).
+The page HTML cannot show this directly: the site is `ssr: false`, so `/tc/status` serves a
+shell and the copy lives in the chunk.
+
+Driving D26's own selection logic against the live artifact yields `status.reseed.none` and
+`status.source.quiet` — correct, because the last seed was a pure backfill that rewrote no
+cards while the official list published nothing. The `reseed.ours` branch (rows churned,
+source silent) fires on the next real reseed; it is covered by the mounted tests.
 
 ### What the rework found
 
