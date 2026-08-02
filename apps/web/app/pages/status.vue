@@ -167,8 +167,13 @@ function cardLabel(entry: StatusEntry): string {
   <div class="h-full overflow-y-auto bg-background">
     <div class="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
       <div class="mx-auto flex max-w-3xl flex-wrap items-center gap-3 px-4 py-3">
+        <!--
+          `localePath`, not a bare `/`. Under `strategy: "prefix"` the unprefixed root is
+          not a route in any locale, so this back button led out of the site — the same
+          defect the deck page's button and the overflow menu's status link carried.
+        -->
         <Button variant="ghost" size="icon" as-child>
-          <NuxtLink to="/">
+          <NuxtLink :to="localePath('/')">
             <ArrowLeft class="h-5 w-5" aria-hidden="true" />
             <span class="sr-only">{{ $t("Card List") }}</span>
           </NuxtLink>

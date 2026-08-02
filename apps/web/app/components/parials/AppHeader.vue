@@ -8,9 +8,16 @@
  * widths. What remains are the controls used *repeatedly while browsing*: density,
  * show-original, locale and colour mode.
  *
- * The `/api/info` fetch went with the Discord link. `useAsyncData`'s shared `"info"` key
- * still means the menu and the about dialog resolve one request between them.
+ * The `/api/info` fetch went with the Discord link, and stays in the menu for the Discord
+ * invite. The about *dialog* is gone — `/about` is a page now, so the menu links to it.
+ *
+ * **The wordmark is the header's own, not the slot's.** The slot holds per-page
+ * navigation — a back link on the card and deck pages — and on the home page both of its
+ * children are `lg:hidden`, so from `lg` up the slot rendered nothing and `ml-auto` pushed
+ * the controls against an empty corner. Naming the site is not a page's decision to
+ * remember, so it does not live at three call sites.
  */
+const localePath = useLocalePath();
 </script>
 
 <template>
@@ -23,6 +30,28 @@
   -->
   <header class="border-solid shrink-0 z-50 w-full border-b bg-background">
     <div class="p-2 md:p-4 flex items-center gap-2">
+      <!--
+        The wordmark (D27).
+
+        Text, not the crest: `icon.png` is saturated lilac, and D3 gives card art the only
+        saturated pixels on screen. Set at the body weight the palette already uses —
+        D4 leaves no accent hue, so identity here is type and spacing.
+
+        `hidden lg:block`, which is the complement of the two slot children the home page
+        passes. Below `lg` the search field owns this row and a wordmark would take the
+        width it needs; from `lg` search moves into the rail and this fills the corner it
+        leaves. So exactly one thing occupies the left at every width.
+
+        Not a `<h1>`: pages own their heading, and a site name repeated as the top heading
+        of every page displaces the one that describes the page.
+      -->
+      <NuxtLink
+        :to="localePath('/')"
+        class="hidden shrink-0 text-sm font-medium tracking-tight lg:block"
+      >
+        Hololive OCG Wiki
+      </NuxtLink>
+
       <slot />
 
       <div class="flex ml-auto">
@@ -45,12 +74,6 @@
         <AppLanguageSwitcher />
         <AppColorModeSwitcher />
         <AppHeaderOverflowMenu />
-
-        <!--
-          The dialog only — its own trigger is off, because the menu opens it. It renders
-          nothing until then.
-        -->
-        <AppInfoButton triggerless />
       </div>
     </div>
   </header>

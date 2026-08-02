@@ -82,9 +82,19 @@ useHead({
 
 <template>
   <AppHeader>
-    <Button class="text-[12px] md:text-sm" @click="$router.push('/')">
-      <Database class="size-3 md:size-4" />
-      {{ $t("Card List") }}
+    <!--
+      Back to the grid, beside the header's wordmark (D27).
+
+      `localePath` rather than the bare `$router.push("/")` this was: `strategy: "prefix"`
+      means every locale's home has one, so pushing `/` sent a `ja` reader to the
+      unprefixed root — which is not a route. The composable was already imported here for
+      the card links and simply was not used on this one.
+    -->
+    <Button variant="ghost" size="sm" as-child>
+      <NuxtLink :to="localePath('/')">
+        <Database class="size-3 md:size-4" aria-hidden="true" />
+        {{ $t("Card List") }}
+      </NuxtLink>
     </Button>
   </AppHeader>
 
