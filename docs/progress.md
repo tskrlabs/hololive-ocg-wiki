@@ -16,20 +16,34 @@ fixed on the way: every search matching >100 cards was a 500 ([#66](https://gith
 and Q&A text was 88% of the search index, so a ruling outranked the card it cited
 ([#67](https://github.com/tskrlabs/hololive-ocg-wiki/issues/67)).
 
-🚀 **Phase 7 is the next action, and its three blocking questions are settled** —
-[ADR 0011](adr/0011-launch-posture.md), 2026-08-02. Analytics, crawler policy and social
-previews each went live with the launch switch and each is now decided rather than
-inherited: GA4 `G-LCSL88VF1N` runs Consent Mode v2 with every storage type denied, so it
-sets no cookies and needs no banner; `robots.txt` is ours alone again (the zone's managed
-block is off) and allows every crawler including AI ones, deliberately; `og:image` stays
-WebP. **What remains is the maintainer's**: flip `NUXT_PUBLIC_LAUNCHED=true` and
-`workers_dev: false`, merge to `main`, make the repo public, archive v1.
+🚀 **Phase 7 launched 2026-08-02.** The site is public, indexable and reporting analytics.
+[#68](https://github.com/tskrlabs/hololive-ocg-wiki/pull/68) merged to `main` and Workers
+Builds deployed it. Its three blocking questions were settled first in
+[ADR 0011](adr/0011-launch-posture.md): GA4 `G-LCSL88VF1N` runs Consent Mode v2 with every
+storage type denied, so it sets no cookies and needs no banner; `robots.txt` is ours alone
+again (the zone's managed block is off) and allows every crawler including AI ones,
+deliberately; `og:image` stays WebP.
+
+Verified live, not assumed: `robots.txt` indexable with a `Sitemap:` line ·
+`sitemap_index.xml` served as real `text/xml` rather than the SPA fallback · gtag
+initialising as `G-LCSL88VF1N` with all four consent types `denied` · no `noindex` meta and
+no `X-Robots-Tag` (the one `noindex` in the HTML is the module's inert
+`robotsDisabledValue` config string) · `workers.dev` origin unreachable · `/api/health` ok,
+2,463 cards.
+
+**The launch was three switches and only one lived in the repo.**
+`NUXT_PUBLIC_LAUNCHED=true` is a Workers Builds **build** variable — it is read by
+`nuxt generate`, and `vars` in `wrangler.jsonc` are runtime-only, so they never reach the
+build. Worth knowing before anyone looks for it in version control: the flag that makes the
+site visible is not in this repo, and the two switches are independently sufficient to
+produce an invisible deploy.
+
+**What remains is the maintainer's**: make the repo public, archive v1 (v2-plan §7).
 
 **Phase 8 went live 2026-08-02** together with ADR 0009 D26, and
 [#63](https://github.com/tskrlabs/hololive-ocg-wiki/pull/63) merged it to `main`. Both
 migrations are applied, the seed has run, and every number Phases 3 and 4 measured came
-back exactly — see [the deploy record](#-phase-8--d26-deployed-2026-08-02). The site
-remains **`noindex`**: Phase 7 is the launch, and it has not happened.
+back exactly — see [the deploy record](#-phase-8--d26-deployed-2026-08-02).
 
 🔎 **The merge appears to have triggered a build — which means Workers Builds may already
 be connected.** `82c4ad6b` was the manual `wrangler deploy` at 03:02; #63 merged at
@@ -1236,15 +1250,21 @@ curl -s "$SITE/api/status" | jq '.counts.total'                     # 2448
 curl -sL "$SITE/tc/" | grep -c noindex                              # 1 — still invisible
 ```
 
-### Three switches to flip at Phase 7
+### Three switches to flip at Phase 7 — flipped 2026-08-02
 
 Was two; the rehearsal added a third.
 
-| switch | where | why it is off now |
+| switch | where | state |
 |---|---|---|
-| `NUXT_PUBLIC_LAUNCHED=true` | build variable | flips indexing **and** analytics together |
-| `workers_dev: false` | `wrangler.jsonc` | ✅ **unblocked** — was kept only to compare origins while [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) was open; that is closed, so this can flip |
-| repo public + v1 archived | GitHub | v2-plan §7 |
+| `NUXT_PUBLIC_LAUNCHED=true` | Workers Builds **build** variable (dashboard) | ✅ set — flips indexing **and** analytics together |
+| `workers_dev: false` | `wrangler.jsonc` | ✅ flipped in [#68](https://github.com/tskrlabs/hololive-ocg-wiki/pull/68) — was kept only to compare origins while [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) was open; that closed, and once indexing is on a live `workers.dev` origin is a second indexable copy of all 17,241 URLs our canonical tags do not govern |
+| repo public + v1 archived | GitHub | ⬜ outstanding — v2-plan §7 |
+
+**Where the first switch lives is the part worth remembering.** It is a *build* variable,
+not a runtime one: `nuxt generate` reads it, and `vars` in `wrangler.jsonc` are runtime-only
+and never reach the build. So it cannot be moved into version control the way
+`workers_dev` was, and searching the repo for the reason the site is visible will find
+nothing.
 
 **Neither issue this section used to gate is still gating.**
 [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) is **closed** — fixed at the
