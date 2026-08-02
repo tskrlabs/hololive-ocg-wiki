@@ -617,5 +617,24 @@
     "unsupported": "Peramban ini tidak dapat menyalin ke papan klip.",
     "failed": "Gagal menyalin — coba lagi, atau salin dari bilah alamat."
   },
-  "More": "Lainnya"
+  "More": "Lainnya",
+  "about": {
+    "title": "Tentang",
+    "description": "Wiki buatan penggemar untuk Hololive OCG — basis data kartu, pencarian, dan perakit dek.",
+    "theSite": "Tentang situs ini",
+    "theLab": "Bagian dari tskr/labs",
+    "labBlurb": "Lab kecil yang membuat perkakas web yang ringkas dan tanpa bloat.",
+    "madeBy": "Dibuat oleh",
+    "contactBlurb": "Untuk pertanyaan atau keperluan bisnis, hubungi lewat salah satu cara berikut.",
+    "privacy": "Privasi",
+    "disclaimer": "Penafian",
+    "supportKofi": "Dukung di Ko-fi",
+    "englishOnlyNote": "Bagian ini hanya tersedia dalam bahasa Inggris agar maknanya tetap tepat.",
+    "links": {
+      "website": "lichingchester.dev",
+      "instagram": "Instagram",
+      "email": "Email",
+      "kofi": "Dukung di Ko-fi"
+    }
+  }
 }

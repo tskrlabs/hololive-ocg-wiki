@@ -269,15 +269,23 @@ check_absent "the noindex tag is gone" "200.html" 'content="noindex'
 check "the sitemap index exists" "sitemap_index.xml" '<sitemapindex'
 check_count "it lists one sitemap per locale" "sitemap_index.xml" '<sitemap>' 7
 
-# The number this whole phase exists for. 2,463 cards + `/` + `/status` per locale; the
-# manifest is committed, so this is checkable without D1 or credentials.
+# The number this whole phase exists for. 2,463 cards + `/` + `/status` + `/about` per
+# locale; the manifest is committed, so this is checkable without D1 or credentials.
+#
+# The non-card count is stated as a name rather than a bare `+ 3`, because it is the thing
+# that changes: adding a page moves every one of these seven numbers at once, and a raw
+# literal gives the next person no way to tell an intended change from a regression.
 CARD_URLS="$(python3 -c 'import json;print(len(json.load(open("../../packages/schema/data/card-urls.json"))))')"
-EXPECTED=$((CARD_URLS + 2))
+NON_CARD_PAGES=3  # `/`, `/status`, `/about`
+EXPECTED=$((CARD_URLS + NON_CARD_PAGES))
 for locale in zh-TW ja-JP en-US id-ID ko-KR th-TH es-ES; do
   actual="$(grep -cE '<loc>' "$OUT/__sitemap__/${locale}.xml" 2>/dev/null || echo 0)"
-  # zh-TW carries one extra: an unprefixed `/status` the module emits for the default
-  # locale. Pre-existing, and not something this phase introduced.
-  if [[ "$actual" == "$EXPECTED" || ( "$locale" == "zh-TW" && "$actual" == "$((EXPECTED + 1))" ) ]]; then
+  # zh-TW carries extras: an unprefixed copy of each non-i18n-routed page, which the module
+  # emits for the default locale. `/status` and `/about` are both reached by `localePath()`
+  # yet still emit one — pre-existing behaviour, not something this phase introduced, and
+  # the count moves with `NON_CARD_PAGES` rather than being a second literal to forget.
+  ZH_EXTRA=2  # unprefixed `/status` and `/about`
+  if [[ "$actual" == "$EXPECTED" || ( "$locale" == "zh-TW" && "$actual" == "$((EXPECTED + ZH_EXTRA))" ) ]]; then
     printf '  ✓ %-54s %s URLs\n' "${locale}.xml lists every card" "$actual"
   else
     printf '  ✗ %-54s expected %s, got %s\n' "${locale}.xml lists every card" "$EXPECTED" "$actual"
@@ -290,9 +298,12 @@ done
 # measured at ~12.3 MB against ~1.9 MB. Absolute `loc` values opt out (see
 # `apps/web/lib/cardUrls.ts`), and a future contributor "fixing" them to relative paths
 # would look tidier and change nothing visible. This is what would catch it.
+# The threshold tracks the non-card pages: each gets 8 alternates (7 locales + x-default),
+# so it is `NON_CARD_PAGES * 8` rather than a literal. A card URL gaining even one alternate
+# pushes past it, which is the regression this guards — 2,463 × 8 is the 12.3 MB outcome.
 alt_count="$(grep -cE 'xhtml:link' "$OUT/__sitemap__/en-US.xml" || true)"
-if [[ "$alt_count" -le 16 ]]; then
-  printf '  ✓ %-54s %s (the two non-card pages)\n' "hreflang is not inlined per card" "$alt_count"
+if [[ "$alt_count" -le $((NON_CARD_PAGES * 8)) ]]; then
+  printf '  ✓ %-54s %s (the non-card pages)\n' "hreflang is not inlined per card" "$alt_count"
 else
   printf '  ✗ %-54s %s — card URLs gained alternates\n' "hreflang is not inlined per card" "$alt_count"
   FAILURES=$((FAILURES + 1))

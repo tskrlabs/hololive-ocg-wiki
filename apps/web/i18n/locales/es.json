@@ -617,5 +617,24 @@
     "unsupported": "Este navegador no puede copiar al portapapeles.",
     "failed": "No se pudo copiar: inténtalo de nuevo o copia la barra de direcciones."
   },
-  "More": "Más"
+  "More": "Más",
+  "about": {
+    "title": "Acerca de",
+    "description": "Una wiki hecha por fans del Hololive OCG: base de datos de cartas, búsqueda y constructor de mazos.",
+    "theSite": "Sobre este sitio",
+    "theLab": "Parte de tskr/labs",
+    "labBlurb": "Un pequeño laboratorio que crea herramientas web afiladas y sin excesos.",
+    "madeBy": "Hecho por",
+    "contactBlurb": "Para preguntas o consultas comerciales, escríbeme por cualquiera de estas vías.",
+    "privacy": "Privacidad",
+    "disclaimer": "Aviso legal",
+    "supportKofi": "Apoya en Ko-fi",
+    "englishOnlyNote": "Esta sección solo está disponible en inglés, para que su significado sea exacto.",
+    "links": {
+      "website": "lichingchester.dev",
+      "instagram": "Instagram",
+      "email": "Correo electrónico",
+      "kofi": "Apoya en Ko-fi"
+    }
+  }
 }
