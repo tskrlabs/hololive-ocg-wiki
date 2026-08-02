@@ -99,7 +99,9 @@ class Masked:
         return out
 
 
-def mask(text: str, table: Iterable[tuple[str, str]]) -> Masked:
+def mask(
+    text: str, table: Iterable[tuple[str, str]], *, first_index: int = 0
+) -> Masked:
     """Replace every glossary name in `text` with a placeholder.
 
     Args:
@@ -107,6 +109,10 @@ def mask(text: str, table: Iterable[tuple[str, str]]) -> Masked:
         table: `(matchable_text, glossary_key)` pairs, longest first — as produced by
             `Glossary.mask_table()`. Order is the caller's responsibility because it is
             a property of the whole table, not of any one entry.
+        first_index: the number the first token gets. Defaults to 0, which is right for
+            a standalone string. `mask_fields` passes a running total so that the several
+            fields of one unit share a **single** numbering — see the warning there for
+            why numbering them independently is unsafe.
 
     Returns:
         A `Masked` carrying the placeholder text and the token map.
@@ -148,7 +154,7 @@ def mask(text: str, table: Iterable[tuple[str, str]]) -> Masked:
         candidate, key = matched
         token = by_surface.get(candidate)
         if token is None:
-            token = token_for(len(tokens))
+            token = token_for(first_index + len(tokens))
             tokens[token] = key
             surfaces[token] = candidate
             by_surface[candidate] = token
@@ -234,6 +240,103 @@ def _restorer_for(glossary: Any) -> Callable[[str, str, str | None], str]:
         return from_glossary
 
     return lambda key, locale, surface: glossary.display(key, locale, surface=surface)
+
+
+# Which fields of a structured (dict-valued) unit carry prose a reader will see.
+#
+# Q&A is the only such kind today, and only two of its four fields are translated text:
+#
+#   title         `Q527（2026.06.26）` — a question number and a date, not prose
+#   related_cards `{card_number: [...], raw_html: "[hBP06-055 ： 沙花叉クロヱ]"}` — source
+#                 markup the site parses, whose Japanese is *data* and must stay
+#   question      prose
+#   answer        prose
+#
+# Masking `raw_html` would be actively wrong: the card number is the key the UI links on,
+# and the Japanese beside it is the official list's own rendering. So this is an allowlist
+# rather than "every string field", and a new field is untranslated until someone adds it
+# here deliberately.
+MASKABLE_FIELDS = ("question", "answer")
+
+
+def mask_fields(
+    value: dict[str, Any], table: Iterable[tuple[str, str]]
+) -> tuple[dict[str, Any], dict[str, Masked]]:
+    """Mask the prose fields of a structured unit, leaving the rest exactly as they are.
+
+    Q&A shipped unmasked for the whole of the rework, and it is the field where names
+    appear *most* — a ruling cites the card it is about. `batcher` masked only `str`
+    units, so a dict got an empty `Masked` and its Japanese names reached the model with
+    nothing protecting them. The model then translated some and not others, which is
+    issue #20 exactly, in the one place the mechanism built to end it never ran.
+
+    Measured on the shipped cache before the fix: **863 Japanese card names inside `〈…〉`
+    in English Q&A alone, 133 distinct, 132 of which already had a curated glossary
+    translation.** Every other locale was within 20% of that. The answers existed; they
+    were simply never asked for.
+
+    ⚠️ **The fields share one token numbering, and that is load-bearing.** Masking each
+    field from `[[N0]]` independently is the obvious implementation and it is unsafe: a
+    Q&A entry naming one card in the question and a different one in the answer would
+    give `[[N0]]` two meanings inside a single unit. Any reply that moved text between
+    the fields — a model that answers by restating the question, or merges the pair —
+    would then restore a **confidently wrong name**, with no error raised, because each
+    token is individually valid. Continuous numbering makes that collision impossible:
+    one token, one name, for the whole unit.
+
+    Returns:
+        The value with masked prose fields, and the `Masked` per field for restoring.
+        Fields outside `MASKABLE_FIELDS` are passed through untouched and unrecorded.
+    """
+    out = dict(value)
+    masks: dict[str, Masked] = {}
+    pairs = list(table)
+    next_index = 0
+
+    for field_name in MASKABLE_FIELDS:
+        text = value.get(field_name)
+        if not isinstance(text, str) or not text:
+            continue
+        masked = mask(text, pairs, first_index=next_index)
+        masks[field_name] = masked
+        out[field_name] = masked.text
+        next_index += len(masked.tokens)
+
+    return out, masks
+
+
+def unmask_fields(
+    reply: dict[str, Any],
+    masks: dict[str, Masked],
+    glossary: Any,
+    locale: str,
+) -> dict[str, Any]:
+    """Restore every masked field of a structured reply.
+
+    Raises `MaskError` on the first field that cannot be restored — which drops the whole
+    unit rather than caching a Q&A entry whose question is intact and whose answer has
+    lost a name. A half-restored pair is worse than a stale one: it reads as correct.
+
+    A field the model omitted entirely is a `MaskError` too, for the same reason. The
+    string path treats a missing reply as a failure; this keeps the two consistent rather
+    than silently returning the masked text with `[[N3]]` still in it.
+    """
+    out = dict(reply)
+
+    for field_name, masked in masks.items():
+        if not masked.is_masked:
+            continue
+
+        text = reply.get(field_name)
+        if not isinstance(text, str):
+            raise MaskError(
+                f"{field_name!r} came back as {type(text).__name__}, "
+                f"but it was sent with {len(masked.tokens)} placeholder(s) to restore."
+            )
+
+        out[field_name] = unmask(text, masked, glossary, locale)
+
+    return out
 
 
 def verify_roundtrip(text: str, table: Iterable[tuple[str, str]]) -> None:

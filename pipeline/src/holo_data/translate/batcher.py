@@ -31,7 +31,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Iterable
 
-from .masking import MaskError, Masked, mask, unmask
+from .masking import MaskError, Masked, mask, mask_fields, unmask, unmask_fields
 from .prompts_v2 import build_prompt, is_prose
 from .units import Unit
 
@@ -44,10 +44,20 @@ DEFAULT_CHAR_BUDGET = 4000
 
 @dataclass
 class BatchItem:
-    """One unit inside a batch, with its masked form."""
+    """One unit inside a batch, with its masked form.
+
+    `masked` covers a string unit; `field_masks` covers a structured one. Exactly one is
+    populated — they are the same mechanism applied to the two shapes a `Unit.value` can
+    take, kept as separate fields because restoring them differs (one string against a
+    named set of them).
+    """
 
     unit: Unit
     masked: Masked
+    #: Masked prose fields, for a dict-valued unit. `{field name -> Masked}`.
+    field_masks: dict[str, Masked] = field(default_factory=dict)
+    #: The unit's value with those fields masked — what the model is actually sent.
+    masked_value: object | None = None
 
     @property
     def context(self) -> dict[str, str]:
@@ -82,7 +92,17 @@ class Batch:
         """
         entries: dict[str, object] = {}
         for index, item in enumerate(self.items):
-            value = item.masked.text if isinstance(item.unit.value, str) else item.unit.value
+            if isinstance(item.unit.value, str):
+                value: object = item.masked.text
+            else:
+                # The masked dict, so a Q&A question reaches the model with `[[N3]]`
+                # where a card name was. Falls back to the raw value for a structured
+                # unit that carried no maskable field.
+                value = (
+                    item.masked_value
+                    if item.masked_value is not None
+                    else item.unit.value
+                )
             if item.context and is_prose(self.kind):
                 entries[str(index)] = {"text": value, "context": item.context}
             else:
@@ -133,17 +153,34 @@ def build_batches(
     for kind in sorted(by_kind):
         current = Batch(kind=kind, locale=locale)
         for unit in sorted(by_kind[kind], key=lambda u: u.key):
-            # Only strings are masked. Q&A units are dicts, and their nested text is
-            # masked field-by-field at send time rather than here.
-            masked = (
-                mask(unit.value, table)
-                if isinstance(unit.value, str)
-                else Masked(text="", original="")
-            )
+            # Both shapes are masked. A string is masked whole; a dict has its prose
+            # fields masked and everything else passed through (`MASKABLE_FIELDS`).
+            #
+            # The dict half was missing until #28: this masked strings only, so Q&A —
+            # the field where card names appear *most*, because a ruling cites the card
+            # it is about — reached the model with its names unprotected. 863 Japanese
+            # names survived in English Q&A alone, 132 of 133 of which had a curated
+            # translation waiting in the glossary.
+            masked = Masked(text="", original="")
+            field_masks: dict[str, Masked] = {}
+            masked_value: object | None = None
+
+            if isinstance(unit.value, str):
+                masked = mask(unit.value, table)
+            elif isinstance(unit.value, dict):
+                masked_value, field_masks = mask_fields(unit.value, table)
+
             if current.items and current.char_count + unit.char_count > char_budget:
                 batches.append(current)
                 current = Batch(kind=kind, locale=locale)
-            current.items.append(BatchItem(unit=unit, masked=masked))
+            current.items.append(
+                BatchItem(
+                    unit=unit,
+                    masked=masked,
+                    field_masks=field_masks,
+                    masked_value=masked_value,
+                )
+            )
         if current.items:
             batches.append(current)
 
@@ -182,8 +219,27 @@ def collect_result(
             continue
 
         if not isinstance(item.unit.value, str):
-            # Q&A and other structured units come back as objects; nothing to unmask.
-            result.translations[item.unit.key] = raw
+            # A structured unit: restore its masked prose fields and pass the rest
+            # through. `related_cards` and `title` were never masked, so they arrive
+            # here exactly as the model returned them.
+            if not item.field_masks:
+                result.translations[item.unit.key] = raw
+                continue
+
+            if not isinstance(raw, dict):
+                result.failures.append(
+                    f"{item.unit.key}: expected an object, got {type(raw).__name__}"
+                )
+                continue
+
+            try:
+                result.translations[item.unit.key] = unmask_fields(
+                    raw, item.field_masks, restorer, batch.locale
+                )
+            except MaskError as exc:
+                result.failures.append(
+                    f"{item.unit.key}: {str(exc).splitlines()[0]}"
+                )
             continue
 
         if not isinstance(raw, str):

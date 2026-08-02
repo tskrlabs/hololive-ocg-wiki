@@ -1,9 +1,9 @@
 {
   "discord-invite-url": "https://discord.gg/qTuMPeuEN2",
   "contents": [
-    "This is an open-source project—pull requests are welcome!",
+    "This is an open-source project, and pull requests are welcome!",
     "Join our <a target=\"_blank\" class=\"underline\" href=\"https://discord.gg/qTuMPeuEN2\">Discord community</a> to report issues, share feedback, and keep track of the latest project updates.",
-    "Card data is pulled from the <a target=\"_blank\" class=\"underline\" href=\"https://hololive-official-cardgame.com/cardlist/\">Official Hololive OCG (JP)</a> site and auto-translated into 7 languages via LLM 🤖"
+    "Card data is pulled from the <a target=\"_blank\" class=\"underline\" href=\"https://hololive-official-cardgame.com/cardlist/\">Official Hololive OCG (JP)</a> site and auto-translated into 7 languages via LLM"
   ],
   "disclaimer": "This wiki is a fan-made, non-official project. All content is created by the community and follows <a target=\"_blank\" class=\"underline\" href=\"https://hololivepro.com/en/terms/\">Cover Corp.'s Derivative Works Guidelines</a>. Hololive names, images, and related content are the property of Cover Corp. This site is not affiliated with or endorsed by Cover Corp. or hololive production."
 }

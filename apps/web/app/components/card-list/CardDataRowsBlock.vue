@@ -10,6 +10,11 @@ defineProps<{
 const { getTranslatedText } = useTranslation();
 
 const icon = useGameIcon();
+
+// The tag row reads the toggle directly rather than through `CardListOriginalText`,
+// because it renders a *list* as its own line rather than one string inline. See the
+// comment on that block for why tags are the exception.
+const { enabled: showOriginal } = useShowOriginal();
 </script>
 
 <template>
@@ -28,25 +33,61 @@ const icon = useGameIcon();
         v-if="item?.tags?.length"
         :name="$t('fields.tags')"
       >
-        <div class="flex flex-wrap gap-1">
-          <template v-for="(tag, index) in item.tags" :key="index">
-            <UseClipboard v-slot="{ copy, copied }" :source="tag">
-              <div class="relative">
-                <Button variant="link" class="p-0 h-auto" @click="copy()">
-                  {{ getTranslatedText("tags", tag, tag) }}
-                </Button>
-                <!-- Copied indicator -->
-                <Transition name="copied">
-                  <span
-                    v-if="copied"
-                    class="absolute bottom-full md:top-auto md:bottom-[calc(100%+0rem)] left-2/4 -translate-x-2/4 -translate-y-1 rounded-lg bg-green-400 text-slate-800 text-xs py-1 px-2 whitespace-nowrap z-10"
-                  >
-                    {{ $t("Copied") }}
-                  </span>
-                </Transition>
-              </div>
-            </UseClipboard>
-          </template>
+        <div class="flex flex-col items-end gap-1">
+          <div class="flex flex-wrap justify-end gap-1">
+            <template v-for="(tag, index) in item.tags" :key="index">
+              <UseClipboard v-slot="{ copy, copied }" :source="tag">
+                <div class="relative">
+                  <Button variant="link" class="p-0 h-auto" @click="copy()">
+                    {{ getTranslatedText("tags", tag, tag) }}
+                  </Button>
+                  <!-- Copied indicator -->
+                  <Transition name="copied">
+                    <span
+                      v-if="copied"
+                      class="absolute bottom-full md:top-auto md:bottom-[calc(100%+0rem)] left-2/4 -translate-x-2/4 -translate-y-1 rounded-lg bg-green-400 text-slate-800 text-xs py-1 px-2 whitespace-nowrap z-10"
+                    >
+                      {{ $t("Copied") }}
+                    </span>
+                  </Transition>
+                </div>
+              </UseClipboard>
+            </template>
+          </div>
+
+          <!--
+            The source tags, as a second row rather than inline after each one (#62).
+            Every other label puts its original inline via `CardListOriginalText`; tags
+            are the one place that reads badly, for two measured reasons.
+
+            **The lists overlap heavily.** On the golden fixtures, 39% of tag pairs in
+            `en` are byte-identical and 60% in `tc` — `#JP`, `#EN`, `#Advent`, and in `tc`
+            also `#0期生` and `#4期生`, which are already Japanese in Chinese. Inline would
+            print `#JP #JP` more often than not, burying the pairs that actually differ
+            (`#Singing` → `#歌`). Suppressing the identical ones is not available: the
+            contract is whole-list-or-nothing, because a partially-shown tag list reads as
+            a data error (`localize.ts`), so that would be a change to the schema rather
+            than to this view.
+
+            **A tag is a button.** Each one copies its source string to the clipboard, so
+            a second string inside the button changes what "copy" means, and outside it
+            roughly doubles the width of a row that already wraps.
+
+            Stacking sidesteps both. It is also the treatment `CardItem` already gives a
+            card name on a tile, so the pattern is not new here.
+
+            Not a `<Button>`: these are for reading, not copying — the translated row above
+            already carries every clipboard target.
+          -->
+          <div
+            v-if="showOriginal && item.original?.tags?.length"
+            lang="ja"
+            class="flex flex-wrap justify-end gap-x-3 gap-y-1 text-[0.9em] font-normal text-muted-foreground"
+          >
+            <span v-for="(tag, index) in item.original.tags" :key="index">
+              {{ tag }}
+            </span>
+          </div>
         </div>
       </CardDataRowsBlockItem>
 

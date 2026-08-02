@@ -139,7 +139,7 @@ export const batchParamSchema = z
     z
       .array(z.string().regex(/^[a-zA-Z0-9_-]+$/, "must be alphanumeric").max(50))
       .min(1, "at least one value is required")
-      .max(MAX_BATCH, `too many values — the maximum is ${MAX_BATCH}`),
+      .max(MAX_BATCH, `too many values: the maximum is ${MAX_BATCH}`),
   );
 
 /** A single card number from the path. */

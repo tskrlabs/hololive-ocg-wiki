@@ -29,7 +29,14 @@
   // 2,448 cards on workers.dev (ADR 0006, Q16). Everything before that point is tested
   // against 34 fixture cards, and Phase 3's most expensive bug — 15.5M rows read —
   // appeared only against a real database.
-  "workers_dev": true,
+  //
+  // Off since Phase 7. It was kept on only to compare the two origins while
+  // [F-017](../../docs/archive/findings.md#f-017) was open — the zone rewriting `robots.txt`
+  // was visible no other way — and #17 closed that. Launch is also the point where leaving
+  // it on stops being free: indexing turns on with `NUXT_PUBLIC_LAUNCHED`, and a live
+  // `workers.dev` origin serving the same site is a second indexable copy of every page
+  // that our own `robots.txt` and canonical tags do not govern.
+  "workers_dev": false,
 
   "observability": {
     // Workers Logs. Free tier, and the reason D2 merged Pages into a Worker at all —

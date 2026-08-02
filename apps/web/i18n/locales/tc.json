@@ -517,7 +517,7 @@
       "descriptionWithAuthor": "Hololive OCG牌組「{deckName}」由{author}製作。查看牌組構成：主牌組{mainCount}張卡片，應援牌組{yellCount}張卡片，推し{oshiCount}張卡片。",
       "description": "Hololive OCG牌組「{deckName}」。查看牌組構成：主牌組{mainCount}張卡片，應援牌組{yellCount}張卡片，推し{oshiCount}張卡片。"
     },
-    "addedPartial": "已加入 {added} / {requested} 張 — {section}已滿",
+    "addedPartial": "已加入 {added} / {requested} 張，{section}已滿",
     "sectionFull": "{section}已滿",
     "nothingToRemove": "沒有可移除的卡片",
     "addCopies": "加入 {count} 張{name}",
@@ -541,7 +541,7 @@
   },
   "status": {
     "title": "資料狀態",
-    "description": "卡牌資料庫狀態 — 哪些卡牌是新增、更新或在官方來源中缺失的。",
+    "description": "卡牌資料庫狀態：哪些卡牌是新增、更新或在官方來源中缺失的。",
     "validInDB": "已收錄",
     "lastUpdated": "最後更新",
     "builtAt": "資料建置",
@@ -618,12 +618,12 @@
   "clipboard": {
     "copied": "已複製牌組代碼網址。",
     "unsupported": "此瀏覽器無法複製到剪貼簿。",
-    "failed": "複製失敗——請再試一次，或直接複製網址列。"
+    "failed": "複製失敗，請再試一次，或直接複製網址列。"
   },
   "More": "更多",
   "about": {
     "title": "關於",
-    "description": "一個由粉絲製作的 Hololive OCG 維基——卡片資料庫、搜尋與牌組編輯器。",
+    "description": "一個由粉絲製作的 Hololive OCG 維基：卡片資料庫、搜尋與牌組編輯器。",
     "theSite": "關於本站",
     "theLab": "隸屬於 tskr/labs",
     "labBlurb": "一個打造俐落、無冗餘網頁工具的小型工作室。",

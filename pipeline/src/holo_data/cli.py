@@ -18,6 +18,7 @@ steps that cost money or touch production are explicit.
     holo-data glossary            proper-noun coverage, per locale     (local, free)
     holo-data cache-status        migration progress, per locale       (local, free)
     holo-data backup-cache        snapshot the translation cache       (local / R2)
+    holo-data normalise-cache     deterministic spelling fixes         (local, free)
     holo-data migrate-images      one-time v1 flat -> set-scoped tree
 
 `translate` requires `--confirm` or refuses, and prints exactly what it would spend
@@ -54,6 +55,7 @@ from . import publish as publish_module
 from . import verify_images as verify_images_module
 from .scrape import card_list, extract, fetch
 from .translate import backup, batcher, mask_table, masking, poe, runner
+from .translate import normalise as normalise_module
 from .translate import units as units_module
 from .translate.cache import TranslationCache
 from .translate import cache_v2 as cache_v2_module
@@ -1226,6 +1228,85 @@ def glossary_(
                 typer.echo(f"\n{kind}/{loc} — {len(gaps)} undecided:")
                 for key in gaps:
                     typer.echo(f"  {key}")
+
+
+@app.command("normalise-cache")
+def normalise_cache(
+    locale: Optional[str] = typer.Option(
+        None, "--locale", help="normalise one locale only"
+    ),
+    write: bool = typer.Option(
+        False, "--write", help="required to modify the cache; otherwise reports only"
+    ),
+) -> None:
+    """Apply deterministic spelling fixes to cached translations. Spends nothing.
+
+    For defects that are not translation *judgements* but one word spelled several ways
+    in a single run — #28's `エール`, which came back from the Thai run as four different
+    strings, one of them (`เอール`) Thai `เอ` followed by katakana `ール`, not a word in
+    any language.
+
+    A re-translation would cost money and would not fix it: the model produced the
+    inconsistency, and nothing about a second run makes it pick one spelling. This is
+    deterministic, free, and re-runnable.
+
+    Reports by default and needs `--write` to touch the cache, matching `translate`'s
+    posture — the cache is expensive to rebuild and this rewrites it in place.
+
+    Entries it changes keep their `source_hash`, because the *source* has not moved —
+    only our rendering of it. A `manual` entry is left alone entirely: a human decided
+    that string, and a blanket rule does not get to overrule them.
+    """
+    cache = TranslationCacheV2.load()
+    locales = [locale] if locale else sorted(cache.entries)
+    total = 0
+    dirty = False
+
+    for loc in locales:
+        entries = cache.entries.get(loc)
+        if not entries:
+            typer.echo(f"{loc}: no entries", err=True)
+            continue
+
+        # `manual` is excluded rather than filtered afterwards: ADR 0002's durability
+        # guarantee is that a human decision stands until the source moves, and a
+        # spelling rule is exactly the kind of blanket change it protects against.
+        editable = {
+            key: entry.value
+            for key, entry in entries.items()
+            if entry.source != "manual"
+        }
+
+        changed, report = normalise_module.normalise_locale(editable, loc)
+        for line in report.lines():
+            typer.echo(line)
+
+        left = normalise_module.remaining({**editable, **changed}, loc)
+        if left:
+            # An ordered rewrite that leaves variants behind has produced a *new*
+            # spelling rather than removing the old ones — the specific way this goes
+            # wrong, so it is checked rather than assumed.
+            typer.echo(f"  ⚠ variants still present after the pass: {left}", err=True)
+            raise typer.Exit(1)
+
+        total += report.total_replacements
+        if changed and write:
+            for key, value in changed.items():
+                entries[key].value = value
+            dirty = True
+
+    if not total:
+        typer.echo("✓ nothing to normalise")
+        return
+
+    if not write:
+        typer.echo(f"\n{total} replacement(s) available — re-run with --write to apply")
+        return
+
+    if dirty:
+        cache.save()
+        typer.echo(f"\n✓ {total} replacement(s) written to the cache")
+        typer.echo("  next: `holo-data build`, then publish and seed")
 
 
 @app.command("cache-status")

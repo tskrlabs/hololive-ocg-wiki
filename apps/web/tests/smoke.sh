@@ -177,6 +177,77 @@ else
 fi
 
 echo ""
+echo "every locale file still compiles as i18n messages (#65)"
+# One character in one string blanks an entire language, and `make check` stays green.
+#
+# `@` opens a *linked message* in vue-i18n's syntax. A literal email address in a locale
+# value — `"email": "tskrlabs.info@lichingchester.dev"` — makes `unplugin-vue-i18n` fail to
+# compile the **whole file**, the locale module 404s at runtime, and every one of the ~79
+# keys in that language renders as its raw key path: `about.title`, `Card List`,
+# `status.validInDB`. One string took out the entire UI, in all seven languages.
+#
+# It is a bundler-plugin error, not a type or unit-test error, so nothing in `make check`
+# sees it. It belongs here for the same reason everything else in this file does.
+#
+# ⚠️ **`generateJSON` does not throw on a bad value — it reports through `onError`.**
+# Verified while writing this: with `type: 'bare'`, `'plain'`, `'sfc'`, and with `jit`
+# either way, a literal `@` compiles *clean* and returns normally. Only passing `onError`
+# surfaces `Invalid linked format`. A guard written the obvious way (wrap the call in
+# try/catch) therefore passes on the exact input it exists to reject — which is the same
+# shape of trap as the documented escape `{'@'}`, which reads as correct and is not.
+node -e '
+const { generateJSON } = require("@intlify/bundle-utils");
+const fs = require("fs");
+const dir = "i18n/locales";
+let bad = 0;
+for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+  const errors = [];
+  try {
+    generateJSON(fs.readFileSync(`${dir}/${file}`, "utf8"), {
+      type: "bare",
+      filename: file,
+      env: "production",
+      onError: (msg) => errors.push(msg),
+    });
+  } catch (e) {
+    errors.push(e.message);
+  }
+  if (errors.length) {
+    console.log(`      ${file}: ${errors[0]}`);
+    bad++;
+  }
+}
+// The control. The loop reports failure by finding *zero* problems, which is also what an
+// empty directory produces — a moved path would go green having compiled nothing. So
+// assert both that a known-bad value is rejected and that a known-good one is not,
+// exercising the detector in both directions before trusting its silence.
+const probe = (value) => {
+  const errors = [];
+  generateJSON(JSON.stringify({ probe: value }), {
+    type: "bare",
+    filename: "probe.json",
+    env: "production",
+    onError: (msg) => errors.push(msg),
+  });
+  return errors.length > 0;
+};
+const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json")).length;
+if (!probe("a@b.dev")) {
+  console.log("      control: a literal @ was NOT rejected — this check is vacuous");
+  bad++;
+} else if (probe("plain text")) {
+  console.log("      control: a clean value was rejected — this check is over-eager");
+  bad++;
+} else {
+  console.log(`  ✓ ${"  (control: the detector discriminates)".padEnd(54)} ${files} files compiled`);
+}
+process.exit(bad ? 1 : 0);
+' && printf '  ✓ %-54s\n' "no locale value breaks its own compilation" || {
+  printf '  ✗ %-54s\n' "a locale file does not compile — that language will be blank"
+  FAILURES=$((FAILURES + 1))
+}
+
+echo ""
 echo "every component a template names actually exists (#61)"
 # The bug this exists for shipped dead for a month and nothing could see it.
 #

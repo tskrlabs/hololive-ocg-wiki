@@ -516,7 +516,7 @@
       "descriptionWithAuthor": "Hololive OCG 덱 \"{deckName}\"이(가) {author}에 의해 생성되었습니다. 메인 덱 카드 {mainCount}장, 옐 카드 {yellCount}장, 오시 카드 {oshiCount}장의 덱 구성을 확인하세요.",
       "description": "Hololive OCG 덱 \"{deckName}\". 메인 덱 카드 {mainCount}장, 옐 카드 {yellCount}장, 오시 카드 {oshiCount}장의 덱 구성을 확인하세요."
     },
-    "addedPartial": "{requested}장 중 {added}장을 추가했습니다 — {section}이(가) 가득 찼습니다",
+    "addedPartial": "{requested}장 중 {added}장을 추가했습니다. {section}이(가) 가득 찼습니다",
     "sectionFull": "{section}이(가) 가득 찼습니다",
     "nothingToRemove": "제거할 카드가 없습니다",
     "addCopies": "{name} {count}장 추가",
@@ -540,7 +540,7 @@
   },
   "status": {
     "title": "데이터 상태",
-    "description": "카드 데이터베이스 상태 — 공식 소스에서 새로 추가, 업데이트되거나 누락된 카드를 확인할 수 있습니다.",
+    "description": "카드 데이터베이스 상태: 공식 소스에서 새로 추가, 업데이트되거나 누락된 카드를 확인할 수 있습니다.",
     "validInDB": "DB 등록",
     "lastUpdated": "마지막 업데이트",
     "builtAt": "데이터 생성",
@@ -622,7 +622,7 @@
   "More": "더 보기",
   "about": {
     "title": "사이트 소개",
-    "description": "홀로라이브 OCG 팬메이드 위키 — 카드 데이터베이스, 검색, 덱 빌더.",
+    "description": "홀로라이브 OCG 팬메이드 위키: 카드 데이터베이스, 검색, 덱 빌더.",
     "theSite": "사이트 소개",
     "theLab": "tskr/labs의 일부",
     "labBlurb": "군더더기 없는 웹 도구를 만드는 작은 랩입니다.",

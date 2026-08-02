@@ -516,7 +516,7 @@
       "descriptionWithAuthor": "ホロライブOCGデッキ「{deckName}」（作成者：{author}）。メインデッキカード{mainCount}枚、エールカード{yellCount}枚、推しカード{oshiCount}枚のデッキ構成をご覧ください。",
       "description": "ホロライブOCGデッキ「{deckName}」。メインデッキカード{mainCount}枚、エールカード{yellCount}枚、推しカード{oshiCount}枚のデッキ構成をご覧ください。"
     },
-    "addedPartial": "{requested} 枚中 {added} 枚を追加しました — {section}がいっぱいです",
+    "addedPartial": "{requested} 枚中 {added} 枚を追加しました。{section}がいっぱいです",
     "sectionFull": "{section}がいっぱいです",
     "nothingToRemove": "削除できるカードがありません",
     "addCopies": "{name}を{count}枚追加",
@@ -540,7 +540,7 @@
   },
   "status": {
     "title": "データステータス",
-    "description": "カードデータベースのステータス — 公式ソースに対して新規・更新・存在しないカードを確認できます。",
+    "description": "カードデータベースのステータス。公式ソースに対して新規・更新・存在しないカードを確認できます。",
     "validInDB": "DB登録済み",
     "lastUpdated": "最終更新",
     "builtAt": "データ生成",
@@ -622,7 +622,7 @@
   "More": "その他",
   "about": {
     "title": "このサイトについて",
-    "description": "ホロライブOCGのファンメイドwiki——カードデータベース、検索、デッキビルダー。",
+    "description": "ホロライブOCGのファンメイドwiki。カードデータベース、検索、デッキビルダー。",
     "theSite": "このサイトについて",
     "theLab": "tskr/labs の一員",
     "labBlurb": "洗練された、無駄のないウェブツールをつくる小さなラボです。",
