@@ -66,6 +66,18 @@ test("the LIKE branch declares its ESCAPE clause", () => {
   assert.equal(built.params[0], "%そら%");
 });
 
+test("an omitted limit binds no LIMIT at all, on either branch", () => {
+  // The filter path asks for every match, because its `total` is the count shown under
+  // the search box — a capped id set makes that number report the cap rather than the
+  // answer (issue #66). A limit that is merely large would still be a lie at 2,463
+  // cards, so the parameter is absent rather than big.
+  for (const query of ["フブキ", "そら"]) {
+    const built = searchSql(query);
+    assert.doesNotMatch(built.sql, /LIMIT/);
+    assert.equal(built.params.length, 1);
+  }
+});
+
 test("both branches select the rowid as the card id", () => {
   // An FTS5 column cannot be indexed for lookup, so the card id lives in the rowid
   // (ADR 0004). Both paths must agree on that or one of them returns unusable ids.

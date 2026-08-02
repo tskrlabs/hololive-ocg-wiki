@@ -58,18 +58,29 @@ export function searchStrategy(query: string): "match" | "like" {
  * the response is cached for an hour. `cards_fts.text` is also the only place the
  * all-locale concatenation exists, so there is nothing cheaper to scan.
  */
-export function searchSql(query: string, limit: number): { sql: string; params: unknown[] } {
+export function searchSql(
+  query: string,
+  limit?: number,
+): { sql: string; params: unknown[] } {
+  // Omitting the limit means *every* match, which is what the filter path wants.
+  //
+  // It used to pass a flat 500, chosen when the id list was expanded one bound parameter
+  // per id and something had to bound it. That cap is gone (issue #66, `idSetClause`),
+  // and while it stood it made `total` lie: a common word matches far more than 500 of
+  // 2,463 cards, so the count under the search box reported the cap rather than the
+  // answer. The id set is bounded by the table either way.
+  const bound = limit === undefined ? "" : " LIMIT ?";
+  const extra = limit === undefined ? [] : [limit];
+
   if (searchStrategy(query) === "match") {
     return {
-      sql:
-        "SELECT rowid AS id FROM cards_fts WHERE cards_fts MATCH ? ORDER BY rank LIMIT ?",
-      params: [escapeFtsPhrase(query), limit],
+      sql: `SELECT rowid AS id FROM cards_fts WHERE cards_fts MATCH ? ORDER BY rank${bound}`,
+      params: [escapeFtsPhrase(query), ...extra],
     };
   }
 
   return {
-    sql:
-      "SELECT rowid AS id FROM cards_fts WHERE text LIKE ? ESCAPE '\\' LIMIT ?",
-    params: [`%${escapeLikePattern(query)}%`, limit],
+    sql: `SELECT rowid AS id FROM cards_fts WHERE text LIKE ? ESCAPE '\\'${bound}`,
+    params: [`%${escapeLikePattern(query)}%`, ...extra],
   };
 }

@@ -178,6 +178,13 @@ check "operator input: -x"         200 "/api/cards/search?q=-x" "'cards' in d"
 check "operator input: bare quote" 200 "/api/cards/search?q=%22" "'cards' in d"
 check "operator input: fub*"       200 "/api/cards/search?q=fub*" "'cards' in d"
 check "short query uses LIKE"      200 "/api/cards/search?q=%E3%81%9D%E3%82%89" "'cards' in d"
+# A broad match, over HTTP, through json_each (issue #66). The 34-card fixture set cannot
+# reach the 100-parameter cap that caused the production 500 — `ホロメン` matches 29 here
+# and >100 there — so this proves the round trip and the unit tests prove the count.
+check "broad match round-trips"    200 "/api/cards/search?q=%E3%83%9B%E3%83%AD%E3%83%A1%E3%83%B3" \
+  "len(d['cards']) > 20"
+check "broad match inside filter"  200 "/api/cards/filter?search=%E3%83%9B%E3%83%AD%E3%83%A1%E3%83%B3&limit=5" \
+  "len(d['cards']) == 5 and d['total'] > 20"
 
 echo ""
 echo "filter"

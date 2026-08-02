@@ -50,6 +50,38 @@ export function expandColors(colors: readonly string[]): string[] {
   return [...expanded].sort();
 }
 
+/**
+ * A set of card ids as **one** bound parameter, not one placeholder each.
+ *
+ * D1 caps a query at 100 bound parameters. Expanding an id list into `id IN (?, ?, …)`
+ * therefore breaks the moment a search matches more than 100 cards — and the popular
+ * queries are all above that line. Production returned a 500 for `hBP03`, `hBP01`,
+ * `ホロメン` and `エール` while `hSD01` (65 matches) and `白上フブキ` (73) worked, which is
+ * the parameter cap showing through as a search feature that fails on common words
+ * (issue #66). Passing the ids as a JSON array makes the count irrelevant.
+ *
+ * **`IN (SELECT …)` here, even though #40 replaced exactly that form with `EXISTS`.**
+ * The two cases are opposites, and the reason is what can be indexed. A junction table
+ * has `idx_card_*_card_id`, so a correlated `EXISTS` probes it per card and the walk
+ * stops at `LIMIT`. `json_each` has no index at all, so the same correlation re-parses
+ * and rescans the whole array for every card considered. Measured on production over
+ * the 283 `hBP03` ids:
+ *
+ * | form | page (LIMIT 50) | count(*) |
+ * |---|---|---|
+ * | `IN (SELECT value FROM json_each(?))` | 1,132 rows | 849 rows |
+ * | `EXISTS (SELECT 1 FROM json_each(?) …)` | 169,940 rows | 659,306 rows |
+ *
+ * 150× and 776× worse respectively — so the rule from #40 is "correlate against
+ * something indexed", not "always use EXISTS".
+ *
+ * The cost scales with the id set rather than the page (100 ids read 300 rows, 283 read
+ * 1,132), which is the same materialise-then-sort shape #40 measured. It is accepted
+ * here because the alternative is a broken endpoint: the id set is bounded by the card
+ * count, and a search is one query per keystroke-debounce rather than the default view.
+ */
+const idSetClause = "id IN (SELECT value FROM json_each(?))";
+
 export interface CardFilters {
   search?: string;
   name?: string;
@@ -124,7 +156,8 @@ export function buildWhere(filters: CardFilters, searchIds?: readonly string[]):
   // card, which is what an omitted condition would do.
   if (searchIds !== undefined) {
     if (searchIds.length === 0) return { sql: "WHERE 1 = 0", params: [] };
-    inClause("id", searchIds);
+    conditions.push(idSetClause);
+    params.push(JSON.stringify(searchIds));
   }
 
   if (filters.colors?.length) junction("card_colors", "color_code", expandColors(filters.colors));
@@ -214,12 +247,18 @@ export function cardKeyByLowercaseSql(imageKey: string): { sql: string; params: 
   };
 }
 
+/**
+ * Several cards by id.
+ *
+ * Takes the same one-parameter id set as `buildWhere` — see `idSetClause`. This is the
+ * second half of issue #66: `/api/cards/search` re-fetches the ids the index returned,
+ * so it hit the 100-parameter cap too, and `limit=101` was a 500 where `limit=100` was
+ * not.
+ */
 export function cardsByIdsSql(ids: readonly string[]): { sql: string; params: unknown[] } {
   return {
-    sql: `SELECT ${CARD_COLUMNS} FROM cards WHERE id IN (${ids
-      .map(() => "?")
-      .join(", ")}) ORDER BY card_number, id`,
-    params: [...ids],
+    sql: `SELECT ${CARD_COLUMNS} FROM cards WHERE ${idSetClause} ORDER BY card_number, id`,
+    params: [JSON.stringify(ids)],
   };
 }
 

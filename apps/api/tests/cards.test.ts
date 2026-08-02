@@ -13,6 +13,7 @@ import {
   buildWhere,
   cardByImageKeySql,
   cardKeyByLowercaseSql,
+  cardsByIdsSql,
   expandColors,
   filterCountSql,
   filterPageSql,
@@ -106,6 +107,38 @@ test("a search matching nothing yields no cards, not every card", () => {
   // turn "no results" into "the whole table".
   const where = buildWhere(base, []);
   assert.equal(where.sql, "WHERE 1 = 0");
+});
+
+test("a search binds one parameter however many cards it matched", () => {
+  // D1 caps a query at 100 bound parameters, so `id IN (?, ?, …)` turned every popular
+  // search into a 500 — `hBP03`, `hBP01`, `ホロメン` and `エール` all failed in production
+  // while `hSD01` (65 matches) worked (issue #66). The count, not the shape, was the
+  // bug, so this asserts the count.
+  for (const size of [1, 100, 101, 2463]) {
+    const ids = Array.from({ length: size }, (_, i) => String(i + 1));
+    const where = buildWhere(base, ids);
+    assert.equal(where.params.length, 1, `${size} ids must bind 1 parameter`);
+    assert.deepEqual(JSON.parse(where.params[0] as string), ids);
+  }
+});
+
+test("the search id set is passed to json_each, not correlated against it", () => {
+  // `IN (SELECT …)` here, though #40 replaced exactly that form with EXISTS for the
+  // junctions. A junction has an index to correlate against; `json_each` has none, so
+  // the EXISTS form rescans the array per card — measured on production over the 283
+  // hBP03 ids, 169,940 rows read against 1,132 for this form.
+  const where = buildWhere(base, ["1", "2"]);
+  assert.match(where.sql, /id IN \(SELECT value FROM json_each\(\?\)\)/);
+  assert.doesNotMatch(where.sql, /EXISTS \(SELECT 1 FROM json_each/);
+});
+
+test("a batch id lookup binds one parameter too", () => {
+  // The same cap through the other door: `/api/cards/search` re-fetches the ids the
+  // index returned, so `limit=101` was a 500 where `limit=100` was not.
+  const ids = Array.from({ length: 200 }, (_, i) => String(i + 1));
+  const built = cardsByIdsSql(ids);
+  assert.equal(built.params.length, 1);
+  assert.match(built.sql, /id IN \(SELECT value FROM json_each\(\?\)\)/);
 });
 
 test("count and page queries share exactly one WHERE clause", () => {
