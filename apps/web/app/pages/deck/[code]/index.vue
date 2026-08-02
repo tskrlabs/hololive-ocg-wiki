@@ -6,6 +6,7 @@ import { Database, Scaling } from "lucide-vue-next";
 
 const { t, locale } = useI18n();
 const route = useRoute();
+const localePath = useLocalePath();
 const decks = useDecks();
 const deck = ref<Deck | null>(null);
 
@@ -19,7 +20,7 @@ const description = ref(
 
 onMounted(() => {
   if (!route.params.code) {
-    toast.error(t("No deck code provided."));
+    toast.error(t("errors.deck.noCode"));
     return;
   }
 
@@ -51,9 +52,12 @@ onMounted(() => {
       }
     }
   } else {
-    toast.error(t(`Failed to import shared deck.`), {
-      duration: Infinity,
-    });
+    // `duration: Infinity` was here, which made this the one toast in the app that never
+    // goes away — on a page that then renders nothing, so the message sat over an empty
+    // screen with the close button as the only exit (#57). The page's own empty state
+    // says the same thing and stays put, which is what a permanent condition wants; the
+    // toast reports the event and leaves.
+    toast.error(t("errors.deck.invalidCode"));
   }
 });
 
@@ -84,7 +88,12 @@ useHead({
     </Button>
   </AppHeader>
 
-  <div class="grow p-2 md:p-4">
+  <!--
+    The shell is now exactly one viewport tall (#44), so the page no longer scrolls as a
+    whole and this region owns its own scrolling. `min-h-0` lets it shrink below its
+    content, which is what allows it to scroll rather than pushing the footer away.
+  -->
+  <main class="grow min-h-0 overflow-y-auto p-2 md:p-4">
     <div v-if="deck" class="flex flex-col gap-2 md:gap-4">
       <div class="flex gap-2">
         <div
@@ -109,15 +118,12 @@ useHead({
         </div>
       </div>
 
-      <!-- <template v-if="compactModeState">
-        <DeckDetailCompactModeCardList
-          :oshi-card-ids="deck.oshiCardIds"
-          :main-card-ids="deck.mainCardIds"
-          :yell-card-ids="deck.yellCardIds"
-        />
-      </template>
-
-      <template v-else> -->
+      <!--
+        `DeckDetailCompactModeCardList` was deleted here. It had been commented out at
+        this, its only call site — so it was dead code that `make check` still typechecked
+        and every reader still had to rule out. Compact mode is not lost: it is the
+        `is-compact-mode` prop below, which is what the toggle has actually driven.
+      -->
       <div class="border rounded-lg p-2 md:p-3 flex flex-col gap-3">
         <div class="flex items-center gap-2">
           <div class="text-md md:text-lg font-semibold">
@@ -168,9 +174,26 @@ useHead({
           :is-compact-mode="compactModeState"
         />
       </div>
-      <!-- </template> -->
     </div>
-  </div>
+
+    <!--
+      An undecodable code used to render an empty page under a toast that never expired
+      (#57). A deck code that does not decode is permanent, not retryable — so this says
+      so and offers the way out, the same shape the card page's 404 uses.
+    -->
+    <div
+      v-else
+      class="flex min-h-[50vh] flex-col items-center justify-center text-center"
+    >
+      <p class="text-xl font-medium">{{ $t("errors.deck.invalidCode") }}</p>
+      <p class="mt-1 text-sm text-muted-foreground">
+        {{ $t("errors.deck.invalidCodeDetail") }}
+      </p>
+      <Button variant="outline" size="sm" class="mt-4" as-child>
+        <NuxtLink :to="localePath('/')">{{ $t("Card List") }}</NuxtLink>
+      </Button>
+    </div>
+  </main>
 
   <AppFooter>
     <AppFooterDeckDetailStatus />

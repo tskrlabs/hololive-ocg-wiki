@@ -1,83 +1,56 @@
 <script setup lang="ts">
-import { Database } from "lucide-vue-next";
-// import { HelpCircle } from "lucide-vue-next";
-
 /**
- * The Discord link comes from `/api/info` (D11), and is fetched **once** for the whole
- * app rather than separately here.
+ * The header: four view controls plus an overflow menu (ADR 0009 D21, #48 §2).
  *
- * v1 duplicated the entire fetch-and-parse block from `AppInfoButton` into this file —
- * including a `safeJsonParse` helper for the case where `$fetch` returned a string,
- * which it did because raw.githubusercontent.com serves JSON as text/plain. Reading from
- * our own Worker, the response is already parsed, and `useAsyncData` with a shared key
- * means the header and the info dialog resolve the same request.
+ * The Discord link, the status link, the GitHub link and the about dialog moved into
+ * `AppHeaderOverflowMenu`. They were `hidden sm:inline-flex` here, which meant a phone
+ * silently lost three of them entirely — the menu is what makes them reachable at all
+ * widths. What remains are the controls used *repeatedly while browsing*: density,
+ * show-original, locale and colour mode.
+ *
+ * The `/api/info` fetch went with the Discord link. `useAsyncData`'s shared `"info"` key
+ * still means the menu and the about dialog resolve one request between them.
  */
-type Info = { "discord-invite-url"?: string };
-
-const { data: info } = await useAsyncData<Info>(
-  "info",
-  () => $fetch<Info>("/api/info"),
-  { default: () => ({}) },
-);
-
-const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? "");
 </script>
 
 <template>
-  <header class="border-solid sticky top-0 z-50 w-full border-b bg-background">
+  <!--
+    A flex child of the shell, not `sticky` (#44). Nothing scrolls past it now — the
+    scroll region is the sibling below — so stickiness bought nothing and cost the
+    scroller a reliable height, which is what left ~138px of the card list hidden
+    underneath this bar. `shrink-0` keeps it at its natural height when the middle
+    region is under pressure.
+  -->
+  <header class="border-solid shrink-0 z-50 w-full border-b bg-background">
     <div class="p-2 md:p-4 flex items-center gap-2">
       <slot />
 
       <div class="flex ml-auto">
-        <!-- <Button
-          variant="ghost"
-          size="icon"
-          as-child
-          class="hidden sm:inline-flex"
-          :title="$t('howToUse.title')"
-        >
-          <NuxtLink to="/how-to-use">
-            <HelpCircle class="w-5 h-5" />
-          </NuxtLink>
-        </Button> -->
-        <Button
-          variant="ghost"
-          size="icon"
-          as-child
-          class="hidden sm:inline-flex"
-          :title="$t('status.title')"
-        >
-          <NuxtLink to="/status">
-            <Database class="w-5 h-5" />
-          </NuxtLink>
-        </Button>
+        <!--
+          Every icon-only control here carries a translated `.sr-only` label (#51).
+
+          Four of the original eight had **no accessible name at all** and two more relied
+          on `title`, which is not a reliable one: several screen readers ignore it when
+          computing the name, and it is unreachable on touch devices entirely. It is a
+          sighted-mouse-user tooltip, so it stays — it just cannot be the only name.
+
+          Nothing here is `hidden sm:` any more. Density is the reason the rule was worth
+          stating (#52): on a phone it is the difference between 4 cards per screen and 9,
+          so hiding it below `sm` hid the control that matters most exactly where it
+          matters most. The same argument retired the other three hides — they became the
+          overflow menu rather than staying desktop-only.
+        -->
+        <AppDensitySwitcher />
         <AppOriginalSwitcher />
         <AppLanguageSwitcher />
         <AppColorModeSwitcher />
-        <Button
-          variant="ghost"
-          size="icon"
-          as-child
-          class="hidden sm:inline-flex"
-        >
-          <a
-            href="https://github.com/tskrlabs/hololive-ocg-wiki"
-            target="_blank"
-          >
-            <IconGithub class="w-5 h-5" />
-          </a>
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          as-child
-          class="hidden sm:inline-flex"
-        >
-          <a :href="discordInviteUrl" target="_blank">
-            <IconDiscord />
-          </a>
-        </Button>
-        <AppInfoButton />
+        <AppHeaderOverflowMenu />
+
+        <!--
+          The dialog only — its own trigger is off, because the menu opens it. It renders
+          nothing until then.
+        -->
+        <AppInfoButton triggerless />
       </div>
     </div>
   </header>

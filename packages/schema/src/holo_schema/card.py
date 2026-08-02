@@ -255,7 +255,22 @@ class Card(BaseModel):
     # is composed at render time by a `cardImage()` helper, so changing CDN host or
     # image format does not require touching a single database row. v1 stored
     # "card_images/default/hBP01-028_C_02.png" — folder layout and extension baked in.
-    image_key: Annotated[str, Column()]
+    #
+    # **Unique, because Phase 8 makes it a card's URL** (ADR 0009 D6):
+    # `/{locale}/card/{set}/{stem}` is `image_key` verbatim. That promotes it from an
+    # identifier the frontend composes to an *alternate key* the Worker looks a card up
+    # by, and both halves of that need the index:
+    #
+    # - **Correctness.** `CardCollection._keys_unique` already refuses a duplicate at
+    #   build time, so this cannot fire on data that came through `holo-data build`. It
+    #   is the same rule stated where the lookup happens rather than only where the
+    #   artifact is made — a hand-run `INSERT` or a partial seed cannot introduce the
+    #   ambiguity that a card URL would then resolve arbitrarily.
+    # - **Cost.** Without it, every card page is a full table scan: ~2,463 rows read per
+    #   view against ~1-2 with it, on a 5M/day free tier that v1 already breached once
+    #   (F-014). Card views are billable Worker invocations under D7, so this is the
+    #   difference between a card page being cheap and being the site's largest read.
+    image_key: Annotated[str, Column(unique=True)]
     # The official site's URL for this card's image. Retained as provenance: it is what
     # `holo-data publish` re-downloads from, and it disambiguates reprints (two cards
     # can share an image filename but never a source URL).

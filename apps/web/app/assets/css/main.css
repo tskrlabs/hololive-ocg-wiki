@@ -1,4 +1,16 @@
-/* transition */
+/**
+ * Vue transition classes.
+ *
+ * Audited in #47: `copied` had 5 usages, `fade-up` 1, and **`list` had none**. The `list`
+ * transition is deleted rather than left for a future component to find, because reaching
+ * for it would be a bug (D23): the card grid is a `RecycleScroller`, which *reuses* DOM
+ * nodes, so a list transition animates a node into a different card's content. Its being
+ * unused is the correct state, and deleting it is how that stays true.
+ *
+ * What animates, and nothing else: skeleton shimmer (1.5s, `--muted`), drawer and dialog
+ * (200ms ease-out transform + opacity), tile hover (120ms). Grid updates do not animate.
+ * Every duration here is overridden by the `prefers-reduced-motion` rule in `tailwind.css`.
+ */
 
 /* copied */
 .copied-enter-active,
@@ -24,23 +36,4 @@
   transition: opacity 0.2s ease, transform 0.2s ease-in;
   opacity: 0;
   transform: translateY(10px);
-}
-
-/* list */
-.list-move, /* apply transition to moving elements */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-.list-leave-active {
-  position: absolute;
 }

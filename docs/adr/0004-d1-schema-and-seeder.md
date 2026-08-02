@@ -255,12 +255,20 @@ and on D1 the meter runs on both.
 - Search works for partial CJK names for the first time.
 - The Phase 4 worker needs a `hasCJK`-style length check to route short queries to
   `LIKE`. That is a real branch the schema does not hide.
-- **Filter with `WHERE c.id IN (SELECT card_id FROM card_colors WHERE …)`, not a join.**
-  A join against a junction table returns one row per matching *value*, so a multi-value
-  filter (`colors=blue,red`) would return a card once per colour it matches and corrupt
-  pagination counts. The `IN` form returns one row per card and is still fully
-  index-driven — verified on real D1: `SEARCH card_colors USING PRIMARY KEY
-  (color_code=?)` plus a Bloom filter, no scan.
+- **Filter through a subquery, not a join.** A join against a junction table returns one
+  row per matching *value*, so a multi-value filter (`colors=blue,red`) would return a
+  card once per colour it matches and corrupt pagination counts. A subquery returns one
+  row per card.
+
+  ⚠️ **The specific form recommended here — `WHERE c.id IN (SELECT card_id FROM
+  card_colors WHERE …)` — is superseded by a correlated `EXISTS`**
+  ([#40](https://github.com/tskrlabs/hololive-ocg-wiki/issues/40)). "Fully index-driven"
+  was measured on the junction lookup alone and missed what the id set does to the
+  *outer* query: it drives it, so every match is sorted in a temp b-tree before `LIMIT`
+  applies. Filtered pages read 4–8× more rows than needed, and the cost grew with the
+  match set rather than with the page. `EXISTS` correlates on `cards.id` instead, so the
+  ordered walk over `idx_cards_card_number` can stop at `LIMIT`. Both the reason for
+  rejecting the join and the junction design itself are unchanged.
 
   Note that duplicate *card numbers* in results are legitimate and not this problem:
   F-006 established that `hBP03-044` is two genuinely different cards. Deduplicate on

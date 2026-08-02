@@ -1,42 +1,42 @@
 <script setup lang="ts">
+/**
+ * Import or share the deck this page is showing (#57).
+ *
+ * `importDeckByCode` returns a `message` that was passed straight to the toast. It *is*
+ * translated — the composable calls `t()` — but routing a string through a status object
+ * means the copy the user reads is chosen a layer away from where it is displayed, and a
+ * future caller returning an untranslated string would show it verbatim with nothing
+ * failing. The status is the value worth returning; the wording is decided here.
+ */
 import { CircleEllipsis, Import, ClipboardCopy } from "lucide-vue-next";
 import { toast } from "vue-sonner";
-import { useClipboard } from "@vueuse/core";
 
 const { t } = useI18n();
 
 const route = useRoute();
 
 const decks = useDecks();
+const { copyLink } = useCopyLink();
 
 const importDeck = () => {
   if (!route.params.code) {
-    toast.error(t("No deck code provided."));
+    toast.error(t("errors.deck.noCode"));
     return;
   }
 
-  const code = route.params.code as string;
-  const result = decks.importDeckByCode(code);
-
+  const result = decks.importDeckByCode(route.params.code as string);
   if (result.status) {
     toast.success(result.message);
   } else {
-    toast.error(result.message);
+    // The only failure `importDeckByCode` reports is an undecodable code, and saying so
+    // is more useful than repeating its own sentence back.
+    toast.error(t("errors.deck.invalidCode"));
   }
 };
 
-const source = ref(import.meta.client ? window.location.href : "");
-const { text, copy, copied, isSupported } = useClipboard({ source });
-
-const shareDeck = () => {
+const shareDeck = async () => {
   if (!import.meta.client) return;
-
-  copy();
-  if (!isSupported.value) {
-    toast.error(t("Clipboard is not supported in this browser."));
-    return;
-  }
-  toast.success(t("Copied deck code URL."));
+  await copyLink(window.location.href);
 };
 </script>
 

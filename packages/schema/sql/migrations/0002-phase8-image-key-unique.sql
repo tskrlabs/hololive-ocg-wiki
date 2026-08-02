@@ -1,0 +1,58 @@
+-- Phase 8 — a unique index on `image_key`, before anything reads a card by it.
+--
+-- Apply from apps/api/ with:
+--   npx wrangler d1 execute hololive-ocg-wiki-db --remote \
+--       --file=../../packages/schema/sql/migrations/0002-phase8-image-key-unique.sql
+--
+-- Why this file exists at all: `schema.sql` is written with `CREATE TABLE IF NOT
+-- EXISTS`, so re-applying it to a populated database is a no-op that silently skips new
+-- structure. It can build a database from nothing; it cannot evolve one. See
+-- `0001-phase4-name-ja.sql`, which is the same story for a column.
+--
+-- Unlike 0001, this adds **no column and no data** — the values are already there and
+-- already correct. It changes what the database *guarantees* about them and what it can
+-- do with them cheaply.
+--
+-- ---------------------------------------------------------------------------
+-- Why now: `image_key` becomes a card's URL (ADR 0009 D6).
+--
+-- A card page is `/{locale}/card/{set}/{stem}`, which is `image_key` verbatim. That
+-- promotes the column from an identifier the frontend composes into an *alternate key*
+-- the Worker looks a row up by, and both halves of that promotion need this index:
+--
+--   Cost.        Without it, `WHERE image_key = ?` is a full table scan — ~2,463 rows
+--                read per card view, against ~1-2 with it. Card views are billable
+--                Worker invocations under D7 and the read tier is the binding
+--                constraint the site has already breached once (F-014), so this is the
+--                difference between a card page being cheap and being the largest read
+--                on the site. 2,463 URLs in a sitemap makes that a crawler's traffic,
+--                not just a user's.
+--
+--   Correctness. `image_key` must identify exactly one card, or a URL resolves to an
+--                arbitrary one of several. `CardCollection._keys_unique` already
+--                enforces this at build time — and it is not hypothetical there: v1's
+--                data has two genuine collisions (hBP03-044_SR and hBP03-055_SR, the
+--                F-006 reprints), which is why the check was written. This states the
+--                same rule at the point of *lookup* rather than only at the point of
+--                manufacture, so a hand-run INSERT or a partially-applied seed cannot
+--                introduce an ambiguity the pipeline would have refused.
+--
+-- ---------------------------------------------------------------------------
+-- ⚠️ This can fail, and that is the point.
+--
+-- A UNIQUE index over existing rows is verified as it is built. If production somehow
+-- holds two rows sharing an `image_key`, this errors with
+-- `UNIQUE constraint failed: cards.image_key` and writes nothing — the database is left
+-- exactly as it was.
+--
+-- That is the correct outcome, not an obstacle to work around. A duplicate here means
+-- two cards would answer to one URL, and the fix is to give the reprint its own key in
+-- the pipeline (as F-006's pair were) and reseed — never to drop the constraint.
+--
+-- Verified against the current build before writing this: 2,463 cards, 2,463 distinct
+-- image keys.
+--
+-- Safe to re-run: `IF NOT EXISTS` makes a second application a no-op. Unlike 0001, this
+-- statement is idempotent, because it declares structure rather than adding it.
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_cards_image_key ON cards(image_key);

@@ -13,13 +13,7 @@
   "Oshi": "Oshi",
   "Main Deck": "Main Deck",
   "Yell Deck": "Yell Deck",
-  "Please select a deck to continue.": "Please select a deck to continue.",
-  "Edit": "Edit",
   "Select one deck to edit": "Select one deck to edit",
-  "Clipboard is not supported in this browser.": "Clipboard is not supported in this browser.",
-  "Copied deck code URL.": "Copied deck code URL.",
-  "Deck detail page not found.": "Deck detail page not found.",
-  "Deck deleted successfully!": "Deck deleted successfully!",
   "Options": "Options",
   "Copy Deck Code URL": "Copy Deck Code URL",
   "Go to Detail Page": "Go to Detail Page",
@@ -32,14 +26,11 @@
   "Deck Name": "Deck Name",
   "Author": "Author",
   "Create Deck": "Create Deck",
-  "No deck code provided.": "No deck code provided.",
-  "Failed to import shared deck.": "Failed to import shared deck.",
   "Card List": "Card List",
   "Saved In Local Storage": "Saved In Local Storage",
   "Can Import/Update This Deck": "Can Import/Update This Deck",
   "Import This Deck": "Import This Deck",
   "Official Site": "Official Site",
-  "Decks": "Decks",
   "No cards to display": "No cards to display",
   "Invalid deck code": "Invalid deck code",
   "Deck updated successfully": "Deck updated successfully",
@@ -114,22 +105,24 @@
     "supportItem": "Support・Item",
     "supportItemLimited": "Support・Item・LIMITED",
     "supportMascot": "Support・Mascot",
+    "supportStaff": "Support・Staff",
     "supportStaffLimited": "Support・Staff・LIMITED"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -516,181 +509,113 @@
     "ライブスタートデッキ 森カリオペ": "Start Deck Mori Calliope",
     "ライブスタートデッキ 白上フブキ": "Start Deck Shirakami Fubuki"
   },
-  "howToUse": {
-    "title": "How to Use",
-    "description": "Learn how to use the Hololive OCG Wiki to search for cards, build decks, and share with others.",
-    "backToCards": "Back to Card List",
-    "tableOfContents": "Table of Contents",
-    "sections": {
-      "searching": "Searching Cards",
-      "filtering": "Filtering Cards",
-      "deckBuilder": "Deck Builder",
-      "cardDetails": "Card Details",
-      "sharing": "Sharing & Storage",
-      "tips": "Tips & Tricks"
-    },
-    "introduction": {
-      "title": "Welcome to Hololive OCG Wiki",
-      "description": "This comprehensive guide will help you navigate and make the most of the Hololive Official Card Game wiki. Whether you're a new player or an experienced duelist, you'll find everything you need to search for cards, build decks, and share your creations with the community."
-    },
-    "searching": {
-      "title": "Searching for Cards",
-      "basicSearch": {
-        "title": "Basic Search",
-        "description": "Use the search bar at the top to find cards by name, ability text, or any other card information.",
-        "examples": "Examples: \"Tokino Sora\", \"Collab\", \"Blue\", \"Debut\""
-      },
-      "advancedSearch": {
-        "title": "Advanced Search Tips",
-        "description": "Make your searches more precise with these tips:",
-        "tip1": "Search works across all card text including abilities and flavor text",
-        "tip2": "You can search in multiple languages - the wiki supports Japanese, English, Traditional Chinese, Indonesian, Korean, and Thai",
-        "tip3": "Search results update in real-time as you type"
-      }
-    },
-    "filtering": {
-      "title": "Filtering Cards",
-      "cardType": {
-        "title": "Card Types",
-        "description": "Filter by specific card types to find exactly what you need for your deck:"
-      },
-      "colors": {
-        "title": "Colors",
-        "description": "Filter cards by their color requirements. Select multiple colors to find multicolor cards:"
-      },
-      "rarity": {
-        "title": "Rarity",
-        "description": "Find cards by their rarity level, from common cards to ultra rare treasures:"
-      },
-      "reset": {
-        "title": "Reset Filters",
-        "description": "Clear all active filters to start fresh:"
-      }
-    },
-    "deckBuilder": {
-      "title": "Building Decks",
-      "creating": {
-        "title": "Creating Your First Deck",
-        "step1": "Click the 'New Deck' button in the deck panel at the bottom of the screen",
-        "step2": "Give your deck a name and optionally add your name as the author",
-        "step3": "Start adding cards by clicking on them in the card list - they'll be added to your active deck",
-        "step4": "Switch between Oshi, Main Deck, and Yell Deck tabs to organize your cards properly"
-      },
-      "deckTypes": {
-        "title": "Deck Types",
-        "oshi": "Your Oshi Holomem - the star of your deck",
-        "main": "Main deck cards including Holomems and Support cards",
-        "yell": "Cheer cards that provide energy and support"
-      },
-      "management": {
-        "title": "Deck Management",
-        "edit": "Edit deck name and author information",
-        "copy": "Copy deck code URL to share with others",
-        "share": "Generate shareable links for your decks",
-        "delete": "Remove decks you no longer need"
-      }
-    },
-    "cardDetails": {
-      "title": "Understanding Card Details",
-      "description": "Click on any card to view its detailed information. Each card shows comprehensive stats and abilities:",
-      "basicInfo": {
-        "title": "Basic Information"
-      },
-      "gameInfo": {
-        "title": "Game Mechanics"
-      }
-    },
-    "sharing": {
-      "title": "Sharing & Storage",
-      "deckCodes": {
-        "title": "Deck Codes",
-        "description": "Share your decks with others using generated deck code URLs:",
-        "copy": "Copy deck code URL from the deck options menu",
-        "import": "Import shared decks by visiting the deck code URL"
-      },
-      "localStorage": {
-        "title": "Local Storage",
-        "description": "Your decks are automatically saved in your browser's local storage.",
-        "warning": "Remember that decks are saved locally in your browser. Clear browser data will remove your saved decks, so consider backing up important deck codes."
-      }
-    },
-    "tips": {
-      "title": "Tips & Tricks",
-      "performance": {
-        "title": "Performance Tips",
-        "tip1": "Use specific filters to reduce the number of cards displayed for better performance",
-        "tip2": "The search and filtering work in real-time - no need to press enter",
-        "tip3": "Enable compact mode for faster browsing of large card lists"
-      },
-      "shortcuts": {
-        "title": "Keyboard & Navigation",
-        "tip1": "Use the search bar to quickly find specific cards",
-        "tip2": "Click on card images to view high-resolution artwork",
-        "tip3": "Use browser back/forward to navigate between card details and list view"
-      },
-      "mobile": {
-        "title": "Mobile Usage",
-        "tip1": "The interface is fully responsive and works great on mobile devices",
-        "tip2": "Tap and hold on cards for quick actions",
-        "tip3": "Swipe gestures work for navigating between deck types"
-      },
-      "troubleshooting": {
-        "title": "Troubleshooting",
-        "tip1": "If cards aren't loading, try refreshing the page",
-        "tip2": "Clear your browser cache if you encounter display issues",
-        "tip3": "Make sure JavaScript is enabled for full functionality"
-      }
-    },
-    "footer": {
-      "title": "Ready to Start?",
-      "description": "Now that you know how to use the wiki, start exploring the amazing world of Hololive OCG!",
-      "startUsing": "Start Using the Wiki"
-    }
-  },
   "deck": {
     "seo": {
       "descriptionWithAuthor": "Hololive OCG deck \"{deckName}\" created by {author}. View deck composition with {mainCount} main deck cards, {yellCount} yell cards, and {oshiCount} oshi card(s).",
       "description": "Hololive OCG deck \"{deckName}\". View deck composition with {mainCount} main deck cards, {yellCount} yell cards, and {oshiCount} oshi card(s)."
-    }
+    },
+    "addedPartial": "Added {added} of {requested} — {section} is full",
+    "sectionFull": "{section} is full",
+    "nothingToRemove": "There is nothing to remove",
+    "addCopies": "Add {count} of {name}",
+    "removeCopy": "Remove one copy of {name}",
+    "guard": {
+      "selectFirst": "Select a deck first."
+    },
+    "deleted": "Deleted \"{name}\".",
+    "editing": {
+      "on": "Editing",
+      "off": "Not editing",
+      "toggle": "Toggle editing mode"
+    },
+    "panel": {
+      "open": "Open deck",
+      "close": "Close deck",
+      "empty": "No deck selected. Choose one from Decks, or create a new one."
+    },
+    "removeAllCopies": "Remove all copies of {name}",
+    "myDecks": "My Decks"
   },
   "status": {
     "title": "Data Status",
     "description": "Card database status — which cards are new, updated, or missing from the official source.",
-    "sourceTotal": "Source Total",
     "validInDB": "In Database",
-    "skippedCount": "Skipped",
     "lastUpdated": "Last Updated",
-    "tabs": {
-      "new": "New",
-      "changed": "Updated",
-      "qaUpdated": "FAQ Updated",
-      "removed": "Removed",
-      "skipped": "Skipped"
+    "builtAt": "Data Built",
+    "summary": "Card data is rebuilt from the official card list and re-seeded into the database. These dates are when that last happened.",
+    "source": {
+      "heading": "In the latest update",
+      "added": "cards added to the official card list",
+      "edited": "cards the official card list changed",
+      "faq": "cards with new or revised Q&A",
+      "quiet": "The official card list published no changes in this update.",
+      "more": "and {count} more"
     },
-    "badges": {
-      "new": "New",
-      "changed": "Updated",
-      "qaUpdated": "FAQ",
-      "removed": "Removed",
-      "skipped": "Skipped"
+    "reseed": {
+      "none": "No card data was rewritten in this update.",
+      "ours": "We rebuilt {count} cards' data in this update — a change on our side, such as re-translating them. The cards themselves are unchanged at the official source.",
+      "mixed": "{count} cards' data was rewritten in this update, which includes the changes above as well as any rebuild on our side."
+    }
+  },
+  "errors": {
+    "retry": "Retry",
+    "cards": {
+      "offline": {
+        "title": "Can't reach the card database",
+        "detail": "Check your connection and try again."
+      },
+      "server": {
+        "title": "The card database isn't responding",
+        "detail": "Something went wrong on our side. Try again in a moment."
+      },
+      "timeout": {
+        "title": "The request timed out",
+        "detail": "The card database took too long to answer. Try again."
+      }
     },
-    "views": {
-      "list": "List",
-      "table": "Table"
+    "filterOptions": {
+      "title": "Filter options couldn't be loaded",
+      "detail": "The lists below may be incomplete."
     },
-    "sort": {
-      "label": "Sort by",
-      "cardNumber": "Card Number",
-      "name": "Name"
+    "card": {
+      "notFound": {
+        "title": "Card not found",
+        "detail": "This card doesn't exist. It may have been renumbered, or the link may be wrong."
+      }
     },
-    "noChanges": "No changes in this category.",
-    "skippedReason": "Missing fields",
-    "removedNote": "These cards were in the previous dataset but are no longer present in the source.",
-    "skippedNote": "These cards exist in the source data but are missing required fields and cannot be added to the database.",
-    "fullModeNote": "This report was generated in full mode. The New / Updated / FAQ / Removed columns reflect source-to-source diff and may be empty until the next incremental migration run.",
-    "officialTotal": "Official site reports {total} cards",
-    "dbTotal": "Our database has {valid} valid cards ({skipped} skipped due to incomplete data)",
-    "loadMore": "Load more ({loaded} / {total})",
-    "viewDetail": "View card detail"
-  }
+    "deck": {
+      "noCode": "No deck code provided.",
+      "invalidCode": "This deck code isn't valid",
+      "invalidCodeDetail": "The link may be incomplete or mistyped. Deck codes are case-sensitive.",
+      "routeMissing": "Deck detail page not found."
+    },
+    "status": {
+      "title": "Status isn't available",
+      "detail": "The status report hasn't been published yet, or couldn't be reached."
+    }
+  },
+  "Toggle theme": "Toggle theme",
+  "Change language": "Change language",
+  "Source code on GitHub": "Source code on GitHub",
+  "Join the Discord server": "Join the Discord server",
+  "About this site": "About this site",
+  "Filter (active)": "Filter (filters active)",
+  "density": {
+    "label": "Card density",
+    "comfortable": "Show card names",
+    "compact": "Art only"
+  },
+  "filter": {
+    "modified": "Modified",
+    "clearGroup": "Clear {group}"
+  },
+  "{total} cards": "{total} cards",
+  "Card not found": "Card not found",
+  "Deck": "Deck",
+  "clipboard": {
+    "copied": "Copied deck code URL.",
+    "unsupported": "This browser can't copy to the clipboard.",
+    "failed": "Couldn't copy — try again, or copy the address bar."
+  },
+  "More": "More"
 }

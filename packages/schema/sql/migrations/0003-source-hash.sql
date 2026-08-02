@@ -1,0 +1,73 @@
+-- ADR 0009 D26 — add `source_hash`, so `/status` can tell an official update apart
+-- from one of ours.
+--
+-- Apply from apps/api/ with:
+--   npx wrangler d1 execute hololive-ocg-wiki-db --remote \
+--       --file=../../packages/schema/sql/migrations/0003-source-hash.sql
+--
+-- ⚠️ **Apply `0002` first if it is still pending.** They are independent, but a single
+-- session with the D1 token should take both, and the reseed that follows wants each.
+--
+-- Why this file exists at all: `schema.sql` is written with `CREATE TABLE IF NOT
+-- EXISTS`, so re-applying it to a populated database is a no-op that silently skips new
+-- columns. It can build a database from nothing; it cannot evolve one. Same story as
+-- `0001-phase4-name-ja.sql`, which added a column for the same reason.
+--
+-- ---------------------------------------------------------------------------
+-- Why the column: `content_hash` measures the wrong thing for a *reader*.
+--
+-- It covers the card's columns and its translated payload — all seven locales. That is
+-- exactly right for deciding what to write, and exactly wrong for saying what happened:
+-- the translation rework rewrote every locale's text, so it marks all 2,463 cards
+-- `changed` while the official card list published nothing at all. The number is real;
+-- the story it tells is false.
+--
+-- `source_hash` covers `translations['ja']` plus the language-independent columns —
+-- and nothing downstream of the source. `translations['ja']` *is* the JP scrape:
+-- `transform` writes it and `apply_translations` only ever adds other locales beside it.
+-- So this hash moves when, and only when, the official site changed the card.
+--
+-- Q&A is excluded, mirroring the split `qa_hash` already makes. "They errata'd eleven
+-- cards" and "they added FAQs to eleven cards" are different sentences and the page
+-- shows both. Columns are included, not just prose: `card_sets` is a column, and the
+-- Selection Cup update moved it on ~660 cards.
+--
+-- ---------------------------------------------------------------------------
+-- Why it is NULLable, when its two neighbours are NOT NULL.
+--
+-- NULL is a third state that matters here: *unknown*, on a row written before this
+-- column existed. Every one of the 2,463 existing rows is in it the moment this runs.
+--
+-- `0001` handled the same situation with `DEFAULT ''` because the reseed immediately
+-- overwrote every row, so a lingering `''` meant "the seed did not finish". That trick
+-- does not work for a hash: `''` is a value the comparison would read as "differs from
+-- the incoming hash", and the first seed would report all 2,463 cards as an official
+-- update — the precise false alarm D26 exists to remove.
+--
+-- So the seeder treats NULL as source-unchanged and backfills it silently. The report
+-- is therefore honest only from the *second* run onward, which is why D26 ships this
+-- before the pending translation reseed: that run rewrites every row anyway, so it
+-- establishes the baseline for free, and the first `/status` a reader sees says
+-- "2,463 cards rebuilt, nothing changed at the source" — true, and the whole point.
+--
+-- ---------------------------------------------------------------------------
+-- No index, deliberately.
+--
+-- The seeder reads this column exactly once per run, in the `SELECT id, content_hash,
+-- qa_hash, source_hash FROM cards` full scan that already builds the diff baseline.
+-- Nothing queries by it, and the site never reads it at all — it reaches `/status`
+-- through R2, not D1. An index would be one more thing every write maintains for a
+-- lookup that never happens.
+--
+-- ---------------------------------------------------------------------------
+-- Safe to re-run only in the sense that it fails loudly on the second attempt
+-- ("duplicate column name"), which is `0001`'s rule and for `0001`'s reason: a migration
+-- that silently does nothing is indistinguishable from one that silently did the wrong
+-- thing.
+--
+-- Until this is applied, `holo-data seed` refuses before writing anything — it probes
+-- for the column and names this file. That refusal is the intended failure mode: a D1
+-- batch is atomic but a *run* is not, so discovering the missing column mid-run would
+-- leave earlier batches committed.
+
+ALTER TABLE cards ADD COLUMN source_hash TEXT;

@@ -13,13 +13,7 @@
   "Oshi": "Oshi",
   "Main Deck": "Main Deck",
   "Yell Deck": "Yell Deck",
-  "Please select a deck to continue.": "Silakan pilih deck untuk melanjutkan.",
-  "Edit": "Edit",
   "Select one deck to edit": "Pilih satu deck untuk diedit",
-  "Clipboard is not supported in this browser.": "Clipboard tidak didukung di browser ini.",
-  "Copied deck code URL.": "URL kode deck telah disalin.",
-  "Deck detail page not found.": "Halaman detail deck tidak ditemukan.",
-  "Deck deleted successfully!": "Deck berhasil dihapus!",
   "Options": "Opsi",
   "Copy Deck Code URL": "Salin URL Kode Deck",
   "Go to Detail Page": "Pergi ke Halaman Detail",
@@ -32,14 +26,11 @@
   "Deck Name": "Nama Deck",
   "Author": "Penulis",
   "Create Deck": "Buat Deck",
-  "No deck code provided.": "Tidak ada kode deck yang diberikan.",
-  "Failed to import shared deck.": "Gagal mengimpor deck yang dibagikan.",
   "Card List": "Daftar Kartu",
   "Saved In Local Storage": "Tersimpan di Penyimpanan Lokal",
   "Can Import/Update This Deck": "Bisa Impor/Perbarui Deck Ini",
   "Import This Deck": "Impor Deck Ini",
   "Official Site": "Situs Resmi",
-  "Decks": "Decks",
   "No cards to display": "Tidak ada kartu untuk ditampilkan",
   "Invalid deck code": "Kode deck tidak valid",
   "Deck updated successfully": "Deck berhasil diperbarui",
@@ -114,22 +105,24 @@
     "supportItem": "Item Dukungan",
     "supportItemLimited": "Item Dukungan TERBATAS",
     "supportMascot": "Maskot Dukungan",
+    "supportStaff": "Staf Dukungan",
     "supportStaffLimited": "Staf Dukungan TERBATAS"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -516,181 +509,113 @@
     "ライブスタートデッキ 森カリオペ": "Deck Awal Live Mori Calliope",
     "ライブスタートデッキ 白上フブキ": "Deck Awal Live Shirakami Fubuki"
   },
-  "howToUse": {
-    "title": "Cara Menggunakan",
-    "description": "Pelajari cara menggunakan Hololive OCG Wiki untuk mencari kartu, membangun deck, dan berbagi dengan orang lain.",
-    "backToCards": "Kembali ke Daftar Kartu",
-    "tableOfContents": "Daftar Isi",
-    "sections": {
-      "searching": "Mencari Kartu",
-      "filtering": "Memfilter Kartu",
-      "deckBuilder": "Pembuat Deck",
-      "cardDetails": "Detail Kartu",
-      "sharing": "Berbagi & Penyimpanan",
-      "tips": "Tips & Trik"
-    },
-    "introduction": {
-      "title": "Selamat Datang di Hololive OCG Wiki",
-      "description": "Panduan lengkap ini akan membantu Anda menavigasi dan memanfaatkan sepenuhnya wiki Hololive Official Card Game. Baik Anda pemain baru atau duelist berpengalaman, Anda akan menemukan semua yang dibutuhkan untuk mencari kartu, membangun deck, dan berbagi kreasi dengan komunitas."
-    },
-    "searching": {
-      "title": "Mencari Kartu",
-      "basicSearch": {
-        "title": "Pencarian Dasar",
-        "description": "Gunakan bilah pencarian di atas untuk menemukan kartu berdasarkan nama, teks kemampuan, atau informasi kartu lainnya.",
-        "examples": "Contoh: \"Tokino Sora\", \"Collab\", \"Blue\", \"Debut\""
-      },
-      "advancedSearch": {
-        "title": "Tips Pencarian Lanjutan",
-        "description": "Buat pencarian Anda lebih tepat dengan tips ini:",
-        "tip1": "Pencarian bekerja di semua teks kartu termasuk kemampuan dan teks flavor",
-        "tip2": "Anda dapat mencari dalam berbagai bahasa - wiki ini mendukung Jepang, Inggris, Cina Tradisional, Indonesia, Korea, dan Thailand",
-        "tip3": "Hasil pencarian diperbarui secara real-time saat Anda mengetik"
-      }
-    },
-    "filtering": {
-      "title": "Memfilter Kartu",
-      "cardType": {
-        "title": "Jenis Kartu",
-        "description": "Filter berdasarkan jenis kartu spesifik untuk menemukan apa yang Anda butuhkan untuk deck:"
-      },
-      "colors": {
-        "title": "Warna",
-        "description": "Filter kartu berdasarkan persyaratan warna. Pilih beberapa warna untuk menemukan kartu multiwarna:"
-      },
-      "rarity": {
-        "title": "Kelangkaan",
-        "description": "Temukan kartu berdasarkan tingkat kelangkaan, dari kartu umum hingga harta ultra langka:"
-      },
-      "reset": {
-        "title": "Reset Filter",
-        "description": "Hapus semua filter aktif untuk memulai yang baru:"
-      }
-    },
-    "deckBuilder": {
-      "title": "Membangun Deck",
-      "creating": {
-        "title": "Membuat Deck Pertama Anda",
-        "step1": "Klik tombol 'Deck Baru' di panel deck di bagian bawah layar",
-        "step2": "Beri nama deck Anda dan opsional tambahkan nama Anda sebagai penulis",
-        "step3": "Mulai menambahkan kartu dengan mengklik mereka di daftar kartu - mereka akan ditambahkan ke deck aktif Anda",
-        "step4": "Beralih antara tab Oshi, Main Deck, dan Yell Deck untuk mengatur kartu dengan benar"
-      },
-      "deckTypes": {
-        "title": "Jenis Deck",
-        "oshi": "Oshi Holomem Anda - bintang deck Anda",
-        "main": "Kartu deck utama termasuk Holomem dan kartu Support",
-        "yell": "Kartu Cheer yang menyediakan energi dan dukungan"
-      },
-      "management": {
-        "title": "Manajemen Deck",
-        "edit": "Edit nama deck dan informasi penulis",
-        "copy": "Salin URL kode deck untuk berbagi dengan orang lain",
-        "share": "Buat tautan yang dapat dibagikan untuk deck Anda",
-        "delete": "Hapus deck yang tidak lagi diperlukan"
-      }
-    },
-    "cardDetails": {
-      "title": "Memahami Detail Kartu",
-      "description": "Klik kartu apa pun untuk melihat informasi detailnya. Setiap kartu menunjukkan statistik dan kemampuan yang komprehensif:",
-      "basicInfo": {
-        "title": "Informasi Dasar"
-      },
-      "gameInfo": {
-        "title": "Mekanik Permainan"
-      }
-    },
-    "sharing": {
-      "title": "Berbagi & Penyimpanan",
-      "deckCodes": {
-        "title": "Kode Deck",
-        "description": "Bagikan deck Anda dengan orang lain menggunakan URL kode deck yang dihasilkan:",
-        "copy": "Salin URL kode deck dari menu opsi deck",
-        "import": "Impor deck yang dibagikan dengan mengunjungi URL kode deck"
-      },
-      "localStorage": {
-        "title": "Penyimpanan Lokal",
-        "description": "Deck Anda secara otomatis disimpan di penyimpanan lokal browser Anda.",
-        "warning": "Ingat bahwa deck disimpan secara lokal di browser Anda. Membersihkan data browser akan menghapus deck tersimpan, jadi pertimbangkan untuk mencadangkan kode deck penting."
-      }
-    },
-    "tips": {
-      "title": "Tips & Trik",
-      "performance": {
-        "title": "Tips Kinerja",
-        "tip1": "Gunakan filter spesifik untuk mengurangi jumlah kartu yang ditampilkan untuk kinerja yang lebih baik",
-        "tip2": "Pencarian dan filtering bekerja secara real-time - tidak perlu menekan enter",
-        "tip3": "Aktifkan mode kompak untuk penjelajahan daftar kartu besar yang lebih cepat"
-      },
-      "shortcuts": {
-        "title": "Keyboard & Navigasi",
-        "tip1": "Gunakan bilah pencarian untuk dengan cepat menemukan kartu tertentu",
-        "tip2": "Klik gambar kartu untuk melihat artwork resolusi tinggi",
-        "tip3": "Gunakan tombol kembali/maju browser untuk navigasi antara detail kartu dan tampilan daftar"
-      },
-      "mobile": {
-        "title": "Penggunaan Mobile",
-        "tip1": "Antarmuka sepenuhnya responsif dan bekerja dengan baik di perangkat mobile",
-        "tip2": "Ketuk dan tahan kartu untuk aksi cepat",
-        "tip3": "Gestur geser berfungsi untuk navigasi antara jenis deck"
-      },
-      "troubleshooting": {
-        "title": "Pemecahan Masalah",
-        "tip1": "Jika kartu tidak memuat, coba refresh halaman",
-        "tip2": "Hapus cache browser jika mengalami masalah tampilan",
-        "tip3": "Pastikan JavaScript diaktifkan untuk fungsionalitas penuh"
-      }
-    },
-    "footer": {
-      "title": "Siap untuk Memulai?",
-      "description": "Sekarang Anda tahu cara menggunakan wiki, mulai jelajahi dunia menakjubkan Hololive OCG!",
-      "startUsing": "Mulai Menggunakan Wiki"
-    }
-  },
   "deck": {
     "seo": {
       "descriptionWithAuthor": "Deck Hololive OCG \"{deckName}\" dibuat oleh {author}. Lihat komposisi deck dengan {mainCount} kartu main deck, {yellCount} kartu yell, dan {oshiCount} kartu oshi.",
       "description": "Deck Hololive OCG \"{deckName}\". Lihat komposisi deck dengan {mainCount} kartu main deck, {yellCount} kartu yell, dan {oshiCount} kartu oshi."
-    }
+    },
+    "addedPartial": "Menambahkan {added} dari {requested} — {section} sudah penuh",
+    "sectionFull": "{section} sudah penuh",
+    "nothingToRemove": "Tidak ada yang bisa dihapus",
+    "addCopies": "Tambah {count} {name}",
+    "removeCopy": "Hapus satu {name}",
+    "guard": {
+      "selectFirst": "Pilih deck terlebih dahulu."
+    },
+    "deleted": "Menghapus \"{name}\".",
+    "editing": {
+      "on": "Sedang mengedit",
+      "off": "Tidak mengedit",
+      "toggle": "Alihkan mode edit"
+    },
+    "panel": {
+      "open": "Buka deck",
+      "close": "Tutup deck",
+      "empty": "Belum ada deck yang dipilih. Pilih dari Decks, atau buat yang baru."
+    },
+    "removeAllCopies": "Hapus semua salinan {name}",
+    "myDecks": "Dek Saya"
   },
   "status": {
     "title": "Status Data",
     "description": "Status basis data kartu — kartu mana yang baru, diperbarui, atau tidak ada dari sumber resmi.",
-    "sourceTotal": "Total Sumber",
     "validInDB": "Dalam Database",
-    "skippedCount": "Dilewati",
     "lastUpdated": "Terakhir Diperbarui",
-    "tabs": {
-      "new": "Baru",
-      "changed": "Diperbarui",
-      "qaUpdated": "FAQ Diperbarui",
-      "removed": "Dihapus",
-      "skipped": "Dilewati"
+    "builtAt": "Data Dibangun",
+    "summary": "Data kartu dibangun ulang dari daftar kartu resmi lalu dimuat ke basis data. Tanggal di atas adalah kapan itu terakhir terjadi.",
+    "source": {
+      "heading": "Dalam pembaruan terakhir",
+      "added": "kartu ditambahkan ke daftar kartu resmi",
+      "edited": "kartu diubah pada daftar kartu resmi",
+      "faq": "kartu dengan Q&A baru atau direvisi",
+      "quiet": "Daftar kartu resmi tidak menerbitkan perubahan pada pembaruan ini.",
+      "more": "dan {count} lainnya"
     },
-    "badges": {
-      "new": "Baru",
-      "changed": "Diperbarui",
-      "qaUpdated": "FAQ",
-      "removed": "Dihapus",
-      "skipped": "Dilewati"
+    "reseed": {
+      "none": "Tidak ada data kartu yang ditulis ulang pada pembaruan ini.",
+      "ours": "Kami membangun ulang data {count} kartu pada pembaruan ini — perubahan dari sisi kami, seperti menerjemahkan ulang. Kartunya sendiri tidak berubah di sumber resmi.",
+      "mixed": "Data {count} kartu ditulis ulang pada pembaruan ini, mencakup perubahan di atas serta pembangunan ulang dari sisi kami."
+    }
+  },
+  "errors": {
+    "retry": "Coba lagi",
+    "cards": {
+      "offline": {
+        "title": "Tidak dapat menghubungi basis data kartu",
+        "detail": "Periksa koneksi Anda lalu coba lagi."
+      },
+      "server": {
+        "title": "Basis data kartu tidak merespons",
+        "detail": "Ada masalah di sisi kami. Coba lagi sebentar lagi."
+      },
+      "timeout": {
+        "title": "Permintaan melebihi batas waktu",
+        "detail": "Basis data kartu terlalu lama menjawab. Coba lagi."
+      }
     },
-    "views": {
-      "list": "Daftar",
-      "table": "Tabel"
+    "filterOptions": {
+      "title": "Opsi filter gagal dimuat",
+      "detail": "Daftar di bawah mungkin tidak lengkap."
     },
-    "sort": {
-      "label": "Urutkan berdasarkan",
-      "cardNumber": "Nomor Kartu",
-      "name": "Nama"
+    "card": {
+      "notFound": {
+        "title": "Kartu tidak ditemukan",
+        "detail": "Kartu ini tidak ada. Mungkin nomornya berubah, atau tautannya salah."
+      }
     },
-    "noChanges": "Tidak ada perubahan dalam kategori ini.",
-    "skippedReason": "Field tidak lengkap",
-    "removedNote": "Kartu-kartu ini ada di dataset sebelumnya tetapi tidak lagi ada di sumber.",
-    "skippedNote": "Kartu-kartu ini ada di data sumber tetapi kekurangan field yang diperlukan dan tidak dapat ditambahkan ke database.",
-    "fullModeNote": "Laporan ini dibuat dalam mode penuh. Kolom Baru / Diperbarui / FAQ / Dihapus mencerminkan perbedaan sumber-ke-sumber dan mungkin kosong hingga proses migrasi inkremental berikutnya.",
-    "officialTotal": "Situs resmi melaporkan {total} kartu",
-    "dbTotal": "Database kami memiliki {valid} kartu valid ({skipped} dilewati karena data tidak lengkap)",
-    "loadMore": "Muat lebih banyak ({loaded} / {total})",
-    "viewDetail": "Lihat detail kartu"
-  }
+    "deck": {
+      "noCode": "Kode deck tidak tersedia.",
+      "invalidCode": "Kode deck ini tidak valid",
+      "invalidCodeDetail": "Tautan mungkin tidak lengkap atau salah ketik. Kode deck membedakan huruf besar dan kecil.",
+      "routeMissing": "Halaman detail deck tidak ditemukan."
+    },
+    "status": {
+      "title": "Status tidak tersedia",
+      "detail": "Laporan status belum dipublikasikan, atau tidak dapat dijangkau."
+    }
+  },
+  "Toggle theme": "Ganti tema",
+  "Change language": "Ganti bahasa",
+  "Source code on GitHub": "Kode sumber di GitHub",
+  "Join the Discord server": "Gabung server Discord",
+  "About this site": "Tentang situs ini",
+  "Filter (active)": "Filter (sedang aktif)",
+  "density": {
+    "label": "Kepadatan kartu",
+    "comfortable": "Tampilkan nama kartu",
+    "compact": "Hanya gambar"
+  },
+  "filter": {
+    "modified": "Diubah",
+    "clearGroup": "Hapus {group}"
+  },
+  "{total} cards": "{total} kartu",
+  "Card not found": "Kartu tidak ditemukan",
+  "Deck": "Deck",
+  "clipboard": {
+    "copied": "URL kode deck telah disalin.",
+    "unsupported": "Peramban ini tidak dapat menyalin ke papan klip.",
+    "failed": "Gagal menyalin — coba lagi, atau salin dari bilah alamat."
+  },
+  "More": "Lainnya"
 }

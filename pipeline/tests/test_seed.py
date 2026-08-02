@@ -23,6 +23,7 @@ from pathlib import Path
 import pytest
 
 from holo_schema import CardCollection
+from holo_schema.enums import SOURCE_LOCALE
 from holo_data import d1, seed as seed_module
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -61,10 +62,25 @@ def apply(connection: sqlite3.Connection, rows) -> None:
     connection.commit()
 
 
-def stored_hashes(connection: sqlite3.Connection) -> dict[str, tuple[str, str]]:
+def stored_hashes(
+    connection: sqlite3.Connection,
+) -> dict[str, seed_module.StoredHashes]:
+    """The baseline, read back the way `read_stored_hashes` reads it from D1.
+
+    `source_hash` is passed through as-is rather than coerced: NULL is a meaningful
+    third state (no baseline recorded — a row written before migration 0003), and
+    `str(None)` would turn it into the string "None", which compares unequal to every
+    real hash and would report the card as an official update.
+    """
     return {
-        str(r[0]): (str(r[1]), str(r[2]))
-        for r in connection.execute("SELECT id, content_hash, qa_hash FROM cards")
+        str(r[0]): seed_module.StoredHashes(
+            content=str(r[1]),
+            qa=str(r[2]),
+            source=None if r[3] is None else str(r[3]),
+        )
+        for r in connection.execute(
+            "SELECT id, content_hash, qa_hash, source_hash FROM cards"
+        )
     }
 
 
@@ -112,6 +128,49 @@ class TestSchema:
             assert "ANY(" not in detail, f"{table} skip-scans: {detail}"
             assert "SCAN" not in detail, f"{table} scans: {detail}"
 
+    def test_a_card_is_found_by_image_key_without_a_scan(self, db):
+        """`image_key` is a card's URL from Phase 8 (ADR 0009 D6), so it is looked up.
+
+        `/{locale}/card/{set}/{stem}` is `image_key` verbatim, which turns the column
+        from something the frontend composes into an alternate key the Worker resolves
+        a row by. Without the index that is a full table scan: ~2,463 rows read per card
+        view against ~1-2, on a read tier the site has already breached once (F-014) —
+        and card views are billable Worker invocations under D7, with 2,463 of them in a
+        sitemap for crawlers to walk.
+        """
+        plan = db.execute(
+            "EXPLAIN QUERY PLAN SELECT id, payload FROM cards WHERE image_key = 'x'"
+        ).fetchall()
+        detail = " ".join(row[3] for row in plan)
+        assert "SCAN" not in detail, detail
+        assert "idx_cards_image_key" in detail, detail
+
+    def test_two_cards_cannot_share_an_image_key(self, db, collection):
+        """The index is UNIQUE, so a URL cannot resolve to two cards.
+
+        `CardCollection._keys_unique` already refuses this at build time, and not
+        hypothetically — v1's data has two genuine collisions (hBP03-044_SR and
+        hBP03-055_SR, the F-006 reprints, where an hCO01 reprint reuses the original
+        set's image filename). This states the same rule at the point of *lookup*, so a
+        hand-run INSERT or a partially-applied seed cannot introduce an ambiguity the
+        pipeline would have refused.
+
+        The failure is the feature: a duplicate must stop the write rather than let two
+        cards answer to one URL.
+        """
+        card = collection.cards[0]
+        apply(db, [seed_module.to_row(card)])
+
+        with pytest.raises(sqlite3.IntegrityError, match="image_key"):
+            db.execute(
+                "INSERT INTO cards (id, card_number, card_type_code, rarity_code, "
+                "image_key, source_image_url, name_ja, payload, content_hash, qa_hash, "
+                "seeded_at) SELECT '9999999', card_number, card_type_code, rarity_code, "
+                "image_key, source_image_url, name_ja, payload, content_hash, qa_hash, "
+                "seeded_at FROM cards WHERE id = ?",
+                (card.id,),
+            )
+
     def test_fts_rows_are_addressed_by_rowid(self, db, collection):
         """An FTS5 column cannot be indexed for lookup — only the rowid can.
 
@@ -155,8 +214,7 @@ class TestSchema:
 
         A *join* against a junction table returns one row per matching value, so
         `colors=blue,red` would return a two-colour card twice and corrupt the
-        pagination count. The `IN (SELECT …)` form returns one row per card and is
-        still index-driven.
+        pagination count. The correlated `EXISTS` form returns one row per card.
         """
         apply(db, [seed_module.to_row(card) for card in collection.cards])
 
@@ -166,17 +224,45 @@ class TestSchema:
             "WHERE cc.color_code IN ('blue', 'red')"
         ).fetchone()[0]
         scoped = db.execute(
-            "SELECT count(*) FROM cards c WHERE c.id IN "
-            "(SELECT card_id FROM card_colors WHERE color_code IN ('blue', 'red'))"
+            "SELECT count(*) FROM cards c WHERE EXISTS "
+            "(SELECT 1 FROM card_colors j WHERE j.card_id = c.id "
+            "AND j.color_code IN ('blue', 'red'))"
         ).fetchone()[0]
 
         assert scoped <= joined
-        # And the form we recommend still resolves through the junction's primary key.
-        plan = db.execute(
-            "EXPLAIN QUERY PLAN SELECT c.id FROM cards c WHERE c.id IN "
-            "(SELECT card_id FROM card_colors WHERE color_code = 'blue')"
-        ).fetchall()
-        assert any("card_colors" in row[3] and "SCAN" not in row[3] for row in plan), plan
+
+    def test_a_filtered_page_is_not_sorted_before_its_limit(self, db, collection):
+        """The read-budget half of the junction design (#40).
+
+        Returning each card once was never the whole requirement — the form also has to
+        let `LIMIT` stop the scan. `id IN (SELECT card_id …)` does not: the id set drives
+        the query, so every match is materialised and sorted in a temp b-tree before the
+        limit applies, and a filter costs the same rows at `LIMIT 20` as at `LIMIT 200`.
+        Measured on production, that was 4–8× more rows read than needed, growing with
+        the match set — 3,885 rows for the top tag against 269 for the same filter as
+        `EXISTS`.
+
+        The discriminator is in the plan: a full `USE TEMP B-TREE FOR ORDER BY` sorts the
+        whole match set, while `FOR LAST TERM OF ORDER BY` sorts only the `id` tiebreak
+        within one card number. This asserts both halves — the driver is the ordered walk
+        over `cards`, and the junction is probed through the `card_id` covering index
+        that Phase 3 added for the seeder's deletes.
+        """
+        apply(db, [seed_module.to_row(card) for card in collection.cards])
+
+        page = (
+            "SELECT c.id FROM cards c WHERE EXISTS "
+            "(SELECT 1 FROM card_colors j WHERE j.card_id = c.id "
+            "AND j.color_code IN ('blue', 'red')) "
+            "ORDER BY c.card_number, c.id LIMIT 50"
+        )
+        detail = " ".join(
+            row[3] for row in db.execute(f"EXPLAIN QUERY PLAN {page}").fetchall()
+        )
+
+        assert "USE TEMP B-TREE FOR ORDER BY" not in detail, detail
+        assert "idx_cards_card_number" in detail, detail
+        assert "idx_card_colors_card_id" in detail, detail
 
     def test_fts_matches_a_cjk_substring(self, db):
         """findings F-013 — the bug this phase fixes.
@@ -420,6 +506,246 @@ class TestDiff:
         assert plan.unchanged == 10
 
 
+class TestSourceDiff:
+    """The source-side report (ADR 0009 D26).
+
+    These cover the distinction the whole decision rests on: what *we* did to a row and
+    what the *official site* did to the card are different events, and before D26 they
+    shared one word. The first test is the one that motivated it.
+    """
+
+    def _reseed(self, db, collection, edit):
+        """Seed, apply `edit` to a deep copy, and diff the result against the database."""
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        baseline = stored_hashes(db)
+
+        edited = collection.model_copy(deep=True)
+        target = edit(edited)
+        plan = seed_module.diff(
+            [seed_module.to_row(card) for card in edited.cards], baseline
+        )
+        return plan, target
+
+    def test_a_retranslation_is_not_a_source_change(self, db, collection):
+        """The bug D26 exists to fix, in one assertion.
+
+        Production reported `changed: 2463` after the translation rework while the
+        official card list had published nothing. `changed` was right — every row really
+        was rewritten — and it was the only number the page had, so the page said the
+        official site had reissued the entire game.
+
+        Here every non-JP locale moves and nothing else does: the write plan must still
+        rewrite every card, and the source report must stay silent.
+        """
+        def retranslate(edited):
+            for card in edited.cards:
+                for locale, translation in card.translations.items():
+                    if locale != SOURCE_LOCALE:
+                        translation.name += " (v2)"
+            return None
+
+        plan, _ = self._reseed(db, collection, retranslate)
+
+        assert len(plan.changed) == len(collection.cards)  # our database churned
+        assert not plan.source_changed  # the game did not
+        assert not plan.source_added
+        assert not plan.faq_changed
+
+    def test_a_japanese_edit_is_a_source_change(self, db, collection):
+        """The official site errata'ing a card — the signal the page leads with."""
+        def errata(edited):
+            target = edited.cards[0]
+            target.translations[SOURCE_LOCALE].name += "★"
+            return target
+
+        plan, target = self._reseed(db, collection, errata)
+
+        assert [r.id for r in plan.source_changed] == [target.id]
+        assert [r.id for r in plan.changed] == [target.id]
+
+    def test_a_column_edit_is_a_source_change(self, db, collection):
+        """`card_sets` is a column, not prose.
+
+        The Selection Cup update moved it on ~660 cards. A source hash over JP *text*
+        alone would have gone quiet on the largest official change the set has seen.
+        """
+        def reprint(edited):
+            target = edited.cards[0]
+            target.card_sets = [*target.card_sets, "【使用可能カード】セレクションカップ"]
+            return target
+
+        plan, target = self._reseed(db, collection, reprint)
+
+        assert [r.id for r in plan.source_changed] == [target.id]
+
+    def test_a_new_faq_is_reported_apart_from_the_card(self, db, collection):
+        """Two facts about one card, and the page says both."""
+        def add_faq(edited):
+            target = next(
+                c for c in edited.cards if any(t.qa_items for t in c.translations.values())
+            )
+            locale = next(l for l, t in target.translations.items() if t.qa_items)
+            target.translations[locale].qa_items[0].answer += " (edited)"
+            return target
+
+        plan, target = self._reseed(db, collection, add_faq)
+
+        assert [r.id for r in plan.faq_changed] == [target.id]
+        assert not plan.source_changed  # the card itself is untouched
+
+    def test_a_card_edited_and_re_faqd_lands_in_both_reports(self, db, collection):
+        """The `elif` chain's blind spot, which is why the report sets are independent.
+
+        The write plan puts this card in `changed` alone — correctly, since a changed
+        card rewrites both payloads anyway. Reporting it only as `changed` is what made
+        `counts.qa_updated` read 0 while the source was adding FAQs.
+        """
+        def both(edited):
+            target = next(
+                c for c in edited.cards if any(t.qa_items for t in c.translations.values())
+            )
+            locale = next(l for l, t in target.translations.items() if t.qa_items)
+            target.translations[locale].qa_items[0].answer += " (edited)"
+            target.translations[SOURCE_LOCALE].name += "★"
+            return target
+
+        plan, target = self._reseed(db, collection, both)
+
+        assert [r.id for r in plan.changed] == [target.id]
+        assert not plan.qa_updated  # the write plan sees one event
+        assert [r.id for r in plan.source_changed] == [target.id]
+        assert [r.id for r in plan.faq_changed] == [target.id]  # the report sees two
+
+    def test_a_new_card_is_reported_as_added_not_edited(self, db, collection):
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows[1:])  # everything except the first card
+
+        plan = seed_module.diff(rows, stored_hashes(db))
+
+        assert [r.id for r in plan.source_added] == [rows[0].id]
+        assert not plan.source_changed
+        assert not plan.faq_changed
+
+    def test_a_missing_baseline_is_unknown_not_changed(self, db, collection):
+        """The first run after migration 0003, which every row is in at once.
+
+        NULL means *no baseline recorded*, and reporting 2,463 official updates because
+        we added a column would be a worse lie than the one D26 set out to fix. The card
+        is queued for backfill instead, so the silence lasts exactly one run.
+        """
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        db.execute("UPDATE cards SET source_hash = NULL")
+        db.commit()
+
+        plan = seed_module.diff(rows, stored_hashes(db))
+
+        assert not plan.source_changed
+        assert plan.unchanged == len(rows)
+        assert len(plan.backfill) == len(rows)
+        # Not "nothing to do" — the backfill is real work, and `is_empty` gating on
+        # to_write alone would skip it and leave the NULLs forever.
+        assert not plan.is_empty
+
+    def test_the_backfill_writes_the_hash_without_touching_the_card(self, db, collection):
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        db.execute("UPDATE cards SET source_hash = NULL")
+        db.commit()
+
+        plan = seed_module.diff(rows, stored_hashes(db))
+        for row in plan.backfill:
+            statement = seed_module.backfill_statement(row)
+            db.execute(statement.sql, statement.params)
+        db.commit()
+
+        # Every hash is now recorded, and the second run has nothing left to say.
+        assert all(h.source is not None for h in stored_hashes(db).values())
+        assert not seed_module.diff(rows, stored_hashes(db)).backfill
+
+    def test_a_card_already_being_rewritten_is_not_double_written(self, db, collection):
+        """A NULL baseline on a card the upsert is about to touch needs no UPDATE.
+
+        The upsert writes `source_hash` itself, so queueing a backfill too would spend a
+        second write on a row already in the batch.
+        """
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        db.execute("UPDATE cards SET source_hash = NULL, content_hash = 'stale'")
+        db.commit()
+
+        plan = seed_module.diff(rows, stored_hashes(db))
+
+        assert len(plan.changed) == len(rows)
+        assert not plan.backfill
+
+    def test_the_backfilled_hash_matches_what_a_fresh_seed_would_write(self, db, collection):
+        """The backfill and the upsert must agree, or the next run reports a phantom edit.
+
+        Two code paths write this column — `backfill_statement` and `statements_for` —
+        and if they disagreed by so much as a key order, every backfilled card would look
+        source-changed on the following run.
+        """
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        from_upsert = {id_: h.source for id_, h in stored_hashes(db).items()}
+
+        db.execute("UPDATE cards SET source_hash = NULL")
+        db.commit()
+        for row in rows:
+            statement = seed_module.backfill_statement(row)
+            db.execute(statement.sql, statement.params)
+        db.commit()
+
+        assert {id_: h.source for id_, h in stored_hashes(db).items()} == from_upsert
+
+    def test_an_unmigrated_database_is_refused_before_any_write(self, db, collection):
+        """Migration 0003 missing, caught by the one query that runs before the writes.
+
+        Deliberately raised rather than degraded: a run that seeds without source tracking
+        would report 0 official changes forever, which is indistinguishable from "the
+        official site published nothing". The refusal names the file to apply.
+        """
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        db.execute("ALTER TABLE cards DROP COLUMN source_hash")
+        db.commit()
+
+        class Unmigrated:
+            """A `d1.query` that fails the way an unmigrated production database does."""
+
+            def __call__(self, _http, _config, sql):
+                try:
+                    return [dict(zip([c[0] for c in cur.description], r))
+                            for cur in [db.execute(sql)] for r in cur.fetchall()]
+                except sqlite3.OperationalError as exc:
+                    raise d1.D1Error(f"query failed: 7500: {exc}") from exc
+
+        original = d1.query
+        d1.query = Unmigrated()
+        try:
+            with pytest.raises(seed_module.MissingSourceHashColumn):
+                seed_module.read_stored_hashes(None, None)
+        finally:
+            d1.query = original
+
+    def test_an_unrelated_query_failure_is_not_mistaken_for_the_migration(self):
+        """A missing token or a typo elsewhere must not print "apply migration 0003"."""
+        original = d1.query
+
+        def boom(_http, _config, _sql):
+            raise d1.D1Error("query failed: 7403: Authentication error")
+
+        d1.query = boom
+        try:
+            with pytest.raises(d1.D1Error) as caught:
+                seed_module.read_stored_hashes(None, None)
+            assert not isinstance(caught.value, seed_module.MissingSourceHashColumn)
+        finally:
+            d1.query = original
+
+
 class TestEstimate:
     def test_counts_indexes_and_fts_not_just_rows(self, collection):
         """v1's estimator counted visible rows only, and was an order of magnitude out.
@@ -460,7 +786,12 @@ class TestGates:
         even writing the survivors would publish a broken dataset.
         """
         rows = [seed_module.to_row(card) for card in collection.cards]
-        stored = {row.id: (row.content_hash, row.qa_hash) for row in rows}
+        stored = {
+            row.id: seed_module.StoredHashes(
+                content=row.content_hash, qa=row.qa_hash, source=row.source_hash
+            )
+            for row in rows
+        }
         plan = seed_module.diff(rows[:5], stored)
         refusals = seed_module.check_gates(plan, collection, 1, 0, prune=False)
         assert any("smaller" in r.reason for r in refusals)

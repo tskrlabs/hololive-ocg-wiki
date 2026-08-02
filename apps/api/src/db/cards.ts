@@ -71,11 +71,31 @@ interface WhereClause {
 /**
  * The WHERE fragment shared by the count and page queries.
  *
- * **Junction filters use `id IN (SELECT card_id FROM …)`, never a join.** A join against
- * a junction returns one row per matching *value*, so `colors=blue,red` would return a
- * card once per colour it matches and corrupt both the page and the count. The `IN` form
- * returns one row per card and is still fully index-driven — verified on real D1:
- * `SEARCH card_colors USING PRIMARY KEY (color_code=?)` plus a Bloom filter, no scan.
+ * **Junction filters use a correlated `EXISTS`, never a join and never `IN (SELECT …)`.**
+ *
+ * A join against a junction returns one row per matching *value*, so `colors=blue,red`
+ * would return a card once per colour it matches and corrupt both the page and the count.
+ * That rules out the join; the subquery forms both return one row per card.
+ *
+ * Between the two subquery forms the difference is where the sort happens.
+ * `id IN (SELECT card_id …)` makes the id set the driver, so SQLite materialises every
+ * match and sorts it in a temp b-tree *before* `LIMIT` applies — the page size then makes
+ * no difference at all, and a filter costs the same 1,328 rows at `LIMIT 20` as at
+ * `LIMIT 200`. The correlated `EXISTS` inverts it: `cards` is walked in
+ * `idx_cards_card_number` order and the scan stops at `LIMIT`, with the junction probed
+ * per row through `idx_card_colors_card_id` (the covering index Phase 3 added for the
+ * seeder's deletes). Only the `id` tiebreak within one card number is sorted, and the
+ * saving grows with the match set instead of shrinking:
+ *
+ * | filter | `IN` | `EXISTS` |
+ * |---|---|---|
+ * | 1 colour | 1,328 | 845 |
+ * | 2 colours | 2,713 | 897 |
+ * | top tag (`JP`) | 3,885 | 269 |
+ * | top set | 1,513 | 152 |
+ *
+ * Measured on production D1 over 2,463 cards — 77% fewer rows read overall, which is
+ * 66% → 15% of the free read tier at v1's traffic. See issue #40.
  *
  * Groups are OR'd internally and AND'd against each other, matching the checkbox UI.
  */
@@ -88,9 +108,11 @@ export function buildWhere(filters: CardFilters, searchIds?: readonly string[]):
     params.push(...values);
   };
 
+  // The subquery is aliased so `cards.id` in the correlation can never be captured by
+  // the junction's own columns, whatever they are named.
   const junction = (table: string, column: string, values: readonly string[]) => {
     conditions.push(
-      `id IN (SELECT card_id FROM ${table} WHERE ${column} IN (${values
+      `EXISTS (SELECT 1 FROM ${table} j WHERE j.card_id = cards.id AND j.${column} IN (${values
         .map(() => "?")
         .join(", ")}))`,
     );
@@ -150,6 +172,45 @@ export function cardByIdSql(id: string): { sql: string; params: unknown[] } {
   return {
     sql: `SELECT ${CARD_COLUMNS}, qa_payload FROM cards WHERE id = ?`,
     params: [id],
+  };
+}
+
+/**
+ * One card by its `image_key` — the lookup behind a card URL (ADR 0009 D6).
+ *
+ * `/{locale}/card/{set}/{stem}` is `image_key` verbatim, so this is how a card page
+ * resolves. Deriving the id client-side was rejected: it would mean shipping a
+ * 2,463-entry key→id map to every visitor.
+ *
+ * Selects `qa_payload` like `cardByIdSql`, because a card *page* shows Q&A (35% of cards
+ * have some) where a list tile does not.
+ *
+ * Matching is **case-sensitive**, which is the stored form and therefore canonical.
+ * `image_key` preserves the printed casing (`hSD01/hSD01-001_OSR`), and an index on it
+ * only serves exact matches — so a wrong-case URL misses here and is redirected by the
+ * route rather than silently resolved. Commit 6's unique index makes this a seek; without
+ * it, it is a 2,463-row scan per card view.
+ */
+export function cardByImageKeySql(imageKey: string): { sql: string; params: unknown[] } {
+  return {
+    sql: `SELECT ${CARD_COLUMNS}, qa_payload FROM cards WHERE image_key = ?`,
+    params: [imageKey],
+  };
+}
+
+/**
+ * The same lookup, case-insensitively — the error path only.
+ *
+ * Verified over the real set: lowercasing all 2,463 keys still yields 2,463 distinct
+ * values, so no two cards differ only by case and this can never be ambiguous. It costs a
+ * second query and a full scan, which is why it runs *only* after the exact match has
+ * already missed — a wrong-case URL is rare, and paying for it on the hot path would be
+ * the wrong trade.
+ */
+export function cardKeyByLowercaseSql(imageKey: string): { sql: string; params: unknown[] } {
+  return {
+    sql: `SELECT image_key FROM cards WHERE lower(image_key) = lower(?) LIMIT 1`,
+    params: [imageKey],
   };
 }
 

@@ -91,6 +91,51 @@ if not eval(predicate, {"__builtins__": __builtins__}, {"d": d}):
   rm -f "$body"
 }
 
+# check_html <name> <expected-status> <path> [grep -E pattern the body must match]
+#
+# The card page returns HTML, not JSON, so `check` above cannot read it. This is what the
+# metadata injection needs: what a crawler sees is the *served bytes*, before any
+# JavaScript runs, which is exactly what curl gets and a browser test would not.
+check_html() {
+  local name="$1" expect="$2" path="$3" pattern="${4:-}"
+  local body status
+  body="$(mktemp)"
+  status="$(curl -sS -o "$body" -w '%{http_code}' "${BASE}${path}")"
+
+  if [[ "$status" != "$expect" ]]; then
+    printf '  ✗ %-52s expected HTTP %s, got %s\n' "$name" "$expect" "$status"
+    FAILURES=$((FAILURES + 1))
+    rm -f "$body"
+    return
+  fi
+
+  if [[ -n "$pattern" ]] && ! grep -qE "$pattern" "$body"; then
+    printf '  ✗ %-52s body did not match: %s\n' "$name" "$pattern"
+    FAILURES=$((FAILURES + 1))
+    rm -f "$body"
+    return
+  fi
+
+  printf '  ✓ %-52s HTTP %s\n' "$name" "$status"
+  rm -f "$body"
+}
+
+# check_redirect <name> <expected-status> <path> <expected Location suffix>
+check_redirect() {
+  local name="$1" expect="$2" path="$3" suffix="$4"
+  local status location
+  status="$(curl -sS -o /dev/null -w '%{http_code}' "${BASE}${path}")"
+  location="$(curl -sS -o /dev/null -w '%{redirect_url}' "${BASE}${path}")"
+
+  if [[ "$status" != "$expect" || "$location" != *"$suffix" ]]; then
+    printf '  ✗ %-52s HTTP %s -> %s\n' "$name" "$status" "$location"
+    FAILURES=$((FAILURES + 1))
+    return
+  fi
+
+  printf '  ✓ %-52s HTTP %s\n' "$name" "$status"
+}
+
 echo ""
 echo "routing"
 # The v1 hazard: `/api/cards/search` must not be swallowed by the `:id` route. Here that
@@ -107,6 +152,22 @@ check "detail carries colours"     200 "/api/cards/1" "d['card']['color_codes'] 
 check "detail carries sets"        200 "/api/cards/1" "len(d['card']['card_sets']) > 0"
 check "detail carries Q&A"         200 "/api/cards/1" "'qa_items' in d['card']"
 check "missing card"               404 "/api/cards/999999"
+
+echo ""
+echo "cards by image key (ADR 0009 D6 — a card's URL)"
+# `{set}/{stem}` is `image_key` verbatim, so this is how a card page resolves.
+check "by key"                     200 "/api/cards/by-key/hSD01/hSD01-001_OSR?locale=tc" \
+  "d['card']['image_key'] == 'hSD01/hSD01-001_OSR'"
+check "by key carries Q&A"         200 "/api/cards/by-key/hSD01/hSD01-001_OSR" \
+  "'qa_items' in d['card']"
+check "by key honours locale"      200 "/api/cards/by-key/hSD01/hSD01-001_OSR?locale=en" \
+  "d['card']['locale'] == 'en'"
+# A wrong-case key reports the canonical form so the caller can 301 rather than 404.
+# Safe because lowercasing all 2,463 real keys still yields 2,463 distinct values.
+check "wrong case names the canonical" 404 "/api/cards/by-key/HSD01/hsd01-001_osr" \
+  "d['canonical'] == 'hSD01/hSD01-001_OSR'"
+check "unknown key"                404 "/api/cards/by-key/hSD01/NOPE" "'canonical' not in d"
+check "malformed key segment"      400 "/api/cards/by-key/hSD01/bad%20key"
 
 echo ""
 echo "search"
@@ -174,10 +235,14 @@ check "notices before publish"     200 "/api/notices" "d['notices'] == []"
 # `holo-data publish` uploads. `status.json` has no committed copy (it is written by
 # `seed` against a live database), so it is faked here, shaped exactly as `build_status`
 # emits it.
+#
+# The scenario is deliberately the one ADR 0009 D26 exists for: 34 rows rewritten,
+# nothing changed at the source. That is the translation rework in miniature, and before
+# D26 the only number available said the official card list had reissued every card.
 npx wrangler r2 object put "hololive-ocg-wiki-artifacts/info.json" \
   --local --file=../../content/info.json >/dev/null
 STATUS_FILE="$(mktemp -t holo-status).json"
-printf '{"generated_at":"2026-07-27T06:17:56Z","built_at":"2026-07-26T23:33:21Z","mode":"diff","counts":{"total":34,"new":0,"changed":34,"qa_updated":0,"unchanged":0,"removed":0,"missing_from_build":0},"new":[],"changed":[{"id":"1","card_number":"hSD01-001","image_key":"hSD01/hSD01-001_OSR","name":"ときのそら"}],"qa_updated":[],"removed":[]}' >"$STATUS_FILE"
+printf '{"generated_at":"2026-07-27T06:17:56Z","built_at":"2026-07-26T23:33:21Z","mode":"diff","counts":{"total":34,"new":0,"changed":34,"qa_updated":0,"unchanged":0,"removed":0,"missing_from_build":0,"source_added":0,"source_changed":0,"faq_changed":2},"list_cap":100,"new":[],"changed":[{"id":"1","card_number":"hSD01-001","image_key":"hSD01/hSD01-001_OSR","name":"ときのそら"}],"qa_updated":[],"source_added":[],"source_changed":[],"faq_changed":[{"id":"2","card_number":"hSD01-002","image_key":"hSD01/hSD01-002_OSR","name":"ときのそら"}],"removed":[]}' >"$STATUS_FILE"
 npx wrangler r2 object put "hololive-ocg-wiki-artifacts/status.json" \
   --local --file="$STATUS_FILE" >/dev/null
 rm -f "$STATUS_FILE"
@@ -191,6 +256,12 @@ check "status served from R2"      200 "/api/status" \
   "d['counts']['total'] == 34 and 'generated_at' in d"
 check "status carries the diff"    200 "/api/status" \
   "d['changed'][0]['image_key'] == 'hSD01/hSD01-001_OSR'"
+# The two vocabularies survive the Worker (D26). It streams the bytes through without
+# parsing, so this is really a check that nothing downstream flattens them back together.
+check "status separates source from reseed" 200 "/api/status" \
+  "d['counts']['changed'] == 34 and d['counts']['source_changed'] == 0"
+check "status carries the FAQ diff" 200 "/api/status" \
+  "d['counts']['faq_changed'] == 2 and d['faq_changed'][0]['card_number'] == 'hSD01-002'"
 
 # A rules notice — the non-card entries the official site publishes into its card list
 # (F-020). Shaped exactly as `NoticeCollection` emits it. The assertions pin the two
@@ -237,6 +308,35 @@ done <<'PATHS'
 PATHS
 
 echo ""
+echo ""
+echo "card pages (ADR 0009 D7, D8 — the Worker's own HTML)"
+# These read the *served bytes*, before any JavaScript runs — which is precisely what a
+# crawler sees and what the generated shell alone does not contain. The shell carries no
+# description, no canonical, no og:*, and a bare <html> with no lang.
+check_html "card page renders"          200 "/tc/card/hSD01/hSD01-001_OSR" \
+  '<html[^>]*lang="zh-TW"'
+check_html "title names the card"       200 "/tc/card/hSD01/hSD01-001_OSR" \
+  '<title>[^<]+ · hSD01-001 \| Hololive OCG Wiki</title>'
+check_html "canonical is the card URL"  200 "/tc/card/hSD01/hSD01-001_OSR" \
+  'rel="canonical" href="[^"]*/tc/card/hSD01/hSD01-001_OSR"'
+check_html "og:image is the card art"   200 "/tc/card/hSD01/hSD01-001_OSR" \
+  'property="og:image" content="[^"]*/hSD01/hSD01-001_OSR.webp"'
+check_html "hreflang covers x-default"  200 "/tc/card/hSD01/hSD01-001_OSR" \
+  'hreflang="x-default"'
+check_html "carries JSON-LD"            200 "/tc/card/hSD01/hSD01-001_OSR" \
+  'application/ld\+json'
+# The soft-404 fix. Before this, an unmatched path served index.html with HTTP 200 —
+# verified against production — so every mistyped card URL looked like a real page.
+check_html "unknown card is a real 404" 404 "/tc/card/hSD01/NOPE"
+# ...but the body is still the app, so the client renders a proper in-app screen. Status
+# and body are independent; the status is the half a crawler reads.
+check_html "404 still serves the app"   404 "/tc/card/hSD01/NOPE" 'id="__nuxt"'
+check_html "an unknown locale is a 404" 404 "/xx/card/hSD01/hSD01-001_OSR"
+# A wrong-case URL is a redirect, not a 404: the stored casing is canonical, and no two
+# real keys differ only by case (verified over all 2,463).
+check_redirect "wrong case 301s to the canonical form" 301 \
+  "/tc/card/HSD01/hsd01-001_osr" "/tc/card/hSD01/hSD01-001_OSR"
+
 if [[ "$FAILURES" -gt 0 ]]; then
   echo "✗ $FAILURES check(s) failed"
   exit 1

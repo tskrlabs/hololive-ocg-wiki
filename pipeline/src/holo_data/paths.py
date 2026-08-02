@@ -140,6 +140,27 @@ def info_json() -> Path:
     return CONTENT_DIR / "info.json"
 
 
+def card_urls_json() -> Path:
+    """Every card's URL, for the sitemap — **committed**, unlike the rest of the build.
+
+    The sitemap needs one entry per card per locale, and nothing at build time can produce
+    that list: `nuxt generate` runs on Cloudflare's builder with no D1 binding and no
+    credentials, and the site never loads `cards.json` (21 MB — D8 moved querying to D1).
+    So the list is emitted here, committed, and read by `nuxt.config.ts` as a static
+    import. No D1 access, no credentials, no network during the build (#33 §5).
+
+    That makes this the one build output that lives in git rather than in `BUILD_DIR`,
+    which is ADR 0001's rule — generated output is committed so a frontend contributor
+    needs no Python toolchain — applied to the sitemap for the same reason ADR 0007
+    applied it to the fixtures. `make check` fails if it is stale.
+
+    It sits beside the generated contract rather than in `fixtures/artifacts/` (which #33
+    §5 suggested): that directory is the 34-card local-R2 mirror, and this describes all
+    2,463 real cards. ~190 KB.
+    """
+    return REPO_ROOT / "packages" / "schema" / "data" / "card-urls.json"
+
+
 # --- Image paths, keyed the same way the CDN is ---
 #
 # An image key is `{set}/{stem}` (no extension) — the same string `Card.image_key` holds

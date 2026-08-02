@@ -14,13 +14,7 @@
   "Oshi": "推し",
   "Main Deck": "主牌組",
   "Yell Deck": "應援牌組",
-  "Please select a deck to continue.": "請選擇一副牌組以繼續。",
-  "Edit": "編輯",
   "Select one deck to edit": "請選擇一副牌組進行編輯",
-  "Clipboard is not supported in this browser.": "此瀏覽器不支援剪貼簿功能。",
-  "Copied deck code URL.": "已複製牌組代碼網址。",
-  "Deck detail page not found.": "找不到牌組詳細頁面。",
-  "Deck deleted successfully!": "牌組已成功刪除！",
   "Options": "選項",
   "Copy Deck Code URL": "複製牌組代碼網址",
   "Go to Detail Page": "前往詳細頁面",
@@ -33,14 +27,11 @@
   "Deck Name": "牌組名稱",
   "Author": "作者",
   "Create Deck": "建立牌組",
-  "No deck code provided.": "未提供牌組代碼。",
-  "Failed to import shared deck.": "匯入共享牌組失敗。",
   "Card List": "卡片列表",
   "Saved In Local Storage": "已儲存於本地端",
   "Can Import/Update This Deck": "可匯入／更新此牌組",
   "Import This Deck": "匯入此牌組",
   "Official Site": "官方網站",
-  "Decks": "牌組",
   "No cards to display": "沒有可顯示的卡片",
   "Invalid deck code": "無效的牌組代碼",
   "Deck updated successfully": "牌組已成功更新",
@@ -115,22 +106,24 @@
     "supportItem": "支援・道具",
     "supportItemLimited": "支援・道具・LIMITED",
     "supportMascot": "支援・吉祥物",
+    "supportStaff": "支援・工作人員",
     "supportStaffLimited": "支援・工作人員・LIMITED"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -517,181 +510,113 @@
     "ライブスタートデッキ 森カリオペ": "Live Start牌組 森美聲",
     "ライブスタートデッキ 白上フブキ": "Live Start牌組 白上吹雪"
   },
-  "howToUse": {
-    "title": "使用說明",
-    "description": "學習如何使用 Hololive OCG Wiki 來搜尋卡片、建構牌組，並與他人分享。",
-    "backToCards": "返回卡片列表",
-    "tableOfContents": "目錄",
-    "sections": {
-      "searching": "搜尋卡片",
-      "filtering": "篩選卡片",
-      "deckBuilder": "牌組編輯器",
-      "cardDetails": "卡片詳情",
-      "sharing": "分享與儲存",
-      "tips": "小撇步"
-    },
-    "introduction": {
-      "title": "歡迎來到 Hololive OCG Wiki",
-      "description": "這個詳細指南將協助您瀏覽並充分利用 Hololive Official Card Game wiki。無論您是新手玩家還是經驗豐富的決鬥者，您都能在這裡找到搜尋卡片、建構牌組以及與社群分享創作所需的一切。"
-    },
-    "searching": {
-      "title": "搜尋卡片",
-      "basicSearch": {
-        "title": "基本搜尋",
-        "description": "使用頂部的搜尋欄位透過名稱、能力文字或任何其他卡片資訊來尋找卡片。",
-        "examples": "範例：\"時乃空\"、\"聯動\"、\"藍色\"、\"Debut\""
-      },
-      "advancedSearch": {
-        "title": "進階搜尋技巧",
-        "description": "使用這些技巧讓您的搜尋更精確：",
-        "tip1": "搜尋功能涵蓋所有卡片文字，包括能力和風味文字",
-        "tip2": "您可以使用多種語言搜尋 - 本 wiki 支援日文、英文、繁體中文、印尼文、韓文和泰文",
-        "tip3": "搜尋結果會隨著您的輸入即時更新"
-      }
-    },
-    "filtering": {
-      "title": "篩選卡片",
-      "cardType": {
-        "title": "卡片類型",
-        "description": "透過特定卡片類型篩選，找到您牌組所需的確切卡片："
-      },
-      "colors": {
-        "title": "顏色",
-        "description": "根據顏色需求篩選卡片。選擇多個顏色來尋找多色卡片："
-      },
-      "rarity": {
-        "title": "稀有度",
-        "description": "根據稀有度尋找卡片，從普通卡片到超稀有珍品："
-      },
-      "reset": {
-        "title": "重設篩選器",
-        "description": "清除所有啟用的篩選器以重新開始："
-      }
-    },
-    "deckBuilder": {
-      "title": "建構牌組",
-      "creating": {
-        "title": "建立您的第一個牌組",
-        "step1": "點擊螢幕底部牌組面板中的「新建牌組」按鈕",
-        "step2": "為您的牌組命名，並可選擇性地新增您的姓名作為作者",
-        "step3": "在卡片列表中點擊卡片開始新增 - 它們會被新增到您的活躍牌組中",
-        "step4": "在推し、主牌組和應援牌組標籤之間切換，適當整理您的卡片"
-      },
-      "deckTypes": {
-        "title": "牌組類型",
-        "oshi": "您的推しHolo成員 - 您牌組的明星",
-        "main": "主牌組卡片，包括Holo成員和支援卡片",
-        "yell": "提供能量和支援的應援卡片"
-      },
-      "management": {
-        "title": "牌組管理",
-        "edit": "編輯牌組名稱和作者資訊",
-        "copy": "複製牌組代碼網址以與他人分享",
-        "share": "為您的牌組產生可分享的連結",
-        "delete": "移除您不再需要的牌組"
-      }
-    },
-    "cardDetails": {
-      "title": "瞭解卡片詳情",
-      "description": "點擊任何卡片以檢視其詳細資訊。每張卡片都顯示完整的數據和能力：",
-      "basicInfo": {
-        "title": "基本資訊"
-      },
-      "gameInfo": {
-        "title": "遊戲機制"
-      }
-    },
-    "sharing": {
-      "title": "分享與儲存",
-      "deckCodes": {
-        "title": "牌組代碼",
-        "description": "使用產生的牌組代碼網址與他人分享您的牌組：",
-        "copy": "從牌組選項選單複製牌組代碼網址",
-        "import": "透過造訪牌組代碼網址匯入分享的牌組"
-      },
-      "localStorage": {
-        "title": "本地儲存",
-        "description": "您的牌組會自動儲存在瀏覽器的本地儲存中。",
-        "warning": "請記住，牌組是在本地儲存在您的瀏覽器中。清除瀏覽器資料會移除您已儲存的牌組，因此請考慮備份重要的牌組代碼。"
-      }
-    },
-    "tips": {
-      "title": "小撇步",
-      "performance": {
-        "title": "效能技巧",
-        "tip1": "使用特定篩選器減少顯示的卡片數量以獲得更好的效能",
-        "tip2": "搜尋和篩選功能會即時運作 - 無需按下確認鍵",
-        "tip3": "啟用精簡模式以更快瀏覽大量卡片列表"
-      },
-      "shortcuts": {
-        "title": "鍵盤與導航",
-        "tip1": "使用搜尋欄位快速尋找特定卡片",
-        "tip2": "點擊卡片圖片以檢視高解析度圖片",
-        "tip3": "使用瀏覽器的上一頁/下一頁在卡片詳情和列表檢視之間導航"
-      },
-      "mobile": {
-        "title": "行動裝置使用",
-        "tip1": "介面完全響應式，在行動裝置上運作良好",
-        "tip2": "長按卡片以進行快速操作",
-        "tip3": "滑動手勢可用於在牌組類型之間導航"
-      },
-      "troubleshooting": {
-        "title": "疑難排解",
-        "tip1": "如果卡片沒有載入，請嘗試重新整理頁面",
-        "tip2": "如果遇到顯示問題，請清除瀏覽器快取",
-        "tip3": "確保 JavaScript 已啟用以獲得完整功能"
-      }
-    },
-    "footer": {
-      "title": "準備開始了嗎？",
-      "description": "現在您知道如何使用 wiki，開始探索令人驚艷的 Hololive OCG 世界吧！",
-      "startUsing": "開始使用 Wiki"
-    }
-  },
   "deck": {
     "seo": {
       "descriptionWithAuthor": "Hololive OCG牌組「{deckName}」由{author}製作。查看牌組構成：主牌組{mainCount}張卡片，應援牌組{yellCount}張卡片，推し{oshiCount}張卡片。",
       "description": "Hololive OCG牌組「{deckName}」。查看牌組構成：主牌組{mainCount}張卡片，應援牌組{yellCount}張卡片，推し{oshiCount}張卡片。"
-    }
+    },
+    "addedPartial": "已加入 {added} / {requested} 張 — {section}已滿",
+    "sectionFull": "{section}已滿",
+    "nothingToRemove": "沒有可移除的卡片",
+    "addCopies": "加入 {count} 張{name}",
+    "removeCopy": "移除一張{name}",
+    "guard": {
+      "selectFirst": "請先選擇一副牌組。"
+    },
+    "deleted": "已刪除「{name}」。",
+    "editing": {
+      "on": "編輯中",
+      "off": "未編輯",
+      "toggle": "切換編輯模式"
+    },
+    "panel": {
+      "open": "開啟牌組",
+      "close": "關閉牌組",
+      "empty": "尚未選擇牌組。請從「牌組」中選擇一副，或建立新的牌組。"
+    },
+    "removeAllCopies": "移除所有「{name}」",
+    "myDecks": "我的牌組"
   },
   "status": {
     "title": "資料狀態",
     "description": "卡牌資料庫狀態 — 哪些卡牌是新增、更新或在官方來源中缺失的。",
-    "sourceTotal": "來源總計",
     "validInDB": "已收錄",
-    "skippedCount": "已跳過",
     "lastUpdated": "最後更新",
-    "tabs": {
-      "new": "新增",
-      "changed": "已更新",
-      "qaUpdated": "FAQ更新",
-      "removed": "已移除",
-      "skipped": "已跳過"
+    "builtAt": "資料建置",
+    "summary": "卡片資料由官方卡表重新建置後寫入資料庫。以上日期為最近一次執行的時間。",
+    "source": {
+      "heading": "最近一次更新",
+      "added": "張卡牌由官方卡表新增",
+      "edited": "張卡牌由官方卡表修改",
+      "faq": "張卡牌的 Q&A 新增或修訂",
+      "quiet": "本次更新中，官方卡表沒有任何異動。",
+      "more": "另有 {count} 張"
     },
-    "badges": {
-      "new": "新增",
-      "changed": "已更新",
-      "qaUpdated": "FAQ",
-      "removed": "已移除",
-      "skipped": "已跳過"
+    "reseed": {
+      "none": "本次更新沒有重建任何卡牌資料。",
+      "ours": "本次更新重建了 {count} 張卡牌的資料，屬於本站這側的變更（例如重新翻譯）。官方卡牌內容本身並未改變。",
+      "mixed": "本次更新重建了 {count} 張卡牌的資料，包含上述異動以及本站這側的重建。"
+    }
+  },
+  "errors": {
+    "retry": "重試",
+    "cards": {
+      "offline": {
+        "title": "無法連線至卡片資料庫",
+        "detail": "請檢查網路連線後再試一次。"
+      },
+      "server": {
+        "title": "卡片資料庫沒有回應",
+        "detail": "我們這邊出了點問題，請稍後再試。"
+      },
+      "timeout": {
+        "title": "請求逾時",
+        "detail": "卡片資料庫回應時間過長，請再試一次。"
+      }
     },
-    "views": {
-      "list": "列表",
-      "table": "表格"
+    "filterOptions": {
+      "title": "無法載入篩選選項",
+      "detail": "下方清單可能不完整。"
     },
-    "sort": {
-      "label": "排序方式",
-      "cardNumber": "卡牌編號",
-      "name": "名稱"
+    "card": {
+      "notFound": {
+        "title": "找不到此卡片",
+        "detail": "這張卡片不存在。可能編號已變更，或連結有誤。"
+      }
     },
-    "noChanges": "此分類無變更。",
-    "skippedReason": "缺少欄位",
-    "removedNote": "這些卡牌存在於前一個資料集中，但已不在來源中。",
-    "skippedNote": "這些卡牌存在於來源資料中，但缺少必要欄位，無法加入資料庫。",
-    "fullModeNote": "此報告以完整模式生成。新增／已更新／FAQ／已移除欄位反映來源間的差異，在下次增量遷移執行前可能為空。",
-    "officialTotal": "官方網站共有 {total} 張卡牌",
-    "dbTotal": "我們的資料庫有 {valid} 張有效卡牌（{skipped} 張因資料不完整而跳過）",
-    "loadMore": "載入更多（{loaded} / {total}）",
-    "viewDetail": "查看卡牌詳情"
-  }
+    "deck": {
+      "noCode": "未提供牌組代碼。",
+      "invalidCode": "此牌組代碼無效",
+      "invalidCodeDetail": "連結可能不完整或有誤。牌組代碼區分大小寫。",
+      "routeMissing": "找不到牌組詳細頁面。"
+    },
+    "status": {
+      "title": "無法取得狀態",
+      "detail": "狀態報告尚未發布，或目前無法連線。"
+    }
+  },
+  "Toggle theme": "切換主題",
+  "Change language": "切換語言",
+  "Source code on GitHub": "GitHub 原始碼",
+  "Join the Discord server": "加入 Discord 伺服器",
+  "About this site": "關於本站",
+  "Filter (active)": "篩選器（已套用）",
+  "density": {
+    "label": "卡片密度",
+    "comfortable": "顯示卡片名稱",
+    "compact": "僅顯示圖片"
+  },
+  "filter": {
+    "modified": "已修改",
+    "clearGroup": "清除{group}"
+  },
+  "{total} cards": "{total} 張卡片",
+  "Card not found": "找不到此卡片",
+  "Deck": "牌組",
+  "clipboard": {
+    "copied": "已複製牌組代碼網址。",
+    "unsupported": "此瀏覽器無法複製到剪貼簿。",
+    "failed": "複製失敗——請再試一次，或直接複製網址列。"
+  },
+  "More": "更多"
 }

@@ -34,13 +34,100 @@ export function setCardSource(next: CardSource) {
   source = next;
 }
 
+/**
+ * Why the last request failed, or `null` if it did not (#45).
+ *
+ * A failed fetch used to be written down as `cards: []`, which is the same value a
+ * genuine zero-result produces — so offline, HTTP 500, a timeout and a malformed response
+ * all rendered as *"No cards found — try adjusting your filters"*. That advice cannot
+ * help: no filter change reaches an unreachable API, and a user on a flaky connection
+ * concludes the wiki has no cards.
+ *
+ * `isLoading: boolean` alongside `cards: []` cannot express this — the pair has four
+ * combinations and only three are legal. The kinds are distinguished because the useful
+ * message differs: offline is the user's network, server is ours.
+ */
+export type QueryErrorKind = "offline" | "server" | "timeout";
+
+/**
+ * What the card list should render right now (D17, #38).
+ *
+ * The four legal situations, named — rather than inferred at each call site from
+ * `isLoading` and `cards.length`. Those two booleans-in-effect have more combinations
+ * than there are real states, and the illegal ones are reachable: `isLoading === false`
+ * with `cards === []` is *both* "matched nothing" and "the fetch failed", which is
+ * precisely the bug #45 fixed by adding `error` beside them.
+ *
+ * `error` stopped the two being the same *value*; this stops them being the same
+ * *question*. A template asks `state.status` once instead of assembling the answer from
+ * three refs in an order it has to get right.
+ *
+ * `refiltering` is deliberately distinct from `loading`: one has results to keep on
+ * screen and dim, the other has nothing to show but skeletons. Conflating them is what
+ * produced the full-screen blur over the very results being refined.
+ */
+export type QueryState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "refiltering"; cards: CardCollection; total: number }
+  | { status: "ready"; cards: CardCollection; total: number }
+  | { status: "empty" }
+  | { status: "error"; kind: QueryErrorKind };
+
+/**
+ * Classify a thrown fetch failure.
+ *
+ * `$fetch` rejects with an `FetchError` carrying `statusCode` for an HTTP response and
+ * none at all when the request never completed, which is the distinction that matters:
+ * no status means the network did not carry it.
+ */
+export function classifyError(error: unknown): QueryErrorKind {
+  const status = (error as { statusCode?: number; status?: number } | null)?.statusCode
+    ?? (error as { status?: number } | null)?.status;
+
+  if (typeof status === "number" && status > 0) {
+    return status === 408 || status === 504 ? "timeout" : "server";
+  }
+
+  const name = (error as { name?: string } | null)?.name;
+  if (name === "TimeoutError" || name === "AbortError") return "timeout";
+
+  // No status and not an abort: the request never reached anyone.
+  return "offline";
+}
+
 export const useCardQuery = () => {
   const cards = useState<CardCollection>("cards", () => []);
   const total = useState<number>("cardsTotal", () => 0);
   const page = useState<number>("cardsPage", () => 1);
   const isLoading = useState<boolean>("cardsLoading", () => false);
 
+  /**
+   * Why the last card fetch failed, or `null`. See `QueryErrorKind` (#45).
+   *
+   * Still here beside `cards` rather than replaced by the union: `state` below is
+   * *derived* from these refs, so the many existing readers of `cards.value` keep
+   * working. The union is what a template should ask; these are what the fetch functions
+   * write.
+   */
+  const error = useState<QueryErrorKind | null>("cardsError", () => null);
+
+  /**
+   * Whether the request in flight is appending a page rather than replacing the list.
+   *
+   * The distinction the union needs and a lone `isLoading` cannot carry: appending must
+   * leave the visible results completely untouched, while replacing may dim them. Both
+   * set `isLoading`.
+   */
+  const isAppending = useState<boolean>("cardsAppending", () => false);
+
+  /** Has any query completed yet? Distinguishes "nothing asked" from "asked, none". */
+  const hasResolved = useState<boolean>("cardsResolved", () => false);
+  const optionsError = useState<QueryErrorKind | null>("filterOptionsError", () => null);
+
   const byIdCache = useState<Map<string, Card>>("cardById", () => new Map());
+  /** Cards resolved by `image_key` — the only handle a cold card-page load has. */
+  const byKeyCache = useState<Map<string, Card>>("cardByKey", () => new Map());
   const pageCache = useState<Map<string, CardPage>>("cardPages", () => new Map());
   const optionsCache = useState<Map<string, FilterOptionsResponse>>(
     "filterOptions",
@@ -91,10 +178,13 @@ export const useCardQuery = () => {
       cards.value = cached.cards;
       total.value = cached.total ?? total.value;
       page.value = pageNumber;
+      error.value = null;
+      hasResolved.value = true;
       return cached.cards;
     }
 
     isLoading.value = true;
+    isAppending.value = false;
     try {
       const result = await once(key, () =>
         source.filter(filters, locale, pageNumber, limit),
@@ -104,15 +194,22 @@ export const useCardQuery = () => {
       cards.value = result.cards;
       total.value = resolved;
       page.value = pageNumber;
+      error.value = null;
       pageCache.value.set(key, { cards: result.cards, total: resolved });
       return result.cards;
-    } catch (error) {
-      console.error("Failed to fetch cards:", error);
+    } catch (cause) {
+      // The empty list still happens — the view needs *something* to render — but it is
+      // no longer the only thing said about the failure (#45).
+      console.error("Failed to fetch cards:", cause);
+      error.value = classifyError(cause);
       cards.value = [];
       total.value = 0;
       return [];
     } finally {
       isLoading.value = false;
+      // Set *after* the request settles, so an in-flight first query reads as `loading`
+      // rather than briefly as `empty`.
+      hasResolved.value = true;
     }
   }
 
@@ -140,21 +237,29 @@ export const useCardQuery = () => {
     }
 
     isLoading.value = true;
+    // Marks this load as an *append*, which is what keeps the visible results from being
+    // dimmed or replaced by skeletons while the next page is in flight (#38).
+    isAppending.value = true;
     try {
       const result = await once(key, () =>
         source.filter(filters, locale, nextPage, limit, true),
       );
       cards.value = [...existing, ...result.cards];
       page.value = nextPage;
+      error.value = null;
       // Cached with the total page 1 established, since this response carries none.
       pageCache.value.set(key, { cards: result.cards, total: total.value });
       return result.cards;
-    } catch (error) {
-      console.error("Failed to load more cards:", error);
+    } catch (cause) {
+      // The cards already on screen are kept — a failed *next* page does not invalidate
+      // the pages that arrived — but the failure is now reportable rather than silent.
+      console.error("Failed to load more cards:", cause);
+      error.value = classifyError(cause);
       cards.value = existing;
       return [];
     } finally {
       isLoading.value = false;
+      isAppending.value = false;
     }
   }
 
@@ -167,6 +272,36 @@ export const useCardQuery = () => {
 
     const card = await once(key, () => source.byId(id, locale));
     if (card) byIdCache.value.set(key, card);
+    return card;
+  }
+
+  /**
+   * One card by its `image_key` — what a card URL resolves to (ADR 0009 D6).
+   *
+   * Shares `byIdCache` with `getCardById`, keyed by id once the card is known, so
+   * navigating from a card page into the grid and back does not refetch. The key→card
+   * lookup gets its own cache entry because a URL is the only thing a cold load has.
+   *
+   * Returns `undefined` for a key that names no card. The caller distinguishes that from
+   * a failure — a 404 is permanent and a fetch error is retryable, and the card page
+   * renders them differently (#38 §5).
+   */
+  async function getCardByKey(
+    set: string,
+    stem: string,
+    locale: Locales,
+  ): Promise<Card | undefined> {
+    const key = `key:${set}/${stem}:${locale}`;
+    const cached = byKeyCache.value.get(key);
+    if (cached) return cached;
+
+    const card = await once(key, () => source.byKey(set, stem, locale));
+    if (card) {
+      byKeyCache.value.set(key, card);
+      // Also fill the id cache: the dialog and the deck builder both look cards up that
+      // way, and this is the same card.
+      byIdCache.value.set(cardKey(card.id, locale), card);
+    }
     return card;
   }
 
@@ -223,17 +358,63 @@ export const useCardQuery = () => {
         source.filterOptions(locale),
       );
       optionsCache.value.set(locale, options);
+      optionsError.value = null;
       return options;
-    } catch (error) {
-      console.error("Failed to load filter options:", error);
+    } catch (cause) {
+      // Empty arrays render as "no filter options exist", which is a lie of the same
+      // shape as the card list's (#45). The caller can now tell the two apart.
+      console.error("Failed to load filter options:", cause);
+      optionsError.value = classifyError(cause);
       return { names: [], tags: [], sets: [] };
     }
   }
+
+  /**
+   * The one question a view should ask (D17, #38).
+   *
+   * Derived rather than stored, so it cannot disagree with the refs the fetch functions
+   * write — a second source of truth updated by hand is how `cards: []` came to mean two
+   * different things in the first place.
+   *
+   * Order matters and encodes the rules:
+   *
+   * 1. **An append never changes the state.** A failed or pending *next* page must leave
+   *    the pages already on screen exactly as they are, so `isAppending` short-circuits
+   *    to whatever the list already is.
+   * 2. **A failure outranks an empty list**, because the empty list *is* the failure's
+   *    residue. Reversed, every error would render "no cards match these filters" — the
+   *    lie #45 removed.
+   * 3. **Loading with results is `refiltering`**, which keeps them; loading without is
+   *    `loading`, which shows skeletons. Same boolean, two situations, and only the
+   *    presence of prior results tells them apart.
+   */
+  const state = computed<QueryState>(() => {
+    const visible = cards.value;
+
+    if (isLoading.value && !isAppending.value) {
+      return visible.length > 0
+        ? { status: "refiltering", cards: visible, total: total.value }
+        : { status: "loading" };
+    }
+
+    if (error.value && visible.length === 0) {
+      return { status: "error", kind: error.value };
+    }
+
+    if (visible.length > 0) {
+      return { status: "ready", cards: visible, total: total.value };
+    }
+
+    // Nothing on screen, nothing failed: either no query has run yet, or one ran and
+    // genuinely matched nothing. Only the second is the user's filters' fault.
+    return hasResolved.value ? { status: "empty" } : { status: "idle" };
+  });
 
   /** Drop every cache. Called when the locale changes — every entry is locale-scoped. */
   function clearCache() {
     pageCache.value.clear();
     byIdCache.value.clear();
+    byKeyCache.value.clear();
     optionsCache.value.clear();
     inFlight.clear();
   }
@@ -243,10 +424,16 @@ export const useCardQuery = () => {
     total,
     page,
     isLoading,
+    error,
+    optionsError,
+    /** What to render (D17). Prefer this over assembling the answer from the refs above. */
+    state,
+    isAppending,
 
     getFilteredCards,
     loadMore,
     getCardById,
+    getCardByKey,
     getCardsByIds,
     getCardsByCardNumber,
     getCardsByCardNumbers,

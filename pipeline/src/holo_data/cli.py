@@ -521,6 +521,17 @@ def build(
         f"{sum(options.values()) / 1024:.0f} KB total"
     )
 
+    # The sitemap's URL list (#33 §5). Written here for the same reason as the filter
+    # options — beside the data it describes — but into `packages/schema/`, because it is
+    # **committed**: the site's build has no D1 and no credentials, so this is the only
+    # way `nuxt generate` can know which cards exist.
+    urls_size = build_module.save_card_urls(collection)
+    typer.echo(
+        f"✓ wrote {paths.card_urls_json()} — {report.valid} card URLs, "
+        f"{urls_size / 1024:.0f} KB"
+    )
+    typer.echo("  commit it — `make check` fails if it is stale")
+
 
 # --- verify ------------------------------------------------------------------
 
@@ -914,25 +925,65 @@ def seed(
             raise typer.Exit(1)
 
         typer.echo("→ reading the diff baseline from D1")
-        stored = seed_module.read_stored_hashes(http, config)
+        try:
+            stored = seed_module.read_stored_hashes(http, config)
+        except seed_module.MissingSourceHashColumn:
+            # Printed in a refusal's shape, but raised before a plan exists — the column
+            # this needs is the one the baseline query selects (ADR 0009 D26).
+            typer.echo("", err=True)
+            typer.echo("✗ D1 is missing the `source_hash` column", err=True)
+            typer.echo(
+                "  Migration 0003 has not been applied. Apply it from apps/api/ with:\n"
+                "    npx wrangler d1 execute hololive-ocg-wiki-db --remote \\\n"
+                "        --file=../../packages/schema/sql/migrations/0003-source-hash.sql\n"
+                "  Refusing here rather than partway through: a D1 batch is atomic but a "
+                "run is not, so seeding would commit some batches before failing.",
+                err=True,
+            )
+            raise typer.Exit(1)
         rows = [seed_module.to_row(card) for card in collection.cards]
         plan = seed_module.diff(rows, stored)
 
         if full:
             # --full is its own path, not a bigger diff: it rebuilds the FTS index with
             # one `rebuild` statement instead of 2,448 delete/insert pairs.
+            #
+            # The report-only sets are *not* overwritten: --full changes what we write,
+            # not what the official site did, and reporting 2,463 source changes because
+            # the operator passed a flag is the falsehood D26 exists to remove. The
+            # backfill list is cleared because every row is about to be rewritten anyway.
             plan.new, plan.changed, plan.qa_updated = rows, [], []
             plan.unchanged = 0
+            plan.backfill = []
 
         typer.echo(f"  stored {plan.stored_count}, incoming {plan.incoming_count}")
         typer.echo(f"  new            {len(plan.new):5d}")
         typer.echo(f"  changed        {len(plan.changed):5d}")
         typer.echo(f"  qa only        {len(plan.qa_updated):5d}")
         typer.echo(f"  unchanged      {plan.unchanged:5d}")
+        if plan.backfill:
+            typer.echo(
+                f"  source_hash backfill: {len(plan.backfill)} "
+                "(one UPDATE each — rows already current, but written before 0003)"
+            )
         if plan.missing_ids:
             typer.echo(
                 f"  in D1, not in the build: {len(plan.missing_ids)}"
                 + ("  → will be deleted (--prune)" if prune else "  → left alone")
+            )
+
+        # What the *source* did, which is what /status reports (D26). Kept apart from the
+        # four lines above on purpose: those describe our database, these describe the
+        # official card list, and conflating them is the bug this whole decision fixes.
+        typer.echo("")
+        typer.echo("  the official card list, since the last seed:")
+        typer.echo(f"    added        {len(plan.source_added):5d}")
+        typer.echo(f"    edited       {len(plan.source_changed):5d}")
+        typer.echo(f"    FAQ changed  {len(plan.faq_changed):5d}")
+        if plan.backfill and not plan.source_changed:
+            typer.echo(
+                "    (no baseline yet for some rows — this run records one, "
+                "so the next is comparable)"
             )
 
         writes_used = d1.writes_used_today(config, http)
@@ -977,6 +1028,11 @@ def seed(
             typer.echo(
                 f"Would write {len(plan.to_write)} card(s), ~{estimated:,} rows."
             )
+            if plan.backfill:
+                typer.echo(
+                    f"Would backfill source_hash on {len(plan.backfill)} "
+                    "already-current card(s)."
+                )
             if prune and plan.missing_ids:
                 typer.echo(f"Would DELETE {len(plan.missing_ids)} card(s).")
             if not confirm:
@@ -987,6 +1043,9 @@ def seed(
             datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
         )
         groups = [seed_module.statements_for(row, seeded_at) for row in plan.to_write]
+        # One statement per group: a backfill touches a single row and depends on nothing,
+        # so there is no atomicity to preserve and `pack_groups` is free to fill batches.
+        groups.extend([seed_module.backfill_statement(row)] for row in plan.backfill)
         if prune and plan.missing_ids:
             groups.extend(seed_module.prune_statements(plan.missing_ids))
 

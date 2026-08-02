@@ -1,13 +1,54 @@
 # v2 rebuild — progress
 
-**Where we are:** Phases 0–5 done. The site is **live** at
-`hololive-ocg-wiki.tskrlabs.com` — one Worker serving nine API endpoints and the static
-site from one origin (D2), against 2,448 cards in D1 and images on R2.
+**Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
+`hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
+origin (D2), against **2,463 cards** in D1 and images on R2.
 
-Deployed 2026-07-27; every number Phases 3 and 4 measured came back exactly against the
-real card set. **Phase 6 (Workers Builds + fixtures + docs) is under way** — the code and
-docs are built and verified from a scratch clone; connecting the git integration is a
-dashboard step only the maintainer can take. See [Phase 6](#phase-6--push-to-deploy).
+**Phase 8 went live 2026-08-02** (version `82c4ad6b`, 390 assets), together with ADR 0009
+D26. Both migrations are applied, the seed has run, and every number Phases 3 and 4
+measured came back exactly — see [the deploy record](#-phase-8--d26-deployed-2026-08-02).
+The site remains **`noindex`**: Phase 7 is the launch, and it has not happened.
+
+**Phase 6 (Workers Builds + fixtures + docs) is still under way** — the code and docs are
+built and verified from a scratch clone; connecting the git integration is a dashboard step
+only the maintainer can take, so deploys are still `wrangler deploy` by hand. See
+[Phase 6](#phase-6--push-to-deploy).
+
+✅ **Phase 8 — the UI/UX rework — is done.** All six prerequisites (`61b2793..77720d0`) and
+all sixteen commits (`95c75fc..441c885`) are on `develop`, `make check` green after each.
+
+✅ **D26 was added and deployed on 2026-08-02: `/status` reports what the *official card
+list* did, not just what our database did.** `content_hash` covers all seven locales' text,
+so the translation rework marks every card `changed` while the official site published
+nothing — a true number telling a false story, and the only number the page had. A third
+column, `source_hash`, hashes the JP source alone (minus Q&A, mirroring `qa_hash`'s split),
+so the page leads with `source_added` / `source_changed` / `faq_changed` and keeps the
+re-seed count as a self-explaining footnote. The write plan is untouched; the report sets
+are independent, which also fixes `qa_updated` reading 0 whenever a card was edited *and*
+re-FAQ'd. The artifact dropped **329 KB → 644 bytes** in production (lists capped at 100,
+counts stay true), which the about dialog also pays.
+See [ADR 0009 D26](adr/0009-ui-rework.md#supporting-surfaces).
+
+🔄 **D18 was amended on 2026-08-01: the deck is a *pushed* panel from `xl`, not an overlay
+drawer.** Building it revealed the original had never actually run — `DeckDrawer` was a
+`Sheet` at every width, so the "overlay beside a still-visible grid" was a modal over a
+blacked-out one, and the deck-open ⇒ editing coupling applied to a grid you could not
+click. It now pushes: `<main>` shrinks and #43's rule turns the narrower box into fewer
+columns rather than smaller cards (6 → 4 at 1512px, tile 205 → 212px). Two bugs found and
+fixed, both invisible to `make check` and both wiring rather than logic — see
+[ADR 0009 D18](adr/0009-ui-rework.md#deck-building). Phase 5's D13 had fenced the website to
+refactors, so v2's *inside* was new while its **outside was still v1's** — a stock shadcn
+theme, an art-only grid, and **no URL for a card**. Every card now has one, the sitemap
+lists all 17,241, and a bad key returns a real 404. Twenty-five decisions in
+[ADR 0009](adr/0009-ui-rework.md); the sequence and what it found are
+[below](#phase-8--the-uiux-rework).
+
+✅ **Both migrations are applied** (2026-08-02). `0002-phase8-image-key-unique.sql` wrote
+2,464 rows building the index, which is also proof no duplicate `image_key` existed;
+`EXPLAIN QUERY PLAN` on a card lookup now reports
+`SEARCH cards USING INDEX idx_cards_image_key` rather than the 2,463-row scan it would
+otherwise be. `0003-source-hash.sql` followed. See
+[the deploy record](#-phase-8--d26-deployed-2026-08-02).
 
 ⚠️ **Phase 5 needed a follow-up.** Visual QA of the live site found the homepage serving
 **200 of 2,448 cards** — infinite scroll had never fired, because `RecycleScroller` gates
@@ -27,7 +68,7 @@ rule flips to `Allow` too. See [F-017](./archive/findings.md#f-017).
 [ADR 0006](adr/0006-website.md). **Phase 6's** is fifteen decisions, in
 [ADR 0007](adr/0007-push-to-deploy.md).
 
-## ✅ The translation rework is done — not yet deployed
+## ✅ The translation rework is done, and live
 
 All six locales are re-translated through a content-addressed cache. **Divergence is
 zero** on every name field in every locale — not reduced, but *unrepresentable*: one
@@ -43,15 +84,16 @@ supersedes ADR 0002's cache key. Execution tracked in
 Cost: 1,493,321 tokens, ~356k points, **0 failures**. 204 API calls for a full cold run
 against 14,778 under the old per-card scheme.
 
-⚠️ **Nothing is published or seeded.** `cards.json` carries the new translations; R2 and
-D1 still serve the old ones. The live site is unchanged until `holo-data publish` and
-`holo-data seed --confirm` run.
+✅ **Published and seeded.** The seed ran 2026-07-30 (2,463 cards); production serves the
+new translations. This section said "nothing is published or seeded" until 2026-08-02,
+when it was checked against the live API and found stale — a reminder that a claim about
+production is worth re-verifying rather than reading.
 
-⚠️ **The tag filter is broken in production and fixed only locally.** `filter-options`
-shipped `#`-prefixed values against a junction table holding unprefixed ones, so **every
-tag returned zero cards, in every locale**
-([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)). The corrected artifact
-reaches production on the next publish.
+✅ **The tag filter is fixed in production**, verified 2026-08-02: `tag=0期生` returns 165
+cards. `filter-options` had shipped `#`-prefixed values against a junction table holding
+unprefixed ones, so **every tag returned zero cards, in every locale**
+([#26](https://github.com/tskrlabs/hololive-ocg-wiki/issues/26)); the corrected artifact
+reached production with the same publish.
 
 This file is the resume point for a new session. Read it, then
 [`v2-plan.md`](./v2-plan.md) for the design, then the ADRs for decisions made during
@@ -69,8 +111,9 @@ copy and is authoritative if they disagree.
 | 3 | D1 redesign + seeder | ✅ done | [ADR 0004](adr/0004-d1-schema-and-seeder.md) · live |
 | 4 | Worker rewrite (Hono + Zod) | ✅ done — deploys with Phase 5 | [ADR 0005](adr/0005-worker-api.md) |
 | 5 | Website (new API/R2, 4 refactors) | ✅ done | [ADR 0006](adr/0006-website.md) · live |
-| 6 | Workers Builds + fixtures + docs | 🚧 **built — needs the dashboard step** | [ADR 0007](adr/0007-push-to-deploy.md) |
-| 7 | Launch | ⬜ | |
+| 6 ✅ `49bb856` | Workers Builds + fixtures + docs | 🚧 **built — needs the dashboard step** | [ADR 0007](adr/0007-push-to-deploy.md) |
+| 7 ✅ `2a10d57` | Launch | ⬜ **unblocked, not taken** — the site is deployed but still `noindex` | |
+| 8 | UI/UX rework | ✅ **done and live** — 16 commits + D26, deployed 2026-08-02 | [ADR 0009](adr/0009-ui-rework.md) · [#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31) |
 
 ## Working agreement
 
@@ -106,6 +149,9 @@ view; this table is the offline copy.
 | [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
 | [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
 | [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29) | The card list has no names, so the show-original toggle has nothing to act on | `ready-for-human` |
+| [#42](https://github.com/tskrlabs/hololive-ocg-wiki/issues/42) | `og:image` for card pages: the public bucket has WebP only | `needs-triage` |
+| [#59](https://github.com/tskrlabs/hololive-ocg-wiki/issues/59) | closing a card dialog loses the grid's scroll position | `ready-for-agent` |
+| [#60](https://github.com/tskrlabs/hololive-ocg-wiki/issues/60) | the card grid is ~40 tab stops, not one — #48 §6's roving tabindex | `ready-for-agent` |
 
 ✅ **#20 and #21 are closed** by the translation rework — see
 [ADR 0008](adr/0008-content-addressed-translations.md). ✅ **#26 is closed** (the tag
@@ -124,9 +170,13 @@ were fixed first — the escape hatch now drops the bad cards and ships the rest
 `holo-data transform` prints the source value — which is what made blocking cheap enough
 to choose. See [the pipeline section](#phase-1--the-pipeline).
 
-The remaining five are judgement calls with no deadline; two resolve at launch. Everything
-settled during phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which
-is closed.
+✅ **#29 is closed** by Phase 8 commit 2 (the grid has names to toggle now) and ✅ **#57 by
+commit 12** — the reading pass found four real defects, not just stale copy. ✅ **#58 is
+closed**, with a coverage test now guarding 4 enums × 7 locales plus every new UI string.
+
+Of the rest, #59 and #60 came out of Phase 8 and neither blocks launch; the others are
+judgement calls with no deadline, and two resolve at launch. Everything settled during
+phases 0–6 is in [`docs/archive/findings.md`](./archive/findings.md), which is closed.
 
 ## What exists now
 
@@ -155,6 +205,7 @@ make help
 make setup     # uv sync + npm install — needed to work on the contract
 make hooks     # opt-in pre-commit check (once per clone)
 make check     # schema, pipeline, seeder, TS parity, Worker units + endpoints, typecheck
+make check-site # builds the site twice and asserts what `nuxt generate` emitted (Phase 8)
 
 uv sync --extra publish   # adds boto3, only needed for `holo-data publish`
 ```
@@ -306,6 +357,189 @@ Recorded in the ADRs; listed here so they are not missed.
 | **Phase 0 contract** | `"unknown"` is **no longer a `card_type_code`** ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)). ADR 0001 modelled it as legitimate so the build would not fail on cards we already ship; it was the pipeline's fallback in four enums but a member of only this one, so an unmapped value blocked the build in three fields and shipped silently in the fourth — into no deck section, counted by nothing. All four now behave identically |
 | **ADR 0001 §4** | `--allow-unknown-enums` **had never worked** — `build()` honoured the flag then discarded the result on a `len(validated) != len(cards)` check that is true exactly when a card fails validation, untested since Phase 0. Its documented promise ("publishes anyway") was also unimplementable against closed `Literal`s: such a card cannot be constructed. It now **drops** those cards, records their ids in `CardCollection.dropped`, and `publish`/`seed` refuse a non-empty list with no override ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) |
 | **Phase 1 pipeline** | `transform` now reports the **source values no mapping covers**. The sentinel discards what the site printed, so every downstream error could name only the values we accept — an operator got `Input should be 'debut', 'first', 'second' or 'spot'` and a card id, never `超進化`. Two lookups that *omit* rather than substitute (skill timing, keyword type) are reported too: they fail nothing, so the card ships with no timing badge or no keyword at all ([#19](https://github.com/tskrlabs/hololive-ocg-wiki/issues/19)) |
+
+## Phase 8 — the UI/UX rework
+
+Full reasoning in [ADR 0009](adr/0009-ui-rework.md); the map that produced it is
+[#31](https://github.com/tskrlabs/hololive-ocg-wiki/issues/31), whose fifteen closed
+tickets hold every measurement.
+
+**This phase blocks Phase 7.** Launch is a one-time SEO event and card pages are the part
+that cannot be retrofitted: 2,463 URLs either exist when Google first crawls us or the
+opportunity is spent.
+
+Phase 5's D13 fenced the website work to refactors, so v2's *inside* is new and its
+**outside is still v1's** — stock shadcn slate, an art-only grid, a screen-covering filter
+sheet, and **no URL for a card at all**.
+
+### ✅ Prerequisites — all six done
+
+Landed on `develop` as `61b2793..77720d0`, one commit each, **each green under
+`make check` checked out in isolation** — verified in a scratch worktree, not only
+cumulatively.
+
+| # | issue | commit | what changed |
+|---|---|---|---|
+| P1 | [#40](https://github.com/tskrlabs/hololive-ocg-wiki/issues/40) `EXISTS` rewrite | `2998a8d` | filtered queries read 4–8× more rows than needed; **66% → 15%** of the read tier |
+| P2 | [#43](https://github.com/tskrlabs/hololive-ocg-wiki/issues/43) grid ladder | `4972b82` | widening the window shrank the cards; columns now derive from a target tile width |
+| P3 | [#44](https://github.com/tskrlabs/hololive-ocg-wiki/issues/44) `100dvh` scroller | `078b126` | hid 138px of the list; **this is D12, so commit 3 of the sequence is already done** |
+| P4 | [#45](https://github.com/tskrlabs/hololive-ocg-wiki/issues/45) offline lies | `b2de00c` | "No cards found" on a network error |
+| P5 | [#49](https://github.com/tskrlabs/hololive-ocg-wiki/issues/49) silent partial add | `51628c8` | `CardItem` discarded `addCardToDeck`'s return |
+| P6 | [#51](https://github.com/tskrlabs/hololive-ocg-wiki/issues/51) unnamed buttons | `77720d0` | 4 of 8 header controls had no accessible name |
+
+The four UI fixes were verified **in Chromium**, not only by unit test. Three of the six
+are precisely the class of bug pure-function tests cannot see, which is F-019's lesson;
+the browser was the check that mattered.
+
+#### What the prerequisites changed for the rework
+
+Three findings that alter commits already in the sequence below:
+
+- **`<Toaster />` was never mounted.** A `TODO(commit 3)` in `app.vue` outlived the Phase 5
+  commit it named, so **22 `toast.*` call sites across 8 components** had been silent since
+  the scaffold. #49's stated fix assumed vue-sonner worked "because it is used elsewhere" —
+  the *calls* existed, the renderer did not. Restoring it made twenty never-seen messages
+  live at once; [#57](https://github.com/tskrlabs/hololive-ocg-wiki/issues/57) tracks the
+  reading pass, and **commit 12 is where it belongs**.
+- **D11's `Math.round` does not hold its own band** — it peaks at a 284px tile. `floor`
+  plus a 150–240px clamp reproduces #43's measured table exactly, and is what shipped.
+  Commit 4 recomputes this for the 280px rail, so note the property to preserve: *strict*
+  tile monotonicity is unachievable for any integer-column grid, because crossing into
+  another column always shrinks the tile. What must hold is the **envelope** — the smallest
+  tile each column count produces must not fall as columns are added. The old ladder broke
+  that three times. (D13 is satisfied as-is: 2 columns at every width from 320–430px, a
+  180px tile at 375px against D13's measured 170px.)
+- **P3 changed the scroll contract for every page.** The shell no longer scrolls as a
+  document, so each page owns its scroll region and must mark it `min-h-0 overflow-y-auto`.
+  `min-h-0` is load-bearing — a flex child's default `min-height: auto` refuses to shrink
+  below its content and would push the footer off-screen, restoring the bug elsewhere.
+  Commits 3, 4 and 12 all touch this shell.
+
+Three more were ruled on by the maintainer and **closed as `wontfix`** — none blocks:
+
+| issue | ruling |
+|---|---|
+| [#50](https://github.com/tskrlabs/hololive-ocg-wiki/issues/50) no per-card copy limit | **keep as-is** — this is a wiki and a deck sketchpad, not a legality validator; a wrong rule would reject legal decks |
+| [#41](https://github.com/tskrlabs/hololive-ocg-wiki/issues/41) site-wide soft 404s | **skipped on cost** — Worker-first on every navigation makes each page view a billable invocation. Card URLs are still covered: D7 extends `run_worker_first` to `/*/card/*` only, so the URLs in the sitemap return real 404s |
+| [#56](https://github.com/tskrlabs/hololive-ocg-wiki/issues/56) English-only disclaimer | **accepted** — it quotes Cover's English-language guidelines; D19 already scoped the dialog to restyle only |
+
+### ✅ The commit sequence is done
+
+All sixteen landed on `develop` as `95c75fc..441c885`, one commit each, `make check` green
+after every one. **Deployed 2026-08-02** with D26 — see
+[the deploy record](#-phase-8--d26-deployed-2026-08-02).
+
+Each row is independently green under `make check`.
+
+| # | commit | why here |
+|---|---|---|
+| 1 ✅ `4942d3a` | tokens — variant D into `tailwind.css`, `--border-strong`, type + spacing scale, `fonts:` block, reduced-motion | everything downstream refers to these |
+| 2 ✅ `6c24fdd` | `useCardDensity` + tile: art + name + card number, density persisted | closes [#29](https://github.com/tskrlabs/hololive-ocg-wiki/issues/29); needs 1 |
+| ~~3~~ | ~~flex-column shell; header/footer stop being sticky; drop `pb-[65vh]`, un-float the summary~~ | ✅ **done in `078b126`** — this row *is* D12, and P3 could not fix #44 without doing all of it |
+| 4 ✅ `fdbbf90` | the filter rail from `lg`; search + count move in; per-group pending markers | needs 1, ~~3~~ |
+| 5 ✅ `06b500a` | query state as a discriminated union; skeletons; error + empty states; `SimpleImage` placeholder | needs 1; **P4 landed the error/empty split** (`b2de00c`) — the union itself is still this commit's job |
+| 6 ✅ `49bb856` | migration: unique index on `image_key` | before anything reads by key |
+| 7 ✅ `2a10d57` | `GET /api/cards/by-key/:set/:stem` + `cardMetaTags()` + its golden test | needs 6 |
+| 8 ✅ `8d8f123` | extract `CardDetail`; dialog becomes a thin wrapper | no behaviour change |
+| 9 ✅ `1766f7a` | the card route + dialog pushes/pops history | needs 7, 8 |
+| 10 ✅ `0539b0b` | `HTMLRewriter` head injection; `run_worker_first` extended to `/*/card/*`; real 404s | needs 7, 9 |
+| 11 ✅ `850af0c` | sitemap from a committed `card-urls.json`; pipeline emits it; `canonicalLowercase: false` | 2,465 URLs × 7 locales. `canonicalLowercase` was **not** the live bug #33 predicted — `app.vue` already outranked it |
+| 12 ✅ `eceb35b` | deck drawer; editing mode; delete `DeckDetailCompactModeCardList` | closes [#57](https://github.com/tskrlabs/hololive-ocg-wiki/issues/57) — the reading pass found **four real defects**, not just stale copy. The compact list was already dead code |
+| 13 ✅ `5d6e394` | header overflow menu, `.sr-only` labels, scroller focus, `alt` text | labels landed in P6 (`77720d0`), `alt` text in commit 5; this was the menu + **two focus-loss bugs**, both reproduced in Chromium. #48 §6's roving tabindex is deferred to [#60](https://github.com/tskrlabs/hololive-ocg-wiki/issues/60) |
+| 14 ✅ `53496d2` | `/status` narrowed; delete the three status components | needs 1, 2 |
+| 15 ✅ `3c6e73d` | `apps/web/tests/smoke.sh` + `make check-site` | 39 checks over two builds; verified by sabotage, which corrected two of them |
+| 16 ✅ `441c885` | delete `app/components/prototype/` and its route | the design has landed for real |
+
+### ✅ Done when — all four met
+
+Verified 2026-08-01, on `develop`:
+
+| clause | result |
+|---|---|
+| `make check` green | ✅ 366 Python, 21 schema TS, 29 Worker unit, every endpoint check, 148 web tests |
+| `make check-site` green | ✅ **new target** — 39 checks over the generated site |
+| a card resolves with injected metadata | ✅ `/tc/card/hSD01/hSD01-001_OSR` — title, canonical, `og:image`, `hreflang` in the served bytes |
+| a real 404 for a bad key | ✅ `/tc/card/hSD01/NOPE` → **404**, and the good key → 200 |
+| the sitemap lists card URLs | ✅ 2,465 per locale × 7, 1.8 MB total |
+| the prototype is gone | ✅ deleted; no file emitted, and the route renders the app's 404 |
+
+**Phase 7 is unblocked**, and Phase 8 is deployed — see the record below.
+
+### ✅ Phase 8 + D26 — deployed 2026-08-02
+
+Version `82c4ad6b` on `hololive-ocg-wiki-tskrlabs-com`, 390 assets (52 unchanged),
+644 KiB / 104 KiB gzipped, 20 ms startup. **The site is still `noindex`**: this shipped the
+rebuild behind the pre-launch guard, not the launch.
+
+**Order was forced, and it is not the obvious one.** The migrations went first. Deploying
+the Worker before `0002` would have made every card page a 2,463-row scan — and card pages
+are billable invocations with 17,241 sitemap URLs aimed at them, against the read tier this
+site has already breached once (F-014).
+
+| step | result |
+|---|---|
+| `0002` unique index | 2,464 rows written — which is also proof no duplicate `image_key` existed |
+| `0003` source_hash | applied; column present |
+| `seed --confirm` | **0 cards rewritten**, 2,463 pure backfills. Estimate 2,463, actual 2,463 |
+| baseline check | 0 rows left with a NULL `source_hash`; a second `--dry` reports "already up to date" |
+| `EXPLAIN QUERY PLAN` on a card lookup | `SEARCH cards USING INDEX idx_cards_image_key` |
+
+The seed is the first real exercise of D26's backfill path, and it behaved as designed:
+`unchanged 2463` with a separate backfill line, and the source report reading 0/0/0 under
+the honest note that no baseline existed yet. The run after it drops that note.
+
+**Verified against the real 2,463 cards** — every Phase 3/4 number came back exactly:
+
+| check | expected | actual |
+|---|---|---|
+| `フブキ` search | 73 | **73** |
+| `name=白上フブキ&locale=en` | 44 | **44** |
+| `filter-options.names` | 296 | **296** |
+| `status.counts.total` | 2,463 | **2,463** |
+| `info.contents` | 3 | **3** |
+| `a AND` (FTS5 syntax error) | 200 | **200** |
+| 51-id batch / 50-id batch | 400 / 50 cards | **400 / 50** |
+| `tag=0期生` (#26) | non-zero | **165** |
+| `colors=blue` includes fused | ~329 | **331** (the set grew 2,448 → 2,463) |
+
+And the four things that were **broken before this deploy**, because production was still
+running Phase 5's Worker:
+
+| check | before | after |
+|---|---|---|
+| `/api/cards/by-key/hSD01/hSD01-001_OSR` | 404 | **200** |
+| a bad card key (`/tc/card/hSD01/NOPE`) | 200 | **404** |
+| injected `og:title` on a card page | absent | **present in the served bytes** |
+| `/api/status` source vocabulary | absent | **present**, artifact 329 KB → **644 bytes** |
+
+The pre-launch guard is intact: `noindex` present on `/tc/`, `robots.txt` disallowing, and
+`NUXT_PUBLIC_LAUNCHED` unset at build time.
+
+### What the rework found
+
+Nine pre-existing bugs were found *specifying* it (ADR 0009); building it found more, all
+of the same class — wiring and composition, invisible to pure-function tests, which is
+F-019's lesson holding for a second phase:
+
+- the site's `<Toaster />` was never mounted, so **22 toast calls across 8 components** had
+  been silent since Phase 5 ([#57](https://github.com/tskrlabs/hololive-ocg-wiki/issues/57),
+  closed) — and reading them found a clipboard check running *after* the copy, an
+  undismissable error toast, and one guard written five times
+- **keyboard focus was lost to `<body>` twice** — once when `RecycleScroller` recycled the
+  focused tile, once when closing a card dialog (Reka blurs the element it restored to,
+  during unmount). Both reproduced in Chromium first
+- **status, GitHub and Discord were desktop-only** — `hidden sm:inline-flex` meant a phone
+  silently lost all three
+- `canonicalLowercase` was **not** the live bug #33 predicted: `app.vue`'s own canonical
+  already outranked it. Turned off anyway, as a latent one
+- two i18n gaps ([#58](https://github.com/tskrlabs/hololive-ocg-wiki/issues/58)), now
+  guarded by a coverage test over 4 enums × 7 locales *and* every new UI string
+
+Two follow-ups are open and neither blocks launch:
+[#59](https://github.com/tskrlabs/hololive-ocg-wiki/issues/59) (closing a card dialog loses
+the grid's scroll position — a routing restructure) and
+[#60](https://github.com/tskrlabs/hololive-ocg-wiki/issues/60) (the card grid is ~40 tab
+stops; #48 §6's roving tabindex).
 
 ## Phase 2 — R2 publish
 

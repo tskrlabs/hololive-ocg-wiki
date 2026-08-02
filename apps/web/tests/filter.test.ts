@@ -21,8 +21,10 @@ import {
 
 import {
   createEmpty,
+  FILTER_SECTIONS,
   FILTERABLE_COLORS,
   isActive,
+  pendingSections,
   toApiParams,
 } from "../app/composables/filter-states";
 
@@ -137,5 +139,87 @@ describe("toApiParams", () => {
       colors: ["white"],
       cardTypes: ["oshiCharacter"],
     });
+  });
+});
+
+/**
+ * Per-group pending markers (D10, #36 §5).
+ *
+ * The rail shows all seven groups at once, so the single global dot the sheet's trigger
+ * carried is too coarse: it says something is uncommitted without saying *what*. Inside a
+ * sheet that was adequate, because the sheet showed one group at a time and closed on
+ * Apply.
+ */
+describe("pendingSections", () => {
+  it("reports nothing when the draft matches what is applied", () => {
+    expect(pendingSections(createEmpty(), createEmpty())).toEqual([]);
+  });
+
+  it("names only the group that changed", () => {
+    const applied = createEmpty();
+    const draft = createEmpty();
+    draft.colors.blue = true;
+
+    expect(pendingSections(draft, applied)).toEqual(["colors"]);
+  });
+
+  it("names several at once, in panel order", () => {
+    // Order matters: the markers are read down the rail, so a stable order is what makes
+    // "three groups are pending" checkable at a glance.
+    const applied = createEmpty();
+    const draft = createEmpty();
+    draft.bloomLevel.first = true;
+    draft.name = "白上フブキ";
+    draft.rarity.HR = true;
+
+    expect(pendingSections(draft, applied)).toEqual(["name", "rarity", "bloomLevel"]);
+  });
+
+  it("ignores search, which applies immediately rather than through the draft", () => {
+    // Search is debounced and separate from the draft filters (#36 §5); forcing it
+    // through Apply would be a regression, so it can never be pending.
+    const applied = createEmpty();
+    const draft = createEmpty();
+    draft.search = "フブキ";
+
+    expect(pendingSections(draft, applied)).toEqual([]);
+  });
+
+  it("clears once the draft is applied", () => {
+    const draft = createEmpty();
+    draft.set = "hBP01";
+
+    expect(pendingSections(draft, createEmpty())).toEqual(["set"]);
+    // The applied state is a copy of the draft — which is what `applyFilters` does.
+    expect(pendingSections(draft, structuredClone(draft))).toEqual([]);
+  });
+
+  it("reports a group turned back off, not just one turned on", () => {
+    // Un-ticking a box that *is* applied is equally uncommitted, and a marker that only
+    // appears when adding a filter would leave the removal invisible.
+    const applied = createEmpty();
+    applied.colors.blue = true;
+    const draft = structuredClone(applied);
+    draft.colors.blue = false;
+
+    expect(pendingSections(draft, applied)).toEqual(["colors"]);
+  });
+
+  it("covers every group the panel renders", () => {
+    // A section added to the filter but missed here would never show a marker — it would
+    // simply be a group whose edits are silently uncommitted.
+    const applied = createEmpty();
+    for (const section of FILTER_SECTIONS) {
+      const draft = createEmpty();
+      const value = draft[section];
+      if (typeof value === "string") {
+        (draft[section] as string) = "changed";
+      } else {
+        const first = Object.keys(value)[0]!;
+        (value as Record<string, boolean>)[first] = true;
+      }
+      expect(pendingSections(draft, applied), section).toEqual([section]);
+    }
+    expect(FILTER_SECTIONS).toHaveLength(7);
   });
 });

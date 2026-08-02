@@ -30,7 +30,13 @@ from holo_schema.enums import SOURCE_LOCALE
 
 from . import transform
 from .glossary import load_all
-from .paths import cards_json, ensure_dirs, filter_options_json, notices_json
+from .paths import (
+    card_urls_json,
+    cards_json,
+    ensure_dirs,
+    filter_options_json,
+    notices_json,
+)
 from .translate import units
 from .translate.cache import TranslationCache, field_keys
 from .translate.cache_v2 import TranslationCacheV2
@@ -293,6 +299,44 @@ def save_notices(collection: NoticeCollection) -> int:
     payload = collection.model_dump(mode="json", exclude_none=True)
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     notices_json().write_text(text, encoding="utf-8")
+    return len(text.encode("utf-8"))
+
+
+def card_urls(collection: CardCollection) -> list[dict[str, str]]:
+    """Every card's `image_key` and `card_number`, sorted by key.
+
+    This is the whole sitemap input: `image_key` is the URL's two path segments verbatim
+    (D6), so `/{locale}/card/{image_key}` needs no lookup and no second source of truth.
+    `card_number` rides along because it is what a human reads in a diff — `hBP05` gaining
+    100 keys says nothing, `hBP05-001…` says which cards.
+
+    **Sorted by `image_key`** so a new card set appears as an insertion rather than
+    reshuffling 2,463 lines. Card order in `cards.json` is scrape order, which is not
+    stable across runs.
+
+    Nothing else is included. Names would be seven locales of churn for a file whose only
+    consumer emits `<loc>`, and `lastmod` per card is not knowable — the pipeline has no
+    per-card modification date, only the build's own timestamp.
+    """
+    return sorted(
+        (
+            {"image_key": card.image_key, "card_number": card.card_number}
+            for card in collection.cards
+        ),
+        key=lambda entry: entry["image_key"],
+    )
+
+
+def save_card_urls(collection: CardCollection) -> int:
+    """Write the committed `card-urls.json`, returning the byte size.
+
+    Unlike its neighbours this writes into `packages/schema/`, not `BUILD_DIR` — see
+    `paths.card_urls_json()`. `make check` fails if the committed copy disagrees.
+    """
+    path = card_urls_json()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    text = json.dumps(card_urls(collection), ensure_ascii=False, indent=2) + "\n"
+    path.write_text(text, encoding="utf-8")
     return len(text.encode("utf-8"))
 
 

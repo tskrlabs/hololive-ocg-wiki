@@ -22,6 +22,7 @@ import {
   CARD_TYPES,
   COLORS,
   DEFAULT_LOCALE,
+  FILTERABLE_CARD_TYPES,
   FUSED_COLORS,
   LOCALES,
   MAIN_CARD_TYPES,
@@ -77,5 +78,131 @@ describe("the generated contract is reachable from the site", () => {
       for (const part of parts ?? []) expect(COLORS).toContain(part);
     }
     expect(FUSED_COLORS.blue_red).toEqual(["blue", "red"]);
+  });
+});
+
+/**
+ * Every enum member the filter UI renders has a string in every locale
+ * ([#58](https://github.com/tskrlabs/hololive-ocg-wiki/issues/58)).
+ *
+ * This is the seam the generated contract cannot cover on its own, and it had **two live
+ * gaps**: `cardTypes.supportStaff` and `rarity.HR` were absent from all seven locale
+ * files, so both chips rendered their own i18n key — a literal `cardTypes.supportStaff` —
+ * in every language, in production.
+ *
+ * The reason it survived is worth stating, because the tests above look like they cover
+ * it and do not. The enums are *generated*, so `createEmpty()` correctly produced a
+ * checkbox for each member and `filter.test.ts` asserted exactly that; the checkbox was
+ * real, the test passed, and the label was a raw key. The translations are hand-written
+ * and nothing compared the two halves. `make check` was green the whole time.
+ *
+ * `rarity.HR` is the sharper case: ADR 0001 records `HR` as one of the drift bugs the
+ * generated contract was built to end, and the test above asserts `RARITIES` contains it.
+ * It did. It simply had no name to render.
+ *
+ * A hand audit is not the answer either — it found `supportStaff` and missed `HR`.
+ */
+describe("the filter UI can name every enum member it offers (#58)", () => {
+  const LOCALE_STRINGS = import.meta.glob("../i18n/locales/*.json", {
+    eager: true,
+    import: "default",
+  }) as Record<string, Record<string, Record<string, string>>>;
+
+  /** `group` is the i18n block; `members` the generated enum it must cover. */
+  const COVERAGE: [string, readonly string[]][] = [
+    ["cardTypes", FILTERABLE_CARD_TYPES],
+    ["rarity", RARITIES],
+    ["bloomLevel", BLOOM_LEVELS],
+    ["colors", COLORS],
+  ];
+
+  it("has a locale file for every locale the contract declares", () => {
+    // Otherwise the sweep below could pass by simply not looking at a language.
+    const found = Object.keys(LOCALE_STRINGS)
+      .map((path) => path.split("/").pop()!.replace(".json", ""))
+      .sort();
+    expect(found).toEqual([...LOCALES].sort());
+  });
+
+  for (const [group, members] of COVERAGE) {
+    it(`names every ${group} in all seven locales`, () => {
+      const missing: string[] = [];
+
+      for (const [path, strings] of Object.entries(LOCALE_STRINGS)) {
+        const locale = path.split("/").pop()!.replace(".json", "");
+        for (const member of members) {
+          if (!strings[group]?.[member]) missing.push(`${locale}.${group}.${member}`);
+        }
+      }
+
+      expect(missing).toEqual([]);
+    });
+  }
+
+  /**
+   * The same sweep for the strings commit 12 added (#57).
+   *
+   * These are not enum-derived, so the loop above cannot reach them — but they fail
+   * identically: a missing key renders as its own dotted path, in production, in one
+   * language, with `make check` green. That is exactly what #58 found for
+   * `cardTypes.supportStaff`, and toasts are *more* exposed to it than filter chips,
+   * because #57's whole point is that nobody had ever seen these messages.
+   *
+   * Listed explicitly rather than globbed from `en.json`: the point is that a key added
+   * for one locale must be added for all seven, and deriving the list from a locale file
+   * would make the test agree with whichever file it read.
+   */
+  const UI_KEYS = [
+    "deck.guard.selectFirst",
+    "deck.deleted",
+    "deck.editing.on",
+    "deck.editing.off",
+    "deck.editing.toggle",
+    "deck.panel.open",
+    "deck.panel.close",
+    "deck.panel.empty",
+    "deck.removeAllCopies",
+    "clipboard.copied",
+    "clipboard.unsupported",
+    "clipboard.failed",
+    "errors.deck.noCode",
+    "errors.deck.invalidCode",
+    "errors.deck.invalidCodeDetail",
+    "errors.deck.routeMissing",
+    // The narrowed status page (D19).
+    "status.validInDB",
+    "status.lastUpdated",
+    "status.builtAt",
+    "status.summary",
+    "errors.status.title",
+    "errors.status.detail",
+    // Its source-side diff (D26). `reseed.*` are the derived sentences — the page picks
+    // one from the shape of the data, so *all three* must exist in every locale or a
+    // reader in one language sees a dotted path where the explanation should be.
+    "status.source.heading",
+    "status.source.added",
+    "status.source.edited",
+    "status.source.faq",
+    "status.source.quiet",
+    "status.source.more",
+    "status.reseed.none",
+    "status.reseed.ours",
+    "status.reseed.mixed",
+  ];
+
+  it("names every deck and clipboard message in all seven locales (#57)", () => {
+    const missing: string[] = [];
+
+    for (const [path, strings] of Object.entries(LOCALE_STRINGS)) {
+      const locale = path.split("/").pop()!.replace(".json", "");
+      for (const key of UI_KEYS) {
+        const value = key
+          .split(".")
+          .reduce<unknown>((node, part) => (node as Record<string, unknown>)?.[part], strings);
+        if (typeof value !== "string" || !value) missing.push(`${locale}.${key}`);
+      }
+    }
+
+    expect(missing).toEqual([]);
   });
 });

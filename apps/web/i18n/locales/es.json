@@ -13,13 +13,7 @@
   "Oshi": "Oshi",
   "Main Deck": "Mazo Principal",
   "Yell Deck": "Mazo Yell",
-  "Please select a deck to continue.": "Por favor, selecciona un mazo para continuar.",
-  "Edit": "Editar",
   "Select one deck to edit": "Selecciona un mazo para editar",
-  "Clipboard is not supported in this browser.": "El portapapeles no es compatible con este navegador.",
-  "Copied deck code URL.": "URL del código de mazo copiada.",
-  "Deck detail page not found.": "Página de detalles del mazo no encontrada.",
-  "Deck deleted successfully!": "¡Mazo eliminado correctamente!",
   "Options": "Opciones",
   "Copy Deck Code URL": "Copiar URL del código de mazo",
   "Go to Detail Page": "Ir a la página de detalles",
@@ -32,14 +26,11 @@
   "Deck Name": "Nombre del Mazo",
   "Author": "Autor",
   "Create Deck": "Crear Mazo",
-  "No deck code provided.": "No se proporcionó código de mazo.",
-  "Failed to import shared deck.": "Error al importar el mazo compartido.",
   "Card List": "Lista de Cartas",
   "Saved In Local Storage": "Guardado en Almacenamiento Local",
   "Can Import/Update This Deck": "Puedes Importar/Actualizar Este Mazo",
   "Import This Deck": "Importar Este Mazo",
   "Official Site": "Sitio Oficial",
-  "Decks": "Mazos",
   "No cards to display": "No hay cartas para mostrar",
   "Invalid deck code": "Código de mazo inválido",
   "Deck updated successfully": "Mazo actualizado correctamente",
@@ -114,22 +105,24 @@
     "supportItem": "Soporte・Ítem",
     "supportItemLimited": "Soporte・Ítem・LIMITADO",
     "supportMascot": "Soporte・Mascota",
+    "supportStaff": "Soporte・Personal",
     "supportStaffLimited": "Soporte・Personal・LIMITADO"
   },
   "rarity": {
     "C": "C",
-    "OC": "OC",
-    "OSR": "OSR",
-    "OUR": "OUR",
-    "P": "P",
+    "U": "U",
     "R": "R",
     "RR": "RR",
-    "S": "S",
-    "SEC": "SEC",
     "SR": "SR",
-    "SY": "SY",
-    "U": "U",
-    "UR": "UR"
+    "HR": "HR",
+    "UR": "UR",
+    "OSR": "OSR",
+    "OUR": "OUR",
+    "SEC": "SEC",
+    "OC": "OC",
+    "P": "P",
+    "S": "S",
+    "SY": "SY"
   },
   "bloomLevel": {
     "debut": "Debut",
@@ -516,181 +509,113 @@
     "ライブスタートデッキ 森カリオペ": "Mazo Inicial de Directo Mori Calliope",
     "ライブスタートデッキ 白上フブキ": "Mazo Inicial de Directo Shirakami Fubuki"
   },
-  "howToUse": {
-    "title": "Cómo Usar",
-    "description": "Aprende a usar la Hololive OCG Wiki para buscar cartas, construir mazos y compartirlos con otros.",
-    "backToCards": "Volver a la Lista de Cartas",
-    "tableOfContents": "Tabla de Contenidos",
-    "sections": {
-      "searching": "Buscar Cartas",
-      "filtering": "Filtrar Cartas",
-      "deckBuilder": "Constructor de Mazos",
-      "cardDetails": "Detalles de Carta",
-      "sharing": "Compartir y Almacenamiento",
-      "tips": "Consejos y Trucos"
-    },
-    "introduction": {
-      "title": "Bienvenido a Hololive OCG Wiki",
-      "description": "Esta guía completa te ayudará a navegar y aprovechar al máximo la wiki del Juego de Cartas Oficial de Hololive. Tanto si eres un nuevo jugador como un duelista experimentado, encontrarás todo lo necesario para buscar cartas, construir mazos y compartir tus creaciones con la comunidad."
-    },
-    "searching": {
-      "title": "Buscar Cartas",
-      "basicSearch": {
-        "title": "Búsqueda Básica",
-        "description": "Usa la barra de búsqueda en la parte superior para encontrar cartas por nombre, texto de habilidad o cualquier otra información.",
-        "examples": "Ejemplos: \"Tokino Sora\", \"Collab\", \"Azul\", \"Debut\""
-      },
-      "advancedSearch": {
-        "title": "Consejos de Búsqueda Avanzada",
-        "description": "Haz tus búsquedas más precisas con estos consejos:",
-        "tip1": "La búsqueda funciona en todo el texto de la carta, incluyendo habilidades y texto de ambientación",
-        "tip2": "Puedes buscar en múltiples idiomas: la wiki admite japonés, inglés, chino tradicional, indonesio, coreano, tailandés y español",
-        "tip3": "Los resultados de búsqueda se actualizan en tiempo real mientras escribes"
-      }
-    },
-    "filtering": {
-      "title": "Filtrar Cartas",
-      "cardType": {
-        "title": "Tipos de Carta",
-        "description": "Filtra por tipos de carta específicos para encontrar exactamente lo que necesitas para tu mazo:"
-      },
-      "colors": {
-        "title": "Colores",
-        "description": "Filtra cartas por sus requisitos de color. Selecciona múltiples colores para encontrar cartas multicolor:"
-      },
-      "rarity": {
-        "title": "Rareza",
-        "description": "Encuentra cartas por su nivel de rareza, desde cartas comunes hasta tesoros ultra raros:"
-      },
-      "reset": {
-        "title": "Restablecer Filtros",
-        "description": "Limpia todos los filtros activos para empezar de nuevo:"
-      }
-    },
-    "deckBuilder": {
-      "title": "Construir Mazos",
-      "creating": {
-        "title": "Crear Tu Primer Mazo",
-        "step1": "Haz clic en el botón 'Nuevo Mazo' en el panel de mazos en la parte inferior de la pantalla",
-        "step2": "Dale un nombre a tu mazo y opcionalmente añade tu nombre como autor",
-        "step3": "Empieza a añadir cartas haciendo clic en ellas en la lista de cartas: se añadirán a tu mazo activo",
-        "step4": "Cambia entre las pestañas Oshi, Mazo Principal y Mazo Yell para organizar correctamente tus cartas"
-      },
-      "deckTypes": {
-        "title": "Tipos de Mazo",
-        "oshi": "Tu Oshi Holomem: la estrella de tu mazo",
-        "main": "Cartas del mazo principal, incluyendo Holomems y cartas de Soporte",
-        "yell": "Cartas Cheer que proporcionan energía y apoyo"
-      },
-      "management": {
-        "title": "Gestión de Mazos",
-        "edit": "Editar el nombre del mazo e información del autor",
-        "copy": "Copiar URL del código de mazo para compartir con otros",
-        "share": "Generar enlaces compartibles para tus mazos",
-        "delete": "Eliminar mazos que ya no necesitas"
-      }
-    },
-    "cardDetails": {
-      "title": "Entender los Detalles de la Carta",
-      "description": "Haz clic en cualquier carta para ver su información detallada. Cada carta muestra estadísticas completas y habilidades:",
-      "basicInfo": {
-        "title": "Información Básica"
-      },
-      "gameInfo": {
-        "title": "Mecánicas de Juego"
-      }
-    },
-    "sharing": {
-      "title": "Compartir y Almacenamiento",
-      "deckCodes": {
-        "title": "Códigos de Mazo",
-        "description": "Comparte tus mazos con otros usando URLs de códigos de mazo generados:",
-        "copy": "Copia la URL del código de mazo desde el menú de opciones del mazo",
-        "import": "Importa mazos compartidos visitando la URL del código de mazo"
-      },
-      "localStorage": {
-        "title": "Almacenamiento Local",
-        "description": "Tus mazos se guardan automáticamente en el almacenamiento local de tu navegador.",
-        "warning": "Recuerda que los mazos se guardan localmente en tu navegador. Limpiar los datos del navegador eliminará tus mazos guardados, así que considera hacer una copia de seguridad de los códigos de mazo importantes."
-      }
-    },
-    "tips": {
-      "title": "Consejos y Trucos",
-      "performance": {
-        "title": "Consejos de Rendimiento",
-        "tip1": "Usa filtros específicos para reducir el número de cartas mostradas y mejorar el rendimiento",
-        "tip2": "La búsqueda y el filtrado funcionan en tiempo real: no es necesario presionar enter",
-        "tip3": "Activa el modo compacto para navegar más rápido por listas de cartas grandes"
-      },
-      "shortcuts": {
-        "title": "Teclado y Navegación",
-        "tip1": "Usa la barra de búsqueda para encontrar cartas específicas rápidamente",
-        "tip2": "Haz clic en las imágenes de las cartas para ver el arte en alta resolución",
-        "tip3": "Usa atrás/adelante del navegador para navegar entre los detalles de carta y la vista de lista"
-      },
-      "mobile": {
-        "title": "Uso en Móvil",
-        "tip1": "La interfaz es completamente responsiva y funciona perfectamente en dispositivos móviles",
-        "tip2": "Mantén pulsada una carta para acciones rápidas",
-        "tip3": "Los gestos de deslizamiento funcionan para navegar entre tipos de mazo"
-      },
-      "troubleshooting": {
-        "title": "Solución de Problemas",
-        "tip1": "Si las cartas no cargan, intenta recargar la página",
-        "tip2": "Limpia la caché del navegador si encuentras problemas de visualización",
-        "tip3": "Asegúrate de que JavaScript está habilitado para la funcionalidad completa"
-      }
-    },
-    "footer": {
-      "title": "¿Listo para Empezar?",
-      "description": "Ahora que sabes cómo usar la wiki, ¡empieza a explorar el increíble mundo de Hololive OCG!",
-      "startUsing": "Empezar a Usar la Wiki"
-    }
-  },
   "deck": {
     "seo": {
       "descriptionWithAuthor": "Mazo de Hololive OCG \"{deckName}\" creado por {author}. Ver composición del mazo con {mainCount} cartas del mazo principal, {yellCount} cartas yell y {oshiCount} carta(s) oshi.",
       "description": "Mazo de Hololive OCG \"{deckName}\". Ver composición del mazo con {mainCount} cartas del mazo principal, {yellCount} cartas yell y {oshiCount} carta(s) oshi."
-    }
+    },
+    "addedPartial": "Se han añadido {added} de {requested} — {section} está completo",
+    "sectionFull": "{section} está completo",
+    "nothingToRemove": "No hay nada que quitar",
+    "addCopies": "Añadir {count} de {name}",
+    "removeCopy": "Quitar una copia de {name}",
+    "guard": {
+      "selectFirst": "Selecciona un mazo primero."
+    },
+    "deleted": "Se eliminó \"{name}\".",
+    "editing": {
+      "on": "Editando",
+      "off": "Sin editar",
+      "toggle": "Alternar modo de edición"
+    },
+    "panel": {
+      "open": "Abrir mazo",
+      "close": "Cerrar mazo",
+      "empty": "No hay ningún mazo seleccionado. Elige uno en Mazos o crea uno nuevo."
+    },
+    "removeAllCopies": "Quitar todas las copias de {name}",
+    "myDecks": "Mis Mazos"
   },
   "status": {
     "title": "Estado de Datos",
     "description": "Estado de la base de datos de cartas — qué cartas son nuevas, actualizadas o faltan en la fuente oficial.",
-    "sourceTotal": "Total de la Fuente",
     "validInDB": "En la Base de Datos",
-    "skippedCount": "Omitidas",
     "lastUpdated": "Última Actualización",
-    "tabs": {
-      "new": "Nuevas",
-      "changed": "Actualizadas",
-      "qaUpdated": "FAQ Actualizado",
-      "removed": "Eliminadas",
-      "skipped": "Omitidas"
+    "builtAt": "Datos Generados",
+    "summary": "Los datos de las cartas se regeneran a partir de la lista oficial y se cargan en la base de datos. Estas fechas indican cuándo ocurrió por última vez.",
+    "source": {
+      "heading": "En la última actualización",
+      "added": "cartas añadidas a la lista oficial",
+      "edited": "cartas modificadas en la lista oficial",
+      "faq": "cartas con preguntas y respuestas nuevas o revisadas",
+      "quiet": "La lista oficial de cartas no publicó cambios en esta actualización.",
+      "more": "y {count} más"
     },
-    "badges": {
-      "new": "Nuevo",
-      "changed": "Actualizado",
-      "qaUpdated": "FAQ",
-      "removed": "Eliminado",
-      "skipped": "Omitido"
+    "reseed": {
+      "none": "No se reescribió ningún dato de cartas en esta actualización.",
+      "ours": "Reconstruimos los datos de {count} cartas en esta actualización — un cambio de nuestro lado, como volver a traducirlas. Las cartas en sí no han cambiado en la fuente oficial.",
+      "mixed": "Se reescribieron los datos de {count} cartas en esta actualización, lo que incluye los cambios anteriores y cualquier reconstrucción de nuestro lado."
+    }
+  },
+  "errors": {
+    "retry": "Reintentar",
+    "cards": {
+      "offline": {
+        "title": "No se puede acceder a la base de datos de cartas",
+        "detail": "Comprueba tu conexión e inténtalo de nuevo."
+      },
+      "server": {
+        "title": "La base de datos de cartas no responde",
+        "detail": "Algo ha fallado por nuestra parte. Inténtalo de nuevo en un momento."
+      },
+      "timeout": {
+        "title": "La solicitud ha caducado",
+        "detail": "La base de datos de cartas ha tardado demasiado en responder. Inténtalo de nuevo."
+      }
     },
-    "views": {
-      "list": "Lista",
-      "table": "Tabla"
+    "filterOptions": {
+      "title": "No se han podido cargar las opciones de filtro",
+      "detail": "Las listas siguientes pueden estar incompletas."
     },
-    "sort": {
-      "label": "Ordenar por",
-      "cardNumber": "Número de Carta",
-      "name": "Nombre"
+    "card": {
+      "notFound": {
+        "title": "Carta no encontrada",
+        "detail": "Esta carta no existe. Puede que se haya renumerado o que el enlace sea incorrecto."
+      }
     },
-    "noChanges": "No hay cambios en esta categoría.",
-    "skippedReason": "Campos faltantes",
-    "removedNote": "Estas cartas estaban en el conjunto de datos anterior pero ya no están en la fuente.",
-    "skippedNote": "Estas cartas existen en los datos de la fuente pero les faltan campos obligatorios y no se pueden añadir a la base de datos.",
-    "fullModeNote": "Este informe fue generado en modo completo. Las columnas Nuevo / Actualizado / FAQ / Eliminado reflejan las diferencias entre fuentes y pueden estar vacías hasta la próxima ejecución de migración incremental.",
-    "officialTotal": "El sitio oficial reporta {total} cartas",
-    "dbTotal": "Nuestra base de datos tiene {valid} cartas válidas ({skipped} omitidas por datos incompletos)",
-    "loadMore": "Cargar más ({loaded} / {total})",
-    "viewDetail": "Ver detalles de la carta"
-  }
+    "deck": {
+      "noCode": "No se proporcionó ningún código de mazo.",
+      "invalidCode": "Este código de mazo no es válido",
+      "invalidCodeDetail": "Puede que el enlace esté incompleto o mal escrito. Los códigos de mazo distinguen mayúsculas y minúsculas.",
+      "routeMissing": "No se encontró la página de detalles del mazo."
+    },
+    "status": {
+      "title": "El estado no está disponible",
+      "detail": "El informe de estado aún no se ha publicado o no se pudo obtener."
+    }
+  },
+  "Toggle theme": "Cambiar tema",
+  "Change language": "Cambiar idioma",
+  "Source code on GitHub": "Código fuente en GitHub",
+  "Join the Discord server": "Unirse al servidor de Discord",
+  "About this site": "Acerca de este sitio",
+  "Filter (active)": "Filtro (filtros activos)",
+  "density": {
+    "label": "Densidad de cartas",
+    "comfortable": "Mostrar nombres",
+    "compact": "Solo ilustración"
+  },
+  "filter": {
+    "modified": "Modificado",
+    "clearGroup": "Borrar {group}"
+  },
+  "{total} cards": "{total} cartas",
+  "Card not found": "Carta no encontrada",
+  "Deck": "Mazo",
+  "clipboard": {
+    "copied": "URL del código de mazo copiada.",
+    "unsupported": "Este navegador no puede copiar al portapapeles.",
+    "failed": "No se pudo copiar: inténtalo de nuevo o copia la barra de direcciones."
+  },
+  "More": "Más"
 }

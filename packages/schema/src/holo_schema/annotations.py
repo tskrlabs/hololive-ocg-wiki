@@ -35,6 +35,10 @@ class Column:
     Args:
         sql_type: D1/SQLite column type.
         indexed: emit a `CREATE INDEX` for this column.
+        unique: emit `CREATE UNIQUE INDEX` instead. Implies `indexed`, and says the
+            column is an *alternate key* — something a row can be looked up by, one
+            row per value. The database then refuses a duplicate rather than serving
+            an ambiguous answer.
         primary_key: this column is the table's primary key.
         json_array: the value is a list stored as a JSON string. SQLite has no array
             type, so `baton_touch_types` is TEXT holding `'["null"]'`. Only for lists
@@ -44,6 +48,7 @@ class Column:
 
     sql_type: SqlType = "TEXT"
     indexed: bool = False
+    unique: bool = False
     primary_key: bool = False
     json_array: bool = False
 

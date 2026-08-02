@@ -7,7 +7,7 @@
 # once per clone to have `make check` run automatically before each commit.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup hooks generate golden fixtures check check-schema check-py check-ts check-api check-web typecheck dev dev-api dev-web preview clean
+.PHONY: help setup hooks generate golden golden-meta fixtures check check-schema check-py check-ts check-api check-web check-site typecheck dev dev-api dev-web preview clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -24,18 +24,24 @@ hooks: ## Enable the pre-commit hook (run once per clone)
 	@echo "✓ pre-commit hook enabled — 'make check' now runs before each commit"
 	@echo "  disable with: git config --unset core.hooksPath"
 
-generate: ## Regenerate JSON Schema, TypeScript, D1 DDL, fixtures.sql and the fixture artifacts
+generate: ## Regenerate JSON Schema, TypeScript, D1 DDL, fixtures.sql, the fixture artifacts and the card URLs
 	uv run python packages/schema/scripts/generate.py
 	uv run python packages/schema/scripts/generate_ddl.py
 	uv run python packages/schema/scripts/generate_fixtures_sql.py
 	uv run python packages/schema/scripts/generate_i18n.py
 	uv run python fixtures/build_local_artifacts.py
+	@# The sitemap's URL list. Rewritten only when `pipeline/build/cards.json` exists —
+	@# it describes all 2,463 real cards, not the 34 fixtures, so it has no other source.
+	uv run python packages/schema/scripts/check_card_urls.py
 
 fixtures: ## Re-select the fixture card set (needs `holo-data build` output)
 	uv run python packages/schema/scripts/build_fixtures.py
 
 golden: ## Regenerate the localize() golden files from the Python reference
 	uv run python packages/schema/scripts/golden.py
+
+golden-meta: ## Regenerate the card-metadata golden file, then read the diff
+	@node packages/schema/scripts/golden-meta.ts
 
 check: check-schema check-py check-ts check-api check-web typecheck ## Run every verification
 	@echo ""
@@ -69,6 +75,7 @@ check-schema: ## Fail if the committed generated files are stale
 	@uv run python packages/schema/scripts/generate_fixtures_sql.py --check
 	@uv run python packages/schema/scripts/generate_i18n.py --check
 	@uv run python fixtures/build_local_artifacts.py --check
+	@uv run python packages/schema/scripts/check_card_urls.py --check
 
 check-py: ## Run the Python tests (schema + pipeline)
 	@uv run pytest packages/schema/tests pipeline/tests -q
@@ -82,6 +89,17 @@ check-api: ## Run the Worker's unit tests and the endpoint smoke test
 
 check-web: ## Run the site's unit tests (the pure modules — ADR 0006)
 	@npm test --workspace @holo/web --silent
+
+check-site: ## Build the site and assert what `nuxt generate` actually emitted
+	@# Deliberately **not** part of `make check` (ADR 0009 D24). It generates the site
+	@# twice — once pre-launch, once with indexing on — and `nuxt generate` alone is ~11s
+	@# against `make check`'s ~46s total; the pre-commit hook should stay fast.
+	@#
+	@# What it covers is the build output, which no unit test can see: that the prototype
+	@# route did not ship, that the pre-launch build is still unindexable, that the fonts
+	@# were downloaded, and that the sitemap lists every card URL with its casing intact.
+	@# Each of those is a bug this repo has actually had.
+	@apps/web/tests/smoke.sh
 
 typecheck: ## Typecheck the generated TypeScript, the Worker and the site
 	@npm run typecheck --workspace @holo/schema --silent

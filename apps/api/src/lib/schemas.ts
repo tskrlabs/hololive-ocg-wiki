@@ -128,3 +128,22 @@ export const cardNumberParamSchema = z
   .min(1)
   .max(50)
   .regex(/^[a-zA-Z0-9_-]+$/, "must be alphanumeric");
+
+/**
+ * One segment of an `image_key` — a set folder or a card stem (ADR 0009 D6).
+ *
+ * The same character class as a card number, and that is a measured fact rather than an
+ * assumption: across all 2,463 keys, **zero** segments require percent-encoding, every
+ * key is exactly `set/stem`, and the longest segment is well inside 50. So a segment that
+ * fails this regex cannot name a real card, and rejecting it here keeps a malformed URL
+ * from reaching D1 at all.
+ *
+ * Case is preserved, not normalised: the stored form is canonical (`hSD01/hSD01-001_OSR`)
+ * and the route redirects a wrong-case URL rather than resolving it silently.
+ */
+export const imageKeySegmentSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(50)
+  .regex(/^[a-zA-Z0-9_-]+$/, "must be alphanumeric");

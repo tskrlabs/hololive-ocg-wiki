@@ -10,9 +10,12 @@
       "types": "./dist/index.d.ts"
     },
     "./enums": "./dist/enums.ts",
-    "./localize": "./src/localize.ts"
+    "./localize": "./src/localize.ts",
+    "./card-meta": "./src/cardMeta.ts",
+    "./card-urls": "./data/card-urls.json"
   },
   "files": [
+    "data",
     "dist",
     "src"
   ],

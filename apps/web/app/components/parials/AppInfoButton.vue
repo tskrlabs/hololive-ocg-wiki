@@ -22,6 +22,16 @@ import { Info } from "lucide-vue-next";
 
 const { locale } = useI18n();
 
+/**
+ * Whether this renders its own trigger button (ADR 0009 D21).
+ *
+ * The header collapses status, GitHub, Discord and info into one overflow menu, and a
+ * menu item cannot *be* a `DialogTrigger` — closing the menu unmounts the trigger and
+ * takes the dialog with it. So the menu opens this dialog by binding `open` instead, and
+ * turns the built-in trigger off.
+ */
+const props = defineProps<{ triggerless?: boolean }>();
+
 type InfoContent = {
   "discord-invite-url"?: string;
   contents?: string[];
@@ -30,7 +40,13 @@ type InfoContent = {
 
 type StatusSummary = { generated_at?: string; counts?: { total?: number } };
 
-const isOpen = ref(false);
+/**
+ * Open state, shared with the header's overflow menu.
+ *
+ * `useState` rather than a local ref so the menu item and this component address the same
+ * dialog — the menu is a sibling and unmounts as soon as it is used.
+ */
+const isOpen = useState("infoDialogOpen", () => false);
 
 const { data: info } = await useAsyncData<InfoContent>(
   "info",
@@ -75,9 +91,10 @@ const dataSummary = computed(() => {
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogTrigger as-child>
-      <Button variant="ghost" size="icon">
+    <DialogTrigger v-if="!props.triggerless" as-child>
+      <Button variant="ghost" size="icon" :title="$t('About this site')">
         <Info />
+        <span class="sr-only">{{ $t("About this site") }}</span>
       </Button>
     </DialogTrigger>
     <DialogScrollContent class="sm:max-w-[425px]">
@@ -90,19 +107,30 @@ const dataSummary = computed(() => {
         -->
         <DialogTitle>Hololive OCG Wiki</DialogTitle>
         <DialogDescription>
+          <!--
+            `status.validInDB`, not `status.sourceTotal`. The number here is
+            `counts.total` — what *our database* holds — and "Source Total" named the
+            official site's count, which v2 does not report separately (the seeder writes
+            only what `build` validated, so the two were always one number). The key was
+            retired with the status page's tabs; this label was the last thing rendering
+            it, under the wrong name.
+          -->
           <span v-if="dataSummary" class="text-xs tabular-nums">
-            {{ $t("status.sourceTotal") }}: {{ dataSummary }}
+            {{ $t("status.validInDB") }}: {{ dataSummary }}
           </span>
 
+          <!-- Same two links as the header, and the same naming rule (#51). -->
           <div class="flex gap-2 mt-2">
             <Button variant="outline" size="icon" as-child>
               <a href="https://github.com/tskrlabs/hololive-ocg-wiki" target="_blank">
                 <IconGithub />
+                <span class="sr-only">{{ $t("Source code on GitHub") }}</span>
               </a>
             </Button>
             <Button v-if="discordInviteUrl" variant="outline" size="icon" as-child>
               <a :href="discordInviteUrl" target="_blank">
                 <IconDiscord />
+                <span class="sr-only">{{ $t("Join the Discord server") }}</span>
               </a>
             </Button>
           </div>

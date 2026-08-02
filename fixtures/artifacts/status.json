@@ -9,140 +9,72 @@
     "qa_updated": 0,
     "unchanged": 0,
     "removed": 0,
-    "missing_from_build": 0
+    "missing_from_build": 0,
+    "source_added": 34,
+    "source_changed": 0,
+    "faq_changed": 0
   },
+  "list_cap": 100,
   "new": [
-    {
-      "id": "1",
-      "card_number": "hSD01-001",
-      "image_key": "hSD01/hSD01-001_OSR",
-      "name": "ときのそら"
-    },
-    {
-      "id": "2",
-      "card_number": "hSD01-002",
-      "image_key": "hSD01/hSD01-002_OSR",
-      "name": "AZKi"
-    },
-    {
-      "id": "6",
-      "card_number": "hSD01-006",
-      "image_key": "hSD01/hSD01-006_RR",
-      "name": "ときのそら"
-    },
-    {
-      "id": "13",
-      "card_number": "hSD01-013",
-      "image_key": "hSD01/hSD01-013_R",
-      "name": "SorAZ"
-    },
-    {
-      "id": "14",
-      "card_number": "hSD01-014",
-      "image_key": "hSD01/hSD01-014_U",
-      "name": "天音かなた"
-    },
-    {
-      "id": "16",
-      "card_number": "hSD01-016",
-      "image_key": "hSD01/hSD01-016_C",
-      "name": "春先のどか"
-    },
-    {
-      "id": "18",
-      "card_number": "hSD01-018",
-      "image_key": "hSD01/hSD01-018_C",
-      "name": "サブパソコン"
-    },
-    {
-      "id": "19",
-      "card_number": "hSD01-019",
-      "image_key": "hSD01/hSD01-019_C_02",
-      "name": "スゴイパソコン"
-    },
-    {
-      "id": "20",
-      "card_number": "hSD01-020",
-      "image_key": "hSD01/hSD01-020_C",
-      "name": "ホロリスの輪"
-    },
-    {
-      "id": "21",
-      "card_number": "hSD01-021",
-      "image_key": "hSD01/hSD01-021_C",
-      "name": "First Gravity"
-    },
     {
       "id": "23",
       "card_number": "hBP01-001",
       "image_key": "hBP01/hBP01-001_OUR",
-      "name": "天音かなた"
+      "name": "Amane Kanata"
     },
     {
       "id": "34",
       "card_number": "hBP01-006",
       "image_key": "hBP01/hBP01-006_SEC",
-      "name": "小鳥遊キアラ"
+      "name": "Takanashi Kiara"
     },
     {
       "id": "46",
       "card_number": "hBP01-014",
       "image_key": "hBP01/hBP01-014_UR",
-      "name": "天音かなた"
+      "name": "Amane Kanata"
+    },
+    {
+      "id": "2444",
+      "card_number": "hBP01-028",
+      "image_key": "hBP08/hBP01-028_HR",
+      "name": "IRyS"
     },
     {
       "id": "156",
       "card_number": "hBP01-115",
       "image_key": "hBP01/hBP01-115_U",
-      "name": "星街すいせいのマイク"
+      "name": "Hoshimachi Suisei's Microphone"
     },
     {
       "id": "157",
       "card_number": "hBP01-116",
       "image_key": "hBP01/hBP01-116_C",
-      "name": "うぱお"
+      "name": "Upao"
     },
     {
       "id": "163",
       "card_number": "hBP01-122",
       "image_key": "hBP01/hBP01-122_C",
-      "name": "ロゼ隊"
+      "name": "Rose-tai"
     },
     {
-      "id": "168",
-      "card_number": "hY01-001",
-      "image_key": "COMMON/hY01-001_C",
-      "name": "白エール"
+      "id": "2164",
+      "card_number": "hBP03-011",
+      "image_key": "hWF01/hBP03-011_P",
+      "name": "Himemori Luna"
     },
     {
-      "id": "172",
-      "card_number": "hYS01-001",
-      "image_key": "hY01/hYS01-001_OC",
-      "name": "七詩ムメイ"
+      "id": "2138",
+      "card_number": "hBP03-044",
+      "image_key": "hCO01/hBP03-044_SR",
+      "name": "Hoshimachi Suisei"
     },
     {
-      "id": "446",
-      "card_number": "hSD03-009",
-      "image_key": "hBP02/hSD03-009_SR",
-      "name": "猫又おかゆ"
-    },
-    {
-      "id": "447",
-      "card_number": "hSD04-009",
-      "image_key": "hBP02/hSD04-009_SR",
-      "name": "癒月ちょこ"
-    },
-    {
-      "id": "477",
-      "card_number": "hY01-003",
-      "image_key": "hBP02/hY01-003_SY",
-      "name": "白エール"
-    },
-    {
-      "id": "529",
-      "card_number": "hSD05-013",
-      "image_key": "hSD05/hSD05-013_U",
-      "name": "音乃瀬奏"
+      "id": "726",
+      "card_number": "hBP03-044",
+      "image_key": "hBP03/hBP03-044_SR",
+      "name": "Hoshimachi Suisei"
     },
     {
       "id": "614",
@@ -151,16 +83,16 @@
       "name": "FUWAMOCO"
     },
     {
-      "id": "726",
-      "card_number": "hBP03-044",
-      "image_key": "hBP03/hBP03-044_SR",
-      "name": "星街すいせい"
+      "id": "2139",
+      "card_number": "hBP03-055",
+      "image_key": "hCO01/hBP03-055_SR",
+      "name": "Tokoyami Towa"
     },
     {
       "id": "735",
       "card_number": "hBP03-055",
       "image_key": "hBP03/hBP03-055_SR",
-      "name": "常闇トワ"
+      "name": "Tokoyami Towa"
     },
     {
       "id": "1218",
@@ -172,31 +104,13 @@
       "id": "1877",
       "card_number": "hBP07-091",
       "image_key": "hBP07/hBP07-091_C",
-      "name": "ライブスタッフ"
+      "name": "Live Staff"
     },
     {
       "id": "2003",
       "card_number": "hBP07-091",
       "image_key": "hBP07/hBP07-091_S",
-      "name": "ライブスタッフ"
-    },
-    {
-      "id": "2138",
-      "card_number": "hBP03-044",
-      "image_key": "hCO01/hBP03-044_SR",
-      "name": "星街すいせい"
-    },
-    {
-      "id": "2139",
-      "card_number": "hBP03-055",
-      "image_key": "hCO01/hBP03-055_SR",
-      "name": "常闇トワ"
-    },
-    {
-      "id": "2164",
-      "card_number": "hBP03-011",
-      "image_key": "hWF01/hBP03-011_P",
-      "name": "姫森ルーナ"
+      "name": "Live Staff"
     },
     {
       "id": "2263",
@@ -205,19 +119,317 @@
       "name": "FUWAMOCO"
     },
     {
+      "id": "1",
+      "card_number": "hSD01-001",
+      "image_key": "hSD01/hSD01-001_OSR",
+      "name": "Tokino Sora"
+    },
+    {
+      "id": "2",
+      "card_number": "hSD01-002",
+      "image_key": "hSD01/hSD01-002_OSR",
+      "name": "AZKi"
+    },
+    {
+      "id": "6",
+      "card_number": "hSD01-006",
+      "image_key": "hSD01/hSD01-006_RR",
+      "name": "Tokino Sora"
+    },
+    {
+      "id": "13",
+      "card_number": "hSD01-013",
+      "image_key": "hSD01/hSD01-013_R",
+      "name": "SorAZ"
+    },
+    {
+      "id": "14",
+      "card_number": "hSD01-014",
+      "image_key": "hSD01/hSD01-014_U",
+      "name": "Amane Kanata"
+    },
+    {
+      "id": "16",
+      "card_number": "hSD01-016",
+      "image_key": "hSD01/hSD01-016_C",
+      "name": "Harukawa Nodoka"
+    },
+    {
+      "id": "18",
+      "card_number": "hSD01-018",
+      "image_key": "hSD01/hSD01-018_C",
+      "name": "Sub PC"
+    },
+    {
+      "id": "19",
+      "card_number": "hSD01-019",
+      "image_key": "hSD01/hSD01-019_C_02",
+      "name": "Amazing PC"
+    },
+    {
+      "id": "20",
+      "card_number": "hSD01-020",
+      "image_key": "hSD01/hSD01-020_C",
+      "name": "Hololist Circle"
+    },
+    {
+      "id": "21",
+      "card_number": "hSD01-021",
+      "image_key": "hSD01/hSD01-021_C",
+      "name": "First Gravity"
+    },
+    {
+      "id": "446",
+      "card_number": "hSD03-009",
+      "image_key": "hBP02/hSD03-009_SR",
+      "name": "Nekomata Okayu"
+    },
+    {
+      "id": "447",
+      "card_number": "hSD04-009",
+      "image_key": "hBP02/hSD04-009_SR",
+      "name": "Yuzuki Choco"
+    },
+    {
+      "id": "529",
+      "card_number": "hSD05-013",
+      "image_key": "hSD05/hSD05-013_U",
+      "name": "Otonose Kanade"
+    },
+    {
+      "id": "9000001",
+      "card_number": "hSYN-001",
+      "image_key": "hSYN/hSYN-001_C",
+      "name": "Test Short Arts"
+    },
+    {
+      "id": "168",
+      "card_number": "hY01-001",
+      "image_key": "COMMON/hY01-001_C",
+      "name": "White Cheer"
+    },
+    {
+      "id": "477",
+      "card_number": "hY01-003",
+      "image_key": "hBP02/hY01-003_SY",
+      "name": "White Cheer"
+    },
+    {
+      "id": "172",
+      "card_number": "hYS01-001",
+      "image_key": "hY01/hYS01-001_OC",
+      "name": "Nanashi Mumei"
+    }
+  ],
+  "changed": [],
+  "qa_updated": [],
+  "source_added": [
+    {
+      "id": "23",
+      "card_number": "hBP01-001",
+      "image_key": "hBP01/hBP01-001_OUR",
+      "name": "Amane Kanata"
+    },
+    {
+      "id": "34",
+      "card_number": "hBP01-006",
+      "image_key": "hBP01/hBP01-006_SEC",
+      "name": "Takanashi Kiara"
+    },
+    {
+      "id": "46",
+      "card_number": "hBP01-014",
+      "image_key": "hBP01/hBP01-014_UR",
+      "name": "Amane Kanata"
+    },
+    {
       "id": "2444",
       "card_number": "hBP01-028",
       "image_key": "hBP08/hBP01-028_HR",
       "name": "IRyS"
     },
     {
+      "id": "156",
+      "card_number": "hBP01-115",
+      "image_key": "hBP01/hBP01-115_U",
+      "name": "Hoshimachi Suisei's Microphone"
+    },
+    {
+      "id": "157",
+      "card_number": "hBP01-116",
+      "image_key": "hBP01/hBP01-116_C",
+      "name": "Upao"
+    },
+    {
+      "id": "163",
+      "card_number": "hBP01-122",
+      "image_key": "hBP01/hBP01-122_C",
+      "name": "Rose-tai"
+    },
+    {
+      "id": "2164",
+      "card_number": "hBP03-011",
+      "image_key": "hWF01/hBP03-011_P",
+      "name": "Himemori Luna"
+    },
+    {
+      "id": "2138",
+      "card_number": "hBP03-044",
+      "image_key": "hCO01/hBP03-044_SR",
+      "name": "Hoshimachi Suisei"
+    },
+    {
+      "id": "726",
+      "card_number": "hBP03-044",
+      "image_key": "hBP03/hBP03-044_SR",
+      "name": "Hoshimachi Suisei"
+    },
+    {
+      "id": "614",
+      "card_number": "hBP03-050",
+      "image_key": "hBP03/hBP03-050_R",
+      "name": "FUWAMOCO"
+    },
+    {
+      "id": "2139",
+      "card_number": "hBP03-055",
+      "image_key": "hCO01/hBP03-055_SR",
+      "name": "Tokoyami Towa"
+    },
+    {
+      "id": "735",
+      "card_number": "hBP03-055",
+      "image_key": "hBP03/hBP03-055_SR",
+      "name": "Tokoyami Towa"
+    },
+    {
+      "id": "1218",
+      "card_number": "hBP05-040",
+      "image_key": "hBP05/hBP05-040_U",
+      "name": "miComet"
+    },
+    {
+      "id": "1877",
+      "card_number": "hBP07-091",
+      "image_key": "hBP07/hBP07-091_C",
+      "name": "Live Staff"
+    },
+    {
+      "id": "2003",
+      "card_number": "hBP07-091",
+      "image_key": "hBP07/hBP07-091_S",
+      "name": "Live Staff"
+    },
+    {
+      "id": "2263",
+      "card_number": "hBP08-060",
+      "image_key": "hBP08/hBP08-060_R",
+      "name": "FUWAMOCO"
+    },
+    {
+      "id": "1",
+      "card_number": "hSD01-001",
+      "image_key": "hSD01/hSD01-001_OSR",
+      "name": "Tokino Sora"
+    },
+    {
+      "id": "2",
+      "card_number": "hSD01-002",
+      "image_key": "hSD01/hSD01-002_OSR",
+      "name": "AZKi"
+    },
+    {
+      "id": "6",
+      "card_number": "hSD01-006",
+      "image_key": "hSD01/hSD01-006_RR",
+      "name": "Tokino Sora"
+    },
+    {
+      "id": "13",
+      "card_number": "hSD01-013",
+      "image_key": "hSD01/hSD01-013_R",
+      "name": "SorAZ"
+    },
+    {
+      "id": "14",
+      "card_number": "hSD01-014",
+      "image_key": "hSD01/hSD01-014_U",
+      "name": "Amane Kanata"
+    },
+    {
+      "id": "16",
+      "card_number": "hSD01-016",
+      "image_key": "hSD01/hSD01-016_C",
+      "name": "Harukawa Nodoka"
+    },
+    {
+      "id": "18",
+      "card_number": "hSD01-018",
+      "image_key": "hSD01/hSD01-018_C",
+      "name": "Sub PC"
+    },
+    {
+      "id": "19",
+      "card_number": "hSD01-019",
+      "image_key": "hSD01/hSD01-019_C_02",
+      "name": "Amazing PC"
+    },
+    {
+      "id": "20",
+      "card_number": "hSD01-020",
+      "image_key": "hSD01/hSD01-020_C",
+      "name": "Hololist Circle"
+    },
+    {
+      "id": "21",
+      "card_number": "hSD01-021",
+      "image_key": "hSD01/hSD01-021_C",
+      "name": "First Gravity"
+    },
+    {
+      "id": "446",
+      "card_number": "hSD03-009",
+      "image_key": "hBP02/hSD03-009_SR",
+      "name": "Nekomata Okayu"
+    },
+    {
+      "id": "447",
+      "card_number": "hSD04-009",
+      "image_key": "hBP02/hSD04-009_SR",
+      "name": "Yuzuki Choco"
+    },
+    {
+      "id": "529",
+      "card_number": "hSD05-013",
+      "image_key": "hSD05/hSD05-013_U",
+      "name": "Otonose Kanade"
+    },
+    {
       "id": "9000001",
       "card_number": "hSYN-001",
       "image_key": "hSYN/hSYN-001_C",
-      "name": "テスト・ショートアーツ"
+      "name": "Test Short Arts"
+    },
+    {
+      "id": "168",
+      "card_number": "hY01-001",
+      "image_key": "COMMON/hY01-001_C",
+      "name": "White Cheer"
+    },
+    {
+      "id": "477",
+      "card_number": "hY01-003",
+      "image_key": "hBP02/hY01-003_SY",
+      "name": "White Cheer"
+    },
+    {
+      "id": "172",
+      "card_number": "hYS01-001",
+      "image_key": "hY01/hYS01-001_OC",
+      "name": "Nanashi Mumei"
     }
   ],
-  "changed": [],
-  "qa_updated": [],
+  "source_changed": [],
+  "faq_changed": [],
   "removed": []
 }

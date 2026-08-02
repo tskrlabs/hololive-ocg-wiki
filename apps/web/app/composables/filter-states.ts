@@ -72,9 +72,42 @@ export function createEmpty(): FilterOptions {
   };
 }
 
+/** Every section, in the order the panel renders them. */
+export const FILTER_SECTIONS: readonly FilterSection[] = [
+  "name",
+  "tag",
+  "set",
+  "colors",
+  "cardTypes",
+  "rarity",
+  "bloomLevel",
+];
+
 /** The keys of a flag section that are switched on. */
 const active = (section: Record<string, boolean>): string[] =>
   Object.keys(section).filter((key) => section[key]);
+
+/**
+ * Which sections the draft has changed but not applied (D10, #36 §5).
+ *
+ * A persistent rail shows all seven groups at once, so one global "you have pending
+ * changes" dot is too coarse to act on — it says something is uncommitted without saying
+ * *what*. Inside a sheet that was fine, because the sheet showed one thing at a time and
+ * closed on Apply.
+ *
+ * `search` is deliberately excluded: it applies immediately rather than through the draft
+ * (#36 §5), so it can never be pending.
+ */
+export function pendingSections(
+  draft: FilterOptions,
+  applied: FilterOptions,
+): FilterSection[] {
+  return FILTER_SECTIONS.filter((section) => {
+    const a = draft[section];
+    const b = applied[section];
+    return typeof a === "string" ? a !== b : JSON.stringify(a) !== JSON.stringify(b);
+  });
+}
 
 /** Is anything set? Drives the "filters are active" dot in the UI. */
 export function isActive(filter: FilterOptions): boolean {
@@ -152,6 +185,16 @@ export const useFilter = () => {
       JSON.stringify(draftFilterState.value) !== JSON.stringify(filterState.value),
   );
 
+  /**
+   * The same question, per group — which the rail needs and the sheet did not (#36 §5).
+   *
+   * A `Set` rather than an array so a group heading asks `pending.has('colors')` instead
+   * of scanning, and so the seven headings share one computation.
+   */
+  const pending = computed(
+    () => new Set(pendingSections(draftFilterState.value, filterState.value)),
+  );
+
   return {
     /** Applied filters — what the card list is showing. */
     filter: filterState,
@@ -164,5 +207,6 @@ export const useFilter = () => {
 
     isFiltered: () => isActive(filterState.value),
     hasPendingChanges,
+    pending,
   };
 };
