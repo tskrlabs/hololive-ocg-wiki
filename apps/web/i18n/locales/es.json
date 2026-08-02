@@ -542,7 +542,20 @@
     "validInDB": "En la Base de Datos",
     "lastUpdated": "Última Actualización",
     "builtAt": "Datos Generados",
-    "summary": "Los datos de las cartas se regeneran a partir de la lista oficial y se cargan en la base de datos. Estas fechas indican cuándo ocurrió por última vez."
+    "summary": "Los datos de las cartas se regeneran a partir de la lista oficial y se cargan en la base de datos. Estas fechas indican cuándo ocurrió por última vez.",
+    "source": {
+      "heading": "En la última actualización",
+      "added": "cartas añadidas a la lista oficial",
+      "edited": "cartas modificadas en la lista oficial",
+      "faq": "cartas con preguntas y respuestas nuevas o revisadas",
+      "quiet": "La lista oficial de cartas no publicó cambios en esta actualización.",
+      "more": "y {count} más"
+    },
+    "reseed": {
+      "none": "No se reescribió ningún dato de cartas en esta actualización.",
+      "ours": "Reconstruimos los datos de {count} cartas en esta actualización — un cambio de nuestro lado, como volver a traducirlas. Las cartas en sí no han cambiado en la fuente oficial.",
+      "mixed": "Se reescribieron los datos de {count} cartas en esta actualización, lo que incluye los cambios anteriores y cualquier reconstrucción de nuestro lado."
+    }
   },
   "errors": {
     "retry": "Reintentar",

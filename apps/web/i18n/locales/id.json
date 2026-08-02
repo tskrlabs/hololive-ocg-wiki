@@ -542,7 +542,20 @@
     "validInDB": "Dalam Database",
     "lastUpdated": "Terakhir Diperbarui",
     "builtAt": "Data Dibangun",
-    "summary": "Data kartu dibangun ulang dari daftar kartu resmi lalu dimuat ke basis data. Tanggal di atas adalah kapan itu terakhir terjadi."
+    "summary": "Data kartu dibangun ulang dari daftar kartu resmi lalu dimuat ke basis data. Tanggal di atas adalah kapan itu terakhir terjadi.",
+    "source": {
+      "heading": "Dalam pembaruan terakhir",
+      "added": "kartu ditambahkan ke daftar kartu resmi",
+      "edited": "kartu diubah pada daftar kartu resmi",
+      "faq": "kartu dengan Q&A baru atau direvisi",
+      "quiet": "Daftar kartu resmi tidak menerbitkan perubahan pada pembaruan ini.",
+      "more": "dan {count} lainnya"
+    },
+    "reseed": {
+      "none": "Tidak ada data kartu yang ditulis ulang pada pembaruan ini.",
+      "ours": "Kami membangun ulang data {count} kartu pada pembaruan ini — perubahan dari sisi kami, seperti menerjemahkan ulang. Kartunya sendiri tidak berubah di sumber resmi.",
+      "mixed": "Data {count} kartu ditulis ulang pada pembaruan ini, mencakup perubahan di atas serta pembangunan ulang dari sisi kami."
+    }
   },
   "errors": {
     "retry": "Coba lagi",

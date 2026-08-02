@@ -542,7 +542,20 @@
     "validInDB": "In Database",
     "lastUpdated": "Last Updated",
     "builtAt": "Data Built",
-    "summary": "Card data is rebuilt from the official card list and re-seeded into the database. These dates are when that last happened."
+    "summary": "Card data is rebuilt from the official card list and re-seeded into the database. These dates are when that last happened.",
+    "source": {
+      "heading": "In the latest update",
+      "added": "cards added to the official card list",
+      "edited": "cards the official card list changed",
+      "faq": "cards with new or revised Q&A",
+      "quiet": "The official card list published no changes in this update.",
+      "more": "and {count} more"
+    },
+    "reseed": {
+      "none": "No card data was rewritten in this update.",
+      "ours": "We rebuilt {count} cards' data in this update — a change on our side, such as re-translating them. The cards themselves are unchanged at the official source.",
+      "mixed": "{count} cards' data was rewritten in this update, which includes the changes above as well as any rebuild on our side."
+    }
   },
   "errors": {
     "retry": "Retry",

@@ -1,16 +1,22 @@
 <script setup lang="ts">
 /**
- * What the database holds, and when it was last seeded (ADR 0009 D19).
+ * What the database holds, when it was last seeded, and what the official card list did
+ * (ADR 0009 D19, extended by D26).
  *
  * **The tabs are gone, and the data is why.** The page offered New / Updated tabs over
  * per-card lists, in two view modes, with a sort control and pagination — 580 lines
  * across four files. Production reports `changed: 2463, new: 0`: a full reseed marks
- * every card changed, so one tab held all 2,463 entries and the other held none. Neither
- * number tells a reader anything the total does not, and paginating 2,463 rows of "this
- * card was re-seeded" is work spent on a list nobody can act on.
+ * every card changed, so one tab held all 2,463 entries and the other held none.
  *
- * What a reader actually comes here for is whether the data is current, which is two
- * numbers. Those stay.
+ * **D26 found the deeper problem: `changed` was measuring the wrong thing.** It covers
+ * the translated payload, so the translation rework marked all 2,463 cards changed while
+ * the official site published nothing at all. The number was real and the story it told
+ * was false. `source_changed` measures the JP source alone, so this page can now lead
+ * with what the *game* did and keep the re-seed number as the footnote it always was.
+ *
+ * Two vocabularies, and the layout keeps them apart on purpose. The tiles are freshness —
+ * how much data, how recent. The update section below is the source diff. `changed` never
+ * appears as a headline number; it appears inside a sentence explaining itself.
  *
  * `writes` is deliberately still not rendered — it is seeder telemetry (rows written,
  * batches, database size) answering "did the run behave" for the maintainer, not "what
@@ -20,9 +26,10 @@
  * makes it reachable **on mobile** — its header button was `hidden sm:inline-flex`.
  */
 import { ArrowLeft } from "lucide-vue-next";
-import type { StatusReport } from "~/types/status";
+import type { StatusEntry, StatusReport } from "~/types/status";
 
 const { t, locale } = useI18n();
+const localePath = useLocalePath();
 
 useSeoMeta({
   title: t("status.title"),
@@ -65,6 +72,90 @@ function formatTimestamp(value?: string): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+/**
+ * The three source-side groups, in the order a reader cares about them.
+ *
+ * `count` comes from `counts` and `cards` from the capped list, so a group can honestly
+ * say "12 cards" while showing 12 of them and "600 cards" while showing 100. Reading the
+ * total off `cards.length` is the bug the cap would otherwise introduce.
+ *
+ * Absent fields (an artifact written before D26) yield 0 and an empty list, which renders
+ * as `hasSourceNews === false` — the same as a quiet update, and the honest answer when
+ * the report simply cannot say.
+ */
+const sourceGroups = computed(() => {
+  const counts = status.value?.counts;
+  const report = status.value;
+  return [
+    {
+      key: "added",
+      label: t("status.source.added"),
+      count: counts?.source_added ?? 0,
+      cards: report?.source_added ?? [],
+    },
+    {
+      key: "edited",
+      label: t("status.source.edited"),
+      count: counts?.source_changed ?? 0,
+      cards: report?.source_changed ?? [],
+    },
+    {
+      key: "faq",
+      label: t("status.source.faq"),
+      count: counts?.faq_changed ?? 0,
+      cards: report?.faq_changed ?? [],
+    },
+  ].filter((group) => group.count > 0);
+});
+
+/** Whether the official card list did anything at all in the run being reported. */
+const hasSourceNews = computed(() => sourceGroups.value.length > 0);
+
+/**
+ * The sentence explaining the re-seed, chosen from the shape of the data (D26).
+ *
+ * Derived rather than authored because the seeder cannot know *why* a run rewrote every
+ * row — a re-translation, a schema fix and a plain re-run look identical from there. A
+ * hand-written note would be v1's bug in new clothes: its `info.json` embedded "Our
+ * database has 2448 cards (June 19, 2026)" in prose, wrong the day after it was written.
+ *
+ * The interesting case is the first: rows churned, source silent. That is precisely the
+ * translation rework, and saying so turns a number that looks alarming into one that
+ * explains itself.
+ */
+const reseedNote = computed(() => {
+  const counts = status.value?.counts;
+  if (!counts) return "";
+
+  const rewritten = counts.changed + counts.new;
+  if (rewritten === 0) return t("status.reseed.none");
+  if (!hasSourceNews.value) {
+    return t("status.reseed.ours", { count: rewritten.toLocaleString(locale.value) });
+  }
+  return t("status.reseed.mixed", { count: rewritten.toLocaleString(locale.value) });
+});
+
+/** How many of a group's cards are not shown, so the list can say "and N more". */
+function hiddenCount(group: { count: number; cards: StatusEntry[] }): number {
+  return Math.max(0, group.count - group.cards.length);
+}
+
+/**
+ * A card's page URL, from its `image_key` — which *is* the URL's `{set}/{stem}` (D6).
+ *
+ * A row with no key is rendered as plain text rather than a dead link: the entry survives
+ * in the artifact even when the card is gone from the build, and a link to nothing is
+ * worse than no link.
+ */
+function cardPath(entry: StatusEntry): string | null {
+  return entry.image_key ? localePath(`/card/${entry.image_key}`) : null;
+}
+
+/** What to call a card whose name never made it into the artifact. */
+function cardLabel(entry: StatusEntry): string {
+  return entry.name || entry.card_number || entry.id;
 }
 </script>
 
@@ -115,6 +206,80 @@ function formatTimestamp(value?: string): string {
           <span class="text-sm font-medium">{{ builtAt }}</span>
         </div>
       </div>
+
+      <!--
+        The latest update, from the source's point of view (D26).
+
+        Headed "in the latest update" and not "recent changes", because `status.json` is
+        overwritten every seed — there is exactly one run's worth of history here, and the
+        heading is the only thing stopping a reader from reading it as a changelog.
+
+        No badges and no colour. D19 deleted four hardcoded greens on the grounds that a
+        number is not a state; "added" and "edited" are categories, not severities, and a
+        green "added" beside an amber "edited" would invent a hierarchy the data does not
+        have. The label carries the meaning.
+      -->
+      <section v-if="status" class="flex flex-col gap-4">
+        <h2 class="text-sm font-semibold">{{ $t("status.source.heading") }}</h2>
+
+        <div v-if="hasSourceNews" class="flex flex-col gap-4">
+          <div
+            v-for="group in sourceGroups"
+            :key="group.key"
+            class="flex flex-col gap-2 rounded-lg border bg-card p-4"
+          >
+            <div class="flex items-baseline gap-2">
+              <span class="font-mono text-lg font-semibold">
+                {{ group.count.toLocaleString(locale) }}
+              </span>
+              <span class="text-sm text-muted-foreground">{{ group.label }}</span>
+            </div>
+
+            <!--
+              A flat list of links, not a table and not a grid. Every row is a card the
+              reader can open, which is the entire reason D19's objection does not apply
+              here: this list is 0-100 specific cards, not 2,463 rows of "re-seeded".
+            -->
+            <ul class="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+              <li v-for="entry in group.cards" :key="entry.id">
+                <NuxtLink
+                  v-if="cardPath(entry)"
+                  :to="cardPath(entry)!"
+                  class="underline-offset-4 hover:underline"
+                >
+                  {{ cardLabel(entry) }}
+                  <span v-if="entry.card_number" class="text-muted-foreground">
+                    {{ entry.card_number }}
+                  </span>
+                </NuxtLink>
+                <span v-else class="text-muted-foreground">{{ cardLabel(entry) }}</span>
+              </li>
+            </ul>
+
+            <!--
+              The cap, stated rather than hidden. A list that silently stopped at 100 would
+              read as "these are all of them", which is the failure mode a truncation
+              should never have.
+            -->
+            <p v-if="hiddenCount(group)" class="text-xs text-muted-foreground">
+              {{ $t("status.source.more", { count: hiddenCount(group).toLocaleString(locale) }) }}
+            </p>
+          </div>
+        </div>
+
+        <p v-else class="text-sm text-muted-foreground">
+          {{ $t("status.source.quiet") }}
+        </p>
+
+        <!--
+          The re-seed footnote — the 2,463, told rather than hidden.
+
+          Below the source section on purpose. It is the answer to "why does it say the
+          data changed when no cards did", which is a question a reader only has *after*
+          reading the section above.
+        -->
+        <p v-if="reseedNote" class="text-sm text-muted-foreground">{{ reseedNote }}</p>
+      </section>
 
       <p v-if="status" class="text-sm text-muted-foreground">
         {{ $t("status.summary") }}

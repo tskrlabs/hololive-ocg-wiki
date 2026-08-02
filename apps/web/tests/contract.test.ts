@@ -176,6 +176,18 @@ describe("the filter UI can name every enum member it offers (#58)", () => {
     "status.summary",
     "errors.status.title",
     "errors.status.detail",
+    // Its source-side diff (D26). `reseed.*` are the derived sentences — the page picks
+    // one from the shape of the data, so *all three* must exist in every locale or a
+    // reader in one language sees a dotted path where the explanation should be.
+    "status.source.heading",
+    "status.source.added",
+    "status.source.edited",
+    "status.source.faq",
+    "status.source.quiet",
+    "status.source.more",
+    "status.reseed.none",
+    "status.reseed.ours",
+    "status.reseed.mixed",
   ];
 
   it("names every deck and clipboard message in all seven locales (#57)", () => {
