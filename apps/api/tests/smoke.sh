@@ -235,10 +235,14 @@ check "notices before publish"     200 "/api/notices" "d['notices'] == []"
 # `holo-data publish` uploads. `status.json` has no committed copy (it is written by
 # `seed` against a live database), so it is faked here, shaped exactly as `build_status`
 # emits it.
+#
+# The scenario is deliberately the one ADR 0009 D26 exists for: 34 rows rewritten,
+# nothing changed at the source. That is the translation rework in miniature, and before
+# D26 the only number available said the official card list had reissued every card.
 npx wrangler r2 object put "hololive-ocg-wiki-artifacts/info.json" \
   --local --file=../../content/info.json >/dev/null
 STATUS_FILE="$(mktemp -t holo-status).json"
-printf '{"generated_at":"2026-07-27T06:17:56Z","built_at":"2026-07-26T23:33:21Z","mode":"diff","counts":{"total":34,"new":0,"changed":34,"qa_updated":0,"unchanged":0,"removed":0,"missing_from_build":0},"new":[],"changed":[{"id":"1","card_number":"hSD01-001","image_key":"hSD01/hSD01-001_OSR","name":"ときのそら"}],"qa_updated":[],"removed":[]}' >"$STATUS_FILE"
+printf '{"generated_at":"2026-07-27T06:17:56Z","built_at":"2026-07-26T23:33:21Z","mode":"diff","counts":{"total":34,"new":0,"changed":34,"qa_updated":0,"unchanged":0,"removed":0,"missing_from_build":0,"source_added":0,"source_changed":0,"faq_changed":2},"list_cap":100,"new":[],"changed":[{"id":"1","card_number":"hSD01-001","image_key":"hSD01/hSD01-001_OSR","name":"ときのそら"}],"qa_updated":[],"source_added":[],"source_changed":[],"faq_changed":[{"id":"2","card_number":"hSD01-002","image_key":"hSD01/hSD01-002_OSR","name":"ときのそら"}],"removed":[]}' >"$STATUS_FILE"
 npx wrangler r2 object put "hololive-ocg-wiki-artifacts/status.json" \
   --local --file="$STATUS_FILE" >/dev/null
 rm -f "$STATUS_FILE"
@@ -252,6 +256,12 @@ check "status served from R2"      200 "/api/status" \
   "d['counts']['total'] == 34 and 'generated_at' in d"
 check "status carries the diff"    200 "/api/status" \
   "d['changed'][0]['image_key'] == 'hSD01/hSD01-001_OSR'"
+# The two vocabularies survive the Worker (D26). It streams the bytes through without
+# parsing, so this is really a check that nothing downstream flattens them back together.
+check "status separates source from reseed" 200 "/api/status" \
+  "d['counts']['changed'] == 34 and d['counts']['source_changed'] == 0"
+check "status carries the FAQ diff" 200 "/api/status" \
+  "d['counts']['faq_changed'] == 2 and d['faq_changed'][0]['card_number'] == 'hSD01-002'"
 
 # A rules notice — the non-card entries the official site publishes into its card list
 # (F-020). Shaped exactly as `NoticeCollection` emits it. The assertions pin the two

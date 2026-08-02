@@ -12,11 +12,16 @@ Before Phase 6 this script ran on every `make dev`, which meant `uv sync`, a ven
 pydantic stood between a fresh clone and a working site — D12 asks for zero *Cloudflare
 credentials*, but the spirit is zero setup, and 64 KB of committed JSON buys it.
 
-The filter options are built with the **pipeline's own `filter_options()`**, not a
-reimplementation. That function encodes F-015 — 41% of characters are spelled
-inconsistently across their own cards — and a second copy of that rule is exactly the
-drift ADR 0001 exists to prevent. `status.json` is synthesised: it describes a seeder run
-that never happened, over the fixture set, because `seed` only ever writes to production.
+Both are built with the **pipeline's own functions**, never a reimplementation.
+`filter_options()` encodes F-015 — 41% of characters are spelled inconsistently across
+their own cards — and `build_status()` encodes the artifact's shape, which ADR 0009 D26
+has since grown by three counts and three lists. A second copy of either rule is exactly
+the drift ADR 0001 exists to prevent, and the status report was one until D26: it was a
+dict literal here, and it silently fell behind the seeder that writes the real thing.
+
+The status report still describes a seeder run that never happened — `seed` only ever
+writes to production — but it is now *synthesised by the seeder*, against an empty
+database, which is what a first seed looks like.
 
     make generate                        # rewrite fixtures/artifacts/
     make check                           # fails if it is stale
@@ -36,6 +41,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "pipeline" / "src"))
 sys.path.insert(0, str(REPO_ROOT / "packages" / "schema" / "src"))
 
+from holo_data import seed as seed_module  # noqa: E402
 from holo_data.build import filter_options  # noqa: E402
 from holo_schema import CardCollection, LOCALE_VALUES  # noqa: E402
 
@@ -55,35 +61,23 @@ def render() -> dict[str, str]:
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
         )
 
-    # A status report describing the fixture set as though it had just been seeded. Every
-    # card counts as "new", which is what a first seed into an empty database looks like.
-    cards = collection.cards
-    status = {
-        "generated_at": raw["generated_at"],
-        "built_at": raw["generated_at"],
-        "mode": "full",
-        "counts": {
-            "total": len(cards),
-            "new": len(cards),
-            "changed": 0,
-            "qa_updated": 0,
-            "unchanged": 0,
-            "removed": 0,
-            "missing_from_build": 0,
-        },
-        "new": [
-            {
-                "id": card.id,
-                "card_number": card.card_number,
-                "image_key": card.image_key,
-                "name": card.translations["ja"].name if "ja" in card.translations else None,
-            }
-            for card in cards
-        ],
-        "changed": [],
-        "qa_updated": [],
-        "removed": [],
-    }
+    # A status report describing the fixture set as though it had just been seeded into an
+    # empty database — every card new, which is what a first seed looks like.
+    #
+    # Built with the seeder's own `diff` and `build_status` rather than a dict literal, for
+    # the reason the filter options are: a hand-written copy of the artifact's shape is a
+    # second source of truth, and it drifts silently. It already had — this file described
+    # a `counts` block that ADR 0009 D26 has since grown three fields, and nothing would
+    # have failed to tell us.
+    #
+    # An empty `stored` is the whole trick: every card is `new`, so `source_added` fills,
+    # `source_changed` stays empty, and no baseline is missing.
+    rows = [seed_module.to_row(card) for card in collection.cards]
+    plan = seed_module.diff(rows, {})
+    status = seed_module.build_status(plan, collection, report=None, mode="full")
+    # The seeder stamps the wall clock; a fixture must be reproducible or `make check`
+    # fails on the second run of any given day.
+    status["generated_at"] = raw["generated_at"]
     out["status.json"] = json.dumps(status, ensure_ascii=False, indent=2) + "\n"
 
     return out
