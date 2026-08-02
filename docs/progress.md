@@ -13,6 +13,22 @@ dashboard step only the maintainer can take. See [Phase 6](#phase-6--push-to-dep
 prerequisites (`61b2793..77720d0`) and all sixteen commits (`95c75fc..441c885`) are on
 `develop`, `make check` green after each.
 
+🔄 **D26 was added on 2026-08-02: `/status` reports what the *official card list* did, not
+just what our database did.** `content_hash` covers all seven locales' text, so the
+translation rework marks every card `changed` while the official site published nothing —
+a true number telling a false story, and the only number the page had. A third column,
+`source_hash`, hashes the JP source alone (minus Q&A, mirroring `qa_hash`'s split), so the
+page can lead with `source_added` / `source_changed` / `faq_changed` and keep the 2,463 as
+a self-explaining footnote. The write plan is untouched; the report sets are independent,
+which also fixes `qa_updated` reading 0 whenever a card was edited *and* re-FAQ'd. The
+artifact drops **329 KB → 10.3 KB** (its lists are capped at 100, counts stay true), which
+the about dialog also pays. See [ADR 0009 D26](adr/0009-ui-rework.md#supporting-surfaces).
+
+⚠️ **D26 adds migration `0003-source-hash.sql`, and it must be applied *before* the next
+seed** — `seed` refuses with instructions if it is not, because a D1 batch is atomic but a
+run is not. Apply it in the same session as the still-pending `0002`, then seed: that seed
+doubles as the silent backfill, so `/status` is comparable from the run after.
+
 🔄 **D18 was amended on 2026-08-01: the deck is a *pushed* panel from `xl`, not an overlay
 drawer.** Building it revealed the original had never actually run — `DeckDrawer` was a
 `Sheet` at every width, so the "overlay beside a still-visible grid" was a modal over a
@@ -448,17 +464,30 @@ Verified 2026-08-01, on `develop`:
 **Phase 7 is unblocked.** Nothing here is deployed — see
 [the deploy steps](#the-deploy--maintainer-steps), and note the Phase 8 migration below.
 
-### ⚠️ One migration is written but not applied
+### ⚠️ Two migrations are written but not applied
 
-`packages/schema/sql/migrations/0002-phase8-image-key-unique.sql` adds the unique index on
-`image_key` that every card page reads through. Without it each card page is a 2,463-row
-scan. Applying it needs the maintainer's D1 token:
+Both need the maintainer's D1 token, and both should be taken in one session — the seed
+that follows wants each of them.
+
+- **`0002-phase8-image-key-unique.sql`** — the unique index on `image_key` that every card
+  page reads through. Without it each card page is a 2,463-row scan.
+- **`0003-source-hash.sql`** (D26) — the column `/status` compares against to tell an
+  official update from one of ours. **`seed` refuses to run without it**, naming this file,
+  because a D1 batch is atomic while a run is not: discovering the missing column mid-run
+  would leave earlier batches committed.
 
 ```bash
 cd apps/api
 npx wrangler d1 execute hololive-ocg-wiki-db --remote \
     --file=../../packages/schema/sql/migrations/0002-phase8-image-key-unique.sql
+npx wrangler d1 execute hololive-ocg-wiki-db --remote \
+    --file=../../packages/schema/sql/migrations/0003-source-hash.sql
 ```
+
+**Then seed.** The pending translation reseed rewrites every row anyway, so it doubles as
+`source_hash`'s backfill — no extra write pass, and `/status` is comparable from the next
+run on. Ordering matters only in that the migrations come first; running them the other
+way round costs a second seed to establish the baseline.
 
 ### What the rework found
 
