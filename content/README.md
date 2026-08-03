@@ -27,11 +27,42 @@ the seeder against the database itself.
 
 Keep it that way. A number in this file is a number nobody will remember to change.
 
+## `changelog.json`
+
+The release notes `/changelog` renders. **Committed and imported at build time — not
+published to R2**, which is the one way it differs from its neighbour above.
+
+The reason is that a release note is tied to a *deploy*. `info.json` describes the project
+in general and can meaningfully be corrected between deploys; a changelog entry describes
+what a particular build changed, so publishing it independently only creates the state
+where the site claims a feature the running code does not have. Importing it means the
+entry and the code it describes ship together, and the page cannot be empty because a
+fetch failed.
+
+**Entries are English only**, deliberately, and the page says so — the same rule the
+privacy section on `/about` follows (ADR 0009 D27). Only the page chrome is translated.
+Seven translations per release is a per-release tax on writing one at all, and a
+mistranslated "this is fixed" is worse than an honest English one.
+
+`kind` is one of `added`, `changed` or `fixed`. Newest release first — the page does not
+sort.
+
+**Open gaps do not go here.** They belong in the GitHub release body, whose reader is
+deciding whether to contribute; on the player-facing page a list of caveats sits next to
+the entry saying the thing was fixed and undercuts it. The page's `Release` type has no
+field for them, so adding one to this file renders nothing rather than half-working.
+
+Adding a release means editing this file **and** `docs/releases/`, which is the body of
+the GitHub release. They are written from the same facts and for different readers.
+
 ## Publishing a change
 
 ```bash
 holo-data publish --artifacts-only     # or plain `publish`, which does both
 ```
+
+This uploads `info.json` only. `changelog.json` is not an artifact and `publish` does not
+look at it.
 
 No site redeploy needed — the file is read from R2 at runtime.
 

@@ -639,5 +639,15 @@
       "email": "電子郵件",
       "kofi": "在 Ko-fi 上支持"
     }
+  },
+  "changelog": {
+    "title": "更新內容",
+    "description": "Hololive OCG Wiki 的更新紀錄——變更了什麼，以及何時變更。",
+    "fullHistory": "完整的技術紀錄請見",
+    "kind": {
+      "added": "新增",
+      "changed": "變更",
+      "fixed": "修正"
+    }
   }
 }

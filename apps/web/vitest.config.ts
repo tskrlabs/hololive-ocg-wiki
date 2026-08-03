@@ -41,6 +41,10 @@ export default defineConfig({
       "@holo/schema/enums": fileURLToPath(
         new URL("../../packages/schema/dist/enums.ts", import.meta.url),
       ),
+      // Mirrors the `alias` block in `nuxt.config.ts`, which Vitest does not read. The two
+      // must agree: an alias in only one place resolves in the build and fails in the
+      // tests, or the reverse — and the reverse is the one that ships broken.
+      "#content": fileURLToPath(new URL("../../content", import.meta.url)),
     },
   },
   test: {

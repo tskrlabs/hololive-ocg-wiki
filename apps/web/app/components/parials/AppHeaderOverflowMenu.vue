@@ -17,7 +17,7 @@
  * — re-adding one for a monetisation ask would reverse that on the surface D21 was about.
  * It is last, under the separator, so it reads as an aside rather than an interruption.
  */
-import { Database, Ellipsis, Heart, Info } from "lucide-vue-next";
+import { Database, Ellipsis, Heart, Info, Sparkles } from "lucide-vue-next";
 
 const localePath = useLocalePath();
 
@@ -85,6 +85,17 @@ const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? ""
       <DropdownMenuItem as-child>
         <NuxtLink :to="localePath('/about')">
           <Info aria-hidden="true" /> {{ $t("About this site") }}
+        </NuxtLink>
+      </DropdownMenuItem>
+
+      <!--
+        Beside About rather than in the header: a destination, read once, which is the line
+        D21 drew. It is here at all because a rebuilt site owes a returning reader an
+        explanation of why it looks different, and nothing else on the site gives one.
+      -->
+      <DropdownMenuItem as-child>
+        <NuxtLink :to="localePath('/changelog')">
+          <Sparkles aria-hidden="true" /> {{ $t("changelog.title") }}
         </NuxtLink>
       </DropdownMenuItem>
 

@@ -188,6 +188,17 @@ describe("the filter UI can name every enum member it offers (#58)", () => {
     "status.reseed.none",
     "status.reseed.ours",
     "status.reseed.mixed",
+    // `/changelog`. Only the chrome is listed because only the chrome is translated — the
+    // release entries live in `content/changelog.json` and are English by design, the same
+    // rule the privacy section on `/about` follows. `kind.*` are the three badge labels,
+    // and they are words rather than colours alone, so a missing one is a dotted path
+    // sitting where "Fixed" should be, on every entry at once.
+    "changelog.title",
+    "changelog.description",
+    "changelog.fullHistory",
+    "changelog.kind.added",
+    "changelog.kind.changed",
+    "changelog.kind.fixed",
   ];
 
   it("names every deck and clipboard message in all seven locales (#57)", () => {

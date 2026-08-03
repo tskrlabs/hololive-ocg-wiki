@@ -347,15 +347,16 @@ check_count "it lists one sitemap per locale" "sitemap_index.xml" '<sitemap>' 7
 # that changes: adding a page moves every one of these seven numbers at once, and a raw
 # literal gives the next person no way to tell an intended change from a regression.
 CARD_URLS="$(python3 -c 'import json;print(len(json.load(open("../../packages/schema/data/card-urls.json"))))')"
-NON_CARD_PAGES=3  # `/`, `/status`, `/about`
+NON_CARD_PAGES=4  # `/`, `/status`, `/about`, `/changelog`
 EXPECTED=$((CARD_URLS + NON_CARD_PAGES))
 for locale in zh-TW ja-JP en-US id-ID ko-KR th-TH es-ES; do
   actual="$(grep -cE '<loc>' "$OUT/__sitemap__/${locale}.xml" 2>/dev/null || echo 0)"
   # zh-TW carries extras: an unprefixed copy of each non-i18n-routed page, which the module
-  # emits for the default locale. `/status` and `/about` are both reached by `localePath()`
-  # yet still emit one — pre-existing behaviour, not something this phase introduced, and
-  # the count moves with `NON_CARD_PAGES` rather than being a second literal to forget.
-  ZH_EXTRA=2  # unprefixed `/status` and `/about`
+  # emits for the default locale. `/status`, `/about` and `/changelog` are all reached by
+  # `localePath()` yet still emit one — pre-existing behaviour, not something this phase
+  # introduced, and the count moves with `NON_CARD_PAGES` rather than being a second
+  # literal to forget.
+  ZH_EXTRA=3  # unprefixed `/status`, `/about` and `/changelog`
   if [[ "$actual" == "$EXPECTED" || ( "$locale" == "zh-TW" && "$actual" == "$((EXPECTED + ZH_EXTRA))" ) ]]; then
     printf '  ✓ %-54s %s URLs\n' "${locale}.xml lists every card" "$actual"
   else
