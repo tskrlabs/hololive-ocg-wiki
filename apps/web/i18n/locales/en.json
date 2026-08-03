@@ -638,5 +638,15 @@
       "email": "Email",
       "kofi": "Support on Ko-fi"
     }
+  },
+  "changelog": {
+    "title": "What's New",
+    "description": "Release notes for the Hololive OCG Wiki — what changed, and when.",
+    "fullHistory": "The full technical history is on",
+    "kind": {
+      "added": "New",
+      "changed": "Changed",
+      "fixed": "Fixed"
+    }
   }
 }

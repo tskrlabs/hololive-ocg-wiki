@@ -638,5 +638,15 @@
       "email": "이메일",
       "kofi": "Ko-fi에서 후원하기"
     }
+  },
+  "changelog": {
+    "title": "업데이트 내역",
+    "description": "Hololive OCG Wiki 릴리스 노트 — 무엇이 언제 바뀌었는지.",
+    "fullHistory": "전체 기술 변경 내역은",
+    "kind": {
+      "added": "신규",
+      "changed": "변경",
+      "fixed": "수정"
+    }
   }
 }

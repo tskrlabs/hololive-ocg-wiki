@@ -638,5 +638,15 @@
       "email": "Email",
       "kofi": "Dukung di Ko-fi"
     }
+  },
+  "changelog": {
+    "title": "Yang Baru",
+    "description": "Catatan rilis Hololive OCG Wiki — apa yang berubah, dan kapan.",
+    "fullHistory": "Riwayat teknis lengkap ada di",
+    "kind": {
+      "added": "Baru",
+      "changed": "Diubah",
+      "fixed": "Diperbaiki"
+    }
   }
 }

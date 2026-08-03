@@ -638,5 +638,15 @@
       "email": "Correo electrónico",
       "kofi": "Apoya en Ko-fi"
     }
+  },
+  "changelog": {
+    "title": "Novedades",
+    "description": "Notas de versión de Hololive OCG Wiki: qué cambió y cuándo.",
+    "fullHistory": "El historial técnico completo está en",
+    "kind": {
+      "added": "Nuevo",
+      "changed": "Cambiado",
+      "fixed": "Corregido"
+    }
   }
 }

@@ -638,5 +638,15 @@
       "email": "メール",
       "kofi": "Ko-fi で支援する"
     }
+  },
+  "changelog": {
+    "title": "更新情報",
+    "description": "Hololive OCG Wiki の更新履歴——何が、いつ変わったか。",
+    "fullHistory": "技術的な変更履歴の全文は",
+    "kind": {
+      "added": "新規",
+      "changed": "変更",
+      "fixed": "修正"
+    }
   }
 }

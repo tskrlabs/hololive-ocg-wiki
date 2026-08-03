@@ -16,6 +16,8 @@
  * second pass over every file later.
  */
 
+import { fileURLToPath } from "node:url";
+
 import tailwindcss from "@tailwindcss/vite";
 
 import cardUrls from "@holo/schema/card-urls" with { type: "json" };
@@ -209,6 +211,22 @@ export default defineNuxtConfig({
   css: ["~/assets/css/app.css"],
 
   components: [{ path: "~/components", pathPrefix: false }],
+
+  /**
+   * `content/` — the repo's editorial copy, reachable from inside `app/`.
+   *
+   * `content/changelog.json` is imported by `/changelog` at build time rather than fetched,
+   * so the entries ship with the code they describe (see `content/README.md`). It sits
+   * above this workspace, which a relative path from `app/pages/` cannot express without
+   * `../../../`, so it gets a name instead.
+   *
+   * ⚠️ **`vitest.config.ts` declares this alias too, and must keep matching.** Vitest does
+   * not read `nuxt.config.ts`, so an alias added only here resolves in the build and fails
+   * in the tests — which is the direction that hurts, since the build is what ships.
+   */
+  alias: {
+    "#content": fileURLToPath(new URL("../../content", import.meta.url)),
+  },
 
   /**
    * The SEO modules are listed individually rather than via the `@nuxtjs/seo`

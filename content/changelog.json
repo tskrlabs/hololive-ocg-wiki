@@ -1,0 +1,45 @@
+{
+  "$comment": "Player-facing release notes. Committed and imported at build time, NOT published to R2. See content/README.md for why this differs from info.json.",
+  "releases": [
+    {
+      "version": "2.0.0",
+      "date": "2026-08-03",
+      "title": "The rebuilt wiki",
+      "summary": "The site has been rebuilt from scratch. Every card now has its own page you can link to, the filters work properly, and it finally behaves on a phone.",
+      "changes": [
+        {
+          "kind": "added",
+          "text": "Every card has its own page. All 2,463 of them, so you can link a card to a friend, bookmark it, or find it from a search engine. The old site had no card pages at all."
+        },
+        {
+          "kind": "added",
+          "text": "Filter by set code. Type a set code like hBP03 into the search box and it becomes a filter, with its own URL you can share."
+        },
+        {
+          "kind": "fixed",
+          "text": "Tag filters returned nothing. Every tag matched zero cards, in all seven languages: 0期生, every generation, every group. They work now, and 0期生 returns 165 cards."
+        },
+        {
+          "kind": "fixed",
+          "text": "Searches with lots of results failed. Any search matching more than 100 cards returned an error instead of results."
+        },
+        {
+          "kind": "changed",
+          "text": "A rebuilt look. Card names on the grid, a density control for how much fits on screen, and a filter sidebar on wide screens instead of a panel that covered everything."
+        },
+        {
+          "kind": "fixed",
+          "text": "The phone lost three things. Data status, GitHub and the Discord invite were desktop-only and simply vanished on a narrow screen, with nothing to show they were missing."
+        },
+        {
+          "kind": "changed",
+          "text": "Translations that cannot disagree with themselves. All seven languages were re-translated so that two cards printing the same Japanese can no longer come out differently. It is now structurally impossible rather than merely unlikely. Thai also had the cheer resource spelled four different ways in rules text, and it is one spelling now."
+        },
+        {
+          "kind": "added",
+          "text": "A data status page that tells you what the official card list did, not just what our database did. A translation pass on our side no longer looks like new cards being printed."
+        }
+      ]
+    }
+  ]
+}
