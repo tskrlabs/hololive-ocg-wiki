@@ -1,0 +1,11 @@
+# Blank issues stay enabled deliberately: triage is driven by the `gh` CLI (see
+# docs/agents/issue-tracker.md), and forcing every issue through a form would put a wizard
+# in front of the maintainer's own filing.
+blank_issues_enabled: true
+contact_links:
+  - name: Ask a question
+    url: https://discord.gg/qTuMPeuEN2
+    about: For "how does this work" rather than "this is broken".
+  - name: How to contribute
+    url: https://github.com/tskrlabs/hololive-ocg-wiki/blob/develop/CONTRIBUTING.md
+    about: What you can change with a pull request, and what needs an issue first.

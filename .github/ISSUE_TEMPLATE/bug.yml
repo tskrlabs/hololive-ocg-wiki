@@ -1,0 +1,62 @@
+name: Bug
+description: Something on the site is broken or behaves wrongly
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Wrong *card text* has [its own form](?template=bad-translation.yml) — this one is for
+        the site misbehaving.
+
+        If you can already see the fix, a pull request is welcome without filing this first.
+        See [CONTRIBUTING.md](../blob/develop/CONTRIBUTING.md).
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to reproduce it
+      description: >
+        A URL is usually enough — the site puts filters and deck contents in the URL, so
+        pasting the address you were on reproduces most states exactly.
+      placeholder: |
+        1. Go to https://hololive-ocg-wiki.tskrlabs.com/en/...
+        2. ...
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Browser and device
+      placeholder: Safari 18 on iPhone / Firefox on Windows
+    validations:
+      required: false
+
+  - type: dropdown
+    id: locale
+    attributes:
+      label: Which language were you viewing
+      options:
+        - English (en)
+        - 日本語 (ja)
+        - 繁體中文 (tc)
+        - Bahasa Indonesia (id)
+        - 한국어 (ko)
+        - ไทย (th)
+        - Español (es)
+    validations:
+      required: false

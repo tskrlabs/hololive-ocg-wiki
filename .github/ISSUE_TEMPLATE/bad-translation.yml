@@ -1,0 +1,83 @@
+name: Bad translation (card text)
+description: Card name, skill text or ruling that reads wrong in your language
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Card text is machine-translated from Japanese, so some of it is wrong. Thank you for
+        catching one.
+
+        **This form is for card text only** — card names, skill text, Q&A rulings. The
+        site's own words (buttons, labels, empty states) live in
+        `apps/web/i18n/locales/*.json`, are in git, and can be fixed with a pull request
+        instead. See [CONTRIBUTING.md](../blob/develop/CONTRIBUTING.md#fixing-site-copy).
+
+        The reason this is not a PR: the translation cache is not in git, so there is no
+        file for you to edit ([#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18)).
+        Corrections are durable — they survive re-translation.
+
+  - type: input
+    id: card
+    attributes:
+      label: Card number
+      description: As shown on the card page, e.g. `hBP01-028` or `hSD01-001`.
+      placeholder: hBP01-028
+    validations:
+      required: true
+
+  - type: dropdown
+    id: locale
+    attributes:
+      label: Language
+      options:
+        - English (en)
+        - 繁體中文 (tc)
+        - Bahasa Indonesia (id)
+        - 한국어 (ko)
+        - ไทย (th)
+        - Español (es)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: field
+    attributes:
+      label: Which field
+      options:
+        - Card name
+        - Skill / Arts text
+        - Oshi skill
+        - SP Oshi skill
+        - Keyword or ability name
+        - Q&A / ruling text
+        - Tag
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: What it says now
+      description: Copy and paste it, so it can be matched exactly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: correction
+    attributes:
+      label: What it should say
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Anything worth knowing
+      description: >
+        Optional. If it is a game term used across many cards, or the Japanese carries a
+        nuance the translation dropped, say so — that may fix a whole class of cards rather
+        than this one.
+    validations:
+      required: false

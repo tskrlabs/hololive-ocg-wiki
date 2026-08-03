@@ -1,46 +1,26 @@
 # hololive-ocg-wiki
 
-A fan-made wiki for the Hololive Official Card Game — card database, search, and deck builder.
+A fan-made wiki for the Hololive Official Card Game — card database, search, and deck
+builder, in seven languages.
 
-> **v2 rebuild in progress.** This repo is a ground-up rebuild of
-> [`lichingchester/hololive-ocg-wiki`](https://github.com/lichingchester/hololive-ocg-wiki)
-> on new infrastructure. The v1 site remains live at
-> `hololive-ocg-wiki.lichingchester.dev` throughout — nothing here affects it until cutover.
->
-> **Start here → [`docs/progress.md`](docs/progress.md)** — where the rebuild is now and
-> what to pick up next. Then [`docs/v2-plan.md`](docs/v2-plan.md) for the full design,
-> every decision and its reasoning.
+**→ [hololive-ocg-wiki.tskrlabs.com](https://hololive-ocg-wiki.tskrlabs.com)**
 
-## Status
+2,463 cards with full rulings, filterable by colour, rarity, card type, bloom level, tag
+and set code, plus a deck builder that round-trips a deck through a shareable URL.
 
-**Phases 0–5 done, Phase 6 in progress.** The card contract is defined once as pydantic
-models (Phase 0), the data pipeline runs from it (Phase 1), images and artifacts are live
-in R2 (Phase 2), D1 holds all 2,448 cards (Phase 3), and one Worker serves the API and the
-site from a single origin (Phases 4–5).
+## Where to go
 
-**The site is live** at `hololive-ocg-wiki.tskrlabs.com` — but deliberately **`noindex`**
-until launch. v1 remains the public site, indexed on the same 2,448 cards, and an indexed
-v2 would pre-empt a domain decision that is still open (`v2-plan.md` §7). The domain going
-live is not the launch.
+| You want to | Go to |
+|---|---|
+| **Use the wiki** | [the site](https://hololive-ocg-wiki.tskrlabs.com) |
+| **Report a bad translation, or a bug** | [open an issue](https://github.com/tskrlabs/hololive-ocg-wiki/issues/new/choose) |
+| **Contribute code or site copy** | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| **Understand the design** | [`docs/v2-plan.md`](docs/v2-plan.md), then [`docs/adr/`](docs/adr/) |
+| **See what is being worked on** | [`docs/progress.md`](docs/progress.md) — the maintainer's working log |
 
-**Phase 6** is push-to-deploy and the contributor path: Workers Builds, a fresh clone that
-runs with no credentials, and the docs for a repo that goes public at Phase 7. See
-[ADR 0007](docs/adr/0007-push-to-deploy.md).
+## Running it locally
 
-## Structure
-
-```
-packages/schema/   ✅ the card contract — pydantic → JSON Schema → TS types → D1 DDL
-pipeline/          ✅ Python pipeline (uv), `holo-data` CLI
-content/           ✅ editorial site copy (info.json), published to R2
-fixtures/          ✅ 34 cards covering every edge case, for credential-free local dev
-apps/api/          ✅ the Worker — Hono + Zod over D1 and R2
-apps/web/          ✅ Nuxt 4 SPA, generated static and served as Worker assets
-```
-
-## Getting started
-
-Node 24 (pinned in `.node-version`) is all you need for the site and the API:
+Node 24 (pinned in `.node-version`) is all you need:
 
 ```bash
 npm install
@@ -48,35 +28,34 @@ make dev       # site on :3000, API on :8787, against local fixtures
 make help      # list all targets
 ```
 
-`make dev` needs **no Cloudflare credentials and no Python** — the Worker runs against a
+`make dev` needs **no Cloudflare credentials and no Python**. The Worker runs against a
 local D1 seeded from 34 committed fixture cards and a local R2 seeded from committed
-artifacts (D12). That property is deliberate, it is verified from a scratch clone each
-phase, and it is what separates a public repo from a contributor-ready one.
+artifacts, and those fixtures deliberately cover every card type, every rarity, all 9
+colours including both fused codes, all 7 locales and 546 Q&A items — so the edge cases are
+reachable without an account.
 
-Working on the **card contract** additionally needs [uv](https://docs.astral.sh/uv/):
+That property is verified from a scratch clone, and it is what separates a public repo from
+a contributor-ready one. [`CONTRIBUTING.md`](CONTRIBUTING.md) has the rest.
 
-```bash
-make setup     # uv sync + npm install
-make hooks     # enable the pre-commit check (once per clone, recommended)
-make check     # run every verification
+## Structure
+
+```
+packages/schema/   the card contract — pydantic → JSON Schema → TS types → D1 DDL
+pipeline/          Python pipeline (uv), `holo-data` CLI — scrape, translate, publish, seed
+content/           editorial site copy (info.json), published to R2
+fixtures/          34 cards covering every edge case, for credential-free local dev
+apps/api/          the Worker — Hono + Zod over D1 and R2
+apps/web/          Nuxt 4 SPA, generated static and served as Worker assets
 ```
 
-There is **no CI** — verification is local by design. `make check` is the single entry
-point, and the pre-commit hook runs it when you touch the contract.
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for what can be done without credentials, what
-needs the maintainer, and how to report a bad translation.
+One Cloudflare Worker serves both the API and the static site from a single origin, on free
+tiers throughout.
 
 ## The contract
 
 The card shape is defined **once**, in `packages/schema/src/holo_schema/`. Everything
 else — the JSON Schema, the TypeScript types, the enum lists the filter UI iterates, the
 D1 schema, and the local-development fixtures — is generated from those pydantic models.
-
-This is the central fix of the v2 rebuild: in v1 the same shape was hand-written in four
-places and had measurably drifted, to the point that 24 cards were unfilterable in the
-live UI because one TypeScript union was missing a rarity. See
-[ADR 0001](docs/adr/0001-card-contract-generation.md).
 
 ```ts
 import type { Card, LocalizedCard } from "@holo/schema";
@@ -87,9 +66,31 @@ import { RARITIES, DEFAULT_LOCALE } from "@holo/schema/enums";
 from holo_schema import Card, CardCollection, localize
 ```
 
+If you edit a model, run `make generate && make golden`. This is the one trap in the repo,
+and [`CONTRIBUTING.md`](CONTRIBUTING.md) explains what it protects.
+
+## About the rebuild
+
+This is v2, rebuilt from the ground up. The v1 repo is
+[`lichingchester/hololive-ocg-wiki`](https://github.com/lichingchester/hololive-ocg-wiki).
+
+The rebuild exists because of one bug class. In v1 the card shape was hand-written in four
+places — a TypeScript union, a SQL schema, a JSON fixture and the scraper — and they
+drifted, until 24 cards were silently unfilterable in the live UI because one union was
+missing a rarity. Nothing was broken enough to notice, which is why it lasted. Generating
+all four from a single pydantic definition makes that particular bug impossible rather than
+unlikely; see [ADR 0001](docs/adr/0001-card-contract-generation.md).
+
+The design and the reasoning behind every decision are in
+[`docs/v2-plan.md`](docs/v2-plan.md); decisions taken while building are in
+[`docs/adr/`](docs/adr/). Neither is required reading to contribute.
+
 ## Disclaimer
 
 This wiki is a fan-made, non-official project. All content is created by the community and
 follows [Cover Corp.'s Derivative Works Guidelines](https://hololivepro.com/en/terms/).
 Hololive names, images, and related content are the property of Cover Corp. This site is
 not affiliated with or endorsed by Cover Corp. or hololive production.
+
+Code is [Apache-2.0](LICENSE); the licence covers this repository's code, not the card data
+or images.
