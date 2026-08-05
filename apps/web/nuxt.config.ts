@@ -330,31 +330,30 @@ export default defineNuxtConfig({
   // `icon.png` — exactly what v1 shipped, minus the rasteriser it never invoked.
 
   /**
-   * Analytics, cookieless by construction (ADR 0011).
+   * Analytics (ADR 0011 D1, amended 2026-08-05).
    *
    * Two guards, and they are independent. `enabled: IS_PUBLIC` is the pre-launch
-   * invisibility guarantee: with the flag unset nothing loads at all. `initCommands` is
-   * the one that matters *after* launch.
+   * invisibility guarantee: with the flag unset nothing loads at all. The `consent`
+   * defaults are the privacy posture *after* launch.
    *
-   * **Consent Mode v2 with everything denied, permanently.** There is no banner and no
-   * code path that grants consent — `denied` is the final state, not a default waiting to
-   * be updated. GA4 still loads and still sends pings, but sets no `_ga` cookie and no
-   * persistent identifier, so no consent is required to collect them under GDPR/ePrivacy.
-   * The site ships Spanish among its seven locales, which makes EU traffic expected
-   * rather than hypothetical (#64).
+   * **`analytics_storage` is granted; the three `ad_*` types stay denied.** Granting
+   * analytics storage is what actually lets GA4 record data — pageviews, referrers,
+   * geography, which cards get read, and returning-visitor counts. The original posture
+   * denied it too, on the theory that cookieless consent-denied pings would still yield
+   * those basics. They do not: GA4 uses consent-denied pings only for behavioural
+   * modelling, which never activates below traffic thresholds a fan wiki will not reach —
+   * so the property recorded *zero* events for the week after launch, verified against the
+   * Data and Realtime APIs. The decision is now to collect normally and disclose it.
    *
-   * What that buys: pageviews, referrers, geography, which cards get read. What it costs:
-   * returning-visitor counts and session identity. For a fan wiki that is the right side
-   * of the trade — the numbers are for knowing whether anyone reads it, not for
-   * remarketing.
+   * The `ad_*` types remain denied deliberately: the site runs no ads and has no Google
+   * Ads linkage, so granting them would set advertising cookies and feed Google's ad
+   * systems for nothing — and would falsify the `/about` line that nothing here is used
+   * for ad targeting. `analytics_storage: "granted"` sets the `_ga` cookie and a
+   * persistent identifier, which the `/about` privacy copy now describes.
    *
-   * ⚠️ **Do not add a consent banner to "improve" this.** A banner is only worth building
-   * if consent can be granted, and granting it re-introduces the cookies this avoids. The
-   * cheaper, more honest answer was to stop needing consent at all. If richer analytics
-   * ever justify a banner, that is a decision to record in an ADR, not a config tweak.
-   *
-   * `wait_for_update` is deliberately absent: it exists to hold pings while a banner
-   * resolves, and there is no banner to wait for.
+   * No consent banner: the maintainer's call is to disclose analytics in the privacy
+   * policy rather than gate it behind a first-visit dialog. Changing that — granting the
+   * ad signals, or adding a real consent surface — is an ADR, not a config tweak.
    */
   gtag: {
     // GA4 measurement ID. Replaced the `GTM-MZHVHBGQ` container in ADR 0011 —
@@ -370,7 +369,7 @@ export default defineNuxtConfig({
           ad_storage: "denied",
           ad_user_data: "denied",
           ad_personalization: "denied",
-          analytics_storage: "denied",
+          analytics_storage: "granted",
         },
       ],
     ],

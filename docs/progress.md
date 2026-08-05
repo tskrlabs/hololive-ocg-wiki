@@ -4,6 +4,17 @@
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
 origin (D2), against **2,463 cards** in D1 and images on R2.
 
+✅ **Analytics now records data** (2026-08-05, [ADR 0011 D1](adr/0011-launch-posture.md)
+amended). The launch posture ran GA4 with `analytics_storage` denied, betting that cookieless
+consent-denied pings would still yield pageviews and geography. They do not — GA4 uses those
+pings only for behavioural modelling, which never activates at this traffic, so
+`G-LCSL88VF1N` recorded **zero events for the week after launch** (confirmed against the Data
+and Realtime APIs; a firing tag returning `204` proved nothing, since `/g/collect` accepts
+every hit whether or not it is recorded). Now `analytics_storage: granted` sets the `_ga`
+cookie and a persistent identifier, the `ad_*` types stay denied (no ads run), and the
+collection is disclosed in the `/about` privacy copy rather than behind a banner. Takes
+effect on the next deploy.
+
 ✅ **Set-code filtering and the two search fixes are merged and live** (2026-08-02,
 [ADR 0010](adr/0010-set-code-and-search.md)). Merged as `b2ed102`; verified in production
 — `/api/cards/filter?search=hBP03` returns **HTTP 200**, where it was a 500. Migration

@@ -261,10 +261,11 @@ const makerLinks = [
 
         <!--
           Written against what the code actually does, and it is worth keeping it that way:
-          `nuxt-gtag` with `GTM-MZHVHBGQ` (silent until `IS_PUBLIC`), Google Fonts from
-          Google's origin, card images from the R2 CDN, and `localStorage` for decks,
-          density and show-original. A policy describing a site other than this one is not
-          a smaller problem than no policy.
+          `nuxt-gtag` with `G-LCSL88VF1N` (silent until `IS_PUBLIC`, `analytics_storage`
+          granted and the `ad_*` types denied per ADR 0011 D1 as amended), typefaces
+          self-hosted by `@nuxt/fonts` rather than fetched from Google, card images from the
+          R2 CDN, and `localStorage` for decks, density and show-original. A policy
+          describing a site other than this one is not a smaller problem than no policy.
         -->
         <div class="flex flex-col gap-3 text-sm leading-6 text-muted-foreground">
           <p>
@@ -282,14 +283,14 @@ const makerLinks = [
           </p>
 
           <p>
-            <strong class="font-medium text-foreground">Analytics, without cookies.</strong>
+            <strong class="font-medium text-foreground">Analytics.</strong>
             We use Google Analytics to count visits and see which pages get read, which is
-            how we decide what to work on. It runs with every storage permission switched
-            off, so <strong class="font-medium text-foreground">it sets no cookies and
-            gives you no identifier</strong> — we can see that a page was read, roughly
-            from where, on what kind of browser, but not that two visits were the same
-            person. That is why there is no cookie banner: there is nothing to consent to.
-            You can still block it with any content blocker, or with your browser's
+            how we decide what to work on. <strong class="font-medium text-foreground">It
+            sets a cookie and gives your browser a persistent identifier</strong>, so we can
+            tell roughly how many people visit, whether a visit is a returning one, roughly
+            from where, and on what kind of browser — never who you are, and we ask you for
+            nothing. Advertising signals are switched off, so nothing here is used for ad
+            targeting. You can block it with any content blocker, or with your browser's
             <a
               href="https://support.google.com/analytics/answer/181881"
               target="_blank"
