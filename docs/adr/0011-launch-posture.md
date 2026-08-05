@@ -1,6 +1,6 @@
 # ADR 0011 — Launch posture: analytics, crawlers, and social previews
 
-**Status:** accepted
+**Status:** accepted — D1 amended 2026-08-05 (analytics consent granted; see the note under D1)
 **Date:** 2026-08-02
 **Closes:** [#17](https://github.com/tskrlabs/hololive-ocg-wiki/issues/17) (managed
 `robots.txt` inverts our `Disallow`), [#42](https://github.com/tskrlabs/hololive-ocg-wiki/issues/42)
@@ -20,6 +20,19 @@ The site had never been read as a *launch posture* — only as a set of unrelate
 Read together they are one question: what does this site do to a visitor it has never met?
 
 ## D1 — Analytics: GA4 with consent denied, permanently. No banner.
+
+> **Amended 2026-08-05 — `analytics_storage` is now granted.** D1 denied it on the theory
+> that cookieless consent-denied pings would still yield pageviews, referrers and geography.
+> They do not. GA4 uses consent-denied pings only for behavioural modelling, which never
+> activates below traffic thresholds a fan wiki will not reach — so the property
+> `G-LCSL88VF1N` recorded **zero events for the week after launch**, verified against the
+> Data and Realtime APIs (a firing tag returning `204` proved nothing; `/g/collect` accepts
+> every hit regardless of whether it is ever recorded). The posture is now
+> `analytics_storage: "granted"` — the `_ga` cookie and a persistent identifier are set —
+> with the three `ad_*` types still `denied` (no ads run, nothing fed to Google's ad
+> systems), and the collection **disclosed in the `/about` privacy copy** rather than gated
+> behind a banner. The reasoning below is kept as the original record; only the
+> analytics-storage value and the privacy copy changed. D2 and D3 stand unaltered.
 
 `nuxt-gtag` shipped configured with a GTM container id and `enabled: IS_PUBLIC`, so it was
 silent pre-launch and would have started setting `_ga` cookies the moment the flag moved.
