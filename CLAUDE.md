@@ -34,6 +34,12 @@ See `docs/agents/triage-labels.md`.
 Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, shared across all
 workspaces. See `docs/agents/domain.md`.
 
+### Releasing
+
+Two modes, and one of them is not a release: a card-set update ships through D1 and R2 with
+no version, while a site change gets a semver tag and notes written twice. See
+`docs/agents/release.md`; the procedure is `.claude/skills/release/`.
+
 ### Code knowledge graph
 
 GitNexus indexes symbols and call edges into a local, gitignored `.gitnexus/`, queried via
