@@ -2,7 +2,52 @@
 
 **Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
-origin (D2), against **2,463 cards** in D1 and images on R2.
+origin (D2), against **2,559 cards** in D1 and images on R2.
+
+## ✅ The card set is at 2,559 — the first real update run, 2026-08-19
+
+The official list grew 2,463 → 2,559, and the whole pipeline ran end to end:
+`backup-cache` → `scrape` → `images` → `translate-units` → `build` → `publish` → `seed` →
+merge to `main`. Deployed as [#72](https://github.com/tskrlabs/hololive-ocg-wiki/pull/72).
+
+| step | result |
+|---|---|
+| `backup-cache --remote` | both caches snapshotted and verified, local + R2 |
+| `scrape` | 2,559 cards, **no unmapped enum values** — the new set printed nothing new |
+| `images` | 96 converted, 2,464 skipped; PNG 777 MB → WebP 218 MB (72% smaller) |
+| `translate-units --confirm` | 720 units × 6 locales, **87,306 tokens** |
+| `build` | 2,559 cards, **100% coverage in all 7 locales**, 0 dropped |
+| `publish` | 105 objects (96 images + 9 artifacts); a second run uploads nothing |
+| `seed --confirm` | 757 cards, **16,718 rows written** against a 16,542 estimate |
+
+Live after the seed: total **2,559** · `フブキ` **74** (was 73) · `白上フブキ&locale=en`
+**45** (was 44) · filter names **306** (was 296) · `tag=0期生` **178** (was 165) ·
+`set_code=hEB01` **35** · sitemap **2,563** URLs per locale (was 2,467).
+
+**The data went live before the deploy, and the sitemap did not.** The API reads D1 and R2
+directly, so cards, images and card pages served the new set the moment `seed` and
+`publish` finished — the merge to `main` was needed only for the sitemap, which is baked
+into the static build from the committed `card-urls.json`. Worth knowing when planning an
+update: the crawlable surface is the part that waits on a deploy.
+
+**`translate-units` could not onboard a new card set at all** — found here, fixed here
+(`b0338b7`). It collected its work from the built `cards.json`, which is the one artifact
+guaranteed not to contain a new set: `build` refuses to write a card whose locales are
+missing, so on an update the build on disk is the *previous* set. The two commands
+deadlocked, and silently — `translate-units` reported "everything is up to date" while
+`build` failed validation on the cards needing exactly the translations it had declined to
+fetch. 132 new units were invisible to it. `translate` has always read `load_i18n()`; only
+the v2 units path diverged. Guarded by a test pinned by sabotage.
+
+Two more things this run turned up, neither a defect:
+
+- **The rules notice is gone.** Card 2459 is no longer in the official list, so
+  `notices.json` is now empty. `publish` and `/api/notices` already treat that as a normal
+  state rather than an error — F-020's split held.
+- **Three Spanish art names were rejected on the first pass**, the masking guard catching
+  the model inventing a `[[N0]]` placeholder absent from the source. Left stale as designed;
+  a targeted `--locale es` re-run translated all three for 414 tokens. This is the "failure
+  is loud" rule doing its job on live data for the first time.
 
 ✅ **Analytics now records data** (2026-08-05, [ADR 0011 D1](adr/0011-launch-posture.md)
 amended). The launch posture ran GA4 with `analytics_storage` denied, betting that cookieless

@@ -5,7 +5,7 @@ builder, in seven languages.
 
 **→ [hololive-ocg-wiki.tskrlabs.com](https://hololive-ocg-wiki.tskrlabs.com)**
 
-2,463 cards with full rulings, filterable by colour, rarity, card type, bloom level, tag
+2,559 cards with full rulings, filterable by colour, rarity, card type, bloom level, tag
 and set code, plus a deck builder that round-trips a deck through a shareable URL.
 
 ## Where to go
