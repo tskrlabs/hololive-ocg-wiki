@@ -280,6 +280,41 @@ curl -s "$API/__sitemap__/en-US.xml" | grep -c '<url>'       # grew
 curl -s "$API/robots.txt" | head -3                          # Allow: /
 ```
 
+## Confirming a deploy landed: use the build timestamp, not chunk greps
+
+**The reliable check**, and the only one to reach for first:
+
+```bash
+curl -s "$API/_nuxt/builds/latest.json"     # {"id":"…","timestamp":1787150366721}
+```
+
+`timestamp` is milliseconds; convert it and compare to the merge time. A build newer than
+the merge means the deploy landed. Workers Builds takes ~50 to 90 seconds.
+
+**Three plausible checks that are all wrong**, each of which cost real time on the v2.0.1
+release:
+
+- **Chunk filenames repeat across builds**, and are served `cache-control: immutable` for a
+  year. Fetching a name you found in the *local* build can return a CDN `HIT` on the old
+  bytes, which looks exactly like "the deploy did not land".
+- **A missing chunk returns the SPA fallback HTML**, with `content-type: text/javascript`
+  and HTTP 200. A grep then searches a 6.6 KB HTML page and reports "not found" forever. If
+  a chunk body is ~6.6 KB and starts with `<!DOCTYPE`, that is what happened.
+- **Page components are lazily imported**, so they appear in no `<link modulepreload>` and
+  crawling the entry chunk's dep map does not reach them.
+
+To confirm a specific string of *copy* is live, read the route table out of the entry chunk
+to get the page component's real name, then grep that one file:
+
+```bash
+curl -s "$API/en/changelog" | grep -oE '_nuxt/[A-Za-z0-9_-]+\.js' | sort -u   # entry chunks
+curl -s "$API/_nuxt/<entry>.js" | grep -o 'changelog___en[^}]*'               # -> 5gR7uFX3.js
+curl -s "$API/_nuxt/5gR7uFX3.js" | grep -c "<the new copy>"
+```
+
+**Sanity-check any negative result** by searching for a string you know is already live (the
+*previous* release's title). If that is missing too, the method is broken, not the deploy.
+
 **Check `noindex` correctly.** A naive `grep -c noindex` returns 1 on every healthy page:
 the string appears inside an inert `robotsDisabledValue` config blob in the bundle. Check
 the real directives instead — both should be empty:
