@@ -167,6 +167,45 @@ class TestStats:
         assert stats.occurrences >= stats.distinct
 
 
+class TestTheUnitsSourceIsTheScrape:
+    """`translate-units` must read the scrape, never the build.
+
+    A regression guard, and the bug it guards is a deadlock rather than a wrong number:
+    `build` refuses to write a card whose locales are missing, so on a new card set the
+    built `cards.json` is the *previous* set — the one artifact from which the new
+    strings are provably absent. Sourcing units from it meant the v2 path could not
+    onboard a new set at all, and the failure was silent in the worst way: it reported
+    "everything is up to date" while `build` failed on cards needing exactly the
+    translations it had declined to fetch.
+
+    Found updating 2,463 → 2,559 cards, where 132 new units were invisible to it.
+    """
+
+    def test_a_new_card_is_visible_before_it_can_be_built(self):
+        """The scrape holds the new card; the last build cannot."""
+        previous_build = [card("1", name="旧カード")]
+        scrape = previous_build + [card("2", name="新カード")]
+
+        assert len(U.collect(scrape)) > len(U.collect(previous_build))
+
+    def test_the_new_strings_are_the_ones_missing_from_the_build(self):
+        new_card = card("2", name="新カード")
+        missing = set(U.collect([card("1"), new_card])) - set(U.collect([card("1")]))
+
+        assert U.unit_key("card_name", "新カード") in missing
+
+    def test_the_cli_collects_from_load_i18n_not_from_cards_json(self):
+        """Pins the call itself: the two sources agree only until a set is added."""
+        import inspect
+
+        from holo_data import cli
+
+        source = inspect.getsource(cli.translate_units)
+
+        assert "transform.load_i18n()" in source
+        assert "build_module.load()" not in source
+
+
 class TestAgainstTheRealBuild:
     """The numbers the plan's cost estimates rest on."""
 
