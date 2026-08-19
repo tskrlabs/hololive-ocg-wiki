@@ -2,6 +2,22 @@
   "$comment": "Player-facing release notes. Committed and imported at build time, NOT published to R2. See content/README.md for why this differs from info.json.",
   "releases": [
     {
+      "version": "2.0.1",
+      "date": "2026-08-19",
+      "title": "New cards, and a fix behind the scenes",
+      "summary": "The card set is up to date with the official list, including the new hEB01 set. Card data reaches the site on its own, so you already had these before this note appeared.",
+      "changes": [
+        {
+          "kind": "added",
+          "text": "96 new cards from the official list, including the hEB01 set, in all seven languages. The Data Status page always shows the current count and when it was last updated."
+        },
+        {
+          "kind": "fixed",
+          "text": "The site's visitor statistics were not recording anything. They had been switched off in a way that looked like it was working, and had collected nothing since launch. What we collect is described on the About page."
+        }
+      ]
+    },
+    {
       "version": "2.0.0",
       "date": "2026-08-03",
       "title": "The rebuilt wiki",

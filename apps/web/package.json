@@ -1,6 +1,6 @@
 {
   "name": "@holo/web",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "private": true,
   "type": "module",
   "description": "The site: Nuxt 4 SPA, generated static and served by the Worker's assets binding.",
