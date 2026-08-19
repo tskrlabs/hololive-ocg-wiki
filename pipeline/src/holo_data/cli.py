@@ -264,13 +264,22 @@ def translate_units(
     **Q&A is excluded by default.** It is 596 units but 62% of the corpus by character
     count, its existing translations were migrated as `legacy`, and re-doing it is a
     separate decision from re-doing everything else (#23 D6).
+
+    Reads the **scrape** output, not `cards.json`, and this is load-bearing: `build`
+    refuses to write a card whose locales are missing, so on a new card set the built
+    artifact is the *previous* set — the one place the new strings are guaranteed absent.
+    Sourcing units from the build made the v2 path unable to onboard a new set at all
+    (found updating 2,463 → 2,559: 132 new units were invisible to it while `build`
+    failed on the 19 cards needing exactly those translations). `translate` has always
+    read `load_i18n()`; only the units path diverged. Units are collected from
+    `translations.ja`, which `build` passes through unchanged — verified over the 2,463
+    shared cards at the time of the fix.
     """
-    collection = build_module.load()
-    if collection is None:
-        typer.echo("no build found — run `holo-data build` first", err=True)
+    cards = transform.load_i18n()
+    if not cards:
+        typer.echo("no cards found — run `holo-data scrape` first", err=True)
         raise typer.Exit(1)
 
-    cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
     all_units = units_module.collect(cards)
     work = [
         unit
