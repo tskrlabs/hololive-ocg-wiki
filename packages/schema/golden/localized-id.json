@@ -217,7 +217,7 @@
       },
       {
         "answer": "Ya, kondisi terpenuhi. Bahkan jika tidak ada nama kartu yang persis sesuai, karena di extra tertulis “holomen ini juga diperlakukan sebagai〈ときのそら〉〈AZKi〉”, jadi kondisi itu terpenuhi.",
-        "question": "hSD01-006〈ときのそら〉のアーツ「SorAZ シンパシー」の「自分のステージにホロメンの〈AZKi〉がいる時」は、hSD01-013〈SorAZ〉がいる場合でも条件を満たしますか？",
+        "question": "hSD01-006〈ときのそら〉のアーツ「SorAZ Sympathy」の「自分のステージにホロメンの〈AZKi〉がいる時」は、hSD01-013〈SorAZ〉がいる場合でも条件を満たしますか？",
         "related_cards": {
           "card_number": [
             "hSD01-006"
@@ -737,7 +737,7 @@
       },
       {
         "answer": "Tidak, karena tidak terjadi perubahan HP, maka tidak bisa menjadi ‘50’.",
-        "question": "Apakah gift ‘冷静沈着’ dari hBP04-024〈儒烏風亭らでん〉 bisa membuat sisa HP menjadi ‘50’ dengan menggunakan skill oshi hBP01-001〈天音かなた〉「ぎゅっぎゅっ」?",
+        "question": "Apakah gift ‘冷静沈着’ dari hBP04-024〈儒烏風亭らでん〉 bisa membuat sisa HP menjadi ‘50’ dengan menggunakan skill oshi hBP01-001〈天音かなた〉「Peluk erat erat」?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -761,7 +761,7 @@
       },
       {
         "answer": "Tidak, karena tidak terjadi perubahan HP, maka tidak bisa menjadi ‘50’.",
-        "question": "Apakah gift ‘ボクシングスタイル’ dari hBP03-065〈戌神ころね〉 bisa membuat sisa HP menjadi ‘50’ dengan skill oshi hBP01-001〈天音かなた〉「ぎゅっぎゅっ」?",
+        "question": "Apakah gift ‘ボクシングスタイル’ dari hBP03-065〈戌神ころね〉 bisa membuat sisa HP menjadi ‘50’ dengan skill oshi hBP01-001〈天音かなた〉「Peluk erat erat」?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -832,8 +832,8 @@
         "title": "Q22（2024.09.21）"
       },
       {
-        "answer": "不行，不能。hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」不是一個會造成傷害的能力，所以無法使用hBP01-002〈七詩ムメイ〉的推し技能能力。",
-        "question": "在對手的回合，當hBP01-001〈天音かなた〉的推し技能「ぎゅっぎゅっ」使自己帶有#Promise 的ホロメン剩餘HP變為50時，能否用hBP01-002〈七詩ムメイ〉的推し技能「文明の守護者」使該ホロメン的傷害-50？",
+        "answer": "不行，不能。hBP01-001〈天音かなた〉的推し技能「Peluk erat erat」不是一個會造成傷害的能力，所以無法使用hBP01-002〈七詩ムメイ〉的推し技能能力。",
+        "question": "在對手的回合，當hBP01-001〈天音かなた〉的推し技能「Peluk erat erat」使自己帶有#Promise 的ホロメン剩餘HP變為50時，能否用hBP01-002〈七詩ムメイ〉的推し技能「Pelindung Peradaban」使該ホロメン的傷害-50？",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -844,8 +844,8 @@
         "title": "Q21（2024.09.21）"
       },
       {
-        "answer": "Tidak, tidak akan aktif. Karena skill oshi〈天音かなた〉「ぎゅっぎゅっ」 hanya menetapkan nilai HP, bukan memulihkan HP.",
-        "question": "Jika skill oshi〈天音かなた〉「ぎゅっぎゅっ」 digunakan pada Holomen lawan yang memiliki sisa HP 40 dan mengenakan〈石の斧〉, ketika sisa HP menjadi 50, apakah kemampuan ‘Saat Holomen ini pulih’ dari〈石の斧〉 akan aktif?",
+        "answer": "Tidak, tidak akan aktif. Karena skill oshi〈天音かなた〉「Peluk erat erat」 hanya menetapkan nilai HP, bukan memulihkan HP.",
+        "question": "Jika skill oshi〈天音かなた〉「Peluk erat erat」 digunakan pada Holomen lawan yang memiliki sisa HP 40 dan mengenakan〈石の斧〉, ketika sisa HP menjadi 50, apakah kemampuan ‘Saat Holomen ini pulih’ dari〈石の斧〉 akan aktif?",
         "related_cards": {
           "card_number": [
             "hBP01-001"
@@ -856,7 +856,7 @@
       },
       {
         "answer": "Sisa HP Holomen lawan menjadi 50.",
-        "question": "Jika skill oshi〈天音かなた〉「ぎゅっぎゅっ」 digunakan pada Holomen lawan yang memiliki sisa HP 40 atau kurang, bagaimana hasil HP-nya?",
+        "question": "Jika skill oshi〈天音かなた〉「Peluk erat erat」 digunakan pada Holomen lawan yang memiliki sisa HP 40 atau kurang, bagaimana hasil HP-nya?",
         "related_cards": {
           "card_number": [
             "hBP01-001"
@@ -866,8 +866,8 @@
         "title": "Q19（2024.09.21）"
       },
       {
-        "answer": "Tidak, tidak bisa. Karena skill oshi〈天音かなた〉「ぎゅっぎゅっ」 bukan kemampuan yang memberikan damage, maka tidak dapat mengurangi atau menghindari damage dengan cara apa pun.",
-        "question": "Ketika skill oshi〈天音かなた〉「ぎゅっぎゅっ」 menurunkan HP Holomen tengah milikku menjadi 50, apakah gift ‘V.7’ dari〈ベスティア・ゼータ〉 dapat digunakan untuk menghindari damage?",
+        "answer": "Tidak, tidak bisa. Karena skill oshi〈天音かなた〉「Peluk erat erat」 bukan kemampuan yang memberikan damage, maka tidak dapat mengurangi atau menghindari damage dengan cara apa pun.",
+        "question": "Ketika skill oshi〈天音かなた〉「Peluk erat erat」 menurunkan HP Holomen tengah milikku menjadi 50, apakah gift ‘V.7’ dari〈ベスティア・ゼータ〉 dapat digunakan untuk menghindari damage?",
         "related_cards": {
           "card_number": [
             "hBP01-001"
@@ -1802,7 +1802,7 @@
       },
       {
         "answer": "可以，能造成傷害。即便卡片名稱中沒有該卡，如果在額外卡區（エクストラ）存在將某張卡指定為「此ホロメン也視為〈フワワ・アビスガード〉〈モココ・アビスガード〉」等以特定卡名扱う的卡，該條件仍然成立。",
-        "question": "hBP03-042〈フワワ・アビスガード〉的Bloom效果「フワ花流水」，即使自己場上的其他ホロメン只有hBP03-050〈FUWAMOCO〉，也能造成特殊傷害「20」嗎？",
+        "question": "hBP03-042〈フワワ・アビスガード〉的Bloom效果「Aliran bunga dan air Fuwa」，即使自己場上的其他ホロメン只有hBP03-050〈FUWAMOCO〉，也能造成特殊傷害「20」嗎？",
         "related_cards": {
           "card_number": [
             "hBP03-042",

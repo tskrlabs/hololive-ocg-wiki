@@ -23,6 +23,24 @@ short one first would leave `ล์` or `ール` stranded, producing a *fifth* v
 than fixing the four. Longest-first is the same rule `mask_table` uses, for the same
 reason.
 
+## Three kinds of rule, and why they are separate
+
+`RULES` is per-locale literal substitution — one word spelled several ways, where the right
+answer is a constant.
+
+`GLOBAL_PATTERNS` is regex, every locale. It exists for the bracket defect (#27): the source
+writes card references in CJK angle brackets **6,804 times and ASCII `<>` zero times**, so an
+ASCII `<X>` in a translation is always model output. That one is not cosmetic —
+`CardDataDetailBlocks.vue` renders `ability_text` through `v-html`, so a browser parses
+`<Hakui Koyori>` as an unknown tag and **drops the name from the page**. 54 character names
+were invisible on 24 live card pages before this rule existed.
+
+Quote substitution is neither: it needs the *cache*, not a constant. A card's rules text
+quotes another card's skill or art name in `「…」`, and the model sometimes leaves it in
+Japanese while the same string has a canonical translation one entry away. The fix is to look
+that answer up rather than to hard-code it, so it lives in `substitute_quotes` and takes the
+unit map as an argument.
+
 ## The guard that matters
 
 **`โนเอล` is Shirogane Noel.** A blind `เอล` -> `เยล` turns her into `โนเยล` in nine
@@ -80,6 +98,29 @@ RULES: dict[str, tuple[tuple[str, str], ...]] = {
     ),
 }
 
+#: Regex rewrites applied to **every** locale, as `(pattern, replacement, label)`.
+#:
+#: The label is what a report names, since a compiled pattern reads badly in a diff.
+#:
+#: **The bracket rule is a rendering fix, not a tidy-up.** `ability_text` reaches the page
+#: through `v-html` (`CardDataDetailBlocks.vue`), so an ASCII `<Hakui Koyori>` is parsed as
+#: an unknown HTML tag and silently dropped — the rule then reads "attached to 1st or
+#: higher" with no name at all. `〈` and `〉` are not HTML metacharacters and render.
+#:
+#: The inner match is bounded (`{1,40}`, no `<>` inside) so a stray bracket cannot swallow a
+#: sentence. Measured before writing it: every `<` in the cache already forms a closed pair,
+#: in all six locales, so the bound is a guard against future data rather than current.
+GLOBAL_PATTERNS: tuple[tuple[re.Pattern[str], str, str], ...] = (
+    (
+        re.compile(r"<([^<>]{1,40})>"),
+        r"〈\1〉",
+        "<X> -> 〈X〉 (a card reference the model rendered in ASCII)",
+    ),
+)
+
+#: The bracket a card reference is written with in the source, and the only correct one.
+QUOTE_OPEN, QUOTE_CLOSE = "「", "」"
+
 # `\x00` is not in any translation and cannot be produced by the rules, so it is safe as
 # a placeholder. Indexed, because a locale may protect more than one string.
 _SENTINEL = "\x00{}\x00"
@@ -121,13 +162,17 @@ class NormaliseReport:
 
 
 def normalise_text(text: str, locale: str) -> tuple[str, dict[tuple[str, str], int]]:
-    """Apply one locale's rules to one string.
+    """Apply one locale's rules, plus the global patterns, to one string.
 
     Returns the rewritten text and a count per rule, so a caller can report what it did
     rather than only that it did something.
+
+    Both rule kinds run **inside** the protected substitution, so a protected phrase is
+    invisible to a regex for the same reason it is invisible to a literal rule: it is not
+    in the string while they execute.
     """
-    rules = RULES.get(locale)
-    if not rules or not text:
+    rules = RULES.get(locale, ())
+    if not text or (not rules and not GLOBAL_PATTERNS):
         return text, {}
 
     protected = PROTECTED.get(locale, ())
@@ -142,16 +187,76 @@ def normalise_text(text: str, locale: str) -> tuple[str, dict[tuple[str, str], i
             counts[(wrong, right)] = found
             working = working.replace(wrong, right)
 
+    for pattern, replacement, label in GLOBAL_PATTERNS:
+        working, found = pattern.subn(replacement, working)
+        if found:
+            counts[(label, "")] = counts.get((label, ""), 0) + found
+
     for index, phrase in enumerate(protected):
         working = working.replace(_SENTINEL.format(index), phrase)
 
     return working, counts
 
 
-def _normalise_value(value: Any, locale: str) -> tuple[Any, dict[tuple[str, str], int]]:
+#: Label a quote substitution reports under. One label rather than one per string: a
+#: report naming 19 individual names would bury the count that matters.
+QUOTE_LABEL = "「name」 -> the canonical translation already in the cache"
+
+
+def substitute_quotes(
+    text: str, quotes: dict[str, str]
+) -> tuple[str, int]:
+    """Replace `「X」` with `「<X translated>」` when X is a string the cache has an answer for.
+
+    Card text quotes another card's skill or art name, and the model sometimes leaves the
+    quote in Japanese while translating everything around it — so a card's rules say
+    `「人生リセットボタン」` while the skill's own entry says `Tombol Reset Kehidupan`. The
+    answer already exists; nothing was looking it up.
+
+    **Exact matches only.** `quotes` is keyed on the whole quoted string, and a substring
+    or fuzzy match here would rewrite a quotation into a different card's name — the
+    failure mode #78 is a record of, arriving by a different route. A quoted string with
+    no entry is left exactly as it is.
+
+    Returns the rewritten text and the number of substitutions.
+    """
+    if not text or not quotes or QUOTE_OPEN not in text:
+        return text, 0
+
+    count = 0
+
+    def replace(match: re.Match[str]) -> str:
+        nonlocal count
+        inner = match.group(1)
+        translated = quotes.get(inner)
+        # `translated == inner` is a decision, not a gap — a name that stays Japanese in
+        # this locale. Substituting it would be a no-op that inflates the count.
+        if not translated or translated == inner:
+            return match.group(0)
+        count += 1
+        return f"{QUOTE_OPEN}{translated}{QUOTE_CLOSE}"
+
+    pattern = re.compile(
+        f"{re.escape(QUOTE_OPEN)}([^{re.escape(QUOTE_CLOSE)}]{{1,60}}){re.escape(QUOTE_CLOSE)}"
+    )
+    return pattern.sub(replace, text), count
+
+
+def _normalise_value(
+    value: Any, locale: str, quotes: dict[str, str] | None = None
+) -> tuple[Any, dict[tuple[str, str], int]]:
     """Rewrite a cache value of either shape — a string, or a Q&A dict."""
+
+    def one(text: str) -> tuple[str, dict[tuple[str, str], int]]:
+        out, counts = normalise_text(text, locale)
+        if quotes:
+            out, n = substitute_quotes(out, quotes)
+            if n:
+                counts = {**counts, (QUOTE_LABEL, ""): n}
+        return out, counts
+
     if isinstance(value, str):
-        return normalise_text(value, locale)
+        return one(value)
 
     if isinstance(value, dict):
         out = dict(value)
@@ -160,7 +265,7 @@ def _normalise_value(value: Any, locale: str) -> tuple[Any, dict[tuple[str, str]
             text = value.get(name)
             if not isinstance(text, str):
                 continue
-            out[name], counts = normalise_text(text, locale)
+            out[name], counts = one(text)
             for rule, n in counts.items():
                 totals[rule] = totals.get(rule, 0) + n
         return out, totals
@@ -182,7 +287,7 @@ def _count(value: Any, needle: str) -> int:
 
 
 def normalise_locale(
-    entries: dict[str, Any], locale: str
+    entries: dict[str, Any], locale: str, quotes: dict[str, str] | None = None
 ) -> tuple[dict[str, Any], NormaliseReport]:
     """Rewrite every entry of one locale, returning the new values and a report.
 
@@ -205,7 +310,7 @@ def normalise_locale(
         for phrase in protected:
             before_counts[phrase] += _count(value, phrase)
 
-        new_value, counts = _normalise_value(value, locale)
+        new_value, counts = _normalise_value(value, locale, quotes)
 
         for phrase in protected:
             after_counts[phrase] += _count(new_value, phrase)
@@ -238,13 +343,19 @@ def remaining(entries: dict[str, Any], locale: str) -> dict[str, int]:
     A pass that reports replacements but leaves variants behind has produced a fifth
     spelling rather than removing four, which is the specific way an ordered rewrite goes
     wrong.
-    """
-    rules = RULES.get(locale)
-    if not rules:
-        return {}
 
+    Covers the global patterns as well as the locale's literal rules. It has to: a regex
+    that half-applies leaves exactly the same kind of residue, and a check that silently
+    ignores a whole rule kind reports `✓` for a pass that did not finish.
+
+    Quote substitution is deliberately **not** checked here. A `「…」` with no cache answer
+    is a normal, permanent state — most quoted strings are flavour prose, not names — so
+    counting them would report failure on every run for something that is not a defect.
+    """
+    rules = RULES.get(locale, ())
     protected = PROTECTED.get(locale, ())
     counts: dict[str, int] = {}
+
     for value in entries.values():
         texts: list[str] = []
         if isinstance(value, str):
@@ -263,5 +374,9 @@ def remaining(entries: dict[str, Any], locale: str) -> dict[str, int]:
                 found = len(re.findall(re.escape(wrong), text))
                 if found:
                     counts[wrong] = counts.get(wrong, 0) + found
+            for pattern, _, label in GLOBAL_PATTERNS:
+                found = len(pattern.findall(text))
+                if found:
+                    counts[label] = counts.get(label, 0) + found
 
     return counts

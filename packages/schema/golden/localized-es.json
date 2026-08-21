@@ -749,7 +749,7 @@
       },
       {
         "answer": "Sí, se puede.",
-        "question": "Se usó la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 sobre 〈ときのそら〉 que tiene anexado hBP01-118〈あん肝〉. En este caso, ¿se puede establecer el HP restante de 〈ときのそら〉 con hBP01-118〈あん肝〉 en '50'?",
+        "question": "Se usó la habilidad oshi 「Apretujón, apretujón」 de hBP01-001〈天音かなた〉 sobre 〈ときのそら〉 que tiene anexado hBP01-118〈あん肝〉. En este caso, ¿se puede establecer el HP restante de 〈ときのそら〉 con hBP01-118〈あん肝〉 en '50'?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -796,8 +796,8 @@
         "title": "Q25（2024.09.21）"
       },
       {
-        "answer": "No, no se puede. Como no inflige daño, no se puede usar la habilidad de hBP01-121〈Kotori〉 contra la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉.",
-        "question": "¿Se puede usar la habilidad de hBP01-121〈Kotori〉 contra la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉?",
+        "answer": "No, no se puede. Como no inflige daño, no se puede usar la habilidad de hBP01-121〈Kotori〉 contra la habilidad oshi 「Apretujón, apretujón」 de hBP01-001〈天音かなた〉.",
+        "question": "¿Se puede usar la habilidad de hBP01-121〈Kotori〉 contra la habilidad oshi 「Apretujón, apretujón」 de hBP01-001〈天音かなた〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -808,8 +808,8 @@
         "title": "Q24（2024.09.21）"
       },
       {
-        "answer": "No, no se puede. Dado que no inflige daño, la habilidad de hBP01-117〈フレンド〉 no puede usarse contra la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉.",
-        "question": "¿Se puede usar la habilidad de hBP01-117〈フレンド〉 contra la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉?",
+        "answer": "No, no se puede. Dado que no inflige daño, la habilidad de hBP01-117〈フレンド〉 no puede usarse contra la habilidad oshi 「Apretujón, apretujón」 de hBP01-001〈天音かなた〉.",
+        "question": "¿Se puede usar la habilidad de hBP01-117〈フレンド〉 contra la habilidad oshi 「Apretujón, apretujón」 de hBP01-001〈天音かなた〉?",
         "related_cards": {
           "card_number": [
             "hBP01-001",
@@ -844,8 +844,8 @@
         "title": "Q21（2024.09.21）"
       },
       {
-        "answer": "No, no se activa. La habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 especifica un valor de HP restante, no restaura HP.",
-        "question": "Se usó la habilidad oshi 「ぎゅっぎゅっ」 de hBP01-001〈天音かなた〉 sobre un holomen del oponente con HP restante 40 y equipado con 〈石の斧〉. Cuando su HP se convierte en 50, ¿se activa la habilidad de 〈石の斧〉 que dice 'cuando este holomen se recupera'?",
+        "answer": "No, no se activa. La habilidad oshi 「Apretujón, apretujón」 de hBP01-001〈天音かなた〉 especifica un valor de HP restante, no restaura HP.",
+        "question": "Se usó la habilidad oshi 「Apretujón, apretujón」 de hBP01-001〈天音かなた〉 sobre un holomen del oponente con HP restante 40 y equipado con 〈石の斧〉. Cuando su HP se convierte en 50, ¿se activa la habilidad de 〈石の斧〉 que dice 'cuando este holomen se recupera'?",
         "related_cards": {
           "card_number": [
             "hBP01-001"

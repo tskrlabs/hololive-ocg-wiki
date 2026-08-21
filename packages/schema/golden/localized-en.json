@@ -1703,8 +1703,8 @@
     },
     "qa_items": [
       {
-        "answer": "It means this card is considered to have the card names <フワワ・アビスガード>, <モココ・アビスガード>, and <FUWAMOCO>.",
-        "question": "What does the extra ability of hBP03-050 <FUWAMOCO> — “This Holomen is also treated as <フワワ・アビスガード> and <モココ・アビスガード>.” — mean?",
+        "answer": "It means this card is considered to have the card names 〈フワワ・アビスガード〉, 〈モココ・アビスガード〉, and 〈FUWAMOCO〉.",
+        "question": "What does the extra ability of hBP03-050 〈FUWAMOCO〉 — “This Holomen is also treated as 〈フワワ・アビスガード〉 and 〈モココ・アビスガード〉.” — mean?",
         "related_cards": {
           "card_number": [
             "hBP03-050"
@@ -1715,7 +1715,7 @@
       },
       {
         "answer": "Yes, it does.",
-        "question": "Does the extra ability of hBP03-050 <FUWAMOCO> — “This Holomen is also treated as <フワワ・アビスガード> and <モココ・アビスガード>.” — apply even when it’s not on the stage?",
+        "question": "Does the extra ability of hBP03-050 〈FUWAMOCO〉 — “This Holomen is also treated as 〈フワワ・アビスガード〉 and 〈モココ・アビスガード〉.” — apply even when it’s not on the stage?",
         "related_cards": {
           "card_number": [
             "hBP03-050"
@@ -1750,8 +1750,8 @@
         "title": "Q390（2025.06.11）"
       },
       {
-        "answer": "Yes, you can. Even if there isn’t a card with that exact name, if an Extra card states something like “This Holomen is also treated as <Fuwawa Abyssgard> and <Mococo Abyssgard>,” that condition is fulfilled.",
-        "question": "For hBP03-109 <Ruffians>, the effect “You may send a blue Cheer from your Archive to your <Fuwawa Abyssgard>” — can this also be sent to hBP03-050 <FUWAMOCO>?",
+        "answer": "Yes, you can. Even if there isn’t a card with that exact name, if an Extra card states something like “This Holomen is also treated as 〈Fuwawa Abyssgard〉 and 〈Mococo Abyssgard〉,” that condition is fulfilled.",
+        "question": "For hBP03-109 〈Ruffians〉, the effect “You may send a blue Cheer from your Archive to your 〈Fuwawa Abyssgard〉” — can this also be sent to hBP03-050 〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-109",
@@ -1776,8 +1776,8 @@
         "title": "Q340 (2025.03.11)"
       },
       {
-        "answer": "Yes, you can. Even if the specific card name isn’t present, if a card has an extra that treats it as a specific name (such as “This Holomen is also treated as <フワワ・アビスガード> and <モココ・アビスガード>.”), it satisfies that condition.",
-        "question": "Using the art “Want to eat together?” from hBP03-043 <フワワ・アビスガード>, can I transfer an Aile to my hBP03-050 <FUWAMOCO>?",
+        "answer": "Yes, you can. Even if the specific card name isn’t present, if a card has an extra that treats it as a specific name (such as “This Holomen is also treated as 〈フワワ・アビスガード〉 and 〈モココ・アビスガード〉.”), it satisfies that condition.",
+        "question": "Using the art “Want to eat together?” from hBP03-043 〈フワワ・アビスガード〉, can I transfer an Aile to my hBP03-050 〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -1789,7 +1789,7 @@
       },
       {
         "answer": "Yes, it does. Even if the specific card name isn’t among your cards, if a card has an extra that treats it as a certain name, it fulfills that condition.",
-        "question": "Does the art “もこもこしてる方” from hBP03-039 <モココ・アビスガード> still give +30 if my center Holomen is hBP03-050 <FUWAMOCO>?",
+        "question": "Does the art “もこもこしてる方” from hBP03-039 〈モココ・アビスガード〉 still give +30 if my center Holomen is hBP03-050 〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-039",
@@ -1837,7 +1837,7 @@
       },
       {
         "answer": "Yes, you can. Even if the specific name isn’t among your cards, cards with extras that treat them as certain names count as fulfilling that condition.",
-        "question": "With hBP03-004 <FUWAMOCO>’s Oshi Skill “モコちゃん！”, can I send an Aile to my hBP03-050 <FUWAMOCO>?",
+        "question": "With hBP03-004 〈FUWAMOCO〉’s Oshi Skill “モコちゃん！”, can I send an Aile to my hBP03-050 〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -2007,7 +2007,7 @@
     "illustrator": "UIIV◇",
     "image_key": "hBP05/hBP05-040_U",
     "keyword": {
-      "effect": "If your Life is 3 or less, your Center holomem that Bloomed this turn with [<Sakura Miko> or <Hoshimachi Suisei>] can Bloom one more time using a holomem from your hand.",
+      "effect": "If your Life is 3 or less, your Center holomem that Bloomed this turn with [〈Sakura Miko〉 or 〈Hoshimachi Suisei〉] can Bloom one more time using a holomem from your hand.",
       "name": "Business Friends",
       "type": "コラボエフェクト",
       "type_code": "collab_effect"

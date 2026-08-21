@@ -24,6 +24,12 @@
       "source": "ぬんぬんしよう",
       "value": "來ぬんぬん吧",
       "note": "F-003 — `ぬんぬん` is Luna's catchphrase and stays in kana by decision, not omission. Covers 2 cards."
+    },
+    {
+      "kind": "keyword_effect",
+      "source": "[コラボポジション限定]相手のターンで、自分のホロメンがダウンした時、自分のライフが相手以下なら、自分のアーカイブのカード名に「パソコン」を含むアイテム1枚を手札に戻せる。",
+      "value": "[僅限合作位]在對手的回合中，當自己的holomen倒下時，若自己的生命值不大於對手，則可以將自己存檔區中1張卡名含有「電腦」的道具返回手牌。",
+      "note": "#27 — the rule matches on a card-name substring, and every locale translates those card names (Gaming PC / 電競電腦), so leaving `パソコン` here made the rule unfollowable: no card on the site displays that string."
     }
   ]
 }

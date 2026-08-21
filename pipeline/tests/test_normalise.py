@@ -24,6 +24,7 @@ from holo_data.translate.normalise import (
     normalise_locale,
     normalise_text,
     remaining,
+    substitute_quotes,
 )
 
 # The glossary's answer, from all six cheer cards: `黄エール` -> `เยลสีเหลือง`.
@@ -195,3 +196,210 @@ class TestAcrossTheCache:
 
         assert again == {}
         assert report.total_replacements == 0
+
+
+class TestTheBracketRule:
+    """#27 part 2 — and it is a rendering fix, not a cosmetic one.
+
+    `ability_text` reaches the page through `v-html`, so a browser parses an ASCII
+    `<Hakui Koyori>` as an unknown tag and **drops the name**. 54 character names were
+    invisible on 24 live card pages: the rule read "attached to 1st or higher" and then
+    stopped. `〈` and `〉` are not HTML metacharacters, so they survive the same path.
+    """
+
+    def test_an_ascii_reference_becomes_a_cjk_one(self):
+        text, counts = normalise_text("attached to <Hakui Koyori>", "en")
+
+        assert text == "attached to 〈Hakui Koyori〉"
+        assert sum(counts.values()) == 1
+
+    def test_it_applies_to_every_locale_not_just_th(self):
+        """Unlike RULES, which is per-locale. The source writes 〈〉 6,804 times and ASCII
+        zero times, so an ASCII reference is model output whatever the language."""
+        for locale in ("en", "tc", "id", "ko", "th", "es"):
+            text, _ = normalise_text("<Natsuiro Matsuri>", locale)
+            assert text == "〈Natsuiro Matsuri〉", locale
+
+    def test_a_correct_reference_is_left_alone(self):
+        text, counts = normalise_text("attached to 〈Hakui Koyori〉", "en")
+
+        assert text == "attached to 〈Hakui Koyori〉"
+        assert counts == {}
+
+    def test_several_references_in_one_string_all_convert(self):
+        text, counts = normalise_text("<A> and <B> and <C>", "en")
+
+        assert text == "〈A〉 and 〈B〉 and 〈C〉"
+        assert sum(counts.values()) == 3
+
+    def test_an_unclosed_bracket_is_left_alone(self):
+        """The bound is what stops a stray `<` swallowing the rest of a sentence. No such
+        string exists in the cache today — every `<` forms a closed pair in all six
+        locales — so this guards against future data, not current."""
+        original = "gets Arts +10 if HP < 100 and the holomem is ready"
+
+        text, counts = normalise_text(original, "en")
+
+        assert text == original
+        assert counts == {}
+
+    def test_a_reference_longer_than_the_bound_is_left_alone(self):
+        original = "<" + "x" * 41 + ">"
+
+        text, _ = normalise_text(original, "en")
+
+        assert text == original
+
+    def test_the_protected_name_survives_the_pattern(self):
+        """The pattern runs inside the sentinel substitution, like every literal rule."""
+        text, _ = normalise_text("ชิโรกาเนะ โนเอล ส่ง <A> เอール", "th")
+
+        assert "โนเอล" in text
+        assert "〈A〉" in text
+        assert CORRECT in text
+
+    def test_remaining_reports_an_unconverted_reference(self):
+        """`remaining` must cover the global patterns too. A check that silently ignores
+        a whole rule kind reports ✓ for a pass that did not finish."""
+        left = remaining({"a": "attached to <Hakui Koyori>"}, "en")
+
+        assert sum(left.values()) == 1
+
+    def test_a_completed_bracket_pass_leaves_nothing(self):
+        entries = {"a": "<A>", "b": "〈B〉", "c": "plain text"}
+
+        changed, _ = normalise_locale(entries, "en")
+
+        assert remaining({**entries, **changed}, "en") == {}
+
+    def test_the_bracket_pass_is_idempotent(self):
+        entries = {"a": "attached to <Hakui Koyori>"}
+
+        changed, _ = normalise_locale(entries, "en")
+        again, report = normalise_locale({**entries, **changed}, "en")
+
+        assert again == {}
+        assert report.total_replacements == 0
+
+
+class TestQuoteSubstitution:
+    """#27 part 1 — the answer is already in the cache, nothing was looking it up.
+
+    A card's rules text quotes another card's skill or art name in `「…」`. The model
+    sometimes leaves that quote in Japanese while translating everything around it, so
+    the card says `「人生リセットボタン」` and the skill's own entry says
+    `Tombol Reset Kehidupan`.
+    """
+
+    QUOTES = {
+        "人生リセットボタン": "Tombol Reset Kehidupan",
+        "神秘の儀式": "Ritual Misterius",
+    }
+
+    def test_a_quoted_name_is_replaced_with_its_canonical_translation(self):
+        text, n = substitute_quotes(
+            "If you used 「人生リセットボタン」 this game", self.QUOTES
+        )
+
+        assert text == "If you used 「Tombol Reset Kehidupan」 this game"
+        assert n == 1
+
+    def test_the_brackets_are_kept(self):
+        """They are the source's own punctuation, not an artifact of the leak."""
+        text, _ = substitute_quotes("「神秘の儀式」", self.QUOTES)
+
+        assert text.startswith("「") and text.endswith("」")
+
+    def test_a_quote_with_no_cache_answer_is_left_exactly_as_it_is(self):
+        """Most quoted strings are flavour prose, not names — `あやふぶみの「あや」担当`.
+        Leaving them is the normal, permanent case, not a failure."""
+        original = "あやふぶみの「あや」担当"
+
+        text, n = substitute_quotes(original, self.QUOTES)
+
+        assert text == original
+        assert n == 0
+
+    def test_only_an_exact_match_substitutes(self):
+        """A substring or fuzzy match would rewrite one card's quotation into another
+        card's name — #78's failure arriving by a different route."""
+        original = "「人生リセットボタンのようなもの」"
+
+        text, n = substitute_quotes(original, self.QUOTES)
+
+        assert text == original
+        assert n == 0
+
+    def test_a_translation_equal_to_the_source_is_not_counted(self):
+        """A name that stays Japanese in this locale is a decision, not a gap.
+        Substituting it is a no-op that would inflate the count."""
+        text, n = substitute_quotes("「FUWAMOCO」", {"FUWAMOCO": "FUWAMOCO"})
+
+        assert text == "「FUWAMOCO」"
+        assert n == 0
+
+    def test_several_quotes_in_one_string(self):
+        text, n = substitute_quotes(
+            "「人生リセットボタン」 and 「神秘の儀式」", self.QUOTES
+        )
+
+        assert "Tombol Reset Kehidupan" in text and "Ritual Misterius" in text
+        assert n == 2
+
+    def test_it_runs_through_normalise_locale(self):
+        entries = {"a": "If you used 「人生リセットボタン」 this game"}
+
+        changed, report = normalise_locale(entries, "id", quotes=self.QUOTES)
+
+        assert "Tombol Reset Kehidupan" in changed["a"]
+        assert report.total_replacements == 1
+
+    def test_it_is_idempotent(self):
+        entries = {"a": "「人生リセットボタン」"}
+
+        changed, _ = normalise_locale(entries, "id", quotes=self.QUOTES)
+        again, _ = normalise_locale({**entries, **changed}, "id", quotes=self.QUOTES)
+
+        assert again == {}
+
+    def test_no_quotes_map_means_no_substitution(self):
+        """The map is optional — `normalise-cache` can run without a build."""
+        entries = {"a": "「人生リセットボタン」"}
+
+        changed, _ = normalise_locale(entries, "id")
+
+        assert changed == {}
+
+
+class TestTheManualEntryBlindSpot:
+    """`manual` entries are not rewritten, so they must at least be *checked*.
+
+    The pass excludes them deliberately — a human decided that string and a blanket rule
+    does not overrule them (ADR 0002). But excluding them from the completeness check as
+    well meant a bad variant inside a committed correction was invisible to both the pass
+    and its guard, and `normalise-cache` still printed ✓.
+
+    Harmless when it was written — `corrections/` held only `tc` while `RULES` held only
+    `th` — but that was a property of the data, not of the code. These pin the reporting
+    path so the next correction in a rule-carrying locale is loud.
+    """
+
+    def test_remaining_finds_a_variant_in_a_manual_entry(self):
+        """What the CLI now runs over the excluded set, so a bad correction is named."""
+        manual = {"art_name:x": "ส่งเอール 1 ใบ"}
+
+        assert remaining(manual, "th") == {"เอール": 1}
+
+    def test_a_clean_manual_entry_reports_nothing(self):
+        manual = {"art_name:x": f"ส่ง{CORRECT} 1 ใบ"}
+
+        assert remaining(manual, "th") == {}
+
+    def test_the_committed_corrections_are_clean(self):
+        """The real files, against the real rules. This is the check that would have
+        fired had a correction been written in a locale with rules."""
+        from holo_data import corrections as C
+
+        for locale, corrections in C.load_all().items():
+            entries = {c.key: c.value for c in corrections.items}
+            assert remaining(entries, locale) == {}, locale

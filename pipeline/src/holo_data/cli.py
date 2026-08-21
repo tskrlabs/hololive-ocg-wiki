@@ -1396,15 +1396,25 @@ def normalise_cache(
         False, "--write", help="required to modify the cache; otherwise reports only"
     ),
 ) -> None:
-    """Apply deterministic spelling fixes to cached translations. Spends nothing.
+    """Apply deterministic fixes to cached translations. Spends nothing.
 
-    For defects that are not translation *judgements* but one word spelled several ways
-    in a single run — #28's `エール`, which came back from the Thai run as four different
-    strings, one of them (`เอール`) Thai `เอ` followed by katakana `ール`, not a word in
-    any language.
+    Three kinds of defect, none of them a translation *judgement*:
 
-    A re-translation would cost money and would not fix it: the model produced the
-    inconsistency, and nothing about a second run makes it pick one spelling. This is
+    **One word spelled several ways** — #28's `エール`, which came back from the Thai run
+    as four different strings, one of them (`เอール`) Thai `เอ` followed by katakana
+    `ール`, not a word in any language.
+
+    **A card reference in ASCII brackets** — #27. The source writes `〈…〉` 6,804 times and
+    ASCII `<>` zero times, so `<Hakui Koyori>` is always model output. This one is not
+    cosmetic: `ability_text` renders through `v-html`, so a browser reads that as an
+    unknown tag and **drops the name**. 54 names were invisible on 24 live card pages.
+
+    **A quoted name left in Japanese** — #27, where the canonical translation is already
+    one entry away in the same cache and nothing was looking it up. Needs a build, since
+    that is where the source-string-to-unit map comes from; skipped without one.
+
+    A re-translation would cost money and would not fix any of them: the model produced
+    the inconsistency, and nothing about a second run makes it pick one answer. This is
     deterministic, free, and re-runnable.
 
     Reports by default and needs `--write` to touch the cache, matching `translate`'s
@@ -1418,6 +1428,29 @@ def normalise_cache(
     locales = [locale] if locale else sorted(cache.entries)
     total = 0
     dirty = False
+
+    # The quoted-name map, per locale: source string -> this locale's translation, for
+    # every unit the build contains. Without a build there is no way to know which
+    # quoted strings are names, so that rule is skipped rather than guessed at.
+    quotes_by_locale: dict[str, dict[str, str]] = {}
+    collection = build_module.load()
+    if collection is None:
+        typer.echo(
+            "no build found — the quoted-name rule needs one and will be skipped "
+            "(`holo-data build` to enable it)",
+            err=True,
+        )
+    else:
+        cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
+        all_units = units_module.collect(cards)
+        for loc in locales:
+            quotes_by_locale[loc] = {
+                unit.value: entry.value
+                for key, unit in all_units.items()
+                if isinstance(unit.value, str)
+                and (entry := cache.get(loc, key)) is not None
+                and isinstance(entry.value, str)
+            }
 
     for loc in locales:
         entries = cache.entries.get(loc)
@@ -1434,7 +1467,9 @@ def normalise_cache(
             if entry.source != "manual"
         }
 
-        changed, report = normalise_module.normalise_locale(editable, loc)
+        changed, report = normalise_module.normalise_locale(
+            editable, loc, quotes=quotes_by_locale.get(loc)
+        )
         for line in report.lines():
             typer.echo(line)
 
@@ -1445,6 +1480,20 @@ def normalise_cache(
             # wrong, so it is checked rather than assumed.
             typer.echo(f"  ⚠ variants still present after the pass: {left}", err=True)
             raise typer.Exit(1)
+
+        # `manual` entries are not rewritten, which used to mean they were not *checked*
+        # either — a bad variant inside a committed correction was invisible to both the
+        # pass and its guard, and the command still printed ✓. Reported, never rewritten:
+        # the fix belongs in `pipeline/corrections/`, where a human can review the diff.
+        protected_left = normalise_module.remaining(
+            {k: e.value for k, e in entries.items() if e.source == "manual"}, loc
+        )
+        if protected_left:
+            typer.echo(
+                f"  ⚠ {loc}: a `manual` entry contains {protected_left} — not rewritten "
+                "(fix it in pipeline/corrections/)",
+                err=True,
+            )
 
         total += report.total_replacements
         if changed and write:
