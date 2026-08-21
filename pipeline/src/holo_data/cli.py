@@ -17,6 +17,7 @@ steps that cost money or touch production are explicit.
 
     holo-data glossary            proper-noun coverage, per locale     (local, free)
     holo-data corrections         verify hand-written fixes            (local, free)
+    holo-data evict               drop entries so they re-translate    (local, free)
     holo-data cache-status        migration progress, per locale       (local, free)
     holo-data backup-cache        snapshot the translation cache       (local / R2)
     holo-data normalise-cache     deterministic spelling fixes         (local, free)
@@ -355,6 +356,14 @@ def translate_units(
     for report in reports:
         status = cache.status(report.locale, work)
         typer.echo(f"  {status.describe()}")
+
+    # Not optional, and measured: the 2026-08-21 Thai Q&A run produced 93 fresh `เอール`
+    # and 68 `เอล` in brand-new output. A translation run refills the deterministic
+    # defects rather than retiring them, so skipping this ships them.
+    typer.echo("")
+    typer.echo("  next: `holo-data normalise-cache --write` — a fresh run reintroduces")
+    typer.echo("        the deterministic defects, so this is part of translating, not")
+    typer.echo("        a separate cleanup. Then `build`, publish and seed.")
 
 
 @app.command()
@@ -1513,6 +1522,82 @@ def normalise_cache(
         cache.save()
         typer.echo(f"\n✓ {total} replacement(s) written to the cache")
         typer.echo("  next: `holo-data build`, then publish and seed")
+
+
+@app.command("evict")
+def evict(
+    locale: str = typer.Option(..., "--locale", help="the locale to evict from"),
+    source: str = typer.Option(
+        "legacy", "--source", help="which provenance to drop: legacy, machine"
+    ),
+    kind: Optional[str] = typer.Option(
+        None, "--kind", help="restrict to one unit kind, e.g. qa"
+    ),
+    write: bool = typer.Option(
+        False, "--write", help="required to modify the cache; otherwise reports only"
+    ),
+) -> None:
+    """Drop cache entries so the next `translate-units` re-does them. Spends nothing here.
+
+    **The step that makes a re-translation possible at all.** A `legacy` entry is a
+    *fresh* entry — its source hash matches, so `stale()` skips it and `translate-units`
+    plans no work. That is correct: ADR 0008 migrated the Q&A corpus deliberately rather
+    than re-spending on it. Re-doing it therefore has to be an explicit act, which is
+    this.
+
+    Deliberately cannot touch `manual`. A human decision is not something a bulk command
+    gets to discard, and a correction lives in `pipeline/corrections/` where deleting it
+    is a reviewable diff (ADR 0012). `--source machine` is allowed but is almost always a
+    mistake — it re-spends on text that is already current.
+
+    Reports by default and needs `--write`, matching `normalise-cache`. The eviction
+    itself is free; the `translate-units` run it unblocks is not, and that gate is
+    separate.
+    """
+    if source == "manual":
+        typer.echo(
+            "refusing: `manual` entries are human decisions. Remove the entry from "
+            "pipeline/corrections/ instead, where the deletion is reviewable.",
+            err=True,
+        )
+        raise typer.Exit(1)
+
+    cache = TranslationCacheV2.load()
+    entries = cache.entries.get(locale)
+    if not entries:
+        typer.echo(f"{locale}: no entries", err=True)
+        raise typer.Exit(1)
+
+    doomed = [
+        key
+        for key, entry in entries.items()
+        if entry.source == source and (kind is None or key.startswith(f"{kind}:"))
+    ]
+
+    scope = f"{kind} " if kind else ""
+    typer.echo(
+        f"{locale}: {len(doomed)} {scope}entr(ies) with source={source!r}, "
+        f"of {len(entries)} total"
+    )
+    if not doomed:
+        return
+
+    if not write:
+        typer.echo(
+            f"\nWould drop {len(doomed)} entr(ies) — re-run with --write to apply.\n"
+            "  then: `holo-data translate-units --include-qa --dry-run` to price the "
+            "re-translation"
+        )
+        return
+
+    for key in doomed:
+        del entries[key]
+    cache.save()
+    typer.echo(f"\n✓ dropped {len(doomed)} entr(ies)")
+    typer.echo(
+        "  the cache no longer has an answer for these — `build` will fall back or "
+        "leave them untranslated until `translate-units` runs"
+    )
 
 
 @app.command("cache-status")

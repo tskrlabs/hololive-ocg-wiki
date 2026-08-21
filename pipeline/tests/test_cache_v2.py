@@ -144,6 +144,45 @@ class TestPersistence:
         assert keys == sorted(keys)
 
 
+class TestEviction:
+    """Dropping entries so `translate-units` re-does them — what `holo-data evict` runs.
+
+    The command itself is a filter over `entries` plus a `save`; what is worth pinning is
+    the property that makes it *necessary*, and the one thing it must never do.
+    """
+
+    def test_a_legacy_entry_is_fresh_which_is_why_eviction_is_needed(self):
+        """The non-obvious part. A `legacy` entry's source hash matches, so nothing is
+        stale and `translate-units` plans no work — ADR 0008 migrated the Q&A corpus
+        deliberately rather than re-spending on it. Re-doing it is therefore an explicit
+        act, not something a re-run discovers."""
+        cache = TranslationCacheV2()
+        cache.put("th", unit(kind="qa", value={"q": "x"}), {"a": "y"}, source="legacy")
+
+        assert cache.stale("th", [unit(kind="qa", value={"q": "x"})]) == []
+
+    def test_dropping_it_makes_the_unit_stale_again(self):
+        cache = TranslationCacheV2()
+        target = unit(kind="qa", value={"q": "x"})
+        cache.put("th", target, {"a": "y"}, source="legacy")
+
+        del cache.entries["th"][target.key]
+
+        assert cache.stale("th", [target]) == [target]
+
+    def test_evicting_one_locale_leaves_the_others(self):
+        """The pilot depends on this: `th` is re-translated while five locales keep
+        their migrated answers."""
+        cache = TranslationCacheV2()
+        for locale in ("th", "en"):
+            cache.put(locale, unit(), "Value", source="legacy")
+
+        cache.entries["th"].clear()
+
+        assert cache.count("th") == 0
+        assert cache.count("en") == 1
+
+
 class TestMigrationStatus:
     def test_reports_progress_per_locale(self):
         cache = TranslationCacheV2()

@@ -16,6 +16,15 @@ A re-translation costs an API call per batch and would not fix it: the model pro
 inconsistency in the first place, and nothing about a second run makes it choose one
 spelling. A rewrite is deterministic, free, reviewable as a diff, and re-runnable.
 
+**This was measured, not assumed.** The 2026-08-21 Thai Q&A re-translation (#28) produced
+608 fresh units under the current prompt, and the model reproduced all four `เอール`
+variants in them — 93 new occurrences of the mixed-script form alone, plus 68 of `เอล`.
+So a re-translation does not retire this module; it refills it.
+
+⚠️ **Which makes `normalise-cache` a required step *after* every `translate-units` run,
+not a one-off cleanup.** Skip it and a run silently reintroduces the defect it was meant
+to fix.
+
 ## Why an ordered list rather than a regex alternation
 
 The variants nest — `เอล` is a prefix of `เอลล์` and a substring of `เอール`. Applying the
