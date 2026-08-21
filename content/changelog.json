@@ -2,6 +2,26 @@
   "$comment": "Player-facing release notes. Committed and imported at build time, NOT published to R2. See content/README.md for why this differs from info.json.",
   "releases": [
     {
+      "version": "2.1.0",
+      "date": "2026-08-21",
+      "title": "The list remembers where you were",
+      "summary": "Closing a card used to drop you back at the top of the list, depending on your screen width. It does not any more. This page and the header also had a tidy up.",
+      "changes": [
+        {
+          "kind": "fixed",
+          "text": "Opening a card and closing it again sent you back to the top of the list. Whether it happened depended on how wide your window was, which is why it survived a first attempt at fixing it. Escape, the close button and your browser's Back button all keep your place now, at every window size."
+        },
+        {
+          "kind": "changed",
+          "text": "This page groups its entries. The coloured labels used to repeat on every line, so a release with eight entries showed eight labels carrying three words between them. Each label now appears once, with its entries underneath."
+        },
+        {
+          "kind": "changed",
+          "text": "GitHub and Discord have moved out of the three dots menu and into the header itself, on wide screens. On a phone or a tablet they stay in the menu, along with everything else that was already there."
+        }
+      ]
+    },
+    {
       "version": "2.0.1",
       "date": "2026-08-19",
       "title": "New cards, and a fix behind the scenes",

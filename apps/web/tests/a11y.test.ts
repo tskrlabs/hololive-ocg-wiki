@@ -22,6 +22,16 @@ import { describe, expect, it } from "vitest";
 /** `$t` returning the key, so a missing translation is visible as the raw key. */
 const translate = (key: string) => key;
 
+/**
+ * `/api/info`, resolved with an invite so the Discord *button* renders.
+ *
+ * The unresolved case renders the reserved placeholder instead, which is inert and has no
+ * name by design — that is the subject of its own test below, not of the name sweep.
+ */
+const infoData = ref<{ "discord-invite-url"?: string }>({
+  "discord-invite-url": "https://discord.gg/example",
+});
+
 Object.assign(globalThis, {
   ref,
   computed,
@@ -29,6 +39,8 @@ Object.assign(globalThis, {
   useColorMode: () => ({ preference: "light" }),
   useShowOriginal: () => ({ enabled: ref(true), toggle: () => {} }),
   useSwitchLocalePath: () => (code: string) => `/${code}/`,
+  useAsyncData: () => ({ data: infoData }),
+  $fetch: () => Promise.resolve(infoData.value),
 });
 
 /**
@@ -77,6 +89,11 @@ const stubs = {
   DropdownMenuContent: true,
   DropdownMenuItem: true,
   Icon: { template: "<svg aria-hidden='true' />" },
+  // Stubbed `aria-hidden`, which is what the real ones are — asserted directly in
+  // "decorative icons stay out of the name" below. Stubbing them as anything else would
+  // let the link tests pass against a glyph the real components do not render.
+  IconGithub: { template: "<svg aria-hidden='true' />" },
+  IconDiscord: { template: "<svg aria-hidden='true' />" },
 };
 
 async function render(path: string) {
@@ -87,10 +104,15 @@ async function render(path: string) {
 }
 
 describe("icon-only controls carry a name (#51)", () => {
+  // The last two are header controls from `lg` up (D28). They are icon-only, so the
+  // `.sr-only` span is their *entire* accessible name — there is no visible label to fall
+  // back on, which is what makes them belong in this file rather than merely near it.
   const cases = [
     ["../app/components/parials/AppColorModeSwitcher.vue", "Toggle theme"],
     ["../app/components/parials/AppOriginalSwitcher.vue", "Show original names"],
     ["../app/components/parials/AppLanguageSwitcher.vue", "Change language"],
+    ["../app/components/parials/AppGithubLink.vue", "Source code on GitHub"],
+    ["../app/components/parials/AppDiscordLink.vue", "Join the Discord server"],
   ] as const;
 
   for (const [path, expected] of cases) {

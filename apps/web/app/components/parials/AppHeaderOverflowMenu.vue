@@ -12,6 +12,11 @@
  * colour mode are *view* controls, used repeatedly while browsing. These are destinations,
  * used once.
  *
+ * **From `lg`, GitHub and Discord leave this menu for the header row** (D28) — they are
+ * the two destinations whose brand mark identifies them without a label, so they are the
+ * two that fit inline. The menu survives at every width for the four that do not, and
+ * below `lg` it is still the only route to any of the six.
+ *
  * **Ko-fi is here rather than in the header (D27).** The support link is a destination
  * like the rest, and D21's whole point was cutting the header from eight controls to five
  * — re-adding one for a monetisation ask would reverse that on the surface D21 was about.
@@ -56,7 +61,19 @@ const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? ""
         </NuxtLink>
       </DropdownMenuItem>
 
-      <DropdownMenuItem as-child>
+      <!--
+        GitHub and Discord are `lg:hidden` here, because from `lg` they are in the header
+        row itself (D28). A dropdown that repeats an item sitting visible an inch to its
+        left is noise — and worse, the reader has no way to tell the two are the same
+        link, so it reads as a menu that forgot to update.
+
+        The menu's contents therefore differ by width, which is exactly what D21 removed
+        from the header. It is acceptable *here* and was not acceptable there because the
+        direction is inverted: `hidden sm:inline-flex` made items reachable on desktop
+        only, while this makes them reachable at every width and merely relocates them.
+        Below `lg` these two are the only way to reach GitHub and Discord at all.
+      -->
+      <DropdownMenuItem as-child class="lg:hidden">
         <a href="https://github.com/tskrlabs/hololive-ocg-wiki" target="_blank">
           <IconGithub class="size-4" /> {{ $t("Source code on GitHub") }}
         </a>
@@ -65,8 +82,12 @@ const discordInviteUrl = computed(() => info.value?.["discord-invite-url"] ?? ""
       <!--
         Hidden rather than shown-and-dead when `/api/info` has not resolved or carries no
         invite: a menu entry that navigates nowhere is worse than one that is absent.
+
+        No reserved slot here, unlike `AppDiscordLink` — a menu item appearing late shifts
+        only the items below it, inside a surface that is shut while the fetch is in
+        flight. The header row has no such luxury.
       -->
-      <DropdownMenuItem v-if="discordInviteUrl" as-child>
+      <DropdownMenuItem v-if="discordInviteUrl" as-child class="lg:hidden">
         <a :href="discordInviteUrl" target="_blank">
           <IconDiscord class="size-4" /> {{ $t("Join the Discord server") }}
         </a>

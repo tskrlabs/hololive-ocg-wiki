@@ -374,6 +374,40 @@ unreachable, and it documented a UI this rework replaces. Done in `7171e7c`.
 **D21. The header keeps four controls plus an overflow menu.** Today 4 of 8 are
 `hidden sm:inline-flex`, so mobile silently loses status, GitHub and Discord.
 
+*Amended by D28, which puts two destinations back in the header from `lg` up.*
+
+**D28. GitHub and Discord leave the overflow menu from `lg`; the menu stays at every
+width.** D21 fixed a *reachability* bug — `hidden sm:inline-flex` meant a phone lost status,
+GitHub and Discord entirely, with nothing indicating anything was missing — and the fix
+made the header identical at 390px and 1440px (`5d6e394`). This makes it width-conditional
+again, which needs saying out loud.
+
+It is not the same defect inverted. Below `lg` the overflow menu still holds all six
+destinations, so nothing is unreachable at any width; an item is on the shelf at one width
+and in the drawer at another. The two are removed from the menu at `lg` (`lg:hidden`)
+because a dropdown repeating an item visible an inch to its left reads as a menu that
+forgot to update, and the reader cannot tell the two entries are one link.
+
+**Only two, because only two fit.** At `lg` the row has ~880px free — both slot children
+are `lg:hidden` on the home page and search has moved to the rail. Six inline icon+label
+destinations cost ~960px in `es` (`Unirse al servidor de Discord` alone is ~174px of text),
+and `ja` and `th` are comparable, so "no three-dots menu on desktop" is not available at
+`lg` in seven languages. GitHub and Discord are the two whose brand mark identifies them
+without a label, so they are the two that can go icon-only; the other four need their words
+and keep the menu alive. At `xl` all six would fit, at the cost of leaving 1024–1279px —
+iPad landscape — on the old layout.
+
+The count is not the criterion and never was; D21's real line is a *kind* test, view
+controls used repeatedly while browsing against destinations used once. The menu used to
+draw that line by being a separate surface. Inline, a divider draws it.
+
+Two consequences worth stating. The Discord link is conditional on `/api/info`, so in the
+header it would pop in mid-load and shift every control left of it — it reserves an inert
+`size-9` slot instead, which the menu does not need because a shut dropdown has no visible
+shift. And the six header strings were absent from `contract.test.ts`'s sweep, present in
+all seven locales by luck rather than by test; promoting two of them to the accessible name
+of an icon-only button raises what a miss costs, so all six are now swept.
+
 ### Type, motion, testing
 
 **D22. Two weights on CJK faces, three on Latin.** Fonts cost **1.5 MB** on a `tc` card

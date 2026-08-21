@@ -4,6 +4,28 @@
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
 origin (D2), against **2,559 cards** in D1 and images on R2.
 
+✅ **`v2.0.1` is tagged and published** (2026-08-19), retroactively covering the analytics
+fix that had shipped unannounced on 2026-08-05, plus the pipeline repair below. Everything
+on `main` is now tagged. The release procedure is a skill: `.claude/skills/release/`, with
+the reasoning in [`docs/agents/release.md`](agents/release.md).
+
+**Its central distinction is that a card-set update is *not* a release** — the API reads D1
+and R2 directly, so card data goes live with no deploy and `/status` reports it at runtime.
+Only the sitemap waits on a merge. So `cards` mode never tags, and stops if anything outside
+a two-path allowlist rode along; `site` mode drafts both notes files, enforces the house
+style, and refuses to tag notes nobody has read.
+
+⚠️ **A deploy cannot be verified by grepping `_nuxt/` chunks.** Confirming v2.0.1 took far
+longer than it should have because three plausible checks are all invalid: chunk **filenames
+repeat across builds** and are served `immutable` for a year, so a familiar name is a CDN
+`HIT` on the *old* bytes; a missing chunk returns the **SPA fallback HTML** with
+`content-type: text/javascript`, so a naive grep silently searches a 6.6 KB HTML page; and
+the page's own component is **lazily imported**, so it appears in no `<link modulepreload>`
+and no crawl of the entry chunk's dep map finds it. The check that works is
+`/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
+To confirm specific *copy*, read the route table out of the entry chunk to get the page
+component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
 ## ✅ The card set is at 2,559 — the first real update run, 2026-08-19
 
 The official list grew 2,463 → 2,559, and the whole pipeline ran end to end:
