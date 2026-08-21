@@ -53,7 +53,21 @@ const shouldPreserveScroll = ref(false);
 
 // Pagination state
 const pageSize = ref(200); // Increased for virtual scrolling
-const currentPage = ref(1);
+
+/**
+ * How many pages are on screen — seeded from the query, not from 1 (#59, third time).
+ *
+ * ⚠️ **This is component-local state describing something that outlives the component.**
+ * Opening a card unmounts the list (D15), so a plain `ref(1)` comes back saying "one page"
+ * over a `cards` array that `useState` faithfully preserved at three. Everything downstream
+ * then works correctly from a false premise.
+ *
+ * `cardQuery.page` is the same number kept where the cards are kept, written by both
+ * `getFilteredCards` and `loadMore`. Reading it here is what makes the two agree across a
+ * remount; it is a `ref` rather than a computed because `loadMore` advances it locally
+ * before the query confirms.
+ */
+const currentPage = ref(cardQuery.page.value);
 const hasMore = computed(() => {
   return cardQuery.cards.value.length < cardQuery.total.value;
 });
@@ -177,7 +191,55 @@ const applyFilters = useDebounceFn(async () => {
     1,
     pageSize.value
   );
-}, 300); // Slightly increased debounce for API calls// Load more cards for infinite scroll with virtual scroller
+}, 300); // Slightly increased debounce for API calls
+
+/**
+ * Fetch the first page **only if the list is not already showing results** (#59, third time).
+ *
+ * ⚠️ This exists because `getFilteredCards` *replaces* the list with a single page, and on
+ * the return-from-a-card path that is a truncation rather than a load.
+ *
+ * The sequence, which is a race the restore appeared to win:
+ *
+ * 1. Infinite scroll appends pages 2 and 3 — `cards` holds 600.
+ * 2. Tapping a card unmounts the list; `cards` survives in `useState`, still 600.
+ * 3. `onMounted` starts *both* `applyFilters()` (debounced 300ms) and
+ *    `scheduleScrollRestore()` (a rAF loop that settles in two or three frames).
+ * 4. The restore wins, sees 600, matches the `itemCount` guard, writes the offset and
+ *    consumes the memory. **It succeeds** — which is why nothing looked wrong here.
+ * 5. ~300ms later the debounced fetch lands. Page 1 is in `pageCache`, so it resolves with
+ *    no request and no loading state, and assigns `cards.value` back to 200.
+ * 6. The scroller's content collapses from 100 rows to 34, and the browser silently
+ *    re-clamps the offset that had just been restored correctly.
+ *
+ * The landing spot is what identifies it: a *failed* restore leaves you at 0, but a clamp
+ * leaves you at the ceiling of the truncated list. So every scroll deeper than one page
+ * lands on the same card near the end of page 1, no matter how far down you were — and
+ * shallow scrolls, which are under that ceiling, survive untouched.
+ *
+ * Refetching pages 1..N instead would also avoid the truncation, at N D1 round trips on
+ * every card close — against a read budget `loadMore` already skips its COUNT query to
+ * protect (F-014). Nothing is stale: `cards`, `total` and `page` are one `useState` unit,
+ * and a filter or locale change routes through `applyFilters` rather than here.
+ *
+ * The condition is on the *state* rather than on `cards.length`, because the states this
+ * must skip and the states it must not are not distinguishable by a count:
+ *
+ * - `ready` is the case this exists for — results are on screen, keep them.
+ * - `loading` / `refiltering` already have a request in flight; a second would race it.
+ * - `error` **must** still fetch. It is reached with an empty list, and skipping would
+ *   leave a failed list stranded with no automatic retry across a remount (#45).
+ * - `empty` still fetches too. A genuine zero-result is cheap to re-ask — page 1 of that
+ *   filter is in `pageCache`, so it costs no request — and it keeps this from being a
+ *   second place that decides what an empty list means.
+ */
+const applyFiltersIfNeeded = () => {
+  const { status } = cardQuery.state.value;
+  if (status === "ready" || status === "loading" || status === "refiltering") return;
+  applyFilters();
+};
+
+// Load more cards for infinite scroll with virtual scroller
 const loadMore = async () => {
   if (cardQuery.isLoading.value || !hasMore.value) return;
 
@@ -445,9 +507,14 @@ watch(gridColCount, () => {
  * alone is not enough: `shouldRenderScroller` gates on a measured width, which arrives
  * from a `ResizeObserver` a frame later, so at `nextTick` the element is often still the
  * fallback grid.
+ *
+ * ⚠️ `applyFiltersIfNeeded` rather than `applyFilters`: returning from a card must not
+ * refetch page 1 *over* a list that infinite scroll had grown to several pages. See that
+ * function for the full trace — the truncation lands after the restore has already
+ * succeeded, so it reads as the restore having failed.
  */
 onMounted(() => {
-  applyFilters();
+  applyFiltersIfNeeded();
   scheduleScrollRestore();
 });
 

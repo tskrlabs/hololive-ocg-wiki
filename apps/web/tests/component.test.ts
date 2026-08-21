@@ -772,3 +772,105 @@ describe("the query state union (#38)", () => {
     expect(useCardQuery().error.value).toBe("offline");
   });
 });
+
+/**
+ * Returning from a card keeps every appended page (#59, third time).
+ *
+ * ⚠️ **The defect was not in the scroll memory, and every test in `scroll-memory.test.ts`
+ * passed throughout.** The restore *succeeded*; it was undone ~300ms later by the mount's
+ * own `applyFilters()`, which fetches page 1 and thereby truncates a three-page list back
+ * to one. The offset had already been written and the memory already consumed, so the
+ * browser simply re-clamped the scroll when the content collapsed.
+ *
+ * That is why this lives here rather than beside the composable's rules. The bug is in the
+ * *wiring* — which of two things `onMounted` starts, against state that outlives the
+ * component — and F-019's lesson is that wiring is exactly what a pure test cannot see.
+ *
+ * It also could not be found locally: `fixtures/cards.json` is smaller than one `pageSize`,
+ * so `hasMore` is false and `loadMore` never fires against fixtures at all. These tests
+ * fake 2,448 cards for the same reason the fixtures were expanded.
+ *
+ * A remount is two `mountList()` calls without clearing `stateStore` — which is precisely
+ * what a card view does: the component is destroyed, `useState` is not.
+ */
+describe("returning from a card view (#59, third time)", () => {
+  it("keeps the appended pages rather than truncating back to page 1", async () => {
+    const first = await mountList();
+    await settle();
+
+    // Infinite scroll: two appends, so the list is three pages deep.
+    for (let i = 0; i < 2; i++) {
+      await first.findComponent(ScrollerStub).vm.$emit("scroll-end");
+      await settle();
+    }
+    expect(useCardQuery().cards.value).toHaveLength(PAGE * 3);
+    expect(requests.map((r) => r.page)).toEqual([1, 2, 3]);
+
+    // Opening a card unmounts the list (D15); `useState` survives it.
+    first.unmount();
+    const requestsBefore = requests.length;
+
+    // Closing it mounts a fresh one.
+    const second = await mountList();
+    await settle();
+
+    // The whole bug, in one assertion: the list came back three pages long.
+    expect(useCardQuery().cards.value).toHaveLength(PAGE * 3);
+    expect(second.findComponent(ScrollerStub).props("items")).toHaveLength(PAGE * 3);
+    // …and it cost nothing to do so. Refetching pages 1..N would also avoid the
+    // truncation, at N D1 round trips per card close (F-014).
+    expect(requests).toHaveLength(requestsBefore);
+  });
+
+  it("still fetches on a cold mount, when there is nothing to keep", async () => {
+    // The guard must not turn the *first* mount into a no-op — that would be a blank
+    // homepage, which is a far worse bug than the one it fixes.
+    const wrapper = await mountList();
+    await settle();
+
+    expect(requests).toHaveLength(1);
+    expect(wrapper.findComponent(ScrollerStub).props("items")).toHaveLength(PAGE);
+  });
+
+  it("retries on remount when the last attempt failed", async () => {
+    // An `error` state is reached with an empty list. Skipping the fetch because there is
+    // "nothing in flight" would strand a failed list across every remount with no
+    // automatic retry (#45).
+    const failing = failingSource(new Error("Failed to fetch"), 1);
+    setCardSource(failing.source as never);
+
+    const first = await mountList();
+    await settle();
+    expect(useCardQuery().state.value.status).toBe("error");
+
+    first.unmount();
+    const second = await mountList();
+    await settle();
+
+    // The second mount asked again, and this time it worked.
+    expect(useCardQuery().state.value.status).toBe("ready");
+    expect(second.findComponent(ScrollerStub).props("items")).toHaveLength(PAGE);
+  });
+
+  it("resumes paging from where it left off rather than refetching page 2", async () => {
+    // `currentPage` is component-local but describes something that outlives the
+    // component. Left as `ref(1)`, the first scroll-end after a remount would re-request
+    // page 2 — a page already on screen — and append a duplicate of it.
+    const first = await mountList();
+    await settle();
+    await first.findComponent(ScrollerStub).vm.$emit("scroll-end");
+    await settle();
+    expect(requests.map((r) => r.page)).toEqual([1, 2]);
+
+    first.unmount();
+    const second = await mountList();
+    await settle();
+
+    await second.findComponent(ScrollerStub).vm.$emit("scroll-end");
+    await settle();
+
+    // Page 3, not page 2 again.
+    expect(requests.map((r) => r.page)).toEqual([1, 2, 3]);
+    expect(useCardQuery().cards.value).toHaveLength(PAGE * 3);
+  });
+});
