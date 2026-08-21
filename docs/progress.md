@@ -374,7 +374,8 @@ below blocks the flip.
 
 | # | what | label |
 |---|---|---|
-| [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Re-translate the `legacy` Q&A corpus — the mechanical half is done | `ready-for-agent` |
+| [#81](https://github.com/tskrlabs/hololive-ocg-wiki/issues/81) | Re-translate the legacy Q&A for the remaining five locales — **maintainer-triggered**, costs Poe quota | `ready-for-agent` |
+| [#80](https://github.com/tskrlabs/hololive-ocg-wiki/issues/80) | `ability_text` renders through `v-html`; only bracket normalisation keeps it safe | `needs-triage` |
 | [#62](https://github.com/tskrlabs/hololive-ocg-wiki/issues/62) | `original.tags` is rendered nowhere, and the deck panel has no source names | `ready-for-human` |
 
 ✅ **#22 is closed** (2026-08-21) by
@@ -483,7 +484,34 @@ Also closed a blind spot found while checking safety: `manual` entries were excl
 the completeness check as well as from rewriting, so a bad variant inside a committed
 correction was invisible and `normalise-cache` still printed `✓`.
 
-⚠️ **Not yet live** — this is a cache edit, so it needs `publish` and `seed`.
+✅ **Live** — published and seeded 2026-08-21. The seed reported `changed 432, qa_only 463,
+source_changed 0`: every row moved because of our own rewrite, which is exactly the
+distinction ADR 0009 D26 built the status vocabulary for.
+
+✅ **#28 is closed** (2026-08-21). The `th` Q&A pilot went **61% → 15%** of units leaking
+kana, 1,851 → 174 kana runs, and **17 wholly-untranslated answers → 0** — `はい、できます。`
+had been shipping to Thai readers verbatim. 608 units, 47 calls, 248,972 tokens.
+
+**The durable finding is a workflow one, and it was nearly missed.** The 608 *fresh* units
+reproduced all four `เอール` variants — 93 of the mixed-script form, 68 bare `เอล`. A
+re-translation **refills** the deterministic defects rather than retiring them, so
+`normalise-cache` is a required step after every `translate-units` run, not a one-off
+cleanup. Recorded in `normalise.py` and printed by `translate-units` on completion, because
+skipping it silently ships the defect the run was meant to fix.
+
+`holo-data evict` is new and is what makes any of this possible: a `legacy` entry is a
+*fresh* entry, so `stale()` skips it and a re-translation plans no work. Re-doing a migrated
+corpus therefore has to be explicit. It refuses `--source manual` outright.
+
+**The glossary #28 asked for was not built, and the measurement is why**: card text carries
+**6 units** of untranslated game grammar across all six locales. The leakage was real but
+~95% of it lived in the `legacy` Q&A corpus, which re-translation addresses directly. A
+fourth glossary kind would mean widening `combined_table` and `Restorer` — both hardcode two
+positional glossaries — plus seven call sites, for six units.
+
+The remaining five locales are [#81](https://github.com/tskrlabs/hololive-ocg-wiki/issues/81),
+deliberately **maintainer-triggered** to manage Poe quota: id 52%, tc 33%, es 31%, en 25%,
+ko 9% degraded, ~235 calls for all five.
 
 ✅ **#20 and #21 are closed** by the translation rework — see
 [ADR 0008](adr/0008-content-addressed-translations.md). ✅ **#26 is closed** (the tag
