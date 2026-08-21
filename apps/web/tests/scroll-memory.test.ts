@@ -290,6 +290,57 @@ describe("the restore waits for the measured geometry (#59, reopened)", () => {
     expect(after.scrollTop).toBe(0);
     expect(memory.isPending()).toBe(false);
   });
+
+  /**
+   * The gate is on the **whole** geometry, not on the column count (#74).
+   *
+   * The near-miss this rules out: releasing the restore as soon as `columns` looks right.
+   * That reads as equivalent — the column count is what the scroller's `:key` carries, so
+   * it is the thing that visibly remounts — and it is wrong at every width where the
+   * observer changes only the row height. `tests/grid.test.ts` establishes that those
+   * widths are the common case; this is what goes wrong when one is hit.
+   *
+   * `measured` cannot drift from the geometry it describes because `CardListViewAPI.vue`
+   * writes them in one assignment. These pin the behaviour that rule exists to protect, so
+   * that unpicking it fails here rather than in a browser at one viewport width.
+   */
+  it("does not release on a matching column count alone", () => {
+    const memory = useGridScrollMemory();
+    const before = scrollable(3000);
+    before.scrollTop = 900;
+    memory.remember(before, 34);
+
+    // The frame the near-miss would accept: the guess's 6 columns happen to be correct at
+    // this width, so a columns-only gate sees nothing left to wait for. The row height is
+    // still the 1280px guess's, and the remount that fixes it has not happened.
+    const columnsAgree = { guessColumns: 6, measuredColumns: 6, measured: false };
+    expect(columnsAgree.measuredColumns).toBe(columnsAgree.guessColumns);
+
+    runScheduler(memory, [
+      { measured: columnsAgree.measured, scroller: { element: scrollable(3000), itemCount: 34 } },
+    ]);
+
+    // Held, because `measured` reports the geometry rather than one field of it.
+    expect(memory.isPending()).toBe(true);
+  });
+
+  it("releases once, on the frame the whole geometry becomes real", () => {
+    const memory = useGridScrollMemory();
+    const before = scrollable(3000);
+    before.scrollTop = 900;
+    memory.remember(before, 34);
+
+    // Same column count throughout — the only thing that changes is `measured`, which is
+    // exactly the signal a columns-only gate would not have.
+    const corrected = scrollable(3000);
+    const result = runScheduler(memory, [
+      { measured: false, scroller: { element: scrollable(3000), itemCount: 34 } },
+      { measured: true, scroller: { element: corrected, itemCount: 34 } },
+    ]);
+
+    expect(result.restored).toBe(true);
+    expect(corrected.scrollTop).toBe(900);
+  });
 });
 
 /**

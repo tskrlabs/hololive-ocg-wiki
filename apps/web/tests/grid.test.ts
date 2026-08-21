@@ -276,6 +276,69 @@ describe("compact's extra column on a phone (#52)", () => {
 });
 
 /**
+ * `columns` is not a proxy for "the geometry settled" (#74, and #59's second fix).
+ *
+ * The card list starts from `gridGeometry(1280)` — a guess made before the grid has been
+ * laid out — and a `ResizeObserver` corrects it a frame or two after mount. The scroll
+ * restore must wait for that correction, and the tempting way to detect it is to watch the
+ * column count, which is already reactive and already in the scroller's `:key`.
+ *
+ * That would be wrong, and these pin why. `itemSize` is a *continuous* function of width
+ * while `columns` is a step function, so there are many widths where the correction changes
+ * the row height and leaves the column count alone. A pixel offset is denominated in row
+ * heights, so "same columns" does not mean "same place in the list".
+ *
+ * This is the evidence behind the single-writer rule in `CardListViewAPI.vue`: geometry and
+ * the claim that it has been measured are written together, so a restore cannot be released
+ * by a half-corrected grid. The consequence is pinned in `tests/scroll-memory.test.ts`.
+ */
+describe("itemSize moves at widths where the column count does not (#74)", () => {
+  /** What the card list assumes before its first `ResizeObserver` callback. */
+  const GUESS = gridGeometry(1280, { compactMobileBonus: true });
+
+  it("changes the row height while holding the columns, at the widths measured in Chromium", () => {
+    // The two widths from #59's sweep where the six-column guess is right and the feature
+    // therefore *looked* fixed. `itemSize` still moves at both, in both directions.
+    for (const width of [1216, 1304]) {
+      const measured = gridGeometry(width, { compactMobileBonus: true });
+
+      expect(measured.columns, `${width}px columns`).toBe(GUESS.columns);
+      expect(measured.itemSize, `${width}px itemSize`).not.toBe(GUESS.itemSize);
+    }
+  });
+
+  it("is the common case, not a curiosity", () => {
+    // Sweeping every content width a real viewport could produce: agreeing on columns while
+    // disagreeing on row height is the *majority* of the widths that share the guess's
+    // column count, which is what makes a columns-only guard quietly wrong rather than
+    // wrong in a corner.
+    const sameColumns = WIDTHS.filter(
+      (width) => gridGeometry(width, { compactMobileBonus: true }).columns === GUESS.columns,
+    );
+    const alsoSameItemSize = sameColumns.filter(
+      (width) => gridGeometry(width, { compactMobileBonus: true }).itemSize === GUESS.itemSize,
+    );
+
+    expect(sameColumns.length).toBeGreaterThan(100);
+    // Exactly one width reproduces the guess outright: the one it was computed from.
+    expect(alsoSameItemSize).toEqual([1280]);
+  });
+
+  it("holds in compact mode too, where the text block is gone", () => {
+    // Density changes `itemSize` by removing the text block, but the property is about
+    // width — so it must not depend on which mode the reader is in.
+    const compactGuess = gridGeometry(1280, { showsText: false, compactMobileBonus: true });
+
+    for (const width of [1216, 1304]) {
+      const measured = gridGeometry(width, { showsText: false, compactMobileBonus: true });
+
+      expect(measured.columns, `${width}px columns`).toBe(compactGuess.columns);
+      expect(measured.itemSize, `${width}px itemSize`).not.toBe(compactGuess.itemSize);
+    }
+  });
+});
+
+/**
  * The grid, with the deck panel pushed beside it (ADR 0009 D18, amended).
  *
  * The panel takes a fixed 384px out of the row the filter rail and the grid already

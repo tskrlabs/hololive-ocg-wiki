@@ -84,30 +84,58 @@ const geometryOptions = computed(() => ({
 const observedWidth = shallowRef(1280);
 
 /**
- * Has the observer reported a real width yet, or is the geometry still the 1280px guess?
+ * The whole geometry, in **one** value — including whether it has been measured (#74).
  *
- * ⚠️ **Load-bearing for the scroll restore** (#59, and the regression below). Every value
- * beneath this line starts as `gridGeometry(1280)` — a guess made before the grid has been
- * measured — and the observer corrects it a frame or two after mount. Until it does, the
- * column count is very likely *wrong*, and a restore that runs against it is worse than
- * one that has not run: it succeeds, consumes the memory, and is then wiped by the remount
- * the correction triggers.
+ * ⚠️ **This shape is a correctness property, not a tidiness preference.** The scroll
+ * restore (#59) may only run once the geometry is real, and "real" has to mean *all* of it:
+ *
+ * - `columns` decides where a given card sits, and is in the scroller's `:key`, so a wrong
+ *   value means a remount is still coming that will discard whatever was restored.
+ * - `itemSize` is the row height a pixel offset is implicitly denominated in, and it
+ *   changes at nearly **every** width — including widths where the column count does not.
+ *   Measured in Chromium: at 1512px and at 1600px the grid is 6 columns before and after
+ *   the observer reports, while `itemSize` moves 334.36 → 319.64 and 334.36 → 339.88.
+ *
+ * Held separately, those two facts had to be *remembered* to be kept in step: three refs
+ * assigned one after another, guarded by a fourth flag, with nothing but convention saying
+ * the four belonged together. #59 has now been fixed twice, the second time because the
+ * first fix's assumption was true of the data and false of the geometry — so here the
+ * invariant is made structural. There is one assignment, so a half-measured grid is not a
+ * state this component can be in.
+ *
+ * The initial value is a guess: `gridGeometry(1280)` computed before the grid has been laid
+ * out, carrying `measured: false` to say so. A `ResizeObserver` replaces it wholesale a
+ * frame or two after mount.
  */
-const hasMeasured = shallowRef(false);
+const grid = shallowRef({
+  ...gridGeometry(1280, { compactMobileBonus: true }),
+  /** False until a `ResizeObserver` has reported a real width. See `scheduleScrollRestore`. */
+  measured: false,
+});
 
-const gridColCount = shallowRef(gridGeometry(1280, { compactMobileBonus: true }).columns);
-const itemSize = shallowRef(gridGeometry(1280, { compactMobileBonus: true }).itemSize);
-const itemSecondarySize = shallowRef(
-  gridGeometry(1280, { compactMobileBonus: true }).itemSecondarySize,
-);
-
-function measure(width: number) {
-  const geometry = gridGeometry(width, geometryOptions.value);
-
-  gridColCount.value = geometry.columns;
-  itemSecondarySize.value = geometry.itemSecondarySize;
-  itemSize.value = geometry.itemSize;
+/**
+ * The only writer of `grid`, which is what makes the invariant above hold.
+ *
+ * ⚠️ Assign the object, never a field of it. `grid.value.columns = …` would reintroduce
+ * exactly the drift this shape exists to prevent, and `shallowRef` would not even notify on
+ * it. `measured` is part of the same write for the same reason: a geometry and the claim
+ * that it has been measured are one fact.
+ */
+function measure(width: number, measured: boolean) {
+  grid.value = { ...gridGeometry(width, geometryOptions.value), measured };
 }
+
+/**
+ * Read-only views, so the ~20 call sites below (and the template) stay as they were.
+ *
+ * Computeds rather than destructuring: they track `grid`, and they cannot be assigned to,
+ * which is the point — the single-writer rule is enforced by the types rather than by a
+ * comment asking future readers to be careful.
+ */
+const gridColCount = computed(() => grid.value.columns);
+const itemSize = computed(() => grid.value.itemSize);
+const itemSecondarySize = computed(() => grid.value.itemSecondarySize);
+const hasMeasured = computed(() => grid.value.measured);
 
 function onResizeObserver(entries: ResizeObserverEntry[]) {
   const [entry] = entries;
@@ -117,10 +145,9 @@ function onResizeObserver(entries: ResizeObserverEntry[]) {
   if (!width || width <= 0) return;
 
   observedWidth.value = width;
-  measure(width);
-  // The geometry is now real rather than assumed, which is what a pending restore waits
-  // for. Set after `measure`, so anything this releases reads the corrected columns.
-  hasMeasured.value = true;
+  // The observer has reported, so this geometry is measured rather than assumed — the one
+  // thing a pending scroll restore is waiting for.
+  measure(width, true);
 }
 
 /**
@@ -130,8 +157,13 @@ function onResizeObserver(entries: ResizeObserverEntry[]) {
  * nothing — so the grid would keep the previous mode's row height until the next window
  * resize. `tests/grid.test.ts` pins the heights themselves; this is the wiring that
  * delivers them, which is the half a pure test cannot see (F-019).
+ *
+ * `measured` is carried through rather than set: whether the *width* came from an observer
+ * is unchanged by the density toggle. Asserting `true` here would let a toggle flipped
+ * before the first observer callback unblock a scroll restore against the 1280px guess;
+ * forcing `false` would stall a restore that is legitimately ready.
  */
-watch(geometryOptions, () => measure(observedWidth.value));
+watch(geometryOptions, () => measure(observedWidth.value, grid.value.measured));
 
 // Debounced filter application - simplified
 const applyFilters = useDebounceFn(async () => {
@@ -292,7 +324,7 @@ const scheduleScrollRestore = () => {
     // ⚠️ **Wait for the measured geometry, not merely for a scroller** — the regression
     // that reopened #59.
     //
-    // `gridColCount` starts at `gridGeometry(1280)`, a guess, and the observer corrects it
+    // The geometry starts as `gridGeometry(1280)`, a guess, and the observer corrects it
     // shortly after mount. Restoring against the guess *works* — the write lands, reads
     // back, and consumes the memory — and is then destroyed by the remount the correction
     // causes, because the column count is in the scroller's `:key`. The position is lost,
@@ -309,6 +341,11 @@ const scheduleScrollRestore = () => {
     // | 1600 | 6 | same    | kept |
     // | 1728 | 7 | changed | lost |
     // | 1920 | 8 | changed | lost |
+    //
+    // ⚠️ The column count is **not** a proxy for "the geometry has settled" (#74). At the
+    // two widths above where the columns hold, `itemSize` still moves — 334.36 → 319.64 at
+    // 1512px — and a pixel offset is denominated in row heights. `measured` covers the
+    // whole geometry precisely because it is written as part of it; see `grid` above.
     //
     // This is D18's "restore waits for the reflow, not the toggle" — the same trap, on the
     // path that does not toggle anything. Retrying (rather than giving up) is what makes it
