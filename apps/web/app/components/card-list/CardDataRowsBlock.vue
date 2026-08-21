@@ -1,10 +1,27 @@
 <script setup lang="ts">
 import { UseClipboard } from "@vueuse/components";
+import { computed } from "vue";
+import { COLOR_PAIRS } from "@holo/schema/enums";
 import type { Card } from "@/types/card";
 
-defineProps<{
+const props = defineProps<{
   item: Card;
 }>();
+
+/**
+ * The name for this card's colours, when the pair has one of its own.
+ *
+ * A dual-colour card is stored as two codes (ADR 0013) and renders two badges, matching
+ * what the card prints. But the *combination* is a colour identity the game names — `青赤`
+ * / "Blue-Red" — so the label keeps that name rather than reading "Blue, Red".
+ *
+ * Returns null for a single colour, which renders per-code as before.
+ */
+const colorPairName = computed(() => {
+  const codes = props.item.color_codes;
+  if (!codes || codes.length !== 2) return null;
+  return COLOR_PAIRS[codes.join(",")] ?? null;
+});
 
 // Use translation composable
 const { getTranslatedText } = useTranslation();
@@ -122,19 +139,25 @@ const { enabled: showOriginal } = useShowOriginal();
         :name="$t('fields.color')"
       >
         <div class="flex items-center gap-1">
-          <!-- Handle multiple colors (new format) -->
-          <template v-if="item.color_codes && item.color_codes.length > 0">
-            <template v-for="(color, index) in item.color_codes" :key="index">
-              <Image
-                :src="icon.color(color)"
-                :img-attributes="{ class: 'w-5' }"
-              />
-              <span v-if="index < item.color_codes.length - 1" class="mr-1"
-                >{{ $t(`colors.${color}`) }},</span
-              >
-              <span v-else>{{ $t(`colors.${color}`) }}</span>
-            </template>
-          </template>
+          <!-- One badge per colour, exactly as the card prints them. A dual-colour
+               card is two codes (ADR 0013), so it renders two full-size icons. -->
+          <Image
+            v-for="(color, index) in item.color_codes"
+            :key="index"
+            :src="icon.color(color)"
+            :img-attributes="{ class: 'w-5' }"
+          />
+
+          <!-- The pair's own name where the game has one ("Blue-Red"), otherwise the
+               colours listed. Two icons, one label either way. -->
+          <span v-if="colorPairName" class="ml-1">
+            {{ $t(`colors.${colorPairName}`) }}
+          </span>
+          <span v-else class="ml-1">
+            {{
+              item.color_codes.map((color) => $t(`colors.${color}`)).join(", ")
+            }}
+          </span>
         </div>
       </CardDataRowsBlockItem>
 

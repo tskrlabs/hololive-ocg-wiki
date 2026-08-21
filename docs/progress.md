@@ -374,10 +374,52 @@ below blocks the flip.
 
 | # | what | label |
 |---|---|---|
-| [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
 | [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
 | [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
 | [#62](https://github.com/tskrlabs/hololive-ocg-wiki/issues/62) | `original.tags` is rendered nowhere, and the deck panel has no source names | `ready-for-human` |
+
+✅ **#22 is closed** (2026-08-21) by
+[ADR 0013](adr/0013-normalised-dual-colours.md), and **not** by fixing the icon.
+
+`transform` now normalises `青赤` → `["blue", "red"]` and `白緑` → `["white", "green"]` at
+extraction, which is the one place the source's two spellings of dual-colour differ. The
+low-resolution asset becomes unnecessary rather than replaced, so #22's real question —
+whether to ship our own redraw in place of official art — never has to be answered. Both
+icons are deleted; the blur is now unrepresentable rather than fixed.
+
+**It deleted more than it changed.** The query-time `expandColors`, the `FILTERABLE_COLORS`
+exclusion list and F-016's matching machinery all existed to make a `blue` filter find a
+`blue_red` card. A dual-colour card now holds one row per badge, so the plain filter hits
+it. Verified against a real Worker and local D1: all three `blue_red` cards return under
+both `blue` and `red`, SorAZ under both `white` and `green`.
+
+**Eight pinning tests were inverted**, across four packages and both languages — every one
+asserted a fused code stays fused. That is the expected shape of the change, and also
+exactly where a test rewrite can hide a regression, so the replacements assert the new
+property against the real card images and fixtures rather than restating the code. Two more
+turned up only when `make check` ran: a TypeScript mirror of a Python test, and the web
+contract test.
+
+Three defects surfaced while building it, none by reading:
+
+- **Cards 1 and 2 were coincidental fixtures.** Card 2 was selected only because it covered
+  `color=green`, which SorAZ took over once it normalised — so the greedy pass dropped it,
+  and with it the second `oshiCharacter`/`OSR` the group-AND smoke check needs to
+  distinguish AND from OR. Pinning card 2 then displaced card 1, which a dozen smoke
+  assertions name directly. Both are pinned now, with the reason recorded.
+- **`computed` was a Nuxt auto-import** in `CardDataRowsBlock.vue` and undefined outside
+  Nuxt. Caught by the new component test, which is the only thing that mounts it.
+- **`:8787` was serving a stale Worker** from an earlier session, so the first round of
+  API checks returned `internal error` against a database predating hBP08 entirely. Worth
+  recording because the failure looked exactly like a code bug.
+
+The one deliberate visual change: a dual-colour card renders **two full-size badges** where
+it rendered one blurry composite, and keeps the name the game gives the pair — "Blue-Red",
+not "Blue, Red". `COLOR_PAIRS` carries that, and the `colors.blue_red` i18n keys survive in
+all seven locales although the codes do not.
+
+⚠️ **Not yet live.** `color_code` is a populated D1 column, so this needs `publish` and
+`seed` before the deploy — data first, per the card-set runbook.
 
 ✅ **#18 is closed** (2026-08-21) by
 [ADR 0012](adr/0012-committed-translation-corrections.md) —

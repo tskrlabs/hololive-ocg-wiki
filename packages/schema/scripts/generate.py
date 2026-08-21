@@ -35,9 +35,9 @@ from pydantic import BaseModel
 from holo_schema import (
     BLOOM_LEVEL_VALUES,
     CARD_TYPE_VALUES,
+    COLOR_PAIRS,
     COLOR_VALUES,
     DEFAULT_LOCALE,
-    FUSED_COLORS,
     KEYWORD_TYPE_VALUES,
     LOCALE_VALUES,
     MAIN_CARD_TYPES,
@@ -126,9 +126,9 @@ def render_enums() -> str:
         body = ", ".join(f'"{value}"' for value in values)
         return f"export const {name}: readonly {ts_type}[] = [{body}] as const;"
 
-    fused = "\n".join(
-        f'  {key}: [{", ".join(chr(34) + c + chr(34) for c in parts)}],'
-        for key, parts in FUSED_COLORS.items()
+    pairs = "\n".join(
+        f'  "{",".join(parts)}": "{name}",'
+        for parts, name in COLOR_PAIRS.items()
     )
 
     return "\n".join(
@@ -199,14 +199,16 @@ def render_enums() -> str:
             as_array("YELL_CARD_TYPES", YELL_CARD_TYPES, "CardTypeCode"),
             "",
             "/**",
-            " * Fused dual-colour symbols and the colours they contain.",
+            " * Dual-colour pairs that have a name of their own, keyed on the joined",
+            " * codes (`\"blue,red\"`). Display only — storage is the two codes, in",
+            " * printed order (ADR 0013).",
             " *",
-            " * `blue_red` is a single printed symbol, not shorthand for `[blue, red]` —",
-            " * the card bears one icon. Use this when filtering so a \"blue\" filter also",
-            " * matches `blue_red`, but never to rewrite the stored value.",
+            " * A card bearing this pair reads \"Blue-Red\" rather than \"Blue, Red\",",
+            " * because the game names the combination. The i18n key is `colors.{name}`.",
+            " * Both orders map to one name: the pair is the same identity either way.",
             " */",
-            "export const FUSED_COLORS: Partial<Record<ColorCode, readonly ColorCode[]>> = {",
-            fused,
+            "export const COLOR_PAIRS: Readonly<Record<string, string>> = {",
+            pairs,
             "};",
             "",
         ]

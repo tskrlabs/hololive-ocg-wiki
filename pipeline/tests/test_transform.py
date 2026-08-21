@@ -190,15 +190,43 @@ class TestTags:
 
 
 class TestColors:
-    def test_fused_colour_is_one_code(self):
-        """`青赤` is a single printed symbol, not two colours (ADR 0001)."""
+    def test_a_dual_colour_token_becomes_two_codes(self):
+        """`青赤` is one source token naming two printed badges (ADR 0013).
+
+        This is the one place the source's two spellings of dual-colour are reconciled:
+        FUWAMOCO's single `青赤` tag and miComet's two separate tags both land as a pair,
+        which is what the card prints in either case (F-007).
+        """
         card = to_card(
             {
                 "id": "1",
                 "info": {"色": [{"images": [{"alt": "青赤"}], "count": 1}]},
             }
         )
-        assert card["color_codes"] == ["blue_red"]
+        assert card["color_codes"] == ["blue", "red"]
+
+    def test_the_token_order_is_the_printed_order(self):
+        card = to_card(
+            {
+                "id": "1",
+                "info": {"色": [{"images": [{"alt": "白緑"}], "count": 1}]},
+            }
+        )
+        assert card["color_codes"] == ["white", "green"]
+
+    def test_a_dual_colour_token_in_a_single_badge_slot_is_reported(self):
+        """A cost icon holds one badge. `青赤` there would be a source change we have
+        never seen, and taking its first half would be a quiet wrong answer."""
+        card = to_card(
+            {
+                "id": "1",
+                "arts": [
+                    {"cost": [{"alt": "青赤", "src": "cost.png"}], "name": "art"}
+                ],
+            }
+        )
+        costs = (card.get("arts") or [{}])[0].get("cost_types") or []
+        assert "blue" not in costs
 
     def test_two_colours_stay_two(self):
         card = to_card(

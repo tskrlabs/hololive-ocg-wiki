@@ -135,13 +135,18 @@ class TestFlattening:
         result = localize(card, "ja")
         assert not hasattr(result.oshi_skill, "cost")
 
-    def test_fused_color_preserved(self, by_id: dict):
-        """`blue_red` must survive the projection intact — it renders as one icon."""
-        card = by_id["2263"]
-        assert card.color_codes == ["blue_red"]
-        assert localize(card, "ja").color_codes == ["blue_red"]
+    def test_a_dual_colour_pair_survives_the_projection(self, by_id: dict):
+        """Both codes and their printed order, or the card renders the wrong badges.
 
-    def test_multi_color_preserved(self, by_id: dict):
+        `青赤` normalises to a pair at extraction (ADR 0013), so what reaches `localize`
+        is two codes; dropping either would leave a dual-colour card showing one icon.
+        """
+        card = by_id["2263"]
+        assert card.color_codes == ["blue", "red"]
+        assert localize(card, "ja").color_codes == ["blue", "red"]
+
+    def test_the_opposite_printed_order_is_not_normalised_away(self, by_id: dict):
+        """miComet prints red-then-blue where FUWAMOCO prints blue-then-red."""
         card = by_id["1218"]
         assert localize(card, "ja").color_codes == ["red", "blue"]
 

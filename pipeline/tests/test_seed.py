@@ -489,22 +489,34 @@ class TestRowMapping:
         }
         assert colours == set(card.color_codes)
 
-    def test_fused_colours_are_stored_as_printed(self, db, collection):
-        """A fused dual-colour symbol is one printed icon, not two colours.
+    def test_a_dual_colour_card_stores_one_row_per_badge(self, db, collection):
+        """The property that replaced the query-time expansion (ADR 0013).
 
-        The filter-time expansion (`blue_red` matches a `blue` filter) is a query-layer
-        rule; storing it expanded would render two icons and a comma where the card
-        shows one.
+        This test used to assert the opposite — that `blue_red` was stored as printed,
+        one row, with a `blue` filter widened at query time to find it. Normalising at
+        extraction deleted that machinery: two rows means the plain junction filter hits
+        a dual-colour card under either of its colours, with nothing to expand.
+
+        Asserted against the junction table rather than the model, because the row is
+        what the filter reads and the two could disagree.
         """
-        fused = [c for c in collection.cards if c.color_codes and any(
-            code in ("blue_red", "white_green") for code in c.color_codes
-        )]
-        assert fused, "the fixture set should carry both fused colour codes"
-        apply(db, [seed_module.to_row(card) for card in fused])
-        stored = {
-            r[0] for r in db.execute("SELECT DISTINCT color_code FROM card_colors")
-        }
-        assert stored & {"blue_red", "white_green"}
+        dual = [c for c in collection.cards if c.color_codes and len(c.color_codes) > 1]
+        assert dual, "the fixture set should carry the dual-colour cards"
+
+        apply(db, [seed_module.to_row(card) for card in dual])
+        for card in dual:
+            stored = {
+                r[0]
+                for r in db.execute(
+                    "SELECT color_code FROM card_colors WHERE card_id = ?", (card.id,)
+                )
+            }
+            assert stored == set(card.color_codes)
+
+        # The retired codes must not survive anywhere — a stored `blue_red` would match
+        # no filter at all now, which is a card silently missing from every colour.
+        every = {r[0] for r in db.execute("SELECT DISTINCT color_code FROM card_colors")}
+        assert not every & {"blue_red", "white_green"}
 
 
 class TestDiff:

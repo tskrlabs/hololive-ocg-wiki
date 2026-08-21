@@ -31,29 +31,21 @@ export type CardTypeCode =
   | "supportStaffLimited"
   | "supportTool";
 export type RarityCode = "C" | "HR" | "OC" | "OSR" | "OUR" | "P" | "R" | "RR" | "S" | "SEC" | "SR" | "SY" | "U" | "UR";
-export type ColorCodes = (
-  "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
-)[];
+export type ColorCodes = ("blue" | "green" | "null" | "purple" | "red" | "white" | "yellow")[];
 export type BloomLevelCode = "debut" | "first" | "second" | "spot";
 export type ImageKey = string;
 export type SourceImageUrl = string;
 export type Hp = number;
 export type Life = number;
 export type BatonTouchCount = number;
-export type BatonTouchTypes = (
-  "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
-)[];
+export type BatonTouchTypes = ("blue" | "green" | "null" | "purple" | "red" | "white" | "yellow")[];
 export type Illustrator = string;
 export type CardSets = string[];
 export type Tags = string[];
-export type CostTypes = (
-  "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
-)[];
+export type CostTypes = ("blue" | "green" | "null" | "purple" | "red" | "white" | "yellow")[];
 export type Damage = number;
 export type IsPlus = boolean;
-export type SpecialTargets = (
-  "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow"
-)[];
+export type SpecialTargets = ("blue" | "green" | "null" | "purple" | "red" | "white" | "yellow")[];
 export type SpecialValues = number[];
 export type Arts = Art[];
 export type Type = string;

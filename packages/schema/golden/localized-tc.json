@@ -257,7 +257,8 @@
     ],
     "card_type_code": "character",
     "color_codes": [
-      "white_green"
+      "white",
+      "green"
     ],
     "extra": "此Holo成員也視為〈時乃空〉〈AZKi〉",
     "hp": 130,
@@ -478,7 +479,7 @@
     ]
   },
   {
-    "ability_text": "抽3張自己的牌庫。\n\r\nLIMITED:每回合只能使用1張。",
+    "ability_text": "從自己的牌庫抽3張牌。\n\nLIMITED：每回合只能使用1張。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-016",
@@ -494,7 +495,8 @@
       "スタートデッキ FLOW GLOW 推し 輪堂千速",
       "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
       "スタートデッキ 推し Advent",
-      "スタートデッキ 推し Justice"
+      "スタートデッキ 推し Justice",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportStaffLimited",
     "color_codes": [],
@@ -518,9 +520,11 @@
     "baton_touch_types": [],
     "card_number": "hSD01-018",
     "card_sets": [
+      "エクストラブースター サマー・ホログラム",
       "スタートデッキ「ときのそら＆AZKi」",
       "スタートデッキ 赤 百鬼あやめ",
-      "スタートデッキ 黄 不知火フレア"
+      "スタートデッキ 黄 不知火フレア",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportItem",
     "color_codes": [],
@@ -555,7 +559,7 @@
       "ライブスタートデッキ さくらみこ",
       "ライブスタートデッキ 星街すいせい",
       "ライブスタートデッキ 大空スバル",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportItemLimited",
     "color_codes": [],
@@ -1609,11 +1613,13 @@
     "bloom_level_code": "first",
     "card_number": "hBP03-050",
     "card_sets": [
-      "ブースターパック「エリートスパーク」"
+      "ブースターパック「エリートスパーク」",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
-      "blue_red"
+      "blue",
+      "red"
     ],
     "extra": "此Holo成員也視為〈Fuwawa Abyssguard〉〈Mococo Abyssguard〉",
     "hp": 150,
@@ -1806,7 +1812,8 @@
     "bloom_level_code": "first",
     "card_number": "hBP03-044",
     "card_sets": [
-      "ブースターパック「エリートスパーク」"
+      "ブースターパック「エリートスパーク」",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1924,7 +1931,8 @@
     "bloom_level_code": "first",
     "card_number": "hBP05-040",
     "card_sets": [
-      "ブースターパック「エンチャントレガリア」"
+      "ブースターパック「エンチャントレガリア」",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1995,7 +2003,7 @@
     "card_number": "hBP07-091",
     "card_sets": [
       "ブースターパック「ディーヴァフィーバー」",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -2020,7 +2028,7 @@
     "card_number": "hBP07-091",
     "card_sets": [
       "ブースターパック「ディーヴァフィーバー」",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -2057,7 +2065,8 @@
     "bloom_level_code": "first",
     "card_number": "hBP03-044",
     "card_sets": [
-      "オフィシャルホロカコレクション-2025ライブセット-"
+      "オフィシャルホロカコレクション-2025ライブセット-",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2232,11 +2241,12 @@
     "card_number": "hBP08-060",
     "card_sets": [
       "ブースターパック バウンサーバウンド",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
-      "blue_red"
+      "blue",
+      "red"
     ],
     "extra": "此Holo成員也視為〈Fuwawa Abyssguard〉〈Mococo Abyssguard〉",
     "hp": 170,
@@ -2287,7 +2297,7 @@
     "card_number": "hBP01-028",
     "card_sets": [
       "ブースターパック バウンサーバウンド",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [

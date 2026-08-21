@@ -192,8 +192,9 @@ check "unfiltered page"            200 "/api/cards/filter?limit=3" \
   "len(d['cards']) == 3 and d['total'] == 34"
 check "skip_count omits total"     200 "/api/cards/filter?limit=3&page=2&skip_count=true" \
   "'total' not in d"
-# blue matches 4 cards outright; the 2 blue_red cards must come with it.
-check "fused colours expand"       200 "/api/cards/filter?colors=blue&limit=1" "d['total'] == 6"
+# Dual-colour cards hold one row per badge (ADR 0013), so they come back under `blue`
+# with no query-time expansion. 4 single-blue cards plus 2 blue-paired ones.
+check "dual colours match plainly" 200 "/api/cards/filter?colors=blue&limit=1" "d['total'] == 6"
 check "colour groups OR"           200 "/api/cards/filter?colors=blue,purple&limit=1" \
   "d['total'] == 9"
 check "groups AND"                 200 "/api/cards/filter?cardTypes=oshiCharacter&rarity=OSR&limit=1" \

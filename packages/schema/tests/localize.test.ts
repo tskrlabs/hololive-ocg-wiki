@@ -124,10 +124,16 @@ test("missing locale falls back to the source locale", () => {
   assert.equal(result.name, card.translations.ja.name);
 });
 
-test("fused colour codes survive the projection", () => {
-  const card = fixtures.cards.find((c: { id: string }) => c.id === "2263");
-  assert.deepStrictEqual(card.color_codes, ["blue_red"]);
-  assert.deepStrictEqual(localize(card, "ja").color_codes, ["blue_red"]);
+test("a dual-colour pair survives the projection, in printed order", () => {
+  // `青赤` normalises to a pair at extraction (ADR 0013), so what reaches localize is
+  // two codes and the card renders two badges. Order is printed, not sorted: FUWAMOCO
+  // is blue-then-red where miComet is red-then-blue, and the icons render from it.
+  const fuwamoco = fixtures.cards.find((c: { id: string }) => c.id === "2263");
+  assert.deepStrictEqual(fuwamoco.color_codes, ["blue", "red"]);
+  assert.deepStrictEqual(localize(fuwamoco, "ja").color_codes, ["blue", "red"]);
+
+  const micomet = fixtures.cards.find((c: { id: string }) => c.id === "1218");
+  assert.deepStrictEqual(localize(micomet, "ja").color_codes, ["red", "blue"]);
 });
 
 test("cardImage composes a URL from the key (D9)", () => {

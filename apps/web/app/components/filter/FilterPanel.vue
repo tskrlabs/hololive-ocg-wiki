@@ -412,10 +412,10 @@ const headingClass = (section: FilterSection) =>
       </div>
       <div class="flex flex-wrap gap-2">
         <!--
-          Iterates FILTERABLE_COLORS, not the filter state: the fused symbols
-          (blue_red, white_green) get no checkbox of their own. The Worker expands a
-          colour filter through FUSED_COLORS, so those cards already appear under both
-          constituent colours (F-016).
+          Iterates FILTERABLE_COLORS, not the filter state, so the checkbox set is a
+          property of the contract rather than of whatever the state happens to hold.
+          A dual-colour card carries a row per badge (ADR 0013), so it turns up under
+          each of its colours without a checkbox of its own.
         -->
         <template v-for="key in FILTERABLE_COLORS" :key="key">
           <Toggle

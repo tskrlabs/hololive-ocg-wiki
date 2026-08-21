@@ -24,7 +24,6 @@ import {
   BLOOM_LEVELS,
   COLORS,
   FILTERABLE_CARD_TYPES,
-  FUSED_COLORS,
   RARITIES,
 } from "@holo/schema/enums";
 import type { FilterOptions } from "~/types/filter";
@@ -38,19 +37,19 @@ export type FilterSection =
   | (typeof TEXT_SECTIONS)[number];
 
 /**
- * Colours the filter UI offers as checkboxes.
+ * Colours the filter UI offers as checkboxes — now every colour there is.
  *
- * The fused symbols (`blue_red`, `white_green`) are **excluded**, which is a real
- * behaviour change: v1 gave them their own checkboxes, and its colour filter then
- * silently omitted them from the constituent colours — filtering `blue` missed the 5
- * `blue_red` cards, because `LIKE '%"blue"%'` does not match `"blue_red"` (F-016). The
- * Worker now expands a colour filter through `FUSED_COLORS`, so those cards appear under
- * *both* their constituent colours; a separate checkbox would be a second, worse way to
- * find them.
+ * This used to exclude `blue_red` and `white_green`, because they were their own enum
+ * values and a checkbox for each would have been a second, worse way to find cards that
+ * the Worker already returned under both constituent colours (F-016). ADR 0013 removed
+ * the codes entirely: a dual-colour card holds a row per badge, so it appears under each
+ * of its colours with nothing excluded and nothing expanded.
+ *
+ * Kept as a named export rather than inlining `COLORS`, because "the colours the filter
+ * offers" and "the colours that exist" are different questions that happen to have the
+ * same answer today.
  */
-export const FILTERABLE_COLORS = COLORS.filter(
-  (color) => !(color in FUSED_COLORS),
-);
+export const FILTERABLE_COLORS = COLORS;
 
 const flags = <T extends string>(values: readonly T[]): Record<T, boolean> =>
   Object.fromEntries(values.map((value) => [value, false])) as Record<T, boolean>;

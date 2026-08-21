@@ -23,7 +23,7 @@ const KEYWORD_ICONS: Record<KeywordTypeCode, string> = {
 
 export function useGameIcon() {
   return {
-    /** The colour symbol printed on a card, e.g. `type_blue_red`. */
+    /** One colour badge, e.g. `type_red`. A dual-colour card calls this twice. */
     color: (code: ColorCode | string): string => `/icons/type_${code}.webp`,
 
     /** The cost symbol on an art, e.g. `arts_green`. */

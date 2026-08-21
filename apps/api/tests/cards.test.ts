@@ -14,7 +14,6 @@ import {
   cardByImageKeySql,
   cardKeyByLowercaseSql,
   cardsByIdsSql,
-  expandColors,
   filterCountSql,
   filterPageSql,
   firstCardPerNumberSql,
@@ -24,18 +23,21 @@ import {
 
 const base: CardFilters = { page: 1, limit: 50 };
 
-test("a filtered colour expands to the fused codes containing it", () => {
-  // `blue_red` is one printed icon, stored as printed. Without expansion a `blue`
-  // filter silently misses those cards — measured on the real set: 5 for blue_red, 2
-  // for white_green. v1 had no expansion and its blue filter was quietly incomplete.
-  assert.deepEqual(expandColors(["blue"]), ["blue", "blue_red"]);
-  assert.deepEqual(expandColors(["red"]), ["blue_red", "red"]);
-  assert.deepEqual(expandColors(["green"]), ["green", "white_green"]);
-  assert.deepEqual(expandColors(["white"]), ["white", "white_green"]);
-  // A colour with no fused partner is unchanged, and no duplicates when both halves
-  // of a fused pair are requested.
-  assert.deepEqual(expandColors(["purple"]), ["purple"]);
-  assert.deepEqual(expandColors(["blue", "red"]), ["blue", "blue_red", "red"]);
+test("a colour filter binds exactly what was asked for, with nothing expanded", () => {
+  // This replaces the `expandColors` test, and pins the reason it is gone. `blue_red`
+  // used to be its own stored code, so a `blue` filter had to be widened to also match
+  // it (F-016); ADR 0013 normalised it to `["blue", "red"]` at extraction, so a
+  // dual-colour card holds a `blue` row and the plain filter hits it.
+  //
+  // Asserting the bound parameters, not just the SQL shape: an expansion reintroduced
+  // upstream would leave this regex matching while binding a code that no longer exists
+  // in the column, which is a filter that silently returns nothing.
+  const one = buildWhere({ ...base, colors: ["blue"] });
+  assert.deepEqual(one.params, ["blue"]);
+  assert.match(one.sql, /j\.color_code IN \(\?\)/);
+
+  const two = buildWhere({ ...base, colors: ["blue", "red"] });
+  assert.deepEqual(two.params, ["blue", "red"]);
 });
 
 test("junction filters use a correlated EXISTS, never a join and never IN (SELECT …)", () => {
@@ -49,11 +51,11 @@ test("junction filters use a correlated EXISTS, never a join and never IN (SELEC
   // is materialised and sorted before LIMIT applies — 4–8× more rows read than needed,
   // and the cost grows with the match set. `EXISTS` correlates against `cards.id`, which
   // lets the walk stop at LIMIT.
-  // Three placeholders, not two: `blue, red` expands to `blue, blue_red, red`.
+  // Two placeholders for two colours — one each, since ADR 0013 removed the expansion.
   const where = buildWhere({ ...base, colors: ["blue", "red"] });
   assert.match(
     where.sql,
-    /EXISTS \(SELECT 1 FROM card_colors j WHERE j\.card_id = cards\.id AND j\.color_code IN \(\?, \?, \?\)\)/,
+    /EXISTS \(SELECT 1 FROM card_colors j WHERE j\.card_id = cards\.id AND j\.color_code IN \(\?, \?\)\)/,
   );
   assert.doesNotMatch(where.sql, /JOIN/i);
   assert.doesNotMatch(where.sql, /id IN \(SELECT/);

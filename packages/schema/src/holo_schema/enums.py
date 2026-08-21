@@ -183,50 +183,57 @@ RARITY_VALUES: tuple[RarityCode, ...] = get_args(RarityCode)
 
 # --- Colour ------------------------------------------------------------------
 #
-# 9 distinct values. `blue_red` and `white_green` are the source's single-token spelling
-# of a dual-colour card: `["blue_red"]` (5 FUWAMOCO cards), `["white_green"]` (2 SorAZ
-# cards) and `["red", "blue"]` (3 miComet cards) all occur in the data.
+# 7 distinct values. A dual-colour card carries two of them, in printed order.
 #
-# These are NOT different printings. F-007 checked all three against the card images:
-# every one prints the same form, two separate badges on a gold ribbon. The split is an
-# artifact of the source HTML — FUWAMOCO and SorAZ get one <img alt="青赤"> of a
-# pre-composited pair, miComet gets two separate <img> tags. `type_blue_red.png` is
-# itself a picture of two badges, not a fused emblem, and its small file size is a
-# low-resolution export (88x108 vs 330x410 for `white_green`, which is equally "fused"),
-# not evidence of a simpler symbol. See F-023.
+# **The source spells dual-colour two different ways, and they mean the same thing.**
+# FUWAMOCO and SorAZ get one <img alt="青赤"> of a pre-composited pair; miComet gets two
+# separate <img> tags. F-007 checked all three against the card images: every one prints
+# the same form, two separate badges on a gold ribbon. So the split is an artifact of the
+# source HTML, not a fact about the game, and `transform` normalises `青赤` to
+# `["blue", "red"]` at the point of extraction — the one place that difference exists.
 #
-# So normalising the two codes into arrays is defensible and would retire the query-layer
-# expansion below. It is not done: it touches a populated D1 column, the seeder, the
-# Worker and F-016's fix, and wants its own design pass. Kept as-is until then.
+# ADR 0013 made that change. Until then `blue_red` and `white_green` were their own enum
+# values, which cost a query-layer expansion (a "blue" filter had to also match
+# `blue_red`, F-016), a filter-UI exclusion list, and a low-resolution icon the official
+# site exports at 88x110 against 330x410 for every other colour (#22). Normalising
+# retired all three at once.
 #
-# Consequence for Phase 4, while the codes remain: a "red" filter must also match fused
-# codes containing red. That is a query-layer rule, deliberately not a contract-layer one.
+# **A file size was mistaken for evidence.** F-007 and this comment both once cited
+# `type_blue_red.png`'s 4.2 KB as proof that `blue_red` was a fused *single* symbol. It
+# was not: `white_green` is equally "fused" and is full-size, and the 88px asset is
+# itself a picture of two badges. An upstream export mistake shaped the contract's
+# reading of the domain for two phases. See F-023 / #22.
 #
 # "null" is the game's colourless concept (無色 / "None"), a real domain value — not a
-# serialisation accident. i18n/locales/*.json:100 translates it in all 7 languages.
+# serialisation accident. i18n/locales/*.json translates it in all 7 languages.
 
 ColorCode = Literal[
     "blue",
-    "blue_red",
     "green",
     "null",
     "purple",
     "red",
     "white",
-    "white_green",
     "yellow",
 ]
 
 COLOR_VALUES: tuple[ColorCode, ...] = get_args(ColorCode)
 
-FUSED_COLORS: dict[ColorCode, tuple[ColorCode, ...]] = {
-    "blue_red": ("blue", "red"),
-    "white_green": ("white", "green"),
+COLOR_PAIRS: dict[tuple[ColorCode, ...], str] = {
+    ("blue", "red"): "blue_red",
+    ("red", "blue"): "blue_red",
+    ("white", "green"): "white_green",
+    ("green", "white"): "white_green",
 }
-"""Fused colour symbols and the colours they contain.
+"""The dual-colour pairs that have a name of their own, for **display only**.
 
-For Phase 4 filtering only — a card with `["blue_red"]` should match a "blue" filter.
-This is NOT a normalisation table: the fused code stays as-is in the card data.
+`青赤` is a colour identity the game names, and a card bearing it should read "Blue-Red"
+rather than "Blue, Red" — so the name survives even though the storage no longer does.
+The i18n key is `colors.{name}`, unchanged from when these were enum values.
+
+Both orders map to one name deliberately. The badges are printed blue-then-red on
+FUWAMOCO and red-then-blue on miComet, and the pair is the same identity either way —
+but the *stored* order is the printed order, because that is what the icons render from.
 """
 
 

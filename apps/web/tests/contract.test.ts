@@ -20,10 +20,10 @@ import { describe, expect, it } from "vitest";
 import {
   BLOOM_LEVELS,
   CARD_TYPES,
+  COLOR_PAIRS,
   COLORS,
   DEFAULT_LOCALE,
   FILTERABLE_CARD_TYPES,
-  FUSED_COLORS,
   LOCALES,
   MAIN_CARD_TYPES,
   OSHI_CARD_TYPES,
@@ -69,15 +69,22 @@ describe("the generated contract is reachable from the site", () => {
     for (const type of sections) expect(CARD_TYPES).toContain(type);
   });
 
-  it("describes fused colours in terms of real colours", () => {
-    // The Worker expands a colour filter through this map so `blue` also matches
-    // `blue_red` (F-016). The site drops v1's separate fused checkboxes because of it,
-    // so the map has to name colours the filter UI actually offers.
-    for (const [fused, parts] of Object.entries(FUSED_COLORS)) {
-      expect(COLORS).toContain(fused);
-      for (const part of parts ?? []) expect(COLORS).toContain(part);
+  it("keys every colour pair on colours that exist", () => {
+    // COLOR_PAIRS turns a card's two codes into the name the game gives the pair, so a
+    // card reads "Blue-Red" rather than "Blue, Red" (ADR 0013). The key is the joined
+    // codes, which means a key naming a colour the contract dropped would silently stop
+    // matching and the label would quietly fall back to the comma-joined form.
+    for (const key of Object.keys(COLOR_PAIRS)) {
+      const parts = key.split(",");
+      expect(parts).toHaveLength(2);
+      for (const part of parts) expect(COLORS).toContain(part);
     }
-    expect(FUSED_COLORS.blue_red).toEqual(["blue", "red"]);
+    // Both printed orders resolve to one name — miComet prints red-then-blue where
+    // FUWAMOCO prints blue-then-red, and the pair is the same identity either way.
+    expect(COLOR_PAIRS["blue,red"]).toBe("blue_red");
+    expect(COLOR_PAIRS["red,blue"]).toBe("blue_red");
+    expect(COLOR_PAIRS["white,green"]).toBe("white_green");
+    expect(COLOR_PAIRS["green,white"]).toBe("white_green");
   });
 });
 
@@ -113,7 +120,11 @@ describe("the filter UI can name every enum member it offers (#58)", () => {
     ["cardTypes", FILTERABLE_CARD_TYPES],
     ["rarity", RARITIES],
     ["bloomLevel", BLOOM_LEVELS],
-    ["colors", COLORS],
+    // The pair names sit in the `colors` block but are not enum members — ADR 0013
+    // retired `blue_red` as a *code* while keeping it as a *label*, so nothing else
+    // would catch the key being deleted as apparently dead and a dual-colour card
+    // rendering a raw `colors.blue_red` in one language.
+    ["colors", [...COLORS, ...new Set(Object.values(COLOR_PAIRS))]],
   ];
 
   it("has a locale file for every locale the contract declares", () => {

@@ -9,13 +9,11 @@
           "items": {
             "enum": [
               "blue",
-              "blue_red",
               "green",
               "null",
               "purple",
               "red",
               "white",
-              "white_green",
               "yellow"
             ],
             "type": "string"
@@ -36,13 +34,11 @@
           "items": {
             "enum": [
               "blue",
-              "blue_red",
               "green",
               "null",
               "purple",
               "red",
               "white",
-              "white_green",
               "yellow"
             ],
             "type": "string"
@@ -292,13 +288,11 @@
       "items": {
         "enum": [
           "blue",
-          "blue_red",
           "green",
           "null",
           "purple",
           "red",
           "white",
-          "white_green",
           "yellow"
         ],
         "type": "string"
@@ -337,13 +331,11 @@
       "items": {
         "enum": [
           "blue",
-          "blue_red",
           "green",
           "null",
           "purple",
           "red",
           "white",
-          "white_green",
           "yellow"
         ],
         "type": "string"

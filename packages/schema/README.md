@@ -47,7 +47,7 @@ files will fail the parity test otherwise, which is the point.
 
 ```ts
 import type { Card, LocalizedCard } from "@holo/schema";
-import { RARITIES, FUSED_COLORS, DEFAULT_LOCALE } from "@holo/schema/enums";
+import { RARITIES, COLOR_PAIRS, DEFAULT_LOCALE } from "@holo/schema/enums";
 import { localize, cardImage } from "@holo/schema/localize";
 ```
 
@@ -70,9 +70,12 @@ every fixture card in every locale.
 
 ## Gotchas the data forced
 
-- **`blue_red` is not `["blue","red"]`.** It is a single fused symbol as printed on the
-  card, with its own icon asset. Both encodings exist in the data and mean different
-  things. Never normalise one into the other. Use `FUSED_COLORS` for filter expansion.
+- **A dual-colour card is two codes, in printed order.** The source spells it two ways —
+  one `青赤` token on FUWAMOCO and SorAZ, two separate tags on miComet — and every one
+  prints the same two badges, so `transform` normalises them to a pair (ADR 0013). The
+  order is printed, not sorted: the icons render from it. `COLOR_PAIRS` gives the pair its
+  display name ("Blue-Red"), and is display only — there is nothing to expand at query
+  time.
 - **`card_number` is not unique.** 2,448 cards share 1,228 numbers — rarity variants of
   one card all carry the same number. `id` is the only unique key.
 - **Absent fields are omitted, never null.** Serialise with `exclude_none=True`; the
