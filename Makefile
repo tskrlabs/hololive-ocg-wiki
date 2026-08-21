@@ -7,7 +7,7 @@
 # once per clone to have `make check` run automatically before each commit.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup hooks generate golden golden-meta fixtures check check-schema check-py check-ts check-api check-web check-site typecheck dev dev-api dev-web preview clean
+.PHONY: help setup hooks generate golden golden-meta fixtures volume check check-schema check-py check-ts check-api check-web check-site typecheck dev dev-api dev-web preview clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -36,6 +36,11 @@ generate: ## Regenerate JSON Schema, TypeScript, D1 DDL, fixtures.sql, the fixtu
 
 fixtures: ## Re-select the fixture card set (needs `holo-data build` output)
 	uv run python packages/schema/scripts/build_fixtures.py
+
+volume: ## Re-select the bulk local cards that put page 4 in reach (needs `holo-data build` output)
+	@# Separate from `fixtures` because the two corpora answer different questions: that
+	@# one is coverage (34 cards, every enum, the golden-file source), this one is volume.
+	uv run python packages/schema/scripts/generate_volume_sql.py
 
 golden: ## Regenerate the localize() golden files from the Python reference
 	uv run python packages/schema/scripts/golden.py
@@ -73,6 +78,7 @@ check-schema: ## Fail if the committed generated files are stale
 	@uv run python packages/schema/scripts/generate.py --check
 	@uv run python packages/schema/scripts/generate_ddl.py --check
 	@uv run python packages/schema/scripts/generate_fixtures_sql.py --check
+	@uv run python packages/schema/scripts/generate_volume_sql.py --check
 	@uv run python packages/schema/scripts/generate_i18n.py --check
 	@uv run python fixtures/build_local_artifacts.py --check
 	@uv run python packages/schema/scripts/check_card_urls.py --check
