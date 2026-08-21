@@ -2,6 +2,38 @@
   "$comment": "Player-facing release notes. Committed and imported at build time, NOT published to R2. See content/README.md for why this differs from info.json.",
   "releases": [
     {
+      "version": "2.2.0",
+      "date": "2026-08-22",
+      "title": "Card names that were missing from the page",
+      "summary": "Some rules text was leaving out the character it referred to. That text is back, dual-colour cards look right, and the Thai rulings have been redone.",
+      "changes": [
+        {
+          "kind": "fixed",
+          "text": "Missing character names in ability text, on 24 card pages."
+        },
+        {
+          "kind": "fixed",
+          "text": "Skill and art names quoted in rules text stayed Japanese. They now match the translation shown on the card itself."
+        },
+        {
+          "kind": "fixed",
+          "text": "Blurry colour symbol on dual-colour cards. They now show both badges at full size."
+        },
+        {
+          "kind": "fixed",
+          "text": "Colour filters find dual-colour cards under both of their colours."
+        },
+        {
+          "kind": "fixed",
+          "text": "An effect that searches card names by keyword quoted the Japanese word, which no card displays."
+        },
+        {
+          "kind": "changed",
+          "text": "Thai rulings re-translated. Seventeen answers were showing as Japanese."
+        }
+      ]
+    },
+    {
       "version": "2.1.0",
       "date": "2026-08-21",
       "title": "The list remembers where you were",
