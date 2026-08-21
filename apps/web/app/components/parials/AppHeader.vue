@@ -11,6 +11,13 @@
  * The `/api/info` fetch went with the Discord link, and stays in the menu for the Discord
  * invite. The about *dialog* is gone — `/about` is a page now, so the menu links to it.
  *
+ * **From `lg`, GitHub and Discord come back out of the menu** (D28). At that width the row
+ * has ~880px free — both slot children are `lg:hidden` on the home page and search has
+ * moved to the rail — so the two destinations whose brand mark needs no label sit inline,
+ * behind a divider that keeps D21's view-control/destination line visible. The menu stays
+ * at every width for the four that need their labels: six inline icon+label destinations
+ * do not fit at `lg` in `es`, `ja` or `th`.
+ *
  * **The wordmark is the header's own, not the slot's.** The slot holds per-page
  * navigation — a back link on the card and deck pages — and on the home page both of its
  * children are `lg:hidden`, so from `lg` up the slot rendered nothing and `ml-auto` pushed
@@ -73,6 +80,33 @@ const localePath = useLocalePath();
         <AppOriginalSwitcher />
         <AppLanguageSwitcher />
         <AppColorModeSwitcher />
+
+        <!--
+          **The two destinations that fit, from `lg` up (D28).**
+
+          This is `hidden lg:` where the header used to have `hidden sm:`, and the two are
+          not the same move. The old hides made status, GitHub and Discord *unreachable* on
+          a phone — they existed on desktop only, with nothing indicating anything was
+          missing. Here the overflow menu still holds every destination below `lg`, so
+          nothing is ever lost; an item is on the shelf at one width and in the drawer at
+          another. D21's fix was reachability, and reachability is intact.
+
+          Only these two, because only these two fit. Six inline icon+label destinations
+          cost ~960px in `es` against ~880px of usable row at `lg`, and these are the two
+          carrying a brand mark that identifies itself without a word. The other four need
+          their labels and stay in the menu, which is therefore still here at every width.
+
+          The divider is what survives of D21's real criterion. The line was never a count
+          — it is a kind test, *view controls used repeatedly while browsing* on the left of
+          it, *destinations used once* on the right — and the menu used to draw that line by
+          being a separate surface. Inline, spacing has to draw it.
+        -->
+        <div class="hidden items-center lg:flex">
+          <div class="mx-1 h-5 w-px shrink-0 bg-border" aria-hidden="true" />
+          <AppGithubLink />
+          <AppDiscordLink />
+        </div>
+
         <AppHeaderOverflowMenu />
       </div>
     </div>

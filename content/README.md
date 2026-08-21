@@ -45,7 +45,14 @@ Seven translations per release is a per-release tax on writing one at all, and a
 mistranslated "this is fixed" is worse than an honest English one.
 
 `kind` is one of `added`, `changed` or `fixed`. Newest release first — the page does not
-sort.
+sort *releases*.
+
+**It does group changes.** Within a release the page buckets entries by `kind` and renders
+one badge per bucket, in the order **added → changed → fixed**, so the order you write them
+in does not reach the reader. Write each entry to stand on its own; if a release needs a
+narrative, it goes in `summary`, which is prose and is rendered where you put it. A `kind`
+that is none of the three still renders — under its own literal label, which is ugly on
+purpose, because the alternative is an entry that silently disappears.
 
 **Open gaps do not go here.** They belong in the GitHub release body, whose reader is
 deciding whether to contribute; on the player-facing page a list of caveats sits next to

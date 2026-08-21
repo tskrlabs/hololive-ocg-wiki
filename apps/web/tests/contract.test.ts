@@ -199,6 +199,21 @@ describe("the filter UI can name every enum member it offers (#58)", () => {
     "changelog.kind.added",
     "changelog.kind.changed",
     "changelog.kind.fixed",
+    // The header row and its overflow menu. None of these were swept before: they happened
+    // to exist in all seven files, by luck rather than by test, so a new one added in
+    // `en.json` alone would have shipped green.
+    //
+    // D28 raises what a miss costs. These were portalled dropdown items, where a dotted
+    // path reads oddly inside a surface the reader opened deliberately; two of them are now
+    // header controls at `lg`, where the string is the *accessible name* of an icon-only
+    // button — so a missing translation is a control a screen reader announces as
+    // "Source code on GitHub" spelled as a key path, on every page, in one language only.
+    "More",
+    "status.title",
+    "Source code on GitHub",
+    "Join the Discord server",
+    "About this site",
+    "about.supportKofi",
   ];
 
   it("names every deck and clipboard message in all seven locales (#57)", () => {

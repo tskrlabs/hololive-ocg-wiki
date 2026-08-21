@@ -92,6 +92,50 @@ const KIND_CLASS: Record<ChangeKind, string> = {
   fixed: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
 };
 
+/**
+ * The order the three groups appear in, and the only thing that orders them.
+ *
+ * Within a release the file's order does *not* reach the reader — grouping necessarily
+ * reorders, and v2.0.0 shipped its eight entries interleaved
+ * (`added, added, fixed, fixed, changed, fixed, changed, added`). What a release means is
+ * carried by its `summary`, which is prose and stays where the author put it; the entries
+ * below it are a list, and a list of eight with the same three labels repeated in no
+ * pattern is harder to read than three short lists. `content/README.md` says so, because
+ * otherwise the next author orders their entries to tell a story and loses it silently.
+ *
+ * Added first: it is what a returning reader came for. Fixed last: it is the group that
+ * grows without bound across releases and reads as a footnote by the third one.
+ */
+const KIND_ORDER: readonly ChangeKind[] = ["added", "changed", "fixed"];
+
+interface ChangeGroup {
+  kind: ChangeKind;
+  texts: string[];
+}
+
+/**
+ * The changes of one release, bucketed by kind, in `KIND_ORDER`.
+ *
+ * A kind with no entries is absent rather than empty — v2.0.1 has no `changed`, and an
+ * empty "Changed" heading states that something was omitted rather than that nothing
+ * happened. Built with a `Map` seeded from `KIND_ORDER` so the output order comes from
+ * the constant rather than from whichever kind the release happened to use first.
+ */
+function groupChanges(changes: Change[]): ChangeGroup[] {
+  const buckets = new Map<ChangeKind, string[]>(KIND_ORDER.map((kind) => [kind, []]));
+
+  for (const change of changes) {
+    // An unrecognised `kind` would otherwise vanish here. The type says it cannot happen;
+    // the file is hand-edited, so it can. Bucketing it under its own key keeps the entry
+    // on the page — a typo'd label is a visible defect, a dropped release note is not.
+    const bucket = buckets.get(change.kind) ?? [];
+    bucket.push(change.text);
+    buckets.set(change.kind, bucket);
+  }
+
+  return [...buckets].filter(([, texts]) => texts.length > 0).map(([kind, texts]) => ({ kind, texts }));
+}
+
 /** "3 Aug 2026", in the reader's locale — a date is a fact, not prose. */
 function formatDate(iso: string): string {
   const date = new Date(`${iso}T00:00:00Z`);
@@ -151,29 +195,51 @@ function formatDate(iso: string): string {
 
         <p class="text-sm leading-6 text-muted-foreground">{{ release.summary }}</p>
 
-        <ul class="flex flex-col gap-5">
-          <!--
-            **Badge above the text, not beside it.** Side by side, the three labels are
-            three different widths, so every entry's text started at a different x — and
-            in seven languages there is no width to align to, since the labels translate
-            to anything from "New" to "เปลี่ยนแปลง". Stacking gives every entry the same
-            left edge for free, in every locale, and hands the full column width to the
-            sentence that has to be read.
+        <!--
+          **One badge per kind, heading the entries that share it.** It used to repeat per
+          entry, so v2.0.0 showed eight badges carrying three distinct words, and the
+          repetition read as decoration rather than as a label.
 
-            `self-start` is load-bearing: a flex column stretches its children, so without
-            it the badge becomes a full-width bar rather than a tag.
+          **Badge above the text, not beside it** — unchanged, and for the original reason.
+          Side by side, the three labels are three different widths, so every entry's text
+          starts at a different x, and in seven languages there is no width to align to
+          since the labels translate to anything from "New" to "เปลี่ยนแปลง". Stacking gives
+          every entry the same left edge for free, in every locale, and hands the full
+          column width to the sentence that has to be read. Grouping would *permit* a left
+          gutter — one badge no longer has to align with anything — but the seven-locale
+          argument against a fixed gutter width is the same one, so it stays stacked.
+
+          `self-start` is load-bearing: a flex column stretches its children, so without it
+          the badge becomes a full-width bar rather than a tag.
+        -->
+        <div
+          v-for="group in groupChanges(release.changes)"
+          :key="group.kind"
+          class="flex flex-col gap-2"
+        >
+          <!-- The label is a word, not only a colour (D4). -->
+          <span
+            class="self-start rounded px-1.5 py-0.5 text-[11px] font-medium"
+            :class="KIND_CLASS[group.kind]"
+          >
+            {{ $t(`changelog.kind.${group.kind}`) }}
+          </span>
+
+          <!--
+            Still a `<ul>`: the entries are a list, and grouping changed how many lists
+            there are per release rather than whether this is one. A screen reader
+            announcing "list, 3 items" under each heading is the point.
           -->
-          <li v-for="(change, index) in release.changes" :key="index" class="flex flex-col gap-1.5">
-            <!-- The label is a word, not only a colour (D4). -->
-            <span
-              class="self-start rounded px-1.5 py-0.5 text-[11px] font-medium"
-              :class="KIND_CLASS[change.kind]"
+          <ul class="flex flex-col gap-3">
+            <li
+              v-for="(text, index) in group.texts"
+              :key="index"
+              class="text-sm leading-6 text-muted-foreground"
             >
-              {{ $t(`changelog.kind.${change.kind}`) }}
-            </span>
-            <span class="text-sm leading-6 text-muted-foreground">{{ change.text }}</span>
-          </li>
-        </ul>
+              {{ text }}
+            </li>
+          </ul>
+        </div>
       </section>
 
       <p class="border-t pt-6 text-sm text-muted-foreground">
