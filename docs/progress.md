@@ -26,6 +26,72 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
 
+## ✅ The card set is at 2,650 — an alt-art run, 2026-08-21
+
+The official list grew 2,559 → 2,651 entries, of which one is the rules notice `build`
+splits out to R2, so **2,650 cards**. The 91 additions are alt-art and variant printings
+spread across *existing* sets (27 hBP01, 16 hBP02, 11 hBP03, 9 hEB01, 7 hBP05, 6 hBP04, the
+rest scattered), not a new set.
+
+| step | result |
+|---|---|
+| `backup-cache --remote` | both caches snapshotted and verified, local + R2 (11 backups, 180.6 MB) |
+| `scrape` | 2,651 entries, **no unmapped enum values** |
+| `images` | 92 converted, 2,560 skipped; PNG 815 MB → WebP 225 MB (72% smaller) |
+| `translate-units --confirm` | 24 units × 6 locales, **9,473 tokens** |
+| `build` | 2,650 cards, **100% coverage in all 7 locales**, 0 dropped |
+| `publish` | 101 objects (92 images + 9 artifacts) |
+| `seed --confirm` | 1,627 cards, **38,611 rows written** against a 40,635 estimate |
+
+**`build` succeeded before the translation pass, which the runbook says should fail.** That
+expectation assumes a new set; alt-art printings reuse existing card text, so every unit was
+already cached. The failure is a signal about *what kind* of update this is, not a step to
+tick off — worth reading before treating a passing build as a skipped gate.
+
+**1,536 cards reported as edited, and it was real.** All 1,536 verified field by field
+against D1, not sampled: 1,530 moved `card_sets` only, every one of them gaining
+`【使用可能カード】hGS 2026 大阪 セレクションロード` as the official site tagged them legal
+for that event. Nothing removed, no card text rewritten. Same shape as the Selection Cup
+update `source_payload`'s docstring already records, and `source_hash` correctly called it an
+official change rather than something we did.
+
+### The official site normalised CRLF, and it cost two cards their translations
+
+The remaining 6 of those 1,536 moved `translations` too. The official site rewrote `\n\r\n`
+to `\n\n` in the JP source — invisible to a reader, but the v2 cache is **content-addressed
+on the source string**, so the key moved and the lookup fell through to the v1 legacy cache
+underneath. Four cards landed on merely older text. Two landed on worse:
+
+- **hBP02-095** — the Indonesian ability came back as raw Japanese
+  (`◆〈Houshou Marine〉なら能力追加`), and `tc` rendered Arts as 藝術 (artwork).
+- **hBP01-126** — the same 藝術 mistranslation in `tc`.
+
+**The v1 fallback held a wrong-source value.** Under hBP02-095's key sat a translation of a
+*different card* — Yukihana Lamy's mascot, not Houshou Marine's. Because a fallback hit
+counts as fresh, `translate-units` planned nothing for it and `build` would have written it
+without complaint. A whitespace edit upstream was enough to surface it.
+
+Fixed by evicting the two units from the v2 cache (12 entries, 2 units × 6 locales) so they
+re-translated. Both verified correct in the build and then live. Filed as
+[#78](https://github.com/tskrlabs/hololive-ocg-wiki/issues/78) — the eviction fixes these two
+cards, not the reason a wrong-source value was in the cache at all.
+
+**A repo-wide scan found 382 cards with kana in a non-JP locale, but only one is this run's
+doing.** 373 were already live, and 8 of the 9 apparent regressions are false positives from
+the detector: `・` (U+30FB) is ordinary punctuation in Chinese transliterated names, and
+`博衣こより` is Koyori's official name. Any future kana-leak check needs both exclusions or it
+will cry wolf on ~380 healthy cards.
+
+**Two things worth knowing about editing the translation cache.** Its on-disk key is
+`locales`, not `entries` (`entries` is the in-memory field) — hand-editing the JSON against
+the wrong key silently writes an empty cache. Use `TranslationCacheV2.load()`/`.save()`.
+And identify a unit by **exact** source match: a substring match on shared mascot phrasing
+selected 17 units instead of 2 here, which would have spent calls re-translating text nobody
+approved touching. Both mistakes were caught and reverted from backups taken first.
+
+Live after the seed: total **2,650** · `/api/info` **3** · hBP02-095 `id` naming Houshou
+Marine with no kana · hBP01-126 `tc` reading Arts.
+
 ## ✅ The card set is at 2,559 — the first real update run, 2026-08-19
 
 The official list grew 2,463 → 2,559, and the whole pipeline ran end to end:
