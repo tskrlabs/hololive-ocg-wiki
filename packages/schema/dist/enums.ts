@@ -9,7 +9,7 @@
 export type Locale = "ja" | "en" | "tc" | "id" | "ko" | "th" | "es";
 export type CardTypeCode = "buzzCharacter" | "character" | "oshiCharacter" | "rulesNotice" | "supportCheer" | "supportEvent" | "supportEventLimited" | "supportFan" | "supportItem" | "supportItemLimited" | "supportMascot" | "supportStaff" | "supportStaffLimited" | "supportTool";
 export type RarityCode = "C" | "HR" | "OC" | "OSR" | "OUR" | "P" | "R" | "RR" | "S" | "SEC" | "SR" | "SY" | "U" | "UR";
-export type ColorCode = "blue" | "blue_red" | "green" | "null" | "purple" | "red" | "white" | "white_green" | "yellow";
+export type ColorCode = "blue" | "green" | "null" | "purple" | "red" | "white" | "yellow";
 export type BloomLevelCode = "debut" | "first" | "second" | "spot";
 export type KeywordTypeCode = "bloom_effect" | "collab_effect" | "gift";
 export type TimingCode = "once_per_game" | "once_per_turn";
@@ -21,7 +21,7 @@ export const LOCALES: readonly Locale[] = ["ja", "en", "tc", "id", "ko", "th", "
  *  For a filter UI use `FILTERABLE_CARD_TYPES` — see below. */
 export const CARD_TYPES: readonly CardTypeCode[] = ["buzzCharacter", "character", "oshiCharacter", "rulesNotice", "supportCheer", "supportEvent", "supportEventLimited", "supportFan", "supportItem", "supportItemLimited", "supportMascot", "supportStaff", "supportStaffLimited", "supportTool"] as const;
 export const RARITIES: readonly RarityCode[] = ["C", "HR", "OC", "OSR", "OUR", "P", "R", "RR", "S", "SEC", "SR", "SY", "U", "UR"] as const;
-export const COLORS: readonly ColorCode[] = ["blue", "blue_red", "green", "null", "purple", "red", "white", "white_green", "yellow"] as const;
+export const COLORS: readonly ColorCode[] = ["blue", "green", "null", "purple", "red", "white", "yellow"] as const;
 export const BLOOM_LEVELS: readonly BloomLevelCode[] = ["debut", "first", "second", "spot"] as const;
 export const KEYWORD_TYPES: readonly KeywordTypeCode[] = ["bloom_effect", "collab_effect", "gift"] as const;
 export const TIMINGS: readonly TimingCode[] = ["once_per_game", "once_per_turn"] as const;
@@ -65,13 +65,17 @@ export const MAIN_CARD_TYPES: readonly CardTypeCode[] = ["buzzCharacter", "chara
 export const YELL_CARD_TYPES: readonly CardTypeCode[] = ["supportCheer"] as const;
 
 /**
- * Fused dual-colour symbols and the colours they contain.
+ * Dual-colour pairs that have a name of their own, keyed on the joined
+ * codes (`"blue,red"`). Display only — storage is the two codes, in
+ * printed order (ADR 0013).
  *
- * `blue_red` is a single printed symbol, not shorthand for `[blue, red]` —
- * the card bears one icon. Use this when filtering so a "blue" filter also
- * matches `blue_red`, but never to rewrite the stored value.
+ * A card bearing this pair reads "Blue-Red" rather than "Blue, Red",
+ * because the game names the combination. The i18n key is `colors.{name}`.
+ * Both orders map to one name: the pair is the same identity either way.
  */
-export const FUSED_COLORS: Partial<Record<ColorCode, readonly ColorCode[]>> = {
-  blue_red: ["blue", "red"],
-  white_green: ["white", "green"],
+export const COLOR_PAIRS: Readonly<Record<string, string>> = {
+  "blue,red": "blue_red",
+  "red,blue": "blue_red",
+  "white,green": "white_green",
+  "green,white": "white_green",
 };

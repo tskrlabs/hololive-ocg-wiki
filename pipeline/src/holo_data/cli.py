@@ -16,6 +16,8 @@ steps that cost money or touch production are explicit.
     holo-data seed --confirm      diff-based upsert into D1            (writes)
 
     holo-data glossary            proper-noun coverage, per locale     (local, free)
+    holo-data corrections         verify hand-written fixes            (local, free)
+    holo-data evict               drop entries so they re-translate    (local, free)
     holo-data cache-status        migration progress, per locale       (local, free)
     holo-data backup-cache        snapshot the translation cache       (local / R2)
     holo-data normalise-cache     deterministic spelling fixes         (local, free)
@@ -47,6 +49,7 @@ from holo_schema import SCHEMA_VERSION
 from holo_schema.enums import SOURCE_LOCALE
 
 from . import build as build_module
+from . import corrections as corrections_module
 from . import glossary as glossary_module
 from . import images as images_module
 from . import migrate_images as migrate_module
@@ -353,6 +356,14 @@ def translate_units(
     for report in reports:
         status = cache.status(report.locale, work)
         typer.echo(f"  {status.describe()}")
+
+    # Not optional, and measured: the 2026-08-21 Thai Q&A run produced 93 fresh `เอール`
+    # and 68 `เอล` in brand-new output. A translation run refills the deterministic
+    # defects rather than retiring them, so skipping this ships them.
+    typer.echo("")
+    typer.echo("  next: `holo-data normalise-cache --write` — a fresh run reintroduces")
+    typer.echo("        the deterministic defects, so this is part of translating, not")
+    typer.echo("        a separate cleanup. Then `build`, publish and seed.")
 
 
 @app.command()
@@ -1239,6 +1250,152 @@ def glossary_(
                     typer.echo(f"  {key}")
 
 
+@app.command("corrections")
+def corrections_(
+    locale: Optional[str] = typer.Option(
+        None, "--locale", help="report one locale only"
+    ),
+    extract: bool = typer.Option(
+        False,
+        "--extract",
+        help="move `manual` cache entries that predate this mechanism into the "
+        "committed files, so they become reviewable",
+    ),
+) -> None:
+    """Verify the committed translation corrections. Spends nothing.
+
+    `pipeline/corrections/{locale}.json` is where a hand-written translation lives — the
+    reviewable surface #18 asked for, and the one thing a contributor can send as a PR
+    against card text. `translate` never overwrites what it holds.
+
+    A correction names its `kind` and the Japanese `source`; the cache key is derived, so
+    nobody has to compute a hash. **This is the check that replaces a stored key**: every
+    `(kind, source)` is looked up in the current build, and one that no card prints is
+    reported here rather than sitting inert as an entry matching nothing. That happens for
+    a typo in the Japanese, and it happens when the official site rewords a card — the
+    same key-moved-underneath-us shape as #78.
+
+    Needs no Poe key. Folding a file into a dict is verifiable offline, which was the
+    third of the three worries that kept this open.
+    """
+    all_corrections = corrections_module.load_all()
+    if locale:
+        all_corrections = {
+            loc: c for loc, c in all_corrections.items() if loc == locale
+        }
+
+    total = sum(len(c) for c in all_corrections.values())
+    if not total:
+        # Deliberately not an early return: with no corrections files at all, *every*
+        # `manual` cache entry is an orphan — which is the state this command exists to
+        # get a repo out of, and returning here would make it silent.
+        typer.echo("no corrections recorded")
+        typer.echo(f"  they would live in {paths.CORRECTIONS_DIR}")
+
+    collection = build_module.load()
+    units = None
+    if collection is None:
+        typer.echo(
+            "⚠ no build found — cannot check corrections against the cards they "
+            "translate. Run `holo-data build` first.",
+            err=True,
+        )
+    else:
+        cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
+        units = units_module.collect(cards).values()
+
+    failed = False
+    for loc, corrections in sorted(all_corrections.items()):
+        typer.echo(f"{loc}: {len(corrections)} correction(s)")
+        for item in sorted(corrections.items, key=lambda c: (c.kind, c.key)):
+            typer.echo(f"  {item.kind:15s} {item.key.split(':')[1][:12]}… {item.value!r}")
+
+        if units is None:
+            continue
+        # An unmatched correction is silent by construction — it fills a slot the build
+        # never asks for. Naming it is the whole reason this command exists.
+        for orphan in corrections.unknown(units):
+            failed = True
+            typer.echo(
+                f"  ✗ no card prints this {orphan.kind}: {orphan.source!r}",
+                err=True,
+            )
+
+    # Entries written before corrections/ existed: durable, but invisible to review.
+    cache = TranslationCacheV2.load()
+    stranded = {
+        loc: keys
+        for loc in (
+            [locale] if locale else sorted(cache.entries)
+        )
+        if (keys := cache.orphan_manual(loc))
+    }
+
+    if stranded and not extract:
+        count = sum(len(keys) for keys in stranded.values())
+        typer.echo("")
+        typer.echo(
+            f"⚠ {count} `manual` cache entry(ies) have no committed correction — "
+            "they are durable but unreviewable.",
+            err=True,
+        )
+        for loc, keys in stranded.items():
+            typer.echo(f"    {loc}: {len(keys)}", err=True)
+        typer.echo("  re-run with --extract to move them into corrections/", err=True)
+
+    if extract:
+        if not stranded:
+            typer.echo("")
+            typer.echo("✓ nothing to extract — every `manual` entry is committed")
+        else:
+            typer.echo("")
+            # The source string is not stored in the cache — only its hash — so the
+            # build is what supplies it. Without a build there is nothing to extract
+            # *from*, which is why this refuses rather than writing hashes.
+            if units is None:
+                typer.echo(
+                    "✗ --extract needs a build: the cache stores a hash, and the "
+                    "source string it addresses comes from the cards.",
+                    err=True,
+                )
+                raise typer.Exit(1)
+
+            by_key = {unit.key: unit for unit in units}
+            for loc, keys in stranded.items():
+                corrections = all_corrections.get(
+                    loc, corrections_module.Corrections(locale=loc)
+                )
+                moved = 0
+                for key in keys:
+                    unit = by_key.get(key)
+                    if unit is None:
+                        typer.echo(
+                            f"  ⚠ {loc}: {key} matches no card in the build — left in "
+                            "the cache, nothing to key a correction on",
+                            err=True,
+                        )
+                        continue
+                    corrections.items.append(
+                        corrections_module.Correction(
+                            kind=unit.kind,
+                            source=unit.value,
+                            value=cache.entries[loc][key].value,
+                            note="extracted from the cache",
+                        )
+                    )
+                    moved += 1
+                if moved:
+                    written = corrections.save()
+                    typer.echo(f"  ✓ {loc}: {moved} moved to {written}")
+
+    if failed:
+        raise typer.Exit(1)
+
+    if units is not None and total:
+        typer.echo("")
+        typer.echo(f"✓ {total} correction(s) all match a string in the build")
+
+
 @app.command("normalise-cache")
 def normalise_cache(
     locale: Optional[str] = typer.Option(
@@ -1248,15 +1405,25 @@ def normalise_cache(
         False, "--write", help="required to modify the cache; otherwise reports only"
     ),
 ) -> None:
-    """Apply deterministic spelling fixes to cached translations. Spends nothing.
+    """Apply deterministic fixes to cached translations. Spends nothing.
 
-    For defects that are not translation *judgements* but one word spelled several ways
-    in a single run — #28's `エール`, which came back from the Thai run as four different
-    strings, one of them (`เอール`) Thai `เอ` followed by katakana `ール`, not a word in
-    any language.
+    Three kinds of defect, none of them a translation *judgement*:
 
-    A re-translation would cost money and would not fix it: the model produced the
-    inconsistency, and nothing about a second run makes it pick one spelling. This is
+    **One word spelled several ways** — #28's `エール`, which came back from the Thai run
+    as four different strings, one of them (`เอール`) Thai `เอ` followed by katakana
+    `ール`, not a word in any language.
+
+    **A card reference in ASCII brackets** — #27. The source writes `〈…〉` 6,804 times and
+    ASCII `<>` zero times, so `<Hakui Koyori>` is always model output. This one is not
+    cosmetic: `ability_text` renders through `v-html`, so a browser reads that as an
+    unknown tag and **drops the name**. 54 names were invisible on 24 live card pages.
+
+    **A quoted name left in Japanese** — #27, where the canonical translation is already
+    one entry away in the same cache and nothing was looking it up. Needs a build, since
+    that is where the source-string-to-unit map comes from; skipped without one.
+
+    A re-translation would cost money and would not fix any of them: the model produced
+    the inconsistency, and nothing about a second run makes it pick one answer. This is
     deterministic, free, and re-runnable.
 
     Reports by default and needs `--write` to touch the cache, matching `translate`'s
@@ -1270,6 +1437,29 @@ def normalise_cache(
     locales = [locale] if locale else sorted(cache.entries)
     total = 0
     dirty = False
+
+    # The quoted-name map, per locale: source string -> this locale's translation, for
+    # every unit the build contains. Without a build there is no way to know which
+    # quoted strings are names, so that rule is skipped rather than guessed at.
+    quotes_by_locale: dict[str, dict[str, str]] = {}
+    collection = build_module.load()
+    if collection is None:
+        typer.echo(
+            "no build found — the quoted-name rule needs one and will be skipped "
+            "(`holo-data build` to enable it)",
+            err=True,
+        )
+    else:
+        cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
+        all_units = units_module.collect(cards)
+        for loc in locales:
+            quotes_by_locale[loc] = {
+                unit.value: entry.value
+                for key, unit in all_units.items()
+                if isinstance(unit.value, str)
+                and (entry := cache.get(loc, key)) is not None
+                and isinstance(entry.value, str)
+            }
 
     for loc in locales:
         entries = cache.entries.get(loc)
@@ -1286,7 +1476,9 @@ def normalise_cache(
             if entry.source != "manual"
         }
 
-        changed, report = normalise_module.normalise_locale(editable, loc)
+        changed, report = normalise_module.normalise_locale(
+            editable, loc, quotes=quotes_by_locale.get(loc)
+        )
         for line in report.lines():
             typer.echo(line)
 
@@ -1297,6 +1489,20 @@ def normalise_cache(
             # wrong, so it is checked rather than assumed.
             typer.echo(f"  ⚠ variants still present after the pass: {left}", err=True)
             raise typer.Exit(1)
+
+        # `manual` entries are not rewritten, which used to mean they were not *checked*
+        # either — a bad variant inside a committed correction was invisible to both the
+        # pass and its guard, and the command still printed ✓. Reported, never rewritten:
+        # the fix belongs in `pipeline/corrections/`, where a human can review the diff.
+        protected_left = normalise_module.remaining(
+            {k: e.value for k, e in entries.items() if e.source == "manual"}, loc
+        )
+        if protected_left:
+            typer.echo(
+                f"  ⚠ {loc}: a `manual` entry contains {protected_left} — not rewritten "
+                "(fix it in pipeline/corrections/)",
+                err=True,
+            )
 
         total += report.total_replacements
         if changed and write:
@@ -1316,6 +1522,82 @@ def normalise_cache(
         cache.save()
         typer.echo(f"\n✓ {total} replacement(s) written to the cache")
         typer.echo("  next: `holo-data build`, then publish and seed")
+
+
+@app.command("evict")
+def evict(
+    locale: str = typer.Option(..., "--locale", help="the locale to evict from"),
+    source: str = typer.Option(
+        "legacy", "--source", help="which provenance to drop: legacy, machine"
+    ),
+    kind: Optional[str] = typer.Option(
+        None, "--kind", help="restrict to one unit kind, e.g. qa"
+    ),
+    write: bool = typer.Option(
+        False, "--write", help="required to modify the cache; otherwise reports only"
+    ),
+) -> None:
+    """Drop cache entries so the next `translate-units` re-does them. Spends nothing here.
+
+    **The step that makes a re-translation possible at all.** A `legacy` entry is a
+    *fresh* entry — its source hash matches, so `stale()` skips it and `translate-units`
+    plans no work. That is correct: ADR 0008 migrated the Q&A corpus deliberately rather
+    than re-spending on it. Re-doing it therefore has to be an explicit act, which is
+    this.
+
+    Deliberately cannot touch `manual`. A human decision is not something a bulk command
+    gets to discard, and a correction lives in `pipeline/corrections/` where deleting it
+    is a reviewable diff (ADR 0012). `--source machine` is allowed but is almost always a
+    mistake — it re-spends on text that is already current.
+
+    Reports by default and needs `--write`, matching `normalise-cache`. The eviction
+    itself is free; the `translate-units` run it unblocks is not, and that gate is
+    separate.
+    """
+    if source == "manual":
+        typer.echo(
+            "refusing: `manual` entries are human decisions. Remove the entry from "
+            "pipeline/corrections/ instead, where the deletion is reviewable.",
+            err=True,
+        )
+        raise typer.Exit(1)
+
+    cache = TranslationCacheV2.load()
+    entries = cache.entries.get(locale)
+    if not entries:
+        typer.echo(f"{locale}: no entries", err=True)
+        raise typer.Exit(1)
+
+    doomed = [
+        key
+        for key, entry in entries.items()
+        if entry.source == source and (kind is None or key.startswith(f"{kind}:"))
+    ]
+
+    scope = f"{kind} " if kind else ""
+    typer.echo(
+        f"{locale}: {len(doomed)} {scope}entr(ies) with source={source!r}, "
+        f"of {len(entries)} total"
+    )
+    if not doomed:
+        return
+
+    if not write:
+        typer.echo(
+            f"\nWould drop {len(doomed)} entr(ies) — re-run with --write to apply.\n"
+            "  then: `holo-data translate-units --include-qa --dry-run` to price the "
+            "re-translation"
+        )
+        return
+
+    for key in doomed:
+        del entries[key]
+    cache.save()
+    typer.echo(f"\n✓ dropped {len(doomed)} entr(ies)")
+    typer.echo(
+        "  the cache no longer has an answer for these — `build` will fall back or "
+        "leave them untranslated until `translate-units` runs"
+    )
 
 
 @app.command("cache-status")

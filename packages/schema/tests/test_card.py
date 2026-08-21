@@ -89,17 +89,29 @@ class TestEnums:
         assert BLOOM_LEVEL_VALUES == ("debut", "first", "second", "spot")
         assert "1st" not in BLOOM_LEVEL_VALUES
 
-    def test_fused_colors_are_first_class(self):
-        """`blue_red` is one printed symbol, not shorthand for two colours."""
-        assert "blue_red" in COLOR_VALUES
-        assert "white_green" in COLOR_VALUES
-        card = Card.model_validate(_minimal_card(color_codes=["blue_red"]))
-        assert card.color_codes == ["blue_red"]
+    def test_the_retired_fused_codes_are_refused(self):
+        """ADR 0013 normalised `青赤` to a pair at extraction, so the code is gone.
 
-    def test_multi_color_array_still_works(self):
-        """miComet genuinely has two separate colour symbols."""
+        Refusing it rather than ignoring it is the point: a `blue_red` reaching the
+        contract means `transform` regressed, and a card stored under a code no filter
+        offers is one that silently disappears from every colour.
+        """
+        assert "blue_red" not in COLOR_VALUES
+        assert "white_green" not in COLOR_VALUES
+        with pytest.raises(ValidationError):
+            Card.model_validate(_minimal_card(color_codes=["blue_red"]))
+
+    def test_a_dual_colour_card_is_two_codes_in_printed_order(self):
+        """Order is printed, not sorted: miComet is red-then-blue, FUWAMOCO the reverse.
+
+        It survives because the icons render from it — sorting here would silently
+        reorder the badges on one of the two.
+        """
         card = Card.model_validate(_minimal_card(color_codes=["red", "blue"]))
         assert card.color_codes == ["red", "blue"]
+
+        reversed_card = Card.model_validate(_minimal_card(color_codes=["blue", "red"]))
+        assert reversed_card.color_codes == ["blue", "red"]
 
     def test_unknown_enum_value_rejected(self):
         with pytest.raises(ValidationError):

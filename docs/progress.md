@@ -374,21 +374,144 @@ below blocks the flip.
 
 | # | what | label |
 |---|---|---|
-| [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface — *proper nouns now have one; arbitrary fields do not* | `ready-for-human` |
-| [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
-| [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
-| [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
+| [#81](https://github.com/tskrlabs/hololive-ocg-wiki/issues/81) | Re-translate the legacy Q&A for the remaining five locales — **maintainer-triggered**, costs Poe quota | `ready-for-agent` |
+| [#80](https://github.com/tskrlabs/hololive-ocg-wiki/issues/80) | `ability_text` renders through `v-html`; only bracket normalisation keeps it safe | `needs-triage` |
 | [#62](https://github.com/tskrlabs/hololive-ocg-wiki/issues/62) | `original.tags` is rendered nowhere, and the deck panel has no source names | `ready-for-human` |
 
-**#18 lost its `phase-7` label.** It does not close with launch — launch creates the
-contributors who hit it. The proper-noun half is closed by `pipeline/glossary/`; an
-arbitrary *field* correction still has no committed home, and `corrections_file()` in
-`paths.py` is a dead helper called by nothing.
+✅ **#22 is closed** (2026-08-21) by
+[ADR 0013](adr/0013-normalised-dual-colours.md), and **not** by fixing the icon.
 
-**#27 and #28 are one pipeline run, and should be done as one.** Both are deterministic
-string rewrites needing no API call, but shipping either means cache edit → R2 publish →
-D1 reseed, so they are worth batching. #28's Thai `เอール` — a mixed-script non-word, 120
-identical occurrences — is the one a reader actually notices.
+`transform` now normalises `青赤` → `["blue", "red"]` and `白緑` → `["white", "green"]` at
+extraction, which is the one place the source's two spellings of dual-colour differ. The
+low-resolution asset becomes unnecessary rather than replaced, so #22's real question —
+whether to ship our own redraw in place of official art — never has to be answered. Both
+icons are deleted; the blur is now unrepresentable rather than fixed.
+
+**It deleted more than it changed.** The query-time `expandColors`, the `FILTERABLE_COLORS`
+exclusion list and F-016's matching machinery all existed to make a `blue` filter find a
+`blue_red` card. A dual-colour card now holds one row per badge, so the plain filter hits
+it. Verified against a real Worker and local D1: all three `blue_red` cards return under
+both `blue` and `red`, SorAZ under both `white` and `green`.
+
+**Eight pinning tests were inverted**, across four packages and both languages — every one
+asserted a fused code stays fused. That is the expected shape of the change, and also
+exactly where a test rewrite can hide a regression, so the replacements assert the new
+property against the real card images and fixtures rather than restating the code. Two more
+turned up only when `make check` ran: a TypeScript mirror of a Python test, and the web
+contract test.
+
+Three defects surfaced while building it, none by reading:
+
+- **Cards 1 and 2 were coincidental fixtures.** Card 2 was selected only because it covered
+  `color=green`, which SorAZ took over once it normalised — so the greedy pass dropped it,
+  and with it the second `oshiCharacter`/`OSR` the group-AND smoke check needs to
+  distinguish AND from OR. Pinning card 2 then displaced card 1, which a dozen smoke
+  assertions name directly. Both are pinned now, with the reason recorded.
+- **`computed` was a Nuxt auto-import** in `CardDataRowsBlock.vue` and undefined outside
+  Nuxt. Caught by the new component test, which is the only thing that mounts it.
+- **`:8787` was serving a stale Worker** from an earlier session, so the first round of
+  API checks returned `internal error` against a database predating hBP08 entirely. Worth
+  recording because the failure looked exactly like a code bug.
+
+The one deliberate visual change: a dual-colour card renders **two full-size badges** where
+it rendered one blurry composite, and keeps the name the game gives the pair — "Blue-Red",
+not "Blue, Red". `COLOR_PAIRS` carries that, and the `colors.blue_red` i18n keys survive in
+all seven locales although the codes do not.
+
+⚠️ **Not yet live.** `color_code` is a populated D1 column, so this needs `publish` and
+`seed` before the deploy — data first, per the card-set runbook.
+
+✅ **#18 is closed** (2026-08-21) by
+[ADR 0012](adr/0012-committed-translation-corrections.md) —
+`pipeline/corrections/{locale}.json` is committed, and the cache folds it in on load and
+holds it back on save, so a hand-written translation lives in exactly one place: the file
+a contributor can diff.
+
+The 2026-08-02 triage kept this open waiting for *"a real report of a badly worded effect"*
+before designing against a hypothetical. **#78 was that report.** Two things that were
+expensive in July had also become cheap: ADR 0008 re-keyed the cache on the source string,
+so a correction is addressable without a card path, and verification turned out to need no
+Poe key — folding a file into a dict is testable offline, which was the third of the three
+worries named in the triage.
+
+The four F-003 `tc` strings are **committed at last** — recovered in Phase 0, applied to
+the cache in Phase 3, and deliberately kept out of git until there was a reviewable place
+to put them. They are `corrections/tc.json`'s first entries.
+
+Two bugs surfaced while building it, both caught by verification rather than by reading:
+folding corrections into *any* cache load broke `backup.stats_for`, which verifies a
+snapshot by loading it and would have reported a `manual` count including entries the
+snapshot does not contain; and `holo-data corrections` returned early on "no corrections
+recorded", making orphan `manual` entries silent in exactly the pre-migration state
+`--extract` exists for. Both are pinned by tests.
+
+✅ **#27 is closed** (2026-08-21) and **#28 is partly applied**, done as one pass in
+`0c05e68` — 1,201 replacements, no API call.
+
+**The bracket half was not cosmetic, and both the issue and its triage said it was.**
+`ability_text` renders through `v-html`, so an ASCII `<Hakui Koyori>` is parsed as an
+unknown tag and **dropped**: 54 character names were invisible on 24 live card pages, with
+the rule reading "attached to 1st or higher" and then stopping. Verified against production
+before and after. Two measurements settled the direction — the JA source writes `〈〉` 6,804
+times and ASCII zero times, and every `<` in the cache already formed a closed pair — and
+normalising the other way would have taken 54 swallowed names to roughly 1,600.
+
+**The quoted-name half had an answer nobody looked up.** A card quoting another card's skill
+name in `「…」` sat untranslated while the canonical value was one cache entry away. 855
+exact-match substitutions; card-text kana-quotes 34 → 14.
+
+**Three of the issues' claims were a year out of date**, which is the reason to re-measure
+before planning rather than after: `normalise.py` already existed and had simply never been
+run (27 Thai replacements pending); `en`'s quote defect was already 0, not 7; and the
+bracket count was 306, not 166.
+
+**`パソコン` — #27's open question, answered the other way.** The issue guessed that
+translating it might be *wrong* because the rule matches a card-name substring. Measured:
+the cards it matches are named `Gaming PC` / `電競電腦`, so leaving it Japanese made the rule
+unfollowable — it told a reader to search for a string no card displays. Per-locale, so it
+landed as 11 entries in `pipeline/corrections/` (the surface #18 delivered the same day),
+across **two** source units rather than the one the issue implies.
+
+**#28's glossary thesis is re-scoped by measurement, not adopted.** The kana leakage looks
+large but ~95% of it is in the `legacy` Q&A corpus ADR 0008 deliberately left alone; card
+text carries only **6 units** of untranslated game grammar across all six locales. That does
+not justify a fourth glossary kind, which would mean widening `combined_table` and
+`Restorer` (both hardcode two positional glossaries) plus seven call sites. #28 stays open
+with its scope narrowed to what it really is: re-translate the legacy Q&A, an API spend
+decision.
+
+Also closed a blind spot found while checking safety: `manual` entries were excluded from
+the completeness check as well as from rewriting, so a bad variant inside a committed
+correction was invisible and `normalise-cache` still printed `✓`.
+
+✅ **Live** — published and seeded 2026-08-21. The seed reported `changed 432, qa_only 463,
+source_changed 0`: every row moved because of our own rewrite, which is exactly the
+distinction ADR 0009 D26 built the status vocabulary for.
+
+✅ **#28 is closed** (2026-08-21). The `th` Q&A pilot went **61% → 15%** of units leaking
+kana, 1,851 → 174 kana runs, and **17 wholly-untranslated answers → 0** — `はい、できます。`
+had been shipping to Thai readers verbatim. 608 units, 47 calls, 248,972 tokens.
+
+**The durable finding is a workflow one, and it was nearly missed.** The 608 *fresh* units
+reproduced all four `เอール` variants — 93 of the mixed-script form, 68 bare `เอล`. A
+re-translation **refills** the deterministic defects rather than retiring them, so
+`normalise-cache` is a required step after every `translate-units` run, not a one-off
+cleanup. Recorded in `normalise.py` and printed by `translate-units` on completion, because
+skipping it silently ships the defect the run was meant to fix.
+
+`holo-data evict` is new and is what makes any of this possible: a `legacy` entry is a
+*fresh* entry, so `stale()` skips it and a re-translation plans no work. Re-doing a migrated
+corpus therefore has to be explicit. It refuses `--source manual` outright.
+
+**The glossary #28 asked for was not built, and the measurement is why**: card text carries
+**6 units** of untranslated game grammar across all six locales. The leakage was real but
+~95% of it lived in the `legacy` Q&A corpus, which re-translation addresses directly. A
+fourth glossary kind would mean widening `combined_table` and `Restorer` — both hardcode two
+positional glossaries — plus seven call sites, for six units.
+
+The remaining five locales are [#81](https://github.com/tskrlabs/hololive-ocg-wiki/issues/81),
+deliberately **maintainer-triggered** to manage Poe quota: id 52%, tc 33%, es 31%, en 25%,
+ko 9% degraded, ~235 calls for all five.
 
 ✅ **#20 and #21 are closed** by the translation rework — see
 [ADR 0008](adr/0008-content-addressed-translations.md). ✅ **#26 is closed** (the tag
@@ -451,6 +574,7 @@ apps/api/          the Worker — Hono + Zod over D1 and R2 (Phase 4)
 apps/web/          the site — Nuxt 4 SPA, generated static (Phase 5)
 content/           info.json — editorial site copy, uploaded by publish
 fixtures/          34 cards + fixtures.sql + artifacts/ — credential-free local dev (D12)
+                   volume.sql — 620 bulk cards, so local dev reaches page 4 (#59)
 docs/adr/          decisions made during execution
 docs/infra.md      the Cloudflare runbook — what exists and which command made it
 docs/archive/findings.md   data anomalies awaiting maintainer review
@@ -1012,6 +1136,7 @@ cd apps/api
 npx wrangler d1 execute hololive-ocg-wiki-db --local \
     --file=../../packages/schema/sql/schema.sql
 npx wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtures.sql
+npx wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/volume.sql
 ```
 
 Or just `make check-api`, which does both and then exercises every endpoint.
@@ -1019,6 +1144,20 @@ Or just `make check-api`, which does both and then exercises every endpoint.
 `fixtures.sql` is committed and generated from the 34 fixture cards — every card type,
 every rarity, all 9 colours, all 7 locales, 539 Q&A items. No token, no network, no
 Python. `seed` is deliberately not involved: it only ever writes to production.
+
+**`volume.sql` is a second corpus, and the split is deliberate.** The coverage set is 34
+cards and `pageSize` is 200, so locally `hasMore` was always false — `loadMore` could not
+fire, and infinite scroll, the append path and the scroll restore were all unreachable.
+That is why [#59](https://github.com/tskrlabs/hololive-ocg-wiki/issues/59) was found in
+production three times: the third was a truncation that silently undid a restore once the
+list was more than one page deep, and no local session could reach a second page to see it.
+
+`volume.sql` adds 620 bulk cards, putting the local database at 654 — past three full
+pages. Growing `fixtures.sql` instead would have meant rewriting ~100 exact-total
+assertions in `smoke.sh` and multiplying 1.6 MB of golden files by twenty, to test
+something none of them are about. So coverage stays coverage, volume is volume, and
+`smoke.sh` keeps loading the 34-card corpus alone. `make volume` regenerates; Q&A and
+`extra` are trimmed from these rows, since `fixtures.sql` already covers both.
 
 33 of the 34 are real cards selected from `holo-data build` output; **one is synthetic**
 (`9000001`), carrying the only remaining cover for `localize()`'s short-arts merge rule

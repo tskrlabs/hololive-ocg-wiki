@@ -257,7 +257,8 @@
     ],
     "card_type_code": "character",
     "color_codes": [
-      "white_green"
+      "white",
+      "green"
     ],
     "extra": "This holomem is also treated as 〈Tokino Sora〉 and 〈AZKi〉.",
     "hp": 130,
@@ -478,7 +479,7 @@
     ]
   },
   {
-    "ability_text": "Draw 3 cards from your deck.\n\r\nLIMITED: You may use only 1 card per turn.",
+    "ability_text": "Draw 3 cards from your deck.\n\nLIMITED: You may play only 1 per turn.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hSD01-016",
@@ -494,7 +495,8 @@
       "スタートデッキ FLOW GLOW 推し 輪堂千速",
       "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
       "スタートデッキ 推し Advent",
-      "スタートデッキ 推し Justice"
+      "スタートデッキ 推し Justice",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportStaffLimited",
     "color_codes": [],
@@ -518,9 +520,11 @@
     "baton_touch_types": [],
     "card_number": "hSD01-018",
     "card_sets": [
+      "エクストラブースター サマー・ホログラム",
       "スタートデッキ「ときのそら＆AZKi」",
       "スタートデッキ 赤 百鬼あやめ",
-      "スタートデッキ 黄 不知火フレア"
+      "スタートデッキ 黄 不知火フレア",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportItem",
     "color_codes": [],
@@ -555,7 +559,7 @@
       "ライブスタートデッキ さくらみこ",
       "ライブスタートデッキ 星街すいせい",
       "ライブスタートデッキ 大空スバル",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportItemLimited",
     "color_codes": [],
@@ -1671,11 +1675,13 @@
     "bloom_level_code": "first",
     "card_number": "hBP03-050",
     "card_sets": [
-      "ブースターパック「エリートスパーク」"
+      "ブースターパック「エリートスパーク」",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
-      "blue_red"
+      "blue",
+      "red"
     ],
     "extra": "This holomem is also treated as 〈Fuwawa Abyssgard〉 and 〈Mococo Abyssgard〉.",
     "hp": 150,
@@ -1697,8 +1703,8 @@
     },
     "qa_items": [
       {
-        "answer": "It means this card is considered to have the card names <フワワ・アビスガード>, <モココ・アビスガード>, and <FUWAMOCO>.",
-        "question": "What does the extra ability of hBP03-050 <FUWAMOCO> — “This Holomen is also treated as <フワワ・アビスガード> and <モココ・アビスガード>.” — mean?",
+        "answer": "It means this card is considered to have the card names 〈フワワ・アビスガード〉, 〈モココ・アビスガード〉, and 〈FUWAMOCO〉.",
+        "question": "What does the extra ability of hBP03-050 〈FUWAMOCO〉 — “This Holomen is also treated as 〈フワワ・アビスガード〉 and 〈モココ・アビスガード〉.” — mean?",
         "related_cards": {
           "card_number": [
             "hBP03-050"
@@ -1709,7 +1715,7 @@
       },
       {
         "answer": "Yes, it does.",
-        "question": "Does the extra ability of hBP03-050 <FUWAMOCO> — “This Holomen is also treated as <フワワ・アビスガード> and <モココ・アビスガード>.” — apply even when it’s not on the stage?",
+        "question": "Does the extra ability of hBP03-050 〈FUWAMOCO〉 — “This Holomen is also treated as 〈フワワ・アビスガード〉 and 〈モココ・アビスガード〉.” — apply even when it’s not on the stage?",
         "related_cards": {
           "card_number": [
             "hBP03-050"
@@ -1744,8 +1750,8 @@
         "title": "Q390（2025.06.11）"
       },
       {
-        "answer": "Yes, you can. Even if there isn’t a card with that exact name, if an Extra card states something like “This Holomen is also treated as <Fuwawa Abyssgard> and <Mococo Abyssgard>,” that condition is fulfilled.",
-        "question": "For hBP03-109 <Ruffians>, the effect “You may send a blue Cheer from your Archive to your <Fuwawa Abyssgard>” — can this also be sent to hBP03-050 <FUWAMOCO>?",
+        "answer": "Yes, you can. Even if there isn’t a card with that exact name, if an Extra card states something like “This Holomen is also treated as 〈Fuwawa Abyssgard〉 and 〈Mococo Abyssgard〉,” that condition is fulfilled.",
+        "question": "For hBP03-109 〈Ruffians〉, the effect “You may send a blue Cheer from your Archive to your 〈Fuwawa Abyssgard〉” — can this also be sent to hBP03-050 〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-109",
@@ -1770,8 +1776,8 @@
         "title": "Q340 (2025.03.11)"
       },
       {
-        "answer": "Yes, you can. Even if the specific card name isn’t present, if a card has an extra that treats it as a specific name (such as “This Holomen is also treated as <フワワ・アビスガード> and <モココ・アビスガード>.”), it satisfies that condition.",
-        "question": "Using the art “Want to eat together?” from hBP03-043 <フワワ・アビスガード>, can I transfer an Aile to my hBP03-050 <FUWAMOCO>?",
+        "answer": "Yes, you can. Even if the specific card name isn’t present, if a card has an extra that treats it as a specific name (such as “This Holomen is also treated as 〈フワワ・アビスガード〉 and 〈モココ・アビスガード〉.”), it satisfies that condition.",
+        "question": "Using the art “Want to eat together?” from hBP03-043 〈フワワ・アビスガード〉, can I transfer an Aile to my hBP03-050 〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -1783,7 +1789,7 @@
       },
       {
         "answer": "Yes, it does. Even if the specific card name isn’t among your cards, if a card has an extra that treats it as a certain name, it fulfills that condition.",
-        "question": "Does the art “もこもこしてる方” from hBP03-039 <モココ・アビスガード> still give +30 if my center Holomen is hBP03-050 <FUWAMOCO>?",
+        "question": "Does the art “もこもこしてる方” from hBP03-039 〈モココ・アビスガード〉 still give +30 if my center Holomen is hBP03-050 〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-039",
@@ -1831,7 +1837,7 @@
       },
       {
         "answer": "Yes, you can. Even if the specific name isn’t among your cards, cards with extras that treat them as certain names count as fulfilling that condition.",
-        "question": "With hBP03-004 <FUWAMOCO>’s Oshi Skill “モコちゃん！”, can I send an Aile to my hBP03-050 <FUWAMOCO>?",
+        "question": "With hBP03-004 〈FUWAMOCO〉’s Oshi Skill “モコちゃん！”, can I send an Aile to my hBP03-050 〈FUWAMOCO〉?",
         "related_cards": {
           "card_number": [
             "hBP03-050",
@@ -1868,7 +1874,8 @@
     "bloom_level_code": "first",
     "card_number": "hBP03-044",
     "card_sets": [
-      "ブースターパック「エリートスパーク」"
+      "ブースターパック「エリートスパーク」",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1986,7 +1993,8 @@
     "bloom_level_code": "first",
     "card_number": "hBP05-040",
     "card_sets": [
-      "ブースターパック「エンチャントレガリア」"
+      "ブースターパック「エンチャントレガリア」",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1999,7 +2007,7 @@
     "illustrator": "UIIV◇",
     "image_key": "hBP05/hBP05-040_U",
     "keyword": {
-      "effect": "If your Life is 3 or less, your Center holomem that Bloomed this turn with [<Sakura Miko> or <Hoshimachi Suisei>] can Bloom one more time using a holomem from your hand.",
+      "effect": "If your Life is 3 or less, your Center holomem that Bloomed this turn with [〈Sakura Miko〉 or 〈Hoshimachi Suisei〉] can Bloom one more time using a holomem from your hand.",
       "name": "Business Friends",
       "type": "コラボエフェクト",
       "type_code": "collab_effect"
@@ -2057,7 +2065,7 @@
     "card_number": "hBP07-091",
     "card_sets": [
       "ブースターパック「ディーヴァフィーバー」",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -2082,7 +2090,7 @@
     "card_number": "hBP07-091",
     "card_sets": [
       "ブースターパック「ディーヴァフィーバー」",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -2119,7 +2127,8 @@
     "bloom_level_code": "first",
     "card_number": "hBP03-044",
     "card_sets": [
-      "オフィシャルホロカコレクション-2025ライブセット-"
+      "オフィシャルホロカコレクション-2025ライブセット-",
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2294,11 +2303,12 @@
     "card_number": "hBP08-060",
     "card_sets": [
       "ブースターパック バウンサーバウンド",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [
-      "blue_red"
+      "blue",
+      "red"
     ],
     "extra": "This holomem is also treated as 〈Fuwawa Abyssgard〉 and 〈Mococo Abyssgard〉.",
     "hp": 170,
@@ -2350,7 +2360,7 @@
     "card_number": "hBP01-028",
     "card_sets": [
       "ブースターパック バウンサーバウンド",
-      "【使用可能カード】セレクションカップ"
+      "【使用可能カード】hGS 2026 大阪 セレクションロード"
     ],
     "card_type_code": "character",
     "color_codes": [

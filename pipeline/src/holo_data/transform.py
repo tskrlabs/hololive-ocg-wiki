@@ -110,6 +110,44 @@ def _mapped(
     return code if code is not None else default
 
 
+def _colour_codes(
+    source: Any, field_name: str, card: dict[str, Any], report: UnmappedReport | None
+) -> list[str]:
+    """Colour codes for one source token — one entry, or two for a dual-colour badge.
+
+    `青赤` and `白緑` name two badges in a single token (ADR 0013), so this is the one
+    lookup in the file that can return more than one code.
+    """
+    codes = mappings.COLOR.get(source) if isinstance(source, str) else None
+    if codes is None:
+        if report is not None and isinstance(source, str) and source:
+            report.record(field_name, source, str(card.get("id", "")))
+        return [UNMAPPED]
+    return list(codes)
+
+
+def _one_colour(
+    source: Any,
+    field_name: str,
+    card: dict[str, Any],
+    report: UnmappedReport | None,
+    default: str | None = UNMAPPED,
+) -> str | None:
+    """A colour code for a slot that holds exactly one — a cost icon, a 特攻 target.
+
+    Dual-colour tokens have only ever appeared in a card's own `色` field; a cost or
+    baton-touch icon is a single badge. If one ever shows up here, returning the first
+    half would be a quiet wrong answer, so it is reported as unmapped instead — the same
+    treatment as a colour we have never seen.
+    """
+    codes = mappings.COLOR.get(source) if isinstance(source, str) else None
+    if codes is None or len(codes) != 1:
+        if report is not None and isinstance(source, str) and source:
+            report.record(field_name, source, str(card.get("id", "")))
+        return default
+    return codes[0]
+
+
 def get_field(card: dict[str, Any], keys: list[str], default: Any = None) -> Any:
     """Look a field up by any of its known labels, top level first then `info`."""
     for key in keys:
@@ -155,29 +193,30 @@ def _colors(
     if not field:
         return None
 
-    def code(source: Any) -> str | None:
-        return _mapped(mappings.COLOR, source, "color", card, report)
+    def code(source: Any) -> list[str]:
+        return _colour_codes(source, "color", card, report)
 
     if isinstance(field, list):
-        codes = []
+        codes: list[str] = []
         for entry in field:
             if isinstance(entry, dict) and "images" in entry:
                 for img in entry["images"]:
                     if "alt" in img:
-                        codes.append(code(img["alt"]))
+                        # `extend`, not `append`: one `青赤` token is two badges.
+                        codes.extend(code(img["alt"]))
         return codes or None
 
     if isinstance(field, dict):
         if "value" in field:
-            return [code(field["value"])]
+            return code(field["value"])
         if "images" in field:
             for img in field["images"]:
                 if "alt" in img:
-                    return [code(img["alt"])]
+                    return code(img["alt"])
         return None
 
     if isinstance(field, str):
-        return [code(field)]
+        return code(field)
 
     return None
 
@@ -198,9 +237,7 @@ def _baton_touch(
                 for img in entry.get("images", []):
                     if "alt" in img:
                         types.append(
-                            _mapped(
-                                mappings.COLOR, img["alt"], "baton_touch", card, report
-                            )
+                            _one_colour(img["alt"], "baton_touch", card, report)
                         )
         return total or None, types or None
 
@@ -250,8 +287,8 @@ def _arts(
             for icon in real_costs:
                 if "alt" in icon:
                     cost_types.append(
-                        _mapped(
-                            mappings.COLOR, icon["alt"], "arts.cost_types", card, report
+                        _one_colour(
+                            icon["alt"], "arts.cost_types", card, report
                         )
                     )
             if cost_types:
@@ -276,8 +313,7 @@ def _arts(
                 # The alt text is the colour *and* the bonus ("紫+50"), so the bare
                 # colour has to be split off before the mapping will match. Looking up
                 # the whole string silently drops every special art.
-                colour = _mapped(
-                    mappings.COLOR,
+                colour = _one_colour(
                     alt.split("+")[0].strip(),
                     "arts.special_targets",
                     card,

@@ -1,0 +1,17 @@
+{
+  "locale": "id",
+  "corrections": [
+    {
+      "kind": "keyword_effect",
+      "source": "[コラボポジション限定]相手のターンで、自分のホロメンがダウンした時、自分のライフが相手以下なら、自分のアーカイブのカード名に「パソコン」を含むアイテム1枚を手札に戻せる。",
+      "value": "[Khusus Posisi Collab] Pada giliran lawan, saat holomen milikmu Down, jika Life milikmu sama dengan atau kurang dari lawan, kamu boleh mengembalikan 1 Item yang nama kartunya mengandung 「PC」 dari Arsip milikmu ke tanganmu.",
+      "note": "#27 — the rule matches on a card-name substring, and every locale translates those card names (Gaming PC / 電競電腦), so leaving `パソコン` here made the rule unfollowable: no card on the site displays that string."
+    },
+    {
+      "kind": "skill_effect",
+      "source": "[ターンに1回]自分のデッキから、カード名に「パソコン」を含むアイテム1枚を公開し、手札に加える。そしてデッキをシャッフルする。",
+      "value": "[Sekali per giliran] Ungkapkan 1 Item dari deckmu yang nama kartunya mengandung 「PC」, lalu tambahkan ke tanganmu. Kemudian kocok deckmu.",
+      "note": "#27 — same decision as the other `パソコン` rule: the cards it matches are named `Gaming PC` / `電競電腦`, so a reader searching for `パソコン` finds nothing."
+    }
+  ]
+}

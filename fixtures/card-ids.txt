@@ -8,10 +8,10 @@
 #
 # <card id>  <why this card is here>
 
-     1  covers card_type=oshiCharacter
-     2  covers color=green
+     1  hSD01-001 — oshiCharacter cover, and the card the smoke suite addresses by key
+     2  hSD01-002 — second oshiCharacter+OSR, for the group-AND and batch checks
      6  covers card_type=buzzCharacter
-    13  covers color=white_green
+    13  hSD01-013 SorAZ — ['white','green'], the other normalised pair
     14  covers bloom=spot
     16  covers card_type=supportStaffLimited
     18  covers card_type=supportItem
@@ -30,15 +30,15 @@
    447  hSD04-009 — same arts-length mismatch
    477  covers rarity=SY
    529  covers color=yellow
-   614  hBP03-050 FUWAMOCO — second fused-colour card, different set
+   614  hBP03-050 FUWAMOCO — second 青赤 card, different set
    726  hBP03-044 SR (hBP03 original) — image_key collision pair B
    735  hBP03-055 SR (hBP03 original) — image_key collision pair D
-  1218  hBP05-040 miComet — genuine two-element colour array ['red','blue']
+  1218  hBP05-040 miComet — ['red','blue'], the source's two-tag spelling
   1877  hBP07-091 — cardTypeCode 'unknown' (scraper could not classify)
   2003  hBP07-091 — the other 'unknown', different rarity
   2138  hBP03-044 SR (hCO01 reprint) — image_key collision pair A
   2139  hBP03-055 SR (hCO01 reprint) — image_key collision pair C
   2164  hBP03-011 P — rarity=P, and the card F-003's `arts[].value` came from
-  2263  hBP08-060 FUWAMOCO — fused colour code 'blue_red'
+  2263  hBP08-060 FUWAMOCO — ['blue','red'] from one 青赤 token, opposite order
   2444  hBP01-028 HR — rarity missing from v1's TypeScript union
 9000001  synthetic — short translated arts list (localize() merge rule 2)

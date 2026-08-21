@@ -66,15 +66,17 @@ describe("createEmpty", () => {
 });
 
 describe("FILTERABLE_COLORS", () => {
-  it("omits the fused symbols, which the Worker expands instead", () => {
-    // v1 gave blue_red and white_green their own checkboxes, and its colour filter then
-    // missed those cards under `blue` and `red` (F-016). The Worker expands through
-    // FUSED_COLORS now, so a separate checkbox would be a second, worse path.
+  it("offers every colour, with no fused symbol to exclude", () => {
+    // This used to assert an exclusion list. v1 gave blue_red and white_green their own
+    // checkboxes and its filter then missed those cards under `blue` (F-016); the Worker
+    // answered that by expanding the query. ADR 0013 removed the codes instead — a
+    // dual-colour card holds a row per badge, so it appears under each of its colours
+    // with nothing excluded here and nothing expanded there.
     expect(FILTERABLE_COLORS).not.toContain("blue_red");
     expect(FILTERABLE_COLORS).not.toContain("white_green");
     expect(FILTERABLE_COLORS).toContain("blue");
     expect(FILTERABLE_COLORS).toContain("null");
-    expect(FILTERABLE_COLORS).toHaveLength(COLORS.length - 2);
+    expect(FILTERABLE_COLORS).toHaveLength(COLORS.length);
   });
 });
 

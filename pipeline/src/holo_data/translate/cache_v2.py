@@ -40,6 +40,14 @@ During the migration a locale may be half-converted. `TranslationCacheV2.get` fa
 to a v1 cache on a miss, so a build always produces complete output, and
 `migration_status` reports per locale how far along it is. Without that, "is this locale
 consistent yet?" would be a question you answer by reading the diff of a 24 MB file.
+
+## Manual entries live in `corrections/`, not here
+
+This file is gitignored, so a `manual` entry written into it is durable but unreviewable —
+#18. `load` folds `pipeline/corrections/{locale}.json` in and `save` holds those entries
+back out again, which keeps a hand-written translation in exactly one place: the committed
+file a contributor can diff. Round-tripping it into this blob as well would leave a copy
+that no diff shows and deleting the correction would not remove.
 """
 
 from __future__ import annotations
@@ -145,6 +153,32 @@ class TranslationCacheV2:
     entries: dict[str, dict[str, Entry]] = field(default_factory=dict)
     fallback: TranslationCache | None = None
 
+    from_corrections: dict[str, set[str]] = field(default_factory=dict)
+    """Keys that came from `corrections/`, per locale. Excluded by `save`.
+
+    Tracked rather than inferred from `source == "manual"`, because the two are not the
+    same set during the one run that matters: a cache written before this mechanism
+    existed still holds `manual` entries of its own, and silently dropping those on the
+    next save would delete hand-written translations that have no committed home yet.
+    `holo-data corrections --extract` is what moves them across; until it runs, they stay.
+    """
+
+    def mark_from_corrections(self, locale: str, key: str) -> None:
+        self.from_corrections.setdefault(locale, set()).add(key)
+
+    def orphan_manual(self, locale: str) -> list[str]:
+        """`manual` keys in this locale that no committed correction accounts for.
+
+        These are the pre-#18 entries: durable, but invisible to review. Reported by
+        `holo-data corrections` so they get moved rather than discovered years later.
+        """
+        tracked = self.from_corrections.get(locale, set())
+        return sorted(
+            key
+            for key, entry in self.entries.get(locale, {}).items()
+            if entry.source == "manual" and key not in tracked
+        )
+
     # --- Lookup ---
 
     def get(self, locale: str, key: str) -> Entry | None:
@@ -245,36 +279,74 @@ class TranslationCacheV2:
     # --- Persistence ---
 
     @classmethod
-    def load(cls, path: Path | None = None) -> "TranslationCacheV2":
+    def load(
+        cls,
+        path: Path | None = None,
+        corrections_dir: Path | None = None,
+        apply_corrections: bool | None = None,
+    ) -> "TranslationCacheV2":
+        """Read the cache, folding the committed corrections over the working copy.
+
+        Corrections are applied *after* the machine entries, so a hand-written value wins
+        over whatever the model last produced for that string — which is the entire point
+        of writing one.
+
+        **Only for the working cache.** Reading a named file — a backup, a fixture — must
+        describe *that file*, or `backup.stats_for` would verify a snapshot by loading it
+        and report a `manual` count including entries the snapshot does not contain. So
+        corrections are folded in when no path is given, or when a caller names a
+        `corrections_dir` explicitly. Pass `apply_corrections` to override either way.
+        """
         target = path or cache_v2_file()
-        if not target.exists():
-            return cls()
+        cache = cls()
 
-        raw = json.loads(target.read_text(encoding="utf-8"))
-        version = raw.get("version")
-        if version != CACHE_VERSION:
-            raise ValueError(
-                f"translation cache at {target} is version {version}, expected "
-                f"{CACHE_VERSION}."
-            )
+        if apply_corrections is None:
+            apply_corrections = path is None or corrections_dir is not None
 
-        return cls(
-            entries={
+        if target.exists():
+            raw = json.loads(target.read_text(encoding="utf-8"))
+            version = raw.get("version")
+            if version != CACHE_VERSION:
+                raise ValueError(
+                    f"translation cache at {target} is version {version}, expected "
+                    f"{CACHE_VERSION}."
+                )
+            cache.entries = {
                 locale: {
                     key: Entry.from_json(value) for key, value in units.items()
                 }
                 for locale, units in raw.get("locales", {}).items()
             }
+
+        if apply_corrections:
+            cache.apply_corrections(corrections_dir)
+        return cache
+
+    def apply_corrections(self, directory: Path | None = None) -> int:
+        """Fold `corrections/*.json` in as `manual` entries. Returns the count."""
+        from ..corrections import load_all  # local: `corrections` imports `units`
+
+        return sum(
+            corrections.apply_to(self)
+            for corrections in load_all(directory=directory).values()
         )
 
     def save(self, path: Path | None = None) -> None:
+        """Write everything except the entries that came from `corrections/`.
+
+        Holding those back is what keeps a hand-written translation in one place. A
+        correction round-tripped into this file would survive its own deletion from the
+        committed one, and nothing in a diff would show it.
+        """
         target = path or cache_v2_file()
         ensure_dirs()
         payload = {
             "version": CACHE_VERSION,
             "locales": {
                 locale: {
-                    key: entry.to_json() for key, entry in sorted(units.items())
+                    key: entry.to_json()
+                    for key, entry in sorted(units.items())
+                    if key not in self.from_corrections.get(locale, set())
                 }
                 for locale, units in sorted(self.entries.items())
             },

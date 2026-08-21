@@ -85,9 +85,25 @@ PINNED: dict[str, str] = {
     "726": "hBP03-044 SR (hBP03 original) — image_key collision pair B",
     "2139": "hBP03-055 SR (hCO01 reprint) — image_key collision pair C",
     "735": "hBP03-055 SR (hBP03 original) — image_key collision pair D",
-    "1218": "hBP05-040 miComet — genuine two-element colour array ['red','blue']",
-    "2263": "hBP08-060 FUWAMOCO — fused colour code 'blue_red'",
-    "614": "hBP03-050 FUWAMOCO — second fused-colour card, different set",
+    # The three dual-colour forms. All print two badges on a gold ribbon (F-007); the
+    # source spells two of them as one token, which `transform` normalises (ADR 0013).
+    # Kept pinned as the cover for a colour *pair* — including the order difference,
+    # which is printed and must survive: miComet is red-then-blue, FUWAMOCO blue-then-red.
+    "1218": "hBP05-040 miComet — ['red','blue'], the source's two-tag spelling",
+    "2263": "hBP08-060 FUWAMOCO — ['blue','red'] from one 青赤 token, opposite order",
+    "614": "hBP03-050 FUWAMOCO — second 青赤 card, different set",
+    "13": "hSD01-013 SorAZ — ['white','green'], the other normalised pair",
+    # Cards 1 and 2 are pinned as a pair, and both are load-bearing for the smoke suite:
+    # `hSD01-001` is named directly by a dozen HTTP assertions (by-key, detail, ordering),
+    # and card 2 is the second oshiCharacter/OSR, without which the group-AND check
+    # matches one row and stops distinguishing AND from OR.
+    #
+    # Neither was pinned before because the greedy pass happened to pick both — card 1 as
+    # the oshiCharacter cover, card 2 for `color=green`. ADR 0013 gave green to card 13
+    # (SorAZ normalises to white+green), which freed card 2 and let the pass drop it.
+    # Depending on a coincidence for a fixture a dozen tests name is the real defect here.
+    "1": "hSD01-001 — oshiCharacter cover, and the card the smoke suite addresses by key",
+    "2": "hSD01-002 — second oshiCharacter+OSR, for the group-AND and batch checks",
 }
 
 

@@ -9,7 +9,8 @@
     "deploy": "wrangler deploy",
     "test": "node --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "db:local": "wrangler d1 execute hololive-ocg-wiki-db --local --file=../../packages/schema/sql/schema.sql && wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtures.sql"
+    "db:local": "wrangler d1 execute hololive-ocg-wiki-db --local --file=../../packages/schema/sql/schema.sql && wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtures.sql && wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/volume.sql",
+    "db:local:coverage": "wrangler d1 execute hololive-ocg-wiki-db --local --file=../../packages/schema/sql/schema.sql && wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtures.sql"
   },
   "dependencies": {
     "hono": "^4.12.32",

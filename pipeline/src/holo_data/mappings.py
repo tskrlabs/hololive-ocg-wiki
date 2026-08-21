@@ -57,19 +57,25 @@ rejects a `rulesNotice` that carries a `card_number`, so if the site ever prints
 bare-`サポート` *card*, it fails `build` loudly exactly as before. The classification is
 one signal; the validator is what keeps a wrong guess from shipping."""
 
-COLOR: dict[str, str] = {
-    "白": "white",
-    "赤": "red",
-    "青": "blue",
-    "緑": "green",
-    "黄": "yellow",
-    "紫": "purple",
-    "白緑": "white_green",
-    "青赤": "blue_red",
-    "◇": "null",
+COLOR: dict[str, tuple[str, ...]] = {
+    "白": ("white",),
+    "赤": ("red",),
+    "青": ("blue",),
+    "緑": ("green",),
+    "黄": ("yellow",),
+    "紫": ("purple",),
+    "白緑": ("white", "green"),
+    "青赤": ("blue", "red"),
+    "◇": ("null",),
 }
-"""Colour. `白緑` and `青赤` are **fused dual-colour symbols** printed as a single icon —
-not shorthand for two colours. `◇` is the game's colourless concept. See ADR 0001."""
+"""Colour, as a tuple because one source token can name two badges.
+
+`白緑` and `青赤` are the source's single-token spelling of a dual-colour card. They print
+exactly what miComet's two separate `<img>` tags print — two badges on a gold ribbon,
+verified against the card images (F-007) — so they normalise here, at the one place the
+spelling difference exists. The tuple order is the printed order.
+
+`◇` is the game's colourless concept. See ADR 0001 and ADR 0013."""
 
 BLOOM_LEVEL: dict[str, str] = {
     "Debut": "debut",

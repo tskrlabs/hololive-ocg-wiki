@@ -1,0 +1,17 @@
+{
+  "locale": "th",
+  "corrections": [
+    {
+      "kind": "keyword_effect",
+      "source": "[コラボポジション限定]相手のターンで、自分のホロメンがダウンした時、自分のライフが相手以下なら、自分のアーカイブのカード名に「パソコン」を含むアイテム1枚を手札に戻せる。",
+      "value": "[เฉพาะตำแหน่งโคลาโบ] ในเทิร์นของคู่ต่อสู้ เมื่อโฮโลเมนของคุณถูกดาวน์ ถ้าไลฟ์ของคุณน้อยกว่าหรือเท่ากับคู่ต่อสู้ คุณสามารถนำไอเทม 1 ใบที่มี「พีซี」อยู่ในชื่อการ์ดจากอาร์ไคฟ์ของคุณกลับขึ้นมือได้",
+      "note": "#27 — the rule matches on a card-name substring, and every locale translates those card names (Gaming PC / 電競電腦), so leaving `パソコン` here made the rule unfollowable: no card on the site displays that string."
+    },
+    {
+      "kind": "skill_effect",
+      "source": "[ターンに1回]自分のデッキから、カード名に「パソコン」を含むアイテム1枚を公開し、手札に加える。そしてデッキをシャッフルする。",
+      "value": "[ใช้ได้ 1 ครั้งต่อเทิร์น] เปิดเผยไอเท็ม 1 ใบที่มีคำว่า「พีซี」อยู่ในชื่อการ์ดจากเด็คของคุณ แล้วนำขึ้นมือ จากนั้นสับเด็ค",
+      "note": "#27 — same decision as the other `パソコン` rule: the cards it matches are named `Gaming PC` / `電競電腦`, so a reader searching for `パソコン` finds nothing."
+    }
+  ]
+}

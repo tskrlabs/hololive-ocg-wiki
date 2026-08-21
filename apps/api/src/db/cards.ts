@@ -14,7 +14,7 @@
 import type { Card } from "@holo/schema";
 import type { LocalizedCard } from "@holo/schema";
 import { localize } from "@holo/schema/localize";
-import type { ColorCode, Locale } from "@holo/schema/enums";
+import type { Locale } from "@holo/schema/enums";
 
 /** Columns every card-returning query needs, minus the Q&A payload. */
 const CARD_COLUMNS = `id, card_number, card_type_code, rarity_code, bloom_level_code,
@@ -22,33 +22,19 @@ const CARD_COLUMNS = `id, card_number, card_type_code, rarity_code, bloom_level_
     illustrator, payload`;
 
 /**
- * Dual-colour cards are printed as one fused icon and stored that way.
+ * A dual-colour card holds two rows in `card_colors`, so a colour filter is a plain
+ * junction match with nothing to expand.
  *
- * `blue_red` is a single printed symbol, not "blue and red" — storage keeps it as
- * printed so the card renders one icon rather than two and a comma. Expanding it is
- * therefore a *query-layer* job, pinned by `test_fused_colours_are_stored_as_printed`
- * in the seeder's tests.
+ * This used to be `expandColors`, because `blue_red` was its own stored code and a
+ * `blue` filter had to be widened to also match it (F-016). ADR 0013 normalised the
+ * two fused codes into pairs at extraction time, which deleted the need rather than
+ * changing it: `青赤` is stored as `["blue", "red"]`, so the `blue` filter simply hits
+ * the `blue` row.
  *
- * Without this, filtering by `blue` silently misses the 5 `blue_red` cards. v1 did no
- * expansion at all and exposed `blue_red`/`white_green` as their own checkboxes, so its
- * blue filter was quietly incomplete.
+ * Kept as a comment because the shape is easy to reintroduce by accident. If a colour
+ * filter ever looks like it is missing dual-colour cards again, the bug is upstream in
+ * `transform`, not here.
  */
-const FUSED_COLORS: Readonly<Record<string, readonly ColorCode[]>> = {
-  blue: ["blue_red"],
-  red: ["blue_red"],
-  white: ["white_green"],
-  green: ["white_green"],
-};
-
-/** A requested colour plus any fused code that contains it. */
-export function expandColors(colors: readonly string[]): string[] {
-  const expanded = new Set<string>();
-  for (const color of colors) {
-    expanded.add(color);
-    for (const fused of FUSED_COLORS[color] ?? []) expanded.add(fused);
-  }
-  return [...expanded].sort();
-}
 
 /**
  * A set of card ids as **one** bound parameter, not one placeholder each.
@@ -184,7 +170,7 @@ export function buildWhere(filters: CardFilters, searchIds?: readonly string[]):
     params.push(JSON.stringify(searchIds));
   }
 
-  if (filters.colors?.length) junction("card_colors", "color_code", expandColors(filters.colors));
+  if (filters.colors?.length) junction("card_colors", "color_code", filters.colors);
   if (filters.tag) junction("card_tags", "tag", [filters.tag]);
   if (filters.set) junction("card_sets", "set_name", [filters.set]);
 

@@ -27,10 +27,10 @@ from .card import (
 from .enums import (
     BLOOM_LEVEL_VALUES,
     CARD_TYPE_VALUES,
+    COLOR_PAIRS,
     COLOR_VALUES,
     DEFAULT_LOCALE,
     MAX_BATCH,
-    FUSED_COLORS,
     KEYWORD_TYPE_VALUES,
     LOCALE_VALUES,
     MAIN_CARD_TYPES,
@@ -100,8 +100,8 @@ __all__ = [
     "RARITY_VALUES",
     "TIMING_VALUES",
     # Domain constants
+    "COLOR_PAIRS",
     "DEFAULT_LOCALE",
-    "FUSED_COLORS",
     "MAX_BATCH",
     "MAIN_CARD_TYPES",
     "NON_CARD_TYPES",
