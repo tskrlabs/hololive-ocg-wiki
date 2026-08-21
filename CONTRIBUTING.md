@@ -38,6 +38,8 @@ Open a PR directly. No issue needed.
 | **Bug fixes** | anywhere — see [the issue list](https://github.com/tskrlabs/hololive-ocg-wiki/issues) |
 | **UI and UX** | `apps/web/app/` |
 | **Site copy and its translations** | `apps/web/i18n/locales/*.json` |
+| **Card translation fixes** | `pipeline/corrections/*.json` — see [below](#fixing-card-text) |
+| **Character and set names** | `pipeline/glossary/*.json` |
 | **Docs** | `README.md`, this file, `docs/` |
 | **Tests** | anywhere — a failing test that demonstrates a bug is a complete contribution on its own |
 
@@ -50,7 +52,7 @@ before you spend time:
 |---|---|
 | **The card contract** (`packages/schema/`) | it generates the TS types, the D1 DDL and the fixtures; changing it is a migration, not an edit |
 | **The pipeline** (`pipeline/`) | its outputs are paid (translation) or destructive (reseed) |
-| **Card text and card data** | not in git — see [below](#fixing-card-text) |
+| **Card *data*** | scraped from the official site, not editable here — but a bad *translation* is a PR, see [below](#fixing-card-text) |
 | **Anything needing credentials** | a paid Poe key, R2 or D1 tokens, or Workers access |
 
 If a change needs one of those, open an issue and it will be run for you. Everything
@@ -75,19 +77,44 @@ edit the file and open a PR. Native speakers are the only people who can catch t
 Card names, skill text and rulings are a different thing entirely: they are
 machine-translated from Japanese into six languages, and some of it is wrong.
 
-**These have to go through an issue, not a pull request.** Use the
-[bad translation form](https://github.com/tskrlabs/hololive-ocg-wiki/issues/new/choose) —
-it asks for the card number (e.g. `hBP01-028`), the locale, the field, and what it should
-say.
+**These are PR-able.** Add an entry to `pipeline/corrections/{locale}.json` — the locale
+you are fixing, one object per fix:
 
-The honest reason it is not a PR: the translation cache lives in `pipeline/locales/`, which
-is **not in git**, so there is no file for you to edit. D14 originally promised a committed
-`corrections/` overlay, and ADR 0002 replaced that mechanism with cache entries without
-replacing the reviewable surface it provided. That gap is
-[#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) and is not yet closed.
+```json
+{
+  "locale": "tc",
+  "corrections": [
+    {
+      "kind": "art_name",
+      "source": "おつルーナ",
+      "value": "辛苦啦露娜～",
+      "note": "why, if it is not obvious"
+    }
+  ]
+}
+```
 
-Corrections are durable despite that — a corrected field is stored as a cache entry marked
-`source: "manual"`, which survives the card being re-translated for any other reason.
+`source` is the **Japanese as the card prints it**, copied exactly — it is what the fix is
+keyed on, so a trailing `～` or a `…` written as three dots will not match. `kind` is the
+field: `card_name`, `art_name`, `ability_text`, `art_effect`, `keyword_name`,
+`keyword_effect`, `skill_name`, `skill_effect`, `skill_timing`, `tag`, `extra` or `qa`.
+
+You do not need a Python toolchain, a Poe key, or the card data to write one. If you have
+the pipeline set up, `holo-data corrections` checks every entry against the real cards and
+names any whose Japanese no card prints; if not, that check runs before your PR is merged.
+
+Two things worth knowing. A correction is keyed on the **string**, not the card, so fixing
+`おつルーナ` fixes every card that prints it. And it is permanent: the pipeline never
+re-translates a string a human has decided, so your fix survives every future run.
+
+Prefer an issue if you would rather not open a PR, or if you are unsure what the right
+translation is. The
+[bad translation form](https://github.com/tskrlabs/hololive-ocg-wiki/issues/new/choose)
+asks for the card number (e.g. `hBP01-028`), the locale, the field, and what it should say.
+
+**Character and set names are a different file** — `pipeline/glossary/names.json`. Those
+are curated proper nouns with per-locale spellings and aliases, and a name fixed there is
+consistent everywhere it appears, including inside rules text.
 
 Bad *data* — as opposed to bad translation — is worth an issue too. Known anomalies are in
 [`docs/archive/findings.md`](docs/archive/findings.md); check there first, since several

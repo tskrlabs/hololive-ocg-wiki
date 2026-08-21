@@ -101,6 +101,7 @@ def cache_file() -> Path:
 
 
 def corrections_file(locale: str) -> Path:
+    """Hand-written translation fixes for one locale. Committed — see `corrections.py`."""
     return CORRECTIONS_DIR / f"{locale}.json"
 
 

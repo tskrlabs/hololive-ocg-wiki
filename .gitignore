@@ -32,8 +32,10 @@ apps/*/dist
 
 # Pipeline working state (D1: generated data lives in R2, not git).
 # `pipeline/glossary/` and `pipeline/corrections/` are deliberately NOT ignored —
-# curated proper nouns and manual translation fixes are source, and reviewing them as a
-# PR diff is the point (ADR 0002, #18).
+# curated proper nouns and hand-written translation fixes are source, and reviewing them
+# as a PR diff is the point (ADR 0012, #18). The cache holds no `manual` entries of its
+# own: they are folded in from `corrections/` on load and held back on save, so a
+# correction lives in exactly one place — the file a contributor can diff.
 pipeline/data/
 pipeline/locales/
 pipeline/images/

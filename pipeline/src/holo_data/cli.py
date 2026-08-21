@@ -16,6 +16,7 @@ steps that cost money or touch production are explicit.
     holo-data seed --confirm      diff-based upsert into D1            (writes)
 
     holo-data glossary            proper-noun coverage, per locale     (local, free)
+    holo-data corrections         verify hand-written fixes            (local, free)
     holo-data cache-status        migration progress, per locale       (local, free)
     holo-data backup-cache        snapshot the translation cache       (local / R2)
     holo-data normalise-cache     deterministic spelling fixes         (local, free)
@@ -47,6 +48,7 @@ from holo_schema import SCHEMA_VERSION
 from holo_schema.enums import SOURCE_LOCALE
 
 from . import build as build_module
+from . import corrections as corrections_module
 from . import glossary as glossary_module
 from . import images as images_module
 from . import migrate_images as migrate_module
@@ -1237,6 +1239,152 @@ def glossary_(
                 typer.echo(f"\n{kind}/{loc} — {len(gaps)} undecided:")
                 for key in gaps:
                     typer.echo(f"  {key}")
+
+
+@app.command("corrections")
+def corrections_(
+    locale: Optional[str] = typer.Option(
+        None, "--locale", help="report one locale only"
+    ),
+    extract: bool = typer.Option(
+        False,
+        "--extract",
+        help="move `manual` cache entries that predate this mechanism into the "
+        "committed files, so they become reviewable",
+    ),
+) -> None:
+    """Verify the committed translation corrections. Spends nothing.
+
+    `pipeline/corrections/{locale}.json` is where a hand-written translation lives — the
+    reviewable surface #18 asked for, and the one thing a contributor can send as a PR
+    against card text. `translate` never overwrites what it holds.
+
+    A correction names its `kind` and the Japanese `source`; the cache key is derived, so
+    nobody has to compute a hash. **This is the check that replaces a stored key**: every
+    `(kind, source)` is looked up in the current build, and one that no card prints is
+    reported here rather than sitting inert as an entry matching nothing. That happens for
+    a typo in the Japanese, and it happens when the official site rewords a card — the
+    same key-moved-underneath-us shape as #78.
+
+    Needs no Poe key. Folding a file into a dict is verifiable offline, which was the
+    third of the three worries that kept this open.
+    """
+    all_corrections = corrections_module.load_all()
+    if locale:
+        all_corrections = {
+            loc: c for loc, c in all_corrections.items() if loc == locale
+        }
+
+    total = sum(len(c) for c in all_corrections.values())
+    if not total:
+        # Deliberately not an early return: with no corrections files at all, *every*
+        # `manual` cache entry is an orphan — which is the state this command exists to
+        # get a repo out of, and returning here would make it silent.
+        typer.echo("no corrections recorded")
+        typer.echo(f"  they would live in {paths.CORRECTIONS_DIR}")
+
+    collection = build_module.load()
+    units = None
+    if collection is None:
+        typer.echo(
+            "⚠ no build found — cannot check corrections against the cards they "
+            "translate. Run `holo-data build` first.",
+            err=True,
+        )
+    else:
+        cards = collection.model_dump(mode="json", exclude_none=True)["cards"]
+        units = units_module.collect(cards).values()
+
+    failed = False
+    for loc, corrections in sorted(all_corrections.items()):
+        typer.echo(f"{loc}: {len(corrections)} correction(s)")
+        for item in sorted(corrections.items, key=lambda c: (c.kind, c.key)):
+            typer.echo(f"  {item.kind:15s} {item.key.split(':')[1][:12]}… {item.value!r}")
+
+        if units is None:
+            continue
+        # An unmatched correction is silent by construction — it fills a slot the build
+        # never asks for. Naming it is the whole reason this command exists.
+        for orphan in corrections.unknown(units):
+            failed = True
+            typer.echo(
+                f"  ✗ no card prints this {orphan.kind}: {orphan.source!r}",
+                err=True,
+            )
+
+    # Entries written before corrections/ existed: durable, but invisible to review.
+    cache = TranslationCacheV2.load()
+    stranded = {
+        loc: keys
+        for loc in (
+            [locale] if locale else sorted(cache.entries)
+        )
+        if (keys := cache.orphan_manual(loc))
+    }
+
+    if stranded and not extract:
+        count = sum(len(keys) for keys in stranded.values())
+        typer.echo("")
+        typer.echo(
+            f"⚠ {count} `manual` cache entry(ies) have no committed correction — "
+            "they are durable but unreviewable.",
+            err=True,
+        )
+        for loc, keys in stranded.items():
+            typer.echo(f"    {loc}: {len(keys)}", err=True)
+        typer.echo("  re-run with --extract to move them into corrections/", err=True)
+
+    if extract:
+        if not stranded:
+            typer.echo("")
+            typer.echo("✓ nothing to extract — every `manual` entry is committed")
+        else:
+            typer.echo("")
+            # The source string is not stored in the cache — only its hash — so the
+            # build is what supplies it. Without a build there is nothing to extract
+            # *from*, which is why this refuses rather than writing hashes.
+            if units is None:
+                typer.echo(
+                    "✗ --extract needs a build: the cache stores a hash, and the "
+                    "source string it addresses comes from the cards.",
+                    err=True,
+                )
+                raise typer.Exit(1)
+
+            by_key = {unit.key: unit for unit in units}
+            for loc, keys in stranded.items():
+                corrections = all_corrections.get(
+                    loc, corrections_module.Corrections(locale=loc)
+                )
+                moved = 0
+                for key in keys:
+                    unit = by_key.get(key)
+                    if unit is None:
+                        typer.echo(
+                            f"  ⚠ {loc}: {key} matches no card in the build — left in "
+                            "the cache, nothing to key a correction on",
+                            err=True,
+                        )
+                        continue
+                    corrections.items.append(
+                        corrections_module.Correction(
+                            kind=unit.kind,
+                            source=unit.value,
+                            value=cache.entries[loc][key].value,
+                            note="extracted from the cache",
+                        )
+                    )
+                    moved += 1
+                if moved:
+                    written = corrections.save()
+                    typer.echo(f"  ✓ {loc}: {moved} moved to {written}")
+
+    if failed:
+        raise typer.Exit(1)
+
+    if units is not None and total:
+        typer.echo("")
+        typer.echo(f"✓ {total} correction(s) all match a string in the build")
 
 
 @app.command("normalise-cache")

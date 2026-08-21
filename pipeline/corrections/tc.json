@@ -1,0 +1,29 @@
+{
+  "locale": "tc",
+  "corrections": [
+    {
+      "kind": "art_name",
+      "source": "あなたの心は…くもりのち晴れ！",
+      "value": "你的心情是……陰轉晴！",
+      "note": "F-003 — recovered from a stray `value` key in the v1 data. Covers 2 cards."
+    },
+    {
+      "kind": "art_name",
+      "source": "おつルーナ",
+      "value": "辛苦啦露娜～",
+      "note": "F-003 — Himemori Luna's sign-off. Covers 3 cards."
+    },
+    {
+      "kind": "art_name",
+      "source": "ぐっどないと～",
+      "value": "晚安～",
+      "note": "F-003 — covers 3 cards."
+    },
+    {
+      "kind": "art_name",
+      "source": "ぬんぬんしよう",
+      "value": "來ぬんぬん吧",
+      "note": "F-003 — `ぬんぬん` is Luna's catchphrase and stays in kana by decision, not omission. Covers 2 cards."
+    }
+  ]
+}

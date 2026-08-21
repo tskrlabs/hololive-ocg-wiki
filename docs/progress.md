@@ -374,16 +374,34 @@ below blocks the flip.
 
 | # | what | label |
 |---|---|---|
-| [#18](https://github.com/tskrlabs/hololive-ocg-wiki/issues/18) | A translation fix has no reviewable surface — *proper nouns now have one; arbitrary fields do not* | `ready-for-human` |
 | [#22](https://github.com/tskrlabs/hololive-ocg-wiki/issues/22) | The `blue_red` colour icon is a quarter its siblings' size | `ready-for-human` |
 | [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
 | [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
 | [#62](https://github.com/tskrlabs/hololive-ocg-wiki/issues/62) | `original.tags` is rendered nowhere, and the deck panel has no source names | `ready-for-human` |
 
-**#18 lost its `phase-7` label.** It does not close with launch — launch creates the
-contributors who hit it. The proper-noun half is closed by `pipeline/glossary/`; an
-arbitrary *field* correction still has no committed home, and `corrections_file()` in
-`paths.py` is a dead helper called by nothing.
+✅ **#18 is closed** (2026-08-21) by
+[ADR 0012](adr/0012-committed-translation-corrections.md) —
+`pipeline/corrections/{locale}.json` is committed, and the cache folds it in on load and
+holds it back on save, so a hand-written translation lives in exactly one place: the file
+a contributor can diff.
+
+The 2026-08-02 triage kept this open waiting for *"a real report of a badly worded effect"*
+before designing against a hypothetical. **#78 was that report.** Two things that were
+expensive in July had also become cheap: ADR 0008 re-keyed the cache on the source string,
+so a correction is addressable without a card path, and verification turned out to need no
+Poe key — folding a file into a dict is testable offline, which was the third of the three
+worries named in the triage.
+
+The four F-003 `tc` strings are **committed at last** — recovered in Phase 0, applied to
+the cache in Phase 3, and deliberately kept out of git until there was a reviewable place
+to put them. They are `corrections/tc.json`'s first entries.
+
+Two bugs surfaced while building it, both caught by verification rather than by reading:
+folding corrections into *any* cache load broke `backup.stats_for`, which verifies a
+snapshot by loading it and would have reported a `manual` count including entries the
+snapshot does not contain; and `holo-data corrections` returned early on "no corrections
+recorded", making orphan `manual` entries silent in exactly the pre-migration state
+`--extract` exists for. Both are pinned by tests.
 
 **#27 and #28 are one pipeline run, and should be done as one.** Both are deterministic
 string rewrites needing no API call, but shipping either means cache edit → R2 publish →
