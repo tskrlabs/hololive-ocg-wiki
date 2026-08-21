@@ -451,6 +451,7 @@ apps/api/          the Worker — Hono + Zod over D1 and R2 (Phase 4)
 apps/web/          the site — Nuxt 4 SPA, generated static (Phase 5)
 content/           info.json — editorial site copy, uploaded by publish
 fixtures/          34 cards + fixtures.sql + artifacts/ — credential-free local dev (D12)
+                   volume.sql — 620 bulk cards, so local dev reaches page 4 (#59)
 docs/adr/          decisions made during execution
 docs/infra.md      the Cloudflare runbook — what exists and which command made it
 docs/archive/findings.md   data anomalies awaiting maintainer review
@@ -1012,6 +1013,7 @@ cd apps/api
 npx wrangler d1 execute hololive-ocg-wiki-db --local \
     --file=../../packages/schema/sql/schema.sql
 npx wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/fixtures.sql
+npx wrangler d1 execute hololive-ocg-wiki-db --local --file=../../fixtures/volume.sql
 ```
 
 Or just `make check-api`, which does both and then exercises every endpoint.
@@ -1019,6 +1021,20 @@ Or just `make check-api`, which does both and then exercises every endpoint.
 `fixtures.sql` is committed and generated from the 34 fixture cards — every card type,
 every rarity, all 9 colours, all 7 locales, 539 Q&A items. No token, no network, no
 Python. `seed` is deliberately not involved: it only ever writes to production.
+
+**`volume.sql` is a second corpus, and the split is deliberate.** The coverage set is 34
+cards and `pageSize` is 200, so locally `hasMore` was always false — `loadMore` could not
+fire, and infinite scroll, the append path and the scroll restore were all unreachable.
+That is why [#59](https://github.com/tskrlabs/hololive-ocg-wiki/issues/59) was found in
+production three times: the third was a truncation that silently undid a restore once the
+list was more than one page deep, and no local session could reach a second page to see it.
+
+`volume.sql` adds 620 bulk cards, putting the local database at 654 — past three full
+pages. Growing `fixtures.sql` instead would have meant rewriting ~100 exact-total
+assertions in `smoke.sh` and multiplying 1.6 MB of golden files by twenty, to test
+something none of them are about. So coverage stays coverage, volume is volume, and
+`smoke.sh` keeps loading the 34-card corpus alone. `make volume` regenerates; Q&A and
+`extra` are trimmed from these rows, since `fixtures.sql` already covers both.
 
 33 of the 34 are real cards selected from `holo-data build` output; **one is synthetic**
 (`9000001`), carrying the only remaining cover for `localize()`'s short-arts merge rule
