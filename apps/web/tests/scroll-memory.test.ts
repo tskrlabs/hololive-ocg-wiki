@@ -136,6 +136,163 @@ describe("the grid's scroll offset across a card view (#59)", () => {
 });
 
 /**
+ * The restore must wait for the **measured** geometry, not merely for a scroller that
+ * works (#59, reopened).
+ *
+ * The shipped fix was correct about everything except *when*. On remount the list's
+ * geometry starts as `gridGeometry(1280)` — a hardcoded guess — and a `ResizeObserver`
+ * corrects it a frame or two later. The restore ran against the guess, and that is the
+ * trap: it does not fail. It writes the offset, reads it back, reports success and
+ * **consumes the memory**; then the correction lands, `gridColCount` changes, the
+ * scroller's `:key` changes, and it remounts at 0 with nothing left to put it back.
+ *
+ * Traced in Chromium across five widths. The bug appears only where the guess is wrong,
+ * which is exactly why it survived review — anyone testing at 1512px or 1600px sees a
+ * working feature:
+ *
+ * | viewport | measured columns | vs. the 6-column guess | outcome |
+ * |---|---|---|---|
+ * | 1280 | 5 | wrong | lost |
+ * | 1512 | 6 | right | kept |
+ * | 1600 | 6 | right | kept |
+ * | 1728 | 7 | wrong | lost |
+ * | 1920 | 8 | wrong | lost |
+ *
+ * These model the scheduler's *sequence* rather than the composable's arithmetic, because
+ * that is where the defect was — every assertion in the suites around this one passed
+ * throughout. What is pinned is that an unmeasured grid is not offered to `restore` at
+ * all, and that waiting cannot strand the memory.
+ */
+describe("the restore waits for the measured geometry (#59, reopened)", () => {
+  beforeEach(() => stateStore.clear());
+
+  /**
+   * The scheduler's gate, extracted to exactly the decision the component makes.
+   *
+   * `hasMeasured` is the observer having reported; `attempt` drives the retry budget. The
+   * real loop is `requestAnimationFrame`, which a happy-dom test cannot meaningfully run,
+   * so the frames are stepped by hand — the ordering is the thing under test.
+   */
+  function runScheduler(
+    memory: ReturnType<typeof useGridScrollMemory>,
+    frames: { measured: boolean; scroller: { element: HTMLElement; itemCount: number } }[],
+    budget = 20,
+  ) {
+    let attempts = 0;
+    for (const frame of frames) {
+      if (!memory.isPending()) return { restored: true, attempts };
+      if (!frame.measured) {
+        if (++attempts > budget) {
+          memory.forget();
+          return { restored: false, attempts, gaveUp: true };
+        }
+        continue;
+      }
+      if (memory.restore(frame.scroller.element, frame.scroller.itemCount)) {
+        return { restored: true, attempts };
+      }
+      if (++attempts > budget) {
+        memory.forget();
+        return { restored: false, attempts, gaveUp: true };
+      }
+    }
+    return { restored: !memory.isPending(), attempts };
+  }
+
+  it("does not spend the memory on a grid whose columns are still a guess", () => {
+    const memory = useGridScrollMemory();
+    const before = scrollable(3000);
+    before.scrollTop = 900;
+    memory.remember(before, 34);
+
+    // Frame 1: the scroller exists and is perfectly capable of taking the write — this is
+    // what made the bug invisible — but the observer has not reported, so the columns are
+    // still `gridGeometry(1280)`'s six and a remount is coming.
+    const guessed = scrollable(3000);
+    runScheduler(memory, [{ measured: false, scroller: { element: guessed, itemCount: 34 } }]);
+
+    // The offset was *not* written into the doomed layout, and is still owed.
+    expect(guessed.scrollTop).toBe(0);
+    expect(memory.isPending()).toBe(true);
+  });
+
+  it("restores into the corrected layout once the observer reports", () => {
+    const memory = useGridScrollMemory();
+    const before = scrollable(3000);
+    before.scrollTop = 900;
+    memory.remember(before, 34);
+
+    // The remount the correction caused: a fresh scroller, and this one is the real one.
+    const corrected = scrollable(3000);
+    const result = runScheduler(memory, [
+      { measured: false, scroller: { element: scrollable(3000), itemCount: 34 } },
+      { measured: false, scroller: { element: scrollable(3000), itemCount: 34 } },
+      { measured: true, scroller: { element: corrected, itemCount: 34 } },
+    ]);
+
+    expect(result.restored).toBe(true);
+    expect(corrected.scrollTop).toBe(900);
+    expect(memory.isPending()).toBe(false);
+  });
+
+  it("is what the pre-fix ordering got wrong", () => {
+    // The discriminator, and the whole reason the gate exists. Restoring against the
+    // unmeasured grid *succeeds* — so no retry is triggered and nothing looks wrong —
+    // and the remount that follows lands at the top with the memory already spent.
+    const memory = useGridScrollMemory();
+    const before = scrollable(3000);
+    before.scrollTop = 900;
+    memory.remember(before, 34);
+
+    const guessed = scrollable(3000);
+    expect(memory.restore(guessed, 34)).toBe(true);
+    expect(memory.isPending()).toBe(false);
+
+    const afterReflow = scrollable(3000);
+    expect(memory.restore(afterReflow, 34)).toBe(false);
+    expect(afterReflow.scrollTop).toBe(0);
+  });
+
+  it("gives up rather than stranding a memory that would suppress scroll-to-top", () => {
+    // A width that never arrives — the observer detached, or the grid is display:none.
+    // Waiting forever is not an option: `isPending()` staying true tells the list's
+    // status watcher that every later `loading → ready` is a return from a card, so a
+    // filter change would silently stop scrolling to the top.
+    const memory = useGridScrollMemory();
+    const before = scrollable(3000);
+    before.scrollTop = 900;
+    memory.remember(before, 34);
+
+    const never = Array.from({ length: 30 }, () => ({
+      measured: false,
+      scroller: { element: scrollable(3000), itemCount: 34 },
+    }));
+    const result = runScheduler(memory, never);
+
+    expect(result.gaveUp).toBe(true);
+    expect(memory.isPending()).toBe(false);
+  });
+
+  it("still refuses a different result set once measured", () => {
+    // The count guard is not weakened by the wait: a filter applied while the card was
+    // open must land at the top, not at a stale offset.
+    const memory = useGridScrollMemory();
+    const before = scrollable(3000);
+    before.scrollTop = 900;
+    memory.remember(before, 34);
+
+    const after = scrollable(3000);
+    runScheduler(memory, [
+      { measured: false, scroller: { element: scrollable(3000), itemCount: 5 } },
+      { measured: true, scroller: { element: after, itemCount: 5 } },
+    ]);
+
+    expect(after.scrollTop).toBe(0);
+    expect(memory.isPending()).toBe(false);
+  });
+});
+
+/**
  * The same memory, anchored by **item index**, across the deck panel's reflow
  * (ADR 0009 D18, amended).
  *

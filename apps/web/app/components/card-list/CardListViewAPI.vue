@@ -83,6 +83,18 @@ const geometryOptions = computed(() => ({
 /** The last width the observer reported, kept so state changes can re-measure. */
 const observedWidth = shallowRef(1280);
 
+/**
+ * Has the observer reported a real width yet, or is the geometry still the 1280px guess?
+ *
+ * ⚠️ **Load-bearing for the scroll restore** (#59, and the regression below). Every value
+ * beneath this line starts as `gridGeometry(1280)` — a guess made before the grid has been
+ * measured — and the observer corrects it a frame or two after mount. Until it does, the
+ * column count is very likely *wrong*, and a restore that runs against it is worse than
+ * one that has not run: it succeeds, consumes the memory, and is then wiped by the remount
+ * the correction triggers.
+ */
+const hasMeasured = shallowRef(false);
+
 const gridColCount = shallowRef(gridGeometry(1280, { compactMobileBonus: true }).columns);
 const itemSize = shallowRef(gridGeometry(1280, { compactMobileBonus: true }).itemSize);
 const itemSecondarySize = shallowRef(
@@ -106,6 +118,9 @@ function onResizeObserver(entries: ResizeObserverEntry[]) {
 
   observedWidth.value = width;
   measure(width);
+  // The geometry is now real rather than assumed, which is what a pending restore waits
+  // for. Set after `measure`, so anything this releases reads the corrected columns.
+  hasMeasured.value = true;
 }
 
 /**
@@ -254,6 +269,11 @@ watch(
  * full height, so a position set too early is clamped to 0 and lost. Measured in
  * Chromium, the whole sequence settles within ~200ms of the list remounting.
  *
+ * ⚠️ There are **two** ways to be too early, and only one of them announces itself. A
+ * scroller with no rows yet *fails* the restore, which is recoverable — that is the retry
+ * below. A scroller with the wrong *column count* **succeeds** and is then thrown away by
+ * the remount that corrects it; see `hasMeasured` inside.
+ *
  * **Giving up must `forget()`**: a memory left behind keeps `isPending()` true, which
  * would suppress the scroll-to-top on every later filter change.
  *
@@ -268,6 +288,40 @@ const scheduleScrollRestore = () => {
   let attempts = 0;
   const tryRestore = () => {
     if (!scrollMemory.isPending()) return;
+
+    // ⚠️ **Wait for the measured geometry, not merely for a scroller** — the regression
+    // that reopened #59.
+    //
+    // `gridColCount` starts at `gridGeometry(1280)`, a guess, and the observer corrects it
+    // shortly after mount. Restoring against the guess *works* — the write lands, reads
+    // back, and consumes the memory — and is then destroyed by the remount the correction
+    // causes, because the column count is in the scroller's `:key`. The position is lost,
+    // and it looks exactly like never having tried.
+    //
+    // Traced in Chromium at five widths. The bug appears only where the guess is wrong,
+    // which is why it survived review — at 1512px and 1600px the grid really is 6 columns
+    // and the restore holds:
+    //
+    // | viewport | measured columns | 6 → ? | outcome |
+    // |---|---|---|---|
+    // | 1280 | 5 | changed | lost |
+    // | 1512 | 6 | same    | kept |
+    // | 1600 | 6 | same    | kept |
+    // | 1728 | 7 | changed | lost |
+    // | 1920 | 8 | changed | lost |
+    //
+    // This is D18's "restore waits for the reflow, not the toggle" — the same trap, on the
+    // path that does not toggle anything. Retrying (rather than giving up) is what makes it
+    // safe: the observer fires within a frame or two, well inside the attempt budget.
+    if (!hasMeasured.value) {
+      if (++attempts > 20) {
+        scrollMemory.forget();
+        return;
+      }
+      requestAnimationFrame(tryRestore);
+      return;
+    }
+
     if (
       scrollMemory.restore(
         virtualScroller.value?.$el as HTMLElement | undefined,
