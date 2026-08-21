@@ -374,8 +374,7 @@ below blocks the flip.
 
 | # | what | label |
 |---|---|---|
-| [#27](https://github.com/tskrlabs/hololive-ocg-wiki/issues/27) | `「…」`-quoted names stay Japanese; `〈〉` becomes `<>` | `ready-for-agent` |
-| [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Game vocabulary is inconsistent inside prose — `エール` is three words in `th` | `ready-for-agent` |
+| [#28](https://github.com/tskrlabs/hololive-ocg-wiki/issues/28) | Re-translate the `legacy` Q&A corpus — the mechanical half is done | `ready-for-agent` |
 | [#62](https://github.com/tskrlabs/hololive-ocg-wiki/issues/62) | `original.tags` is rendered nowhere, and the deck panel has no source names | `ready-for-human` |
 
 ✅ **#22 is closed** (2026-08-21) by
@@ -445,10 +444,46 @@ snapshot does not contain; and `holo-data corrections` returned early on "no cor
 recorded", making orphan `manual` entries silent in exactly the pre-migration state
 `--extract` exists for. Both are pinned by tests.
 
-**#27 and #28 are one pipeline run, and should be done as one.** Both are deterministic
-string rewrites needing no API call, but shipping either means cache edit → R2 publish →
-D1 reseed, so they are worth batching. #28's Thai `เอール` — a mixed-script non-word, 120
-identical occurrences — is the one a reader actually notices.
+✅ **#27 is closed** (2026-08-21) and **#28 is partly applied**, done as one pass in
+`0c05e68` — 1,201 replacements, no API call.
+
+**The bracket half was not cosmetic, and both the issue and its triage said it was.**
+`ability_text` renders through `v-html`, so an ASCII `<Hakui Koyori>` is parsed as an
+unknown tag and **dropped**: 54 character names were invisible on 24 live card pages, with
+the rule reading "attached to 1st or higher" and then stopping. Verified against production
+before and after. Two measurements settled the direction — the JA source writes `〈〉` 6,804
+times and ASCII zero times, and every `<` in the cache already formed a closed pair — and
+normalising the other way would have taken 54 swallowed names to roughly 1,600.
+
+**The quoted-name half had an answer nobody looked up.** A card quoting another card's skill
+name in `「…」` sat untranslated while the canonical value was one cache entry away. 855
+exact-match substitutions; card-text kana-quotes 34 → 14.
+
+**Three of the issues' claims were a year out of date**, which is the reason to re-measure
+before planning rather than after: `normalise.py` already existed and had simply never been
+run (27 Thai replacements pending); `en`'s quote defect was already 0, not 7; and the
+bracket count was 306, not 166.
+
+**`パソコン` — #27's open question, answered the other way.** The issue guessed that
+translating it might be *wrong* because the rule matches a card-name substring. Measured:
+the cards it matches are named `Gaming PC` / `電競電腦`, so leaving it Japanese made the rule
+unfollowable — it told a reader to search for a string no card displays. Per-locale, so it
+landed as 11 entries in `pipeline/corrections/` (the surface #18 delivered the same day),
+across **two** source units rather than the one the issue implies.
+
+**#28's glossary thesis is re-scoped by measurement, not adopted.** The kana leakage looks
+large but ~95% of it is in the `legacy` Q&A corpus ADR 0008 deliberately left alone; card
+text carries only **6 units** of untranslated game grammar across all six locales. That does
+not justify a fourth glossary kind, which would mean widening `combined_table` and
+`Restorer` (both hardcode two positional glossaries) plus seven call sites. #28 stays open
+with its scope narrowed to what it really is: re-translate the legacy Q&A, an API spend
+decision.
+
+Also closed a blind spot found while checking safety: `manual` entries were excluded from
+the completeness check as well as from rewriting, so a bad variant inside a committed
+correction was invisible and `normalise-cache` still printed `✓`.
+
+⚠️ **Not yet live** — this is a cache edit, so it needs `publish` and `seed`.
 
 ✅ **#20 and #21 are closed** by the translation rework — see
 [ADR 0008](adr/0008-content-addressed-translations.md). ✅ **#26 is closed** (the tag
