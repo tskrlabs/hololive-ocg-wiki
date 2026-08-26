@@ -48,6 +48,13 @@ export type UnresolvedDeckCard = {
 /**
  * @param cardRefs `image_key`s (ADR 0014), or `unresolved:` markers for references the
  * migration could not translate.
+ *
+ * **Never name a local binding `ref` in this file.** Nuxt's auto-import scanner skips any
+ * identifier it sees bound in scope, so a `for (const ref of …)` loop suppressed the
+ * `ref` import for the whole module: `computed` and `watch` were injected, `ref` was not,
+ * and the deck panel died with `ReferenceError: ref is not defined` on first open. Nothing
+ * caught it — `vue-tsc` resolves auto-imports from generated types, and the unit tests
+ * shim `ref` onto `globalThis`, so both were blind to it.
  */
 export function useDeckCards(cardRefs: () => string[]) {
   const cardQuery = useCardQuery();
@@ -59,8 +66,10 @@ export function useDeckCards(cardRefs: () => string[]) {
   /** Distinct refs with their multiplicity, in first-seen order. */
   const counted = computed(() => {
     const counts = new Map<string, number>();
-    for (const ref of cardRefs()) counts.set(ref, (counts.get(ref) ?? 0) + 1);
-    return [...counts].map(([ref, count]) => ({ ref, count }));
+    for (const cardRef of cardRefs()) {
+      counts.set(cardRef, (counts.get(cardRef) ?? 0) + 1);
+    }
+    return [...counts].map(([cardRef, count]) => ({ cardRef, count }));
   });
 
   /** The counts joined onto the fetched cards. */
@@ -68,8 +77,8 @@ export function useDeckCards(cardRefs: () => string[]) {
     if (!cards.value.length) return [];
     const byKey = new Map(cards.value.map((card) => [card.image_key, card]));
 
-    return counted.value.flatMap(({ ref, count }) => {
-      const card = byKey.get(ref);
+    return counted.value.flatMap(({ cardRef, count }) => {
+      const card = byKey.get(cardRef);
       return card ? [{ cardId: card.id, count, card }] : [];
     });
   });
@@ -80,11 +89,17 @@ export function useDeckCards(cardRefs: () => string[]) {
    */
   const unresolvedCards = computed<UnresolvedDeckCard[]>(() => {
     const byKey = new Set(cards.value.map((card) => card.image_key));
-    return counted.value.flatMap(({ ref, count }) => {
-      if (!isUnresolved(ref) && byKey.has(ref)) return [];
+    return counted.value.flatMap(({ cardRef, count }) => {
+      if (!isUnresolved(cardRef) && byKey.has(cardRef)) return [];
       // Still loading is not the same as unresolvable; say nothing until the fetch lands.
-      if (!isUnresolved(ref) && isLoading.value) return [];
-      return [{ ref, originalId: isUnresolved(ref) ? unresolvedId(ref) : ref, count }];
+      if (!isUnresolved(cardRef) && isLoading.value) return [];
+      return [
+        {
+          ref: cardRef,
+          originalId: isUnresolved(cardRef) ? unresolvedId(cardRef) : cardRef,
+          count,
+        },
+      ];
     });
   });
 
@@ -93,7 +108,9 @@ export function useDeckCards(cardRefs: () => string[]) {
     async () => {
       isLoading.value = true;
       // `unresolved:` markers name no card, so they are never sent to the API.
-      const keys = counted.value.map((item) => item.ref).filter((ref) => !isUnresolved(ref));
+      const keys = counted.value
+        .map((item) => item.cardRef)
+        .filter((cardRef) => !isUnresolved(cardRef));
       if (keys.length === 0) {
         cards.value = [];
         isLoading.value = false;
