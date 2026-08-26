@@ -2,7 +2,11 @@
 
 **Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
-origin (D2), against **2,559 cards** in D1 and images on R2.
+origin (D2), against **2,650 cards** in D1 and images on R2.
+
+⛔ **Card updates are blocked** until [#83](https://github.com/tskrlabs/hololive-ocg-wiki/issues/83)
+lands: the official site reuses card ids, and we key card identity on them. See the
+2026-08-26 run below.
 
 ✅ **`v2.0.1` is tagged and published** (2026-08-19), retroactively covering the analytics
 fix that had shipped unannounced on 2026-08-05, plus the pipeline repair below. Everything
@@ -25,6 +29,60 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 `/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
+## ⛔ The card set is stuck at 2,650 — the site reused card ids, 2026-08-26
+
+The official list went to 2,687 entries (2,686 cards + the rules notice), but **none of it
+shipped**, and the run stopped at `seed` on purpose. Tracked as
+[#83](https://github.com/tskrlabs/hololive-ocg-wiki/issues/83).
+
+The list inserted 36 new hEB01 cards *mid-sequence* and **renumbered 82 existing cards**,
+shifting their ids by +18 to +21. Each kept its `card_number` and its `image_key` and
+changed only its `?id=`. Card ids come from the site's own hrefs
+(`card_list.py` reads `?id=`), so the pipeline imported the renumbering faithfully.
+
+| step | result |
+|---|---|
+| `backup-cache --remote` | both caches snapshotted and verified, local + R2 (13 backups, 214.0 MB) |
+| `scrape` | 2,687 entries, **no unmapped enum values** |
+| `images` | 36 converted, 2,652 skipped; PNG 830 MB → WebP 228 MB (73% smaller) |
+| `translate-units --dry-run` | **0 stale units** — nothing spent, the new cards are alt-art variants whose text was already cached |
+| `build` | 2,686 cards, **100% coverage in all 7 locales**, 0 dropped |
+| `publish` | 45 objects (36 images + 9 artifacts) — landed, and harmless |
+| `seed --confirm` | ⛔ **refused**, nothing written |
+
+**`build` passing before translation was again the signal, not a skipped gate** — the same
+alt-art shape as 2026-08-21, and the runbook's "expected to fail" still assumes a new set.
+
+### The constraint failure was the database defending saved decks
+
+`seed` died 19 batches in with `UNIQUE constraint failed: cards.image_key`: the upsert keys
+`ON CONFLICT(id)` while `image_key` carries a unique index (ADR 0009 D6), so incoming id
+2594 tried to claim a key row 2576 still held. A D1 batch is atomic, so **nothing was
+written** and production kept serving 2,650 cards correctly.
+
+That crash was luck. **82 ids now point at a different card** — id 2582 moved from
+`hBP01-051_UR_02` to `hEB01-007_SR`. Decks are stored *as card ids* (`deckCode.ts` encodes
+`mainCards` as an id → count map; `useDeckCards.ts` resolves via `byId.get(id)`), living in
+`localStorage` and inside shared deck-code URLs — the format `APP_VERSION` is frozen to
+protect (ADR 0006 Q11). Seeding would not have raised anything. It would have quietly
+rewritten every saved deck referencing those ids.
+
+**There is no partial workaround, which is the part worth remembering.** "Just seed the 36
+new cards" fails too: **27 of the 36 land on ids D1 already uses for other cards.** Only 9
+are safely insertable. The renumbering is one interlocked shift, so a subset is not a
+smaller version of the fix.
+
+`seed` now detects this before the first write and refuses, naming the cards, and reports
+`renumbered 82` beside the source counts. No flag clears it — the damage lands *outside* the
+database, which is the class D10 says to refuse rather than gate. The real fix is re-keying
+identity on `image_key` (stable across all 2,686 here, and what R2 already keys on); it
+needs a migration plus a deck-load shim, so it is [#83](https://github.com/tskrlabs/hololive-ocg-wiki/issues/83)
+and not a seeder branch.
+
+`card-urls.json` was **deliberately not committed**: its 36 new URLs 404 until D1 is seeded,
+and the sitemap is the one thing a card run deploys. R2 already holds the new images, which
+is fine and idempotent — R2 keys on `image_key`, the identifier that stayed stable.
 
 ## ✅ The card set is at 2,650 — an alt-art run, 2026-08-21
 
