@@ -24,7 +24,20 @@ Paste `demo-legacy-deck.js` into the browser console, then **reload**.
 | 1 | a toast: *Updated 1 deck(s) to the latest card numbering.* | the migration ran, and said so once — reload again and it must **not** reappear |
 | 2 | `localStorage["hololive-ocg-wiki-decks.pre-image-key"]` holds the original | the eager migration touches every saved deck at once, so the pre-state is kept |
 | 3 | the stored deck now holds `image_key`s and `cardRefFormat: "image-key"` | the format actually moved, rather than being translated on every read |
-| 4 | the deck panel shows a **placeholder tile**, not a silently shorter deck | a dropped card in a 50-card deck is invisible; only the user knows what was meant |
+| 4 | **two kinds of placeholder tile**, not a silently shorter deck | a dropped card in a 50-card deck is invisible; only the user knows what was meant |
+| 5 | the same tiles on the **deck detail page**, not only in the panel | the full deck view is where a missing card is most noticeable |
+
+On (4), the two cases read differently on purpose:
+
+- **id 2582** resolves to an `hEB01` key the local fixtures do not carry, so it renders as a
+  *nameable* miss: it shows `hBP01-051` (read out of the key) and links to browse `hBP01`.
+  That is the shape a card withdrawn from the official list would take.
+- **id 999999** is in no snapshot at all and carries no card number, so there is nothing to
+  suggest. It says the card cannot be identified instead of guessing.
+
+The link is `?set_code=`, the one filter with a URL (ADR 0010). There is no `?q=` to link
+to — filter state is otherwise in-memory only — so the card number is also rendered as
+select-all text, to paste into the search box.
 
 Check 2 and 3 in the console:
 

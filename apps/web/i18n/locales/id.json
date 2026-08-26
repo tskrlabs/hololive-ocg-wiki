@@ -539,9 +539,10 @@
     "myDecks": "Dek Saya",
     "migration": {
       "updated": "Memperbarui {count} dek ke penomoran kartu terbaru.",
-      "unresolvedTitle": "Kartu ini tidak dapat dicocokkan",
-      "unresolvedDetail": "Daftar resmi tidak lagi memuat kartu {id}. Cari untuk mengembalikan kartu yang benar.",
-      "unresolvedReplace": "Cari pengganti"
+      "unresolvedTitle": "Kartu tidak ditemukan",
+      "unresolvedDetail": "Daftar resmi tidak lagi memuat kartu ini.",
+      "unresolvedUnknown": "Kartu ini tidak dapat diidentifikasi. Mungkin berasal dari kode dek yang diedit atau tidak standar.",
+      "unresolvedBrowseSet": "Jelajahi {set}"
     }
   },
   "status": {

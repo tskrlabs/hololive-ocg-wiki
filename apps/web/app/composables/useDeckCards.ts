@@ -21,7 +21,12 @@
  */
 
 import type { Card, Locales } from "~/types/card";
-import { isUnresolved, unresolvedId } from "~/composables/cardRefs";
+import {
+  cardNumberOf,
+  isUnresolved,
+  setCodeOf,
+  unresolvedId,
+} from "~/composables/cardRefs";
 
 export type DeckCard = {
   /** Convenience alias of `card.id`, which several templates key on. */
@@ -42,6 +47,16 @@ export type UnresolvedDeckCard = {
   ref: string;
   /** The legacy card id behind it, when there was one. */
   originalId: string;
+  /**
+   * The card number the reference names — `hBP01-051` — or `undefined`.
+   *
+   * Present whenever the reference is an `image_key`, which is the case worth handling
+   * well: the card is nameable, so the placeholder can say which one it is and link to
+   * its set. Absent for a bare legacy id, which carries no card number to extract.
+   */
+  cardNumber?: string;
+  /** The set that card number belongs to, for the `?set_code=` link. */
+  setCode?: string;
   count: number;
 };
 
@@ -93,10 +108,13 @@ export function useDeckCards(cardRefs: () => string[]) {
       if (!isUnresolved(cardRef) && byKey.has(cardRef)) return [];
       // Still loading is not the same as unresolvable; say nothing until the fetch lands.
       if (!isUnresolved(cardRef) && isLoading.value) return [];
+      const cardNumber = cardNumberOf(cardRef);
       return [
         {
           ref: cardRef,
           originalId: isUnresolved(cardRef) ? unresolvedId(cardRef) : cardRef,
+          cardNumber,
+          setCode: cardNumber ? setCodeOf(cardNumber) : undefined,
           count,
         },
       ];

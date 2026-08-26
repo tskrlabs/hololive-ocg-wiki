@@ -16,11 +16,14 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  cardNumberOf,
   formatOf,
   isUnresolved,
   migrateDeck,
   migrateDecks,
   refForId,
+  setCodeOf,
+  unresolvedRef,
   unresolvedId,
 } from "../app/composables/cardRefs";
 import * as deckCode from "../app/composables/deckCode";
@@ -70,6 +73,34 @@ describe("reference translation", () => {
     const ref = refForId("999999");
     expect(isUnresolved(ref)).toBe(true);
     expect(unresolvedId(ref)).toBe("999999");
+  });
+});
+
+describe("naming an unresolved slot", () => {
+  it("reads the card number out of an image_key", () => {
+    // The stem opens with the card number, which is what lets a placeholder say *which*
+    // card is missing instead of showing a raw key.
+    expect(cardNumberOf("hEB01/hBP01-051_UR_02")).toBe("hBP01-051");
+    expect(cardNumberOf("hSD01/hSD01-001_OSR")).toBe("hSD01-001");
+    expect(cardNumberOf("hPR/hBP01-104_P_04")).toBe("hBP01-104");
+  });
+
+  it("handles the reprint whose folder disagrees with its number", () => {
+    // `hBP05/hBP02-085_HR` — a reprint filed under the later set (F-006). The number is
+    // read from the stem, not the folder, so this yields the real card number.
+    expect(cardNumberOf("hBP05/hBP02-085_HR")).toBe("hBP02-085");
+    expect(setCodeOf("hBP02-085")).toBe("hBP02");
+  });
+
+  it("returns nothing for a bare legacy id", () => {
+    // Nothing to extract, so the placeholder says the card cannot be identified rather
+    // than inventing a suggestion.
+    expect(cardNumberOf(unresolvedRef("999999"))).toBeUndefined();
+  });
+
+  it("derives the set code for the browse link", () => {
+    expect(setCodeOf("hBP01-051")).toBe("hBP01");
+    expect(setCodeOf("hSD01-001")).toBe("hSD01");
   });
 });
 

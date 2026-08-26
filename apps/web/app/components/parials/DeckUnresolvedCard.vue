@@ -2,14 +2,23 @@
 /**
  * A deck slot that names no card (ADR 0014).
  *
- * Two ways to arrive here: the migration could not translate a legacy id (a hand-edited
- * `localStorage`, or a code from some other tool), or the `image_key` resolves to nothing
- * because the official list withdrew that card after the deck was saved.
+ * Two ways to arrive here, and they deserve different copy:
+ *
+ * - **The reference is an `image_key`** the API returned nothing for — a card withdrawn
+ *   from the official list since the deck was saved. The key still carries a card number
+ *   (`hEB01/hBP01-051_UR_02` → `hBP01-051`), so the slot can say *which* card is missing
+ *   and link to its set.
+ * - **The reference is a bare legacy id** the snapshot does not cover — hand-edited
+ *   storage, or a code from some other tool. There is nothing to extract, so the slot says
+ *   plainly that the card cannot be identified rather than inventing a suggestion.
  *
  * **It occupies the slot rather than vanishing.** Dropping it would make a missing card in
- * a 50-card deck invisible, and the user is the only one who knows what was meant. The
- * reference is shown verbatim so they have something to search on, and the button hands
- * them to the card list to pick a replacement.
+ * a 50-card deck invisible, and the user is the only one who knows what was meant.
+ *
+ * The link is `?set_code=`, the one filter with a URL (ADR 0010). Not a search link:
+ * filter state is otherwise in-memory only, so a `?q=` would need query-param plumbing
+ * that ADR deliberately scoped out. The card number is rendered as selectable text either
+ * way, so it can be copied into the search box when the link is not enough.
  */
 import type { UnresolvedDeckCard } from "~/composables/useDeckCards";
 
@@ -20,27 +29,38 @@ const localePath = useLocalePath();
 
 <template>
   <div
-    class="relative flex aspect-400/559 flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-muted-foreground/40 bg-muted/30 p-2 text-center"
+    class="relative flex aspect-400/559 flex-col items-center justify-center gap-1.5 rounded-sm border border-dashed border-muted-foreground/40 bg-muted/30 p-2 text-center"
   >
-    <Icon name="lucide:help-circle" class="size-6 text-muted-foreground" />
+    <Icon name="lucide:help-circle" class="size-5 text-muted-foreground" />
 
     <p class="text-xs font-medium text-muted-foreground">
       {{ $t("deck.migration.unresolvedTitle") }}
     </p>
 
-    <p class="text-[10px] leading-tight text-muted-foreground/80">
-      {{ $t("deck.migration.unresolvedDetail", { id: item.originalId }) }}
+    <!-- Nameable: say which card, and offer its set. -->
+    <template v-if="item.cardNumber">
+      <p class="text-[11px] font-medium tabular-nums select-all">
+        {{ item.cardNumber }}
+      </p>
+      <p class="text-[10px] leading-tight text-muted-foreground/80">
+        {{ $t("deck.migration.unresolvedDetail") }}
+      </p>
+      <NuxtLink
+        v-if="item.setCode"
+        :to="{ path: localePath('/'), query: { set_code: item.setCode } }"
+        class="rounded-sm bg-secondary px-2 py-1 text-[10px] hover:bg-secondary/80"
+      >
+        {{ $t("deck.migration.unresolvedBrowseSet", { set: item.setCode }) }}
+      </NuxtLink>
+    </template>
+
+    <!-- Not nameable: no card number exists, so no suggestion is possible. -->
+    <p v-else class="text-[10px] leading-tight text-muted-foreground/80">
+      {{ $t("deck.migration.unresolvedUnknown") }}
     </p>
 
     <span v-if="item.count > 1" class="text-[10px] text-muted-foreground/80">
       ×{{ item.count }}
     </span>
-
-    <NuxtLink
-      :to="localePath('/')"
-      class="rounded-sm bg-secondary px-2 py-1 text-[10px] hover:bg-secondary/80"
-    >
-      {{ $t("deck.migration.unresolvedReplace") }}
-    </NuxtLink>
   </div>
 </template>

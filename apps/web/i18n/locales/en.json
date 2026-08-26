@@ -539,9 +539,10 @@
     "myDecks": "My Decks",
     "migration": {
       "updated": "Updated {count} deck(s) to the latest card numbering.",
-      "unresolvedTitle": "This card could not be matched",
-      "unresolvedDetail": "The official list no longer has card {id}. Search for it to put the right card back.",
-      "unresolvedReplace": "Find a replacement"
+      "unresolvedTitle": "Card not found",
+      "unresolvedDetail": "The official list no longer has this card.",
+      "unresolvedUnknown": "This card could not be identified. It may have come from an edited or non-standard deck code.",
+      "unresolvedBrowseSet": "Browse {set}"
     }
   },
   "status": {

@@ -539,9 +539,10 @@
     "myDecks": "내 덱",
     "migration": {
       "updated": "{count}개의 덱을 최신 카드 번호로 업데이트했습니다.",
-      "unresolvedTitle": "이 카드를 찾을 수 없습니다",
-      "unresolvedDetail": "공식 목록에 카드 {id}이(가) 없습니다. 검색해서 올바른 카드로 되돌리세요.",
-      "unresolvedReplace": "대체 카드 찾기"
+      "unresolvedTitle": "카드를 찾을 수 없습니다",
+      "unresolvedDetail": "공식 목록에 이 카드가 더 이상 없습니다.",
+      "unresolvedUnknown": "이 카드를 식별할 수 없습니다. 편집되었거나 표준이 아닌 덱 코드일 수 있습니다.",
+      "unresolvedBrowseSet": "{set} 보기"
     }
   },
   "status": {

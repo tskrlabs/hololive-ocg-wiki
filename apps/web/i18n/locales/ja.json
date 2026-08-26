@@ -539,9 +539,10 @@
     "myDecks": "マイデッキ",
     "migration": {
       "updated": "{count}件のデッキを最新のカード番号に更新しました。",
-      "unresolvedTitle": "このカードを特定できませんでした",
-      "unresolvedDetail": "公式リストにカード {id} が見つかりません。検索して正しいカードに戻してください。",
-      "unresolvedReplace": "代わりのカードを探す"
+      "unresolvedTitle": "カードが見つかりません",
+      "unresolvedDetail": "公式リストにこのカードはもうありません。",
+      "unresolvedUnknown": "このカードを特定できませんでした。編集されたデッキコード、または非対応の形式の可能性があります。",
+      "unresolvedBrowseSet": "{set} を見る"
     }
   },
   "status": {

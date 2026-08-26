@@ -66,6 +66,34 @@ export function formatOf(value: string | undefined): CardRefFormat {
 }
 
 /**
+ * The card number an unresolved reference names, when it names one.
+ *
+ * An `image_key` is `{set}/{stem}` and the stem opens with the card number:
+ * `hEB01/hBP01-051_UR_02` → `hBP01-051`. Verified across the 2,686-card build — 2,685 hold
+ * this, the exception being `hBP05/hBP02-085_HR`, a reprint filed under the later set
+ * (F-006). That one still yields a real card number, just not one matching its folder,
+ * which is fine: the number is what we search on, not the folder.
+ *
+ * Returns `undefined` for a legacy id like `999999`. There is genuinely nothing to
+ * extract — a bare id carries no card number — so the placeholder says so rather than
+ * inventing a suggestion.
+ */
+export function cardNumberOf(ref: string): string | undefined {
+  const key = isUnresolved(ref) ? unresolvedId(ref) : ref;
+  const stem = key.includes("/") ? key.split("/")[1] : undefined;
+  if (!stem) return undefined;
+
+  // `hBP01-051_UR_02` → `hBP01-051`. Anchored, so a stem that does not open with a card
+  // number yields nothing rather than a partial match.
+  return /^([A-Za-z]+[0-9]+-[0-9]+)/.exec(stem)?.[1];
+}
+
+/** The set a card number belongs to — `hBP01-051` → `hBP01`. */
+export function setCodeOf(cardNumber: string): string | undefined {
+  return /^([A-Za-z]+[0-9]+)-/.exec(cardNumber)?.[1];
+}
+
+/**
  * One card id to its `image_key`, or an unresolved marker.
  *
  * The lookup is exact, never a guess. The snapshot was verified total at capture — 2,650

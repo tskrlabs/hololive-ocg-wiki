@@ -540,9 +540,10 @@
     "myDecks": "我的牌組",
     "migration": {
       "updated": "已將 {count} 個牌組更新為最新的卡片編號。",
-      "unresolvedTitle": "無法辨識這張卡片",
-      "unresolvedDetail": "官方列表中已無卡片 {id}。搜尋以放回正確的卡片。",
-      "unresolvedReplace": "尋找替代卡片"
+      "unresolvedTitle": "找不到卡片",
+      "unresolvedDetail": "官方列表中已無這張卡片。",
+      "unresolvedUnknown": "無法辨識這張卡片，可能來自經過編輯或非標準的牌組代碼。",
+      "unresolvedBrowseSet": "瀏覽 {set}"
     }
   },
   "status": {

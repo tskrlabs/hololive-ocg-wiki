@@ -18,8 +18,12 @@
  *                     `hEB01-007_SR`. This is the silent corruption the whole change
  *                     exists to prevent: without the migration it resolves to the wrong
  *                     card, with no error.
- *   - id 999999     — an id in no snapshot at all, so it cannot be translated. It must
- *                     keep its slot and render the placeholder rather than vanishing.
+ *   - id 2582       — doubles as the *withdrawn card* case locally: the fixture set has no
+ *                     hEB01, so this key resolves to nothing and renders the nameable
+ *                     placeholder — "hBP01-051", with a link to browse hBP01.
+ *   - id 999999     — an id in no snapshot at all, so it cannot be translated and carries
+ *                     no card number. It must keep its slot and say plainly that the card
+ *                     cannot be identified, rather than vanishing or inventing a guess.
  *
  * Note that 2582 and 999999 will not render as *cards* against the local fixture database
  * (34 cards, none of them hEB01), so both appear as unresolved placeholders locally. That
@@ -51,7 +55,10 @@ console.log("now reload the page — expect:");
 console.log("  1. a toast: 'Updated 1 deck(s) to the latest card numbering.'");
 console.log(`  2. ${BACKUP_KEY} to hold the original, id-keyed copy`);
 console.log("  3. the stored deck to hold image_keys, and cardRefFormat 'image-key'");
-console.log("  4. placeholder tiles rather than silently missing cards");
+console.log("  4. two kinds of placeholder tile, not silently missing cards:");
+console.log("     - id 2582  -> names 'hBP01-051' and links to browse hBP01");
+console.log("     - id 999999 -> says the card cannot be identified (no number to show)");
+console.log("  5. the SAME tiles on the deck detail page, not only in the panel");
 console.log("");
 console.log("the point of the whole change, in one line — after reloading, compare:");
 console.log("  what the deck MEANT by id 2582:  hEB01/hBP01-051_UR_02");
