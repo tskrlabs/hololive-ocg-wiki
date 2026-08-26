@@ -77,9 +77,10 @@ def stored_hashes(
             content=str(r[1]),
             qa=str(r[2]),
             source=None if r[3] is None else str(r[3]),
+            image_key=None if r[4] is None else str(r[4]),
         )
         for r in connection.execute(
-            "SELECT id, content_hash, qa_hash, source_hash FROM cards"
+            "SELECT id, content_hash, qa_hash, source_hash, image_key FROM cards"
         )
     }
 
@@ -571,6 +572,46 @@ class TestDiff:
         # irreversible thing seed can do.
         assert rows[0].id not in {r.id for r in plan.to_write}
 
+    def test_a_renumbered_card_is_detected_as_an_identity_shift(self, db, collection):
+        """The official site handing an existing id to a different card.
+
+        Observed for real when the list inserted 36 hEB01 cards mid-sequence and shifted
+        82 existing ids by +18 to +21: same card_number, same artwork, new `?id=`. The
+        seeder saw it as `UNIQUE constraint failed: cards.image_key` 19 batches into a
+        run, because the upsert keys `ON CONFLICT(id)` while `image_key` carries a unique
+        index. Caught here instead, before the first write.
+        """
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        baseline = stored_hashes(db)
+
+        # Card 0's artwork, arriving under card 1's id — the renumbering signature.
+        shifted = collection.model_copy(deep=True)
+        shifted.cards[0].id = rows[1].id
+
+        plan = seed_module.diff(
+            [seed_module.to_row(shifted.cards[0])], baseline
+        )
+        assert [s[0] for s in plan.identity_shifts] == [rows[1].id]
+        _, was, now = plan.identity_shifts[0]
+        assert was == rows[1].image_key
+        assert now == rows[0].image_key
+
+    def test_an_ordinary_edit_is_not_an_identity_shift(self, db, collection):
+        """A card whose text moved keeps its id and its artwork, so it is just changed."""
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        baseline = stored_hashes(db)
+
+        edited = collection.model_copy(deep=True)
+        edited.cards[0].translations["ja"].name += "★"
+
+        plan = seed_module.diff(
+            [seed_module.to_row(card) for card in edited.cards], baseline
+        )
+        assert plan.identity_shifts == []
+        assert [r.id for r in plan.changed] == [edited.cards[0].id]
+
     def test_reseeding_after_an_interrupted_run_resumes(self, db, collection):
         """The property that makes the in-database baseline worth its 2,448 reads.
 
@@ -903,6 +944,26 @@ class TestGates:
         refusals = seed_module.check_gates(plan, short, 1, 0, prune=False)
         assert any("dropped" in r.reason for r in refusals)
         assert any("mappings.py" in r.detail for r in refusals)
+
+    def test_a_renumbered_card_is_refused(self, db, collection):
+        """No flag clears this one, and that is the point.
+
+        Decks are stored as card ids in localStorage and in shared deck-code URLs, so
+        seeding a reused id rewrites saved decks with nothing raising and nothing
+        announcing it. The failure is silent and lands outside the database, which is
+        exactly the class D10 says to refuse rather than gate.
+        """
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        baseline = stored_hashes(db)
+
+        shifted = collection.model_copy(deep=True)
+        shifted.cards[0].id = rows[1].id
+
+        plan = seed_module.diff([seed_module.to_row(shifted.cards[0])], baseline)
+        refusals = seed_module.check_gates(plan, collection, 1, 0, prune=False)
+        assert any("different card" in r.reason for r in refusals)
+        assert any("image_key" in r.detail for r in refusals)
 
     def test_unreadable_analytics_does_not_block_a_small_run(self, collection):
         """A missing analytics permission should not stop a legitimate seed.

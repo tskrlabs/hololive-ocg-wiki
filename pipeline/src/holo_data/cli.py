@@ -1018,6 +1018,13 @@ def seed(
         typer.echo(f"    added        {len(plan.source_added):5d}")
         typer.echo(f"    edited       {len(plan.source_changed):5d}")
         typer.echo(f"    FAQ changed  {len(plan.faq_changed):5d}")
+        if plan.identity_shifts:
+            # Printed beside `edited` because that is what it masquerades as: a renumbered
+            # card has a new id and identical text, so the diff calls it changed.
+            typer.echo(
+                f"    renumbered   {len(plan.identity_shifts):5d}  "
+                "← the site gave these ids to different cards"
+            )
         if plan.backfill and not plan.source_changed:
             typer.echo(
                 "    (no baseline yet for some rows — this run records one, "

@@ -322,6 +322,15 @@ class CardRow:
     search_text: str
     qa_text: str
 
+    @property
+    def image_key(self) -> str:
+        """This card's stable identity, pulled back out of `columns` by name.
+
+        Looked up through `CARD_COLUMNS` rather than by a literal index so that
+        reordering the DDL cannot silently repoint this at `source_image_url`.
+        """
+        return self.columns[CARD_COLUMNS.index("image_key")]
+
 
 def to_row(card: Card) -> CardRow:
     payload, qa_payload = card_payloads(card)
@@ -473,6 +482,10 @@ class StoredHashes:
     #: `None` means *no baseline recorded* — a row written before migration 0003 — which
     #: is a different claim from "the source did not change". See `diff`.
     source: str | None = None
+    #: The card this id currently *is*, independent of its content. Read so `diff` can
+    #: notice the official site handing an existing id to a different card — see
+    #: `SeedPlan.identity_shifts`. `None` only in tests that predate the column.
+    image_key: str | None = None
 
 
 @dataclass
@@ -509,6 +522,12 @@ class SeedPlan:
     faq_changed: list[CardRow] = field(default_factory=list)
     #: Otherwise-unchanged cards carrying a NULL `source_hash`, needing one UPDATE each.
     backfill: list[CardRow] = field(default_factory=list)
+
+    #: Ids the official site has handed to a *different card* since the last seed, as
+    #: `(id, stored_image_key, incoming_image_key)`. Report-only, and the input to the
+    #: hard refusal in `check_gates` — see `identity_shifts` there for why this is fatal
+    #: rather than something the upsert should absorb.
+    identity_shifts: list[tuple[str, str, str]] = field(default_factory=list)
 
     @property
     def to_write(self) -> list[CardRow]:
@@ -573,6 +592,17 @@ def diff(rows: Sequence[CardRow], stored: dict[str, StoredHashes]) -> SeedPlan:
         if existing is not None and existing.qa != row.qa_hash:
             plan.faq_changed.append(row)
 
+        # The id is the site's, not ours, and the site reuses them. Compared against the
+        # stored `image_key` because that is the one identifier observed to survive a
+        # renumbering: when the official list inserted a set mid-sequence, every affected
+        # card kept its number and its artwork and changed only its `?id=`.
+        if (
+            existing is not None
+            and existing.image_key is not None
+            and existing.image_key != row.image_key
+        ):
+            plan.identity_shifts.append((row.id, existing.image_key, row.image_key))
+
     incoming_ids = {row.id for row in rows}
     plan.missing_ids = sorted(id_ for id_ in stored if id_ not in incoming_ids)
     return plan
@@ -630,6 +660,43 @@ def check_gates(
                 "set missing them with nothing announcing it. Add the mapping in "
                 "`mappings.py` (the `transform` report names the source value) and "
                 "re-run `holo-data build`.",
+            )
+        )
+
+    # The official site handed an existing id to a different card. Fatal, and no flag
+    # clears it, because the damage is silent and lands outside the database: decks are
+    # stored as card ids (`deckCode.ts` encodes id → count) in localStorage and inside
+    # shared deck-code URLs, so rewriting id 2594 from hBP01-026 to hEB01-019 edits every
+    # saved deck that ever used it. Nothing errors and nothing announces it — a player
+    # opens a deck and one card is quietly a different card.
+    #
+    # This is not the constraint failure it presents as. Seeding first surfaced it as
+    # `UNIQUE constraint failed: cards.image_key` from the upsert's `ON CONFLICT(id)`
+    # racing the unique index on `image_key` (ADR 0009 D6), 19 batches deep. That crash
+    # was the database defending itself; this gate is the same refusal moved before the
+    # first write, where it can name the cards.
+    #
+    # Deliberately not "repair it here". Re-keying on `image_key` is the real fix and it
+    # changes a persistence format that lives in users' browsers, so it needs a migration
+    # and a deck-load shim, not a seeder branch.
+    if plan.identity_shifts:
+        shown = ", ".join(
+            f"id {card_id}: {was} -> {now}"
+            for card_id, was, now in plan.identity_shifts[:5]
+        )
+        more = (
+            f" (+{len(plan.identity_shifts) - 5} more)"
+            if len(plan.identity_shifts) > 5
+            else ""
+        )
+        refusals.append(
+            Refusal(
+                f"{len(plan.identity_shifts)} card id(s) now point at a different card",
+                f"{shown}{more}. The official site reused these ids, so seeding would "
+                "silently rewrite every saved deck and shared deck code that references "
+                "them. Card identity needs to be re-keyed on `image_key` before this "
+                "set can ship; seeding a subset does not help, because the renumbering "
+                "is one interlocked shift.",
             )
         )
 
@@ -748,7 +815,9 @@ def read_stored_hashes(
     """
     try:
         rows = d1.query(
-            http, config, "SELECT id, content_hash, qa_hash, source_hash FROM cards"
+            http,
+            config,
+            "SELECT id, content_hash, qa_hash, source_hash, image_key FROM cards",
         )
     except d1.D1Error as exc:
         # SQLite's wording, surfaced verbatim through D1's error body. Matched on the
@@ -763,6 +832,7 @@ def read_stored_hashes(
             content=str(row["content_hash"]),
             qa=str(row["qa_hash"]),
             source=None if row["source_hash"] is None else str(row["source_hash"]),
+            image_key=None if row["image_key"] is None else str(row["image_key"]),
         )
         for row in rows
     }
