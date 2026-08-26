@@ -4,9 +4,10 @@
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
 origin (D2), against **2,650 cards** in D1 and images on R2.
 
-⛔ **Card updates are blocked** until [#83](https://github.com/tskrlabs/hololive-ocg-wiki/issues/83)
-lands: the official site reuses card ids, and we key card identity on them. See the
-2026-08-26 run below.
+✅ **`v2.3.0` shipped and the 2,686-card set is live** (2026-08-26). Decks now reference
+`image_key` rather than the official site's reusable ids
+([ADR 0014](adr/0014-deck-card-references.md), closing
+[#83](https://github.com/tskrlabs/hololive-ocg-wiki/issues/83)).
 
 ✅ **`v2.0.1` is tagged and published** (2026-08-19), retroactively covering the analytics
 fix that had shipped unannounced on 2026-08-05, plus the pipeline repair below. Everything
@@ -30,11 +31,33 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
 
-## ⛔ The card set is stuck at 2,650 — the site reused card ids, 2026-08-26
+## ✅ The card set is at 2,686 — shipped after the deck format moved, 2026-08-26
 
-The official list went to 2,687 entries (2,686 cards + the rules notice), but **none of it
-shipped**, and the run stopped at `seed` on purpose. Tracked as
-[#83](https://github.com/tskrlabs/hololive-ocg-wiki/issues/83).
+The blocked run below **shipped the same day**, once decks stopped referencing the site's
+ids. Order mattered and was not negotiable: `v2.3.0` (the deck migration) merged and
+deployed *first*, then D1 was seeded. Seeding first would have left decks saved before the
+seed and decks saved in the gap both stamped `0.9.0` and indistinguishable, so a migration
+would have repaired one group and corrupted the other.
+
+| step | result |
+|---|---|
+| `v2.3.0` deploy | build 64s after merge, `by-keys` live, changelog rendering |
+| `seed --confirm` | 118 cards, **2,800 rows** against a 2,997 estimate, 19 batches, **no collision** |
+| verification | `/api/status` 2,686; new and renumbered card pages 200; sitemap 2,690 URLs |
+
+**The write ordering worked against production exactly as rehearsed.** The rehearsal loaded
+all 2,650 production rows into a local copy of the real schema and replayed the seeder's own
+statements; production then did the same thing for real, in 19 batches, with the 82
+renumbered ids landing on their correct keys.
+
+`hBP01-051_UR_02` moved from id 2582 to 2600 and kept its card number, which is the case
+that would have silently rewritten saved decks a day earlier.
+
+## ⛔ The run that stopped at seed — the site reused card ids, 2026-08-26
+
+Kept because the reasoning outlives the incident. The official list went to 2,687 entries
+(2,686 cards + the rules notice), and the run stopped at `seed` on purpose. Everything below
+describes the state *before* the fix above shipped.
 
 The list inserted 36 new hEB01 cards *mid-sequence* and **renumbered 82 existing cards**,
 shifting their ids by +18 to +21. Each kept its `card_number` and its `image_key` and
@@ -80,9 +103,20 @@ identity on `image_key` (stable across all 2,686 here, and what R2 already keys 
 needs a migration plus a deck-load shim, so it is [#83](https://github.com/tskrlabs/hololive-ocg-wiki/issues/83)
 and not a seeder branch.
 
-`card-urls.json` was **deliberately not committed**: its 36 new URLs 404 until D1 is seeded,
-and the sitemap is the one thing a card run deploys. R2 already holds the new images, which
-is fine and idempotent — R2 keys on `image_key`, the identifier that stayed stable.
+`card-urls.json` was **deliberately not committed** at the time: its 36 new URLs 404 until
+D1 is seeded, and the sitemap is the one thing a card run deploys. It shipped in its own
+data-only PR after the seed. R2 already held the new images throughout, which was fine and
+idempotent — R2 keys on `image_key`, the identifier that stayed stable.
+
+**Two bugs in the fix shipped past a green `make check`** and were caught by opening the
+page: an import attribute (`with { type: "json" }`) that `vue-tsc` and Vitest both accept
+but the app parser rejects, and a local variable named `ref` that suppressed its own
+auto-import. Both now have scans in the suite. The gap is structural and worth remembering:
+`make check` runs unit tests, `make check-site` builds, and the two are deliberately split
+to keep the pre-commit hook fast — so a failure that only appears in a browser is invisible
+to the fast path. Four further issues (a dead link, an unremovable slot, a filter that did
+not apply, a placeholder that stretched the grid) were found the same way, by a human
+clicking through the demo.
 
 ## ✅ The card set is at 2,650 — an alt-art run, 2026-08-21
 
