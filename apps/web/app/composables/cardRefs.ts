@@ -15,7 +15,12 @@
  * trip must be testable without a browser, `localStorage` or `useI18n`.
  */
 
-import history from "@holo/schema/card-id-history" with { type: "json" };
+// No `with { type: "json" }`, matching `changelog.vue`'s import of `#content/changelog.json`.
+// The attribute is fine in `nuxt.config.ts` and in tests — those are parsed by Vite's node
+// pipeline and by vitest — but app code goes through a parser that reads `with` as the
+// statement, and the dev server dies with "Strict mode code may not include a with
+// statement" before rendering anything.
+import history from "@holo/schema/card-id-history";
 import type { Deck } from "~/types/deck";
 
 /**
