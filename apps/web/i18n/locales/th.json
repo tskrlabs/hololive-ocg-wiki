@@ -536,7 +536,15 @@
       "empty": "ยังไม่ได้เลือกเด็ค เลือกจากเด็ค หรือสร้างใหม่"
     },
     "removeAllCopies": "ลบ {name} ทั้งหมด",
-    "myDecks": "เด็คของฉัน"
+    "myDecks": "เด็คของฉัน",
+    "migration": {
+      "updated": "อัปเดต {count} เด็คเป็นหมายเลขการ์ดล่าสุดแล้ว",
+      "unresolvedTitle": "ไม่พบการ์ด",
+      "unresolvedDetail": "รายการอย่างเป็นทางการไม่มีการ์ดใบนี้แล้ว",
+      "unresolvedUnknown": "ไม่สามารถระบุการ์ดใบนี้ได้ อาจมาจากรหัสเด็คที่ถูกแก้ไขหรือไม่ได้มาตรฐาน",
+      "unresolvedBrowseSet": "ดู {set}",
+      "unresolvedRemove": "ลบออกจากเด็ค"
+    }
   },
   "status": {
     "title": "สถานะข้อมูล",

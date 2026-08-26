@@ -7,7 +7,7 @@ const props = defineProps<{
 // The count → dedupe → fetch → join pipeline, once (Candidate 04). This component and
 // FloatingDeckCardList had it verbatim; the compact list had a Map variant of the same
 // thing applied three times.
-const { deckCards, isLoading } = useDeckCards(() => props.cardIds);
+const { deckCards, unresolvedCards, isLoading } = useDeckCards(() => props.cardIds);
 const cardImage = useCardImage();
 </script>
 
@@ -18,8 +18,12 @@ const cardImage = useCardImage();
     ></div>
   </div>
 
+  <!--
+    `unresolvedCards` counts toward emptiness: a deck whose every card failed to resolve
+    is not empty, and "no cards" would hide exactly what the user needs to see (ADR 0014).
+  -->
   <div
-    v-else-if="deckCards.length === 0"
+    v-else-if="deckCards.length === 0 && unresolvedCards.length === 0"
     class="p-4 text-center text-sm text-gray-500"
   >
     {{ $t("No cards to display") }}
@@ -51,5 +55,16 @@ const cardImage = useCardImage();
         <CardCountBadge :count="count" :size="'large'" />
       </div>
     </template>
+
+    <!--
+      Slots we cannot name, after the real cards. The full deck view is where a missing
+      card is most noticeable, so it must not be the one view that hides them.
+    -->
+    <DeckUnresolvedCard
+      v-for="item in unresolvedCards"
+      :key="item.ref"
+      :item="item"
+      size="large"
+    />
   </div>
 </template>

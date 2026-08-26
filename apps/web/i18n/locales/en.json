@@ -536,7 +536,15 @@
       "empty": "No deck selected. Choose one from Decks, or create a new one."
     },
     "removeAllCopies": "Remove all copies of {name}",
-    "myDecks": "My Decks"
+    "myDecks": "My Decks",
+    "migration": {
+      "updated": "Updated {count} deck(s) to the latest card numbering.",
+      "unresolvedTitle": "Card not found",
+      "unresolvedDetail": "The official list no longer has this card.",
+      "unresolvedUnknown": "This card could not be identified. It may have come from an edited or non-standard deck code.",
+      "unresolvedBrowseSet": "Browse {set}",
+      "unresolvedRemove": "Remove from deck"
+    }
   },
   "status": {
     "title": "Data Status",

@@ -268,6 +268,33 @@ export function cardKeyByLowercaseSql(imageKey: string): { sql: string; params: 
 }
 
 /**
+ * Several cards by `image_key` — the deck-list lookup (ADR 0014).
+ *
+ * A deck references cards by `image_key` rather than by the official site's id, which the
+ * site reuses (#83). A legal deck is 71 cards, so this has to be one round trip; the
+ * single-card `cardByImageKeySql` would be 71.
+ *
+ * Uses the same one-parameter `json_each` set as `cardsByIdsSql` and for the same reason
+ * (#66): a 71-element `IN (?, ?, …)` would sit under D1's 100-parameter cap today, but the
+ * cap is what turned `limit=101` into a 500 once already.
+ *
+ * Case-sensitive, like every other `image_key` lookup: the stored form is canonical and
+ * the unique index only serves exact matches. A deck holding a wrong-case key gets that
+ * card back as unresolved, which is the correct outcome — it did not come from us.
+ */
+export function cardsByImageKeysSql(keys: readonly string[]): {
+  sql: string;
+  params: unknown[];
+} {
+  return {
+    sql:
+      `SELECT ${CARD_COLUMNS} FROM cards ` +
+      `WHERE image_key IN (SELECT value FROM json_each(?)) ORDER BY card_number, id`,
+    params: [JSON.stringify(keys)],
+  };
+}
+
+/**
  * Several cards by id.
  *
  * Takes the same one-parameter id set as `buildWhere` — see `idSetClause`. This is the

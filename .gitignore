@@ -36,11 +36,23 @@ apps/*/dist
 # as a PR diff is the point (ADR 0012, #18). The cache holds no `manual` entries of its
 # own: they are folded in from `corrections/` on load and held back on save, so a
 # correction lives in exactly one place — the file a contributor can diff.
-pipeline/data/
+pipeline/data/*
 pipeline/locales/
 pipeline/images/
 pipeline/build/
 pipeline/logs/
+
+# `pipeline/data/identity/` is the third exception, and the sharpest: it holds a snapshot
+# of `id -> image_key` taken from production D1 before the official site reused card ids
+# (#83). Every other path above can be rebuilt by re-running the pipeline; this one cannot
+# be rebuilt by anything, because the ids it records no longer mean what they meant. Saved
+# decks are stored as ids, so this file is the only bridge from a deck saved before
+# 2026-08-26 to the card it names.
+#
+# `pipeline/data/*` above rather than `pipeline/data/`: git will not descend into an
+# excluded *directory*, so a negation inside one never matches. Excluding the contents
+# instead leaves the directory walkable, which is what makes this line work.
+!pipeline/data/identity/
 
 # Environment
 .env

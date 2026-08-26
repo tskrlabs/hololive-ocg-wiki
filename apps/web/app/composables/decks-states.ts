@@ -20,6 +20,8 @@ import type { Deck } from "~/types/deck";
 import type { CardTypeCode } from "~/types/card";
 import { APP_VERSION } from "~/constants/app";
 import * as deckCode from "~/composables/deckCode";
+import { migrateDecks } from "~/composables/cardRefs";
+import { toast } from "vue-sonner";
 import {
   SECTIONS,
   addToSection,
@@ -33,6 +35,20 @@ import { useTimestamp } from "@vueuse/core";
 /** The v1 key. Changing it would orphan every saved deck (Q11). */
 const STORAGE_KEY = "hololive-ocg-wiki-decks";
 
+/**
+ * The pre-migration snapshot, written once before decks are first converted to
+ * `image_key` (ADR 0014).
+ *
+ * The migration is eager and touches every saved deck in one pass, which is the thing
+ * worth insuring against: a bug here hits all of a user's decks at once, and the data it
+ * overwrites is theirs, not ours. Written only if absent, so a later mount cannot
+ * overwrite the original with already-migrated data.
+ */
+const BACKUP_KEY = "hololive-ocg-wiki-decks.pre-image-key";
+
+/** `vue-sonner` de-dupes by id, so a remount cannot stack a second copy (see #57). */
+const MIGRATION_TOAST_ID = "deck-refs-migrated";
+
 export const useDecks = () => {
   const decksState = useState<Deck[]>("decks", () => []);
   const currentDeckState = useState<Deck | null>("currentDeck", () => null);
@@ -43,7 +59,31 @@ export const useDecks = () => {
   onMounted(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) decksState.value = JSON.parse(stored);
+      if (!stored) return;
+
+      const loaded = JSON.parse(stored) as Deck[];
+      const { decks, convertedCount } = migrateDecks(loaded);
+      decksState.value = decks;
+
+      // Nothing to migrate is the common case after the first load, and it must not
+      // write, back up, or toast.
+      if (convertedCount === 0) return;
+
+      // Back up before the first mutation, and only if nothing is there — a second mount
+      // must not overwrite the original with data this migration already touched.
+      if (localStorage.getItem(BACKUP_KEY) === null) {
+        localStorage.setItem(BACKUP_KEY, stored);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(decks));
+
+      // Transparency, not approval (ADR 0014). The mapping is exact, so there is nothing
+      // to confirm and no card list worth reading: after this the deck holds the cards it
+      // always meant to. A stable id keeps a remount from stacking toasts.
+      // A named parameter, not `t(key, count)`: that second form is vue-i18n's
+      // plural-choice syntax and no message in this app uses `|` branches.
+      toast.info(t("deck.migration.updated", { count: convertedCount }), {
+        id: MIGRATION_TOAST_ID,
+      });
     } catch (error) {
       console.error("Failed to load decks from localStorage:", error);
     }
@@ -65,6 +105,9 @@ export const useDecks = () => {
     mainCardIds: [],
     yellCardIds: [],
     version: APP_VERSION,
+    // Without this a freshly created deck reads as legacy and would be "migrated" on the
+    // next mount, turning its image_keys into unresolved markers.
+    cardRefFormat: "image-key",
   });
 
   const addDeck = (deck: Deck) => {
@@ -117,11 +160,12 @@ export const useDecks = () => {
    * Returns how many were actually added, which may be fewer than asked for.
    */
   const addCardToDeck = ({
-    cardId,
+    cardRef,
     amount,
     cardTypeCode,
   }: {
-    cardId: string;
+    /** The card's `image_key`, not its id (ADR 0014). */
+    cardRef: string;
     amount: number;
     cardTypeCode: CardTypeCode;
   }): number => {
@@ -129,17 +173,18 @@ export const useDecks = () => {
     const section = sectionForCardType(cardTypeCode);
     if (!deck || !section) return 0;
 
-    const { ids, added } = addToSection(deck, section, cardId, amount);
+    const { ids, added } = addToSection(deck, section, cardRef, amount);
     if (added > 0) commit(section.field, ids);
     return added;
   };
 
   const removeCardFromDeck = ({
-    cardId,
+    cardRef,
     amount,
     cardTypeCode,
   }: {
-    cardId: string;
+    /** The card's `image_key`, not its id (ADR 0014). */
+    cardRef: string;
     amount: number;
     cardTypeCode: CardTypeCode;
   }): number => {
@@ -147,29 +192,55 @@ export const useDecks = () => {
     const section = sectionForCardType(cardTypeCode);
     if (!deck || !section) return 0;
 
-    const { ids, removed } = removeFromSection(deck, section, cardId, amount);
+    const { ids, removed } = removeFromSection(deck, section, cardRef, amount);
     if (removed > 0) commit(section.field, ids);
     return removed;
   };
 
   const removeAllCardFromDeck = (
-    cardId: string,
+    cardRef: string,
     cardTypeCode: CardTypeCode,
   ): number => {
     const deck = currentDeckState.value;
     const section = sectionForCardType(cardTypeCode);
     if (!deck || !section) return 0;
 
-    const { ids, removed } = removeFromSection(deck, section, cardId);
+    const { ids, removed } = removeFromSection(deck, section, cardRef);
     if (removed > 0) commit(section.field, ids);
     return removed;
   };
 
-  const getCardCount = (cardId: string, cardTypeCode: CardTypeCode): number => {
+  /**
+   * Remove every copy of a reference, without knowing its card type (ADR 0014).
+   *
+   * The other mutations route through `sectionForCardType`, which needs a `Card`. An
+   * unresolved slot has none — that is what makes it unresolved — so this searches all
+   * three sections instead. It is the only way a user can get a card they cannot see out
+   * of their deck, and without it a withdrawn card is stuck there permanently.
+   *
+   * Safe to run across sections: a reference appears in exactly one, because the section
+   * was chosen by card type when it was added.
+   */
+  const removeRefFromDeck = (cardRef: string): number => {
+    const deck = currentDeckState.value;
+    if (!deck) return 0;
+
+    let total = 0;
+    for (const section of SECTIONS) {
+      const { ids, removed } = removeFromSection(deck, section, cardRef);
+      if (removed > 0) {
+        commit(section.field, ids);
+        total += removed;
+      }
+    }
+    return total;
+  };
+
+  const getCardCount = (cardRef: string, cardTypeCode: CardTypeCode): number => {
     const deck = currentDeckState.value;
     const section = sectionForCardType(cardTypeCode);
     if (!deck || !section) return 0;
-    return copiesOf(deck, section, cardId);
+    return copiesOf(deck, section, cardRef);
   };
 
   // --- Sharing -------------------------------------------------------------
@@ -240,6 +311,7 @@ export const useDecks = () => {
     addCardToDeck,
     removeCardFromDeck,
     removeAllCardFromDeck,
+    removeRefFromDeck,
     getCardCount,
 
     /** The section rules, for views that render limits and status badges. */

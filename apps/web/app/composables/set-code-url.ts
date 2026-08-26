@@ -21,11 +21,17 @@ export function useSetCodeUrl() {
   const router = useRouter();
   const filter = useFilter();
 
-  /** Read the URL into the filter — once, on load. */
-  const applyFromUrl = () => {
+  /** The `set_code` the URL currently names, normalised out of the array form. */
+  const codeInUrl = () => {
     const fromUrl = route.query.set_code;
     const code = Array.isArray(fromUrl) ? fromUrl[0] : fromUrl;
-    if (typeof code !== "string" || !code) return;
+    return typeof code === "string" && code ? code : undefined;
+  };
+
+  /** Read the URL into the filter — once, on load. */
+  const applyFromUrl = () => {
+    const code = codeInUrl();
+    if (!code) return;
 
     // Both, for the same reason the search handoff writes both: the applied filter is
     // what fetches, the draft is what the panel shows, and leaving the draft empty would
@@ -33,6 +39,31 @@ export function useSetCodeUrl() {
     filter.filter.value.setCode = code;
     filter.draftFilter.value.setCode = code;
   };
+
+  /**
+   * Keep following the URL after load, so an in-app link to `?set_code=` works.
+   *
+   * `applyFromUrl` alone runs at setup, which is enough for a cold load but not for a
+   * link followed *while the listing page is already mounted* — the page does not
+   * re-setup, so the query changes and nothing reads it. That is what made the deck
+   * panel's "Browse hBP01" change the URL and nothing else (ADR 0014's placeholder).
+   *
+   * Navigating from another page (the deck detail view) re-runs setup, so the panel
+   * updated there — but the grid still did not refetch, because `applyFiltersIfNeeded`
+   * skips a `ready` list and the filter had been written *before* the watcher existed.
+   * Assigning here, after mount, means the filter watcher in `CardListViewAPI` sees a
+   * real change and refetches.
+   *
+   * Guarded on inequality: `syncToUrl` writes the URL from the filter, so an unguarded
+   * watcher would answer its own write and loop.
+   */
+  const followUrl = () =>
+    watch(codeInUrl, (code) => {
+      const next = code ?? "";
+      if (filter.filter.value.setCode === next) return;
+      filter.filter.value.setCode = next;
+      filter.draftFilter.value.setCode = next;
+    });
 
   /**
    * Write the filter back to the URL whenever it changes.
@@ -56,5 +87,5 @@ export function useSetCodeUrl() {
       },
     );
 
-  return { applyFromUrl, syncToUrl };
+  return { applyFromUrl, syncToUrl, followUrl };
 }

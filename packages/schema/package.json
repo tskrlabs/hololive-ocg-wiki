@@ -12,7 +12,8 @@
     "./enums": "./dist/enums.ts",
     "./localize": "./src/localize.ts",
     "./card-meta": "./src/cardMeta.ts",
-    "./card-urls": "./data/card-urls.json"
+    "./card-urls": "./data/card-urls.json",
+    "./card-id-history": "./data/card-id-history.json"
   },
   "files": [
     "data",

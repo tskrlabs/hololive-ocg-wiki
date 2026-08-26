@@ -142,6 +142,35 @@ export const batchParamSchema = z
       .max(MAX_BATCH, `too many values: the maximum is ${MAX_BATCH}`),
   );
 
+/**
+ * A comma-separated batch of `image_key`s from the path (ADR 0014).
+ *
+ * Separate from `batchParamSchema` rather than a loosening of it: that one is
+ * deliberately `[a-zA-Z0-9_-]+` and an `image_key` contains a `/`. Widening the shared
+ * validator would also widen the id and card-number routes, which have no business
+ * accepting a slash.
+ *
+ * Same over-the-cap **failure** as its sibling, for the reason recorded there: v1
+ * truncated silently and a deck longer than the cap rendered short with no error.
+ */
+export const imageKeyBatchParamSchema = z
+  .string()
+  .transform((raw) => raw.split(",").map((part) => part.trim()).filter(Boolean))
+  .pipe(
+    z
+      .array(
+        z
+          .string()
+          .regex(
+            /^[A-Za-z0-9][A-Za-z0-9._-]*\/[A-Za-z0-9][A-Za-z0-9._-]*$/,
+            "must be a set/stem image key",
+          )
+          .max(100),
+      )
+      .min(1, "at least one value is required")
+      .max(MAX_BATCH, `too many values: the maximum is ${MAX_BATCH}`),
+  );
+
 /** A single card number from the path. */
 export const cardNumberParamSchema = z
   .string()

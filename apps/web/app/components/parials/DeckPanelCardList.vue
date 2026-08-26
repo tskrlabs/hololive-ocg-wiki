@@ -27,28 +27,29 @@ const props = defineProps<{
 // The count → dedupe → fetch → join pipeline, once (Candidate 04). v1 had it written
 // out verbatim here and in DeckDetailCardList, plus a hand-rolled Map variant in the
 // compact list — six copies of one derivation across three files.
-const { deckCards, isLoading } = useDeckCards(() => props.cardIds);
+const { deckCards, unresolvedCards, isLoading } = useDeckCards(() => props.cardIds);
 
 const decks = useDecks();
 const cardImage = useCardImage();
 
 // Optimized action methods with cached context
 // Using arrow functions with parameter destructuring for better performance
-const add = (cardId: string, cardTypeCode: CardTypeCode) => {
+// A deck references a card by `image_key`, not by id (ADR 0014).
+const add = (cardRef: string, cardTypeCode: CardTypeCode) => {
   if (decks.currentDeck.value) {
-    decks.addCardToDeck({ cardId, amount: 1, cardTypeCode });
+    decks.addCardToDeck({ cardRef, amount: 1, cardTypeCode });
   }
 };
 
-const remove = (cardId: string, cardTypeCode: CardTypeCode) => {
+const remove = (cardRef: string, cardTypeCode: CardTypeCode) => {
   if (decks.currentDeck.value) {
-    decks.removeCardFromDeck({ cardId, amount: 1, cardTypeCode });
+    decks.removeCardFromDeck({ cardRef, amount: 1, cardTypeCode });
   }
 };
 
-const removeAll = (cardId: string, cardTypeCode: CardTypeCode) => {
+const removeAll = (cardRef: string, cardTypeCode: CardTypeCode) => {
   if (decks.currentDeck.value) {
-    decks.removeAllCardFromDeck(cardId, cardTypeCode);
+    decks.removeAllCardFromDeck(cardRef, cardTypeCode);
   }
 };
 
@@ -63,8 +64,14 @@ const removeAll = (cardId: string, cardTypeCode: CardTypeCode) => {
 
   <!-- `muted-foreground`, not a hardcoded `text-gray-500`: the palette has a token for
        exactly this and D4 leaves no room for ad-hoc colours. -->
+  <!--
+    `unresolvedCards` is part of the emptiness test on purpose: a deck whose every card
+    failed to resolve is not empty, and showing "no cards" for it would be the exact
+    invisibility ADR 0014 refuses — the user would see nothing rather than seeing what
+    they lost.
+  -->
   <div
-    v-else-if="deckCards.length === 0"
+    v-else-if="deckCards.length === 0 && unresolvedCards.length === 0"
     class="p-4 text-center text-sm text-muted-foreground"
   >
     {{ $t("No cards to display") }}
@@ -95,7 +102,7 @@ const removeAll = (cardId: string, cardTypeCode: CardTypeCode) => {
           -->
           <button
             class="h-6 w-2/4 rounded-sm bg-secondary/95"
-            @click.prevent="add(card.id, card.card_type_code)"
+            @click.prevent="add(card.image_key, card.card_type_code)"
             :aria-label="$t('deck.addCopies', { count: 1, name: card.name ?? card.card_number })"
           >
             <div class="flex items-center justify-center text-xs">
@@ -108,7 +115,7 @@ const removeAll = (cardId: string, cardTypeCode: CardTypeCode) => {
           -->
           <button
             class="h-6 w-2/4 rounded-sm bg-destructive/95 text-destructive-foreground"
-            @click.prevent="remove(card.id, card.card_type_code)"
+            @click.prevent="remove(card.image_key, card.card_type_code)"
             :aria-label="$t('deck.removeCopy', { name: card.name ?? card.card_number })"
           >
             <div class="flex items-center justify-center text-xs">
@@ -120,7 +127,7 @@ const removeAll = (cardId: string, cardTypeCode: CardTypeCode) => {
         <div class="absolute top-0 right-0 flex flex-col gap-1 p-1">
           <button
             class="size-7 rounded-sm bg-destructive/90 text-destructive-foreground"
-            @click.prevent="removeAll(card.id, card.card_type_code)"
+            @click.prevent="removeAll(card.image_key, card.card_type_code)"
             :aria-label="$t('deck.removeAllCopies', { name: card.name ?? card.card_number })"
           >
             <div class="flex items-center justify-center text-xs">
@@ -133,6 +140,16 @@ const removeAll = (cardId: string, cardTypeCode: CardTypeCode) => {
         <CardCountBadge :count="count" :size="'small'" />
       </div>
     </template>
+
+    <!--
+      Slots we cannot name, kept rather than dropped (ADR 0014). Rendered after the real
+      cards so a deck that is entirely fine looks entirely fine.
+    -->
+    <DeckUnresolvedCard
+      v-for="item in unresolvedCards"
+      :key="item.ref"
+      :item="item"
+    />
     <!-- </TransitionGroup> -->
   </div>
 </template>

@@ -157,6 +157,28 @@ export function createCardSource(transport: Transport = httpTransport) {
       return pages.flatMap((page) => page.cards);
     },
 
+    /**
+     * Several cards by `image_key`, chunked — the deck-list lookup (ADR 0014).
+     *
+     * Chunked like `byIds` and for the same reason: an over-cap request is a 400 rather
+     * than a silent truncation, and a legal deck is 71 cards.
+     *
+     * Keys go in the **query string**, not the path: an `image_key` contains a `/`, which
+     * a path parameter would split across segments.
+     */
+    async byKeys(keys: string[], locale: Locales): Promise<CardCollection> {
+      if (keys.length === 0) return [];
+      const pages = await Promise.all(
+        chunk(keys).map((batch) =>
+          transport<{ cards: CardCollection }>("/api/cards/by-keys", {
+            keys: batch.join(","),
+            locale,
+          }),
+        ),
+      );
+      return pages.flatMap((page) => page.cards);
+    },
+
     /** Every printing of one card number. */
     async byCardNumber(cardNumber: string, locale: Locales): Promise<CardCollection> {
       const response = await transport<{ cards: CardCollection }>(

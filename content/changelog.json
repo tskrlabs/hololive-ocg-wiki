@@ -2,6 +2,26 @@
   "$comment": "Player-facing release notes. Committed and imported at build time, NOT published to R2. See content/README.md for why this differs from info.json.",
   "releases": [
     {
+      "version": "2.3.0",
+      "date": "2026-08-26",
+      "title": "Saved decks keep the cards you picked",
+      "summary": "The official card list renumbered 82 cards to make room for a new set. Your saved decks and shared deck codes are updated to match, so they still hold the cards you chose.",
+      "changes": [
+        {
+          "kind": "fixed",
+          "text": "Saved decks are updated automatically the next time you open the site. Nothing to do, and your deck codes keep working."
+        },
+        {
+          "kind": "fixed",
+          "text": "Shared deck codes made before this release still open correctly, including ones posted long ago."
+        },
+        {
+          "kind": "added",
+          "text": "A deck slot whose card is no longer in the official list now shows the card number and a link to browse that set, instead of quietly disappearing. You can remove it from the deck."
+        }
+      ]
+    },
+    {
       "version": "2.2.0",
       "date": "2026-08-22",
       "title": "Card names that were missing from the page",
