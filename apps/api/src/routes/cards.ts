@@ -18,6 +18,7 @@ import {
   cardKeyByLowercaseSql,
   cardsByCardNumberSql,
   cardsByIdsSql,
+  cardsByImageKeysSql,
   filterCountSql,
   filterPageSql,
   firstCardPerNumberSql,
@@ -29,6 +30,7 @@ import {
   batchParamSchema,
   cardNumberParamSchema,
   filterQuerySchema,
+  imageKeyBatchParamSchema,
   imageKeySegmentSchema,
   localeQuerySchema,
   searchQuerySchema,
@@ -137,6 +139,42 @@ cardsList.get("/:ids", async (c) => {
   // deck's order is the client's, not the database's.
   const position = new Map(parsed.data.map((id, index) => [id, index]));
   found.sort((a, b) => (position.get(a.id) ?? 0) - (position.get(b.id) ?? 0));
+
+  return cached(c, { cards: found });
+});
+
+/**
+ * GET /api/cards/by-keys?keys=set/stem,set/stem — several cards by `image_key`.
+ *
+ * The deck-list lookup (ADR 0014): a deck references cards by `image_key`, because the
+ * official site reuses its own ids (#83). One round trip for a 71-card deck.
+ *
+ * **Keys go in the query string, not the path**, which is the one thing that differs from
+ * every sibling batch route here. An `image_key` contains a `/`, so a path parameter would
+ * split it across segments and no single `:param` could hold a comma-separated list of
+ * them.
+ *
+ * Cards come back in the order asked for, like `/api/cards-list/:ids`: a deck's order is
+ * the client's, not the database's. Keys that match nothing are simply absent, and the
+ * client renders those slots as unresolved rather than dropping them.
+ */
+cards.get("/by-keys", async (c) => {
+  const parsed = imageKeyBatchParamSchema.safeParse(c.req.query("keys") ?? "");
+  if (!parsed.success) {
+    return failure(c, 400, parsed.error.issues[0]?.message ?? "invalid card keys");
+  }
+  const { locale } = localeQuerySchema.parse(c.req.query());
+
+  const found = await fetchCards(
+    c.env,
+    cardsByImageKeysSql(parsed.data),
+    locale as Locale,
+  );
+
+  const position = new Map(parsed.data.map((key, index) => [key, index]));
+  found.sort(
+    (a, b) => (position.get(a.image_key) ?? 0) - (position.get(b.image_key) ?? 0),
+  );
 
   return cached(c, { cards: found });
 });

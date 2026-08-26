@@ -330,6 +330,41 @@ export const useCardQuery = () => {
       .filter((card): card is Card => card !== undefined);
   }
 
+  /**
+   * Several cards by `image_key`, in the order asked for — the deck lookup (ADR 0014).
+   *
+   * Mirrors `getCardsByIds`, against `byKeyCache`: a deck sharing cards with the visible
+   * list costs nothing extra, and a card page already visited is free.
+   *
+   * Keys that match no card are simply absent from the result. The caller keeps their
+   * slots rather than dropping them — a card missing from a 50-card deck is invisible,
+   * and only the user knows what was meant.
+   */
+  async function getCardsByKeys(
+    keys: string[],
+    locale: Locales,
+  ): Promise<CardCollection> {
+    // `key:{image_key}:{locale}`, the exact form `getCardByKey` writes — the two share
+    // this cache, so a card page already visited answers a deck lookup for free.
+    const cacheKey = (imageKey: string) => `key:${imageKey}:${locale}`;
+    const missing = keys.filter((key) => !byKeyCache.value.has(cacheKey(key)));
+
+    if (missing.length > 0) {
+      const fetched = await once(`keys:${missing.join(",")}:${locale}`, () =>
+        source.byKeys(missing, locale),
+      );
+      for (const card of fetched) {
+        byKeyCache.value.set(cacheKey(card.image_key), card);
+        // The same card, so fill the id cache too — the dialog looks cards up that way.
+        byIdCache.value.set(cardKey(card.id, locale), card);
+      }
+    }
+
+    return keys
+      .map((key) => byKeyCache.value.get(cacheKey(key)))
+      .filter((card): card is Card => card !== undefined);
+  }
+
   function getCardsByCardNumber(cardNumber: string, locale: Locales) {
     return once(`number:${cardNumber}:${locale}`, () =>
       source.byCardNumber(cardNumber, locale),
@@ -435,6 +470,7 @@ export const useCardQuery = () => {
     getCardById,
     getCardByKey,
     getCardsByIds,
+    getCardsByKeys,
     getCardsByCardNumber,
     getCardsByCardNumbers,
     search,

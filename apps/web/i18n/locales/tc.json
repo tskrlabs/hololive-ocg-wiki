@@ -537,7 +537,13 @@
       "empty": "尚未選擇牌組。請從「牌組」中選擇一副，或建立新的牌組。"
     },
     "removeAllCopies": "移除所有「{name}」",
-    "myDecks": "我的牌組"
+    "myDecks": "我的牌組",
+    "migration": {
+      "updated": "已將 {count} 個牌組更新為最新的卡片編號。",
+      "unresolvedTitle": "無法辨識這張卡片",
+      "unresolvedDetail": "官方列表中已無卡片 {id}。搜尋以放回正確的卡片。",
+      "unresolvedReplace": "尋找替代卡片"
+    }
   },
   "status": {
     "title": "資料狀態",

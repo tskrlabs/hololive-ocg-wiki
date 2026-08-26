@@ -536,7 +536,13 @@
       "empty": "Belum ada deck yang dipilih. Pilih dari Decks, atau buat yang baru."
     },
     "removeAllCopies": "Hapus semua salinan {name}",
-    "myDecks": "Dek Saya"
+    "myDecks": "Dek Saya",
+    "migration": {
+      "updated": "Memperbarui {count} dek ke penomoran kartu terbaru.",
+      "unresolvedTitle": "Kartu ini tidak dapat dicocokkan",
+      "unresolvedDetail": "Daftar resmi tidak lagi memuat kartu {id}. Cari untuk mengembalikan kartu yang benar.",
+      "unresolvedReplace": "Cari pengganti"
+    }
   },
   "status": {
     "title": "Status Data",

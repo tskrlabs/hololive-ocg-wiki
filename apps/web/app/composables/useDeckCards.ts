@@ -1,9 +1,14 @@
 /**
  * The deck-list view model (architecture review Candidate 04).
  *
- * A deck is stored as a flat list of card ids with duplicates — three copies of a card
- * appear three times. Every view that renders one has to do the same four steps: count
- * the duplicates, dedupe, fetch the distinct cards, and join the counts back on.
+ * A deck is stored as a flat list of card references with duplicates — three copies of a
+ * card appear three times. Every view that renders one has to do the same four steps:
+ * count the duplicates, dedupe, fetch the distinct cards, and join the counts back on.
+ *
+ * **The reference is an `image_key`, not an id** (ADR 0014, #83). The official site reuses
+ * its own ids, so an id-keyed deck silently resolved to the wrong cards after a
+ * renumbering. Some refs resolve to nothing at all; those are surfaced as
+ * `unresolvedCards` rather than dropped.
  *
  * v1 wrote that pipeline out three times. `FloatingDeckCardList` and `DeckDetailCardList`
  * had it verbatim — the same `uniqueCardIds` reduce, the same `uniqueCards` join, the
@@ -16,6 +21,7 @@
  */
 
 import type { Card, Locales } from "~/types/card";
+import { isUnresolved, unresolvedId } from "~/composables/cardRefs";
 
 export type DeckCard = {
   /** Convenience alias of `card.id`, which several templates key on. */
@@ -25,28 +31,60 @@ export type DeckCard = {
   card: Card;
 };
 
-export function useDeckCards(cardIds: () => string[]) {
+/**
+ * A slot the deck holds but we cannot name (ADR 0014).
+ *
+ * Kept rather than dropped: a card missing from a 50-card deck is invisible, and the user
+ * is the only one who knows what was meant. `ref` is the original reference, shown so they
+ * can replace it.
+ */
+export type UnresolvedDeckCard = {
+  ref: string;
+  /** The legacy card id behind it, when there was one. */
+  originalId: string;
+  count: number;
+};
+
+/**
+ * @param cardRefs `image_key`s (ADR 0014), or `unresolved:` markers for references the
+ * migration could not translate.
+ */
+export function useDeckCards(cardRefs: () => string[]) {
   const cardQuery = useCardQuery();
   const { locale } = useI18n();
 
   const isLoading = ref(true);
   const cards = ref<Card[]>([]);
 
-  /** Distinct ids with their multiplicity, in first-seen order. */
+  /** Distinct refs with their multiplicity, in first-seen order. */
   const counted = computed(() => {
     const counts = new Map<string, number>();
-    for (const id of cardIds()) counts.set(id, (counts.get(id) ?? 0) + 1);
-    return [...counts].map(([id, count]) => ({ id, count }));
+    for (const ref of cardRefs()) counts.set(ref, (counts.get(ref) ?? 0) + 1);
+    return [...counts].map(([ref, count]) => ({ ref, count }));
   });
 
-  /** The counts joined onto the fetched cards. Ids that failed to fetch drop out. */
+  /** The counts joined onto the fetched cards. */
   const deckCards = computed<DeckCard[]>(() => {
     if (!cards.value.length) return [];
-    const byId = new Map(cards.value.map((card) => [card.id, card]));
+    const byKey = new Map(cards.value.map((card) => [card.image_key, card]));
 
-    return counted.value.flatMap(({ id, count }) => {
-      const card = byId.get(id);
+    return counted.value.flatMap(({ ref, count }) => {
+      const card = byKey.get(ref);
       return card ? [{ cardId: card.id, count, card }] : [];
+    });
+  });
+
+  /**
+   * Slots that name no card — either marked `unresolved:` by the migration, or an
+   * `image_key` the API returned nothing for (a card withdrawn since the deck was saved).
+   */
+  const unresolvedCards = computed<UnresolvedDeckCard[]>(() => {
+    const byKey = new Set(cards.value.map((card) => card.image_key));
+    return counted.value.flatMap(({ ref, count }) => {
+      if (!isUnresolved(ref) && byKey.has(ref)) return [];
+      // Still loading is not the same as unresolvable; say nothing until the fetch lands.
+      if (!isUnresolved(ref) && isLoading.value) return [];
+      return [{ ref, originalId: isUnresolved(ref) ? unresolvedId(ref) : ref, count }];
     });
   });
 
@@ -54,18 +92,19 @@ export function useDeckCards(cardIds: () => string[]) {
     [counted, locale],
     async () => {
       isLoading.value = true;
-      const ids = counted.value.map((item) => item.id);
-      if (ids.length === 0) {
+      // `unresolved:` markers name no card, so they are never sent to the API.
+      const keys = counted.value.map((item) => item.ref).filter((ref) => !isUnresolved(ref));
+      if (keys.length === 0) {
         cards.value = [];
         isLoading.value = false;
         return;
       }
       // Chunked to the API's batch cap inside the store — a legal deck is 71 cards.
-      cards.value = (await cardQuery.getCardsByIds(ids, locale.value as Locales)) ?? [];
+      cards.value = (await cardQuery.getCardsByKeys(keys, locale.value as Locales)) ?? [];
       isLoading.value = false;
     },
     { immediate: true },
   );
 
-  return { deckCards, cards, isLoading };
+  return { deckCards, cards, unresolvedCards, isLoading };
 }

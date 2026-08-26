@@ -8,16 +8,23 @@
  * files, and the store enforced nothing: `addCardToDeck` pushed unconditionally, so a
  * 60-card main deck was reachable and only the badge turned red.
  *
- * **The wire format is frozen** (Q11). `localStorage["hololive-ocg-wiki-decks"]` holds a
- * `Deck[]` in every existing user's browser, and the base64 deck code lives in Discord
- * messages that never expire. Candidate 03 restructures the deck *in memory* only; these
- * tests are what says so. A failure here is not a style regression — it is someone's
- * saved decks, or a link that has already been shared.
+ * **The wire format was frozen** (Q11), and **ADR 0014 amended it once** — the only time,
+ * and for the one reason the freeze anticipated. `localStorage["hololive-ocg-wiki-decks"]`
+ * holds a `Deck[]` in every existing user's browser, and the base64 deck code lives in
+ * Discord messages that never expire. A failure here is not a style regression — it is
+ * someone's saved decks, or a link that has already been shared.
+ *
+ * What changed: a card reference is an `image_key`, not the official site's id, because
+ * the site reuses its ids (#83) and an id-keyed deck silently resolved to the *wrong*
+ * cards after a renumbering. Field names, the count-map form and the base64 envelope are
+ * untouched; `cardRefFormat` is additive, and legacy codes are translated on decode
+ * forever rather than being rewritten.
  */
 
 import { describe, expect, it } from "vitest";
 
 import * as deckCode from "../app/composables/deckCode";
+import { refForId } from "../app/composables/cardRefs";
 import {
   SECTIONS,
   addToSection,
@@ -150,10 +157,13 @@ describe("copiesOf and isDeckLegal", () => {
 
 describe("the deck code — a frozen format (Q11)", () => {
   it("round-trips a deck", () => {
+    // References are `image_key`s now (ADR 0014), and the deck carries the format it is
+    // written in. A round trip must preserve both.
     const original = deck({
-      oshiCardIds: ["1"],
-      mainCardIds: ["2", "2", "3"],
-      yellCardIds: ["4"],
+      oshiCardIds: ["hSD01/hSD01-001_OSR"],
+      mainCardIds: ["hBP01/hBP01-002_R", "hBP01/hBP01-002_R", "hBP01/hBP01-003_C"],
+      yellCardIds: ["hBP01/hBP01-004_C"],
+      cardRefFormat: "image-key",
     });
     const restored = deckCode.decode(deckCode.encode(original));
     expect(restored).toEqual(original);
@@ -166,19 +176,36 @@ describe("the deck code — a frozen format (Q11)", () => {
     expect(deckCode.decode(deckCode.encode(original))?.name).toBe(original.name);
   });
 
-  it("emits exactly the v1 payload shape", () => {
-    // Field names and the count-map form are v1's. A code produced here must decode in
-    // v1 for as long as both are live, and vice versa.
+  it("emits v1's payload shape, plus the format marker (ADR 0014)", () => {
+    // Field names and the count-map form are still v1's — those never move. `cardRefFormat`
+    // is the one addition, and it is additive on purpose: v1 ignores an unknown key, so a
+    // code written here still decodes there. What v1 cannot do is *interpret* image_keys,
+    // which is moot now that v1 is archived.
     const encoded = deckCode.encode(
-      deck({ oshiCardIds: ["7"], mainCardIds: ["8", "8"], yellCardIds: [] }),
+      deck({
+        oshiCardIds: ["hSD01/hSD01-007_OSR"],
+        mainCardIds: ["hBP01/hBP01-008_R", "hBP01/hBP01-008_R"],
+        yellCardIds: [],
+        cardRefFormat: "image-key",
+      }),
     );
     const payload = JSON.parse(decodeURIComponent(atob(encoded)));
 
     expect(Object.keys(payload).sort()).toEqual(
-      ["author", "id", "mainCards", "name", "oshiCards", "version", "yellCards"].sort(),
+      [
+        "author",
+        "cardRefFormat",
+        "id",
+        "mainCards",
+        "name",
+        "oshiCards",
+        "version",
+        "yellCards",
+      ].sort(),
     );
-    expect(payload.oshiCards).toEqual({ "7": 1 });
-    expect(payload.mainCards).toEqual({ "8": 2 });
+    expect(payload.cardRefFormat).toBe("image-key");
+    expect(payload.oshiCards).toEqual({ "hSD01/hSD01-007_OSR": 1 });
+    expect(payload.mainCards).toEqual({ "hBP01/hBP01-008_R": 2 });
     expect(payload.yellCards).toEqual({});
   });
 
@@ -196,11 +223,20 @@ describe("the deck code — a frozen format (Q11)", () => {
 
     const decoded = deckCode.decode(code);
     expect(decoded?.id).toBe("my-deck-1750000000000");
-    expect(decoded?.oshiCardIds).toEqual(["199"]);
-    expect(decoded?.mainCardIds).toEqual(["564", "564", "564", "809"]);
-    expect(decoded?.yellCardIds).toEqual(["810", "810"]);
+    // The ids are translated to `image_key`s on the way in (ADR 0014): a v1 code names
+    // cards by ids the official site has since handed to *different* cards, so reading it
+    // verbatim is what would corrupt the deck. Counts and order survive.
+    expect(decoded?.oshiCardIds).toEqual([refForId("199")]);
+    expect(decoded?.mainCardIds).toEqual([
+      refForId("564"),
+      refForId("564"),
+      refForId("564"),
+      refForId("809"),
+    ]);
+    expect(decoded?.yellCardIds).toEqual([refForId("810"), refForId("810")]);
     // v1 codes carry no `version`; the reader must not choke on that.
     expect(decoded?.version).toBe("");
+    expect(decoded?.cardRefFormat).toBe("image-key");
   });
 
   it("returns null for junk rather than throwing", () => {

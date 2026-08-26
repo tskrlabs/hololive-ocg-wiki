@@ -10,9 +10,17 @@
  *
  * Candidate 03 restructures the deck **in memory** into sections. This module is the seam
  * where that internal shape meets the stored one, so the refactor cannot strand data
- * already in the wild. What makes it safe across the v1 → v2 cutover is that a card `id`
- * is the official site's own detail-page id (`scrape/fetch.py:91`), not a database rowid
- * — the ids in an old deck code still resolve.
+ * already in the wild.
+ *
+ * **The premise that made the v1 → v2 cutover safe has since failed** (ADR 0014, #83).
+ * This file used to argue that a card `id` is the official site's own detail-page id
+ * rather than a database rowid, so ids in an old deck code still resolve. They do still
+ * resolve — that turned out to be the danger, not the safety. On 2026-08-26 the site
+ * renumbered 82 cards, so those ids now resolve to the *wrong* cards, silently.
+ *
+ * References are therefore `image_key` from that date on, and an id-form code is
+ * translated on decode. The format field is `cardRefFormat`, not `version`; both formats
+ * stay readable forever, because the codes are in messages we do not control.
  *
  * Extracted as pure functions, per the review's "other notes": v1 welded this transform
  * into the state composable alongside `window`, `localStorage` and `useI18n`, so the
@@ -21,6 +29,7 @@
  */
 
 import type { Deck } from "~/types/deck";
+import { formatOf, refForId } from "~/composables/cardRefs";
 
 /**
  * A deck as it appears inside a shared code.
@@ -38,6 +47,11 @@ export type EncodedDeck = {
   mainCards: Record<string, number>;
   yellCards: Record<string, number>;
   version?: string;
+  /**
+   * Which identifier the three card maps are written in (ADR 0014). Absent means `"id"`,
+   * which is every code written before 2026-08-26 and every code v1 ever produced.
+   */
+  cardRefFormat?: "id" | "image-key";
 };
 
 /** `["1","1","2"]` → `{"1": 2, "2": 1}`. */
@@ -72,6 +86,7 @@ export function encode(deck: Deck): string {
     mainCards: compressCardIds(deck.mainCardIds),
     yellCards: compressCardIds(deck.yellCardIds),
     version: deck.version,
+    cardRefFormat: formatOf(deck.cardRefFormat),
   };
   return btoa(encodeURIComponent(JSON.stringify(payload)));
 }
@@ -88,14 +103,25 @@ export function decode(code: string): Deck | null {
     const parsed = JSON.parse(decodeURIComponent(atob(code))) as Partial<EncodedDeck>;
     if (!parsed || typeof parsed.id !== "string") return null;
 
+    // A code is not ours to rewrite — it lives in a Discord message that never expires —
+    // so an id-form code is translated on the way in, every time, forever (ADR 0014).
+    // This is why the mapping is permanent rather than a migration artifact with an end
+    // date: the last id-form code will be pasted long after every saved deck has moved.
+    const legacy = formatOf(parsed.cardRefFormat) === "id";
+    const refs = (compressed: Record<string, number>) => {
+      const ids = expandCardIds(compressed);
+      return legacy ? ids.map(refForId) : ids;
+    };
+
     return {
       id: parsed.id,
       name: parsed.name,
       author: parsed.author,
-      oshiCardIds: expandCardIds(parsed.oshiCards ?? {}),
-      mainCardIds: expandCardIds(parsed.mainCards ?? {}),
-      yellCardIds: expandCardIds(parsed.yellCards ?? {}),
+      oshiCardIds: refs(parsed.oshiCards ?? {}),
+      mainCardIds: refs(parsed.mainCards ?? {}),
+      yellCardIds: refs(parsed.yellCards ?? {}),
       version: parsed.version ?? "",
+      cardRefFormat: "image-key",
     };
   } catch {
     return null;

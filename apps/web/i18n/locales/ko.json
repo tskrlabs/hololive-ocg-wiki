@@ -536,7 +536,13 @@
       "empty": "선택된 덱이 없습니다. 덱에서 선택하거나 새로 만드세요."
     },
     "removeAllCopies": "{name} 모두 제거",
-    "myDecks": "내 덱"
+    "myDecks": "내 덱",
+    "migration": {
+      "updated": "{count}개의 덱을 최신 카드 번호로 업데이트했습니다.",
+      "unresolvedTitle": "이 카드를 찾을 수 없습니다",
+      "unresolvedDetail": "공식 목록에 카드 {id}이(가) 없습니다. 검색해서 올바른 카드로 되돌리세요.",
+      "unresolvedReplace": "대체 카드 찾기"
+    }
   },
   "status": {
     "title": "데이터 상태",

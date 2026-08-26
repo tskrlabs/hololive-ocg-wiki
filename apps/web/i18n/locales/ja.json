@@ -536,7 +536,13 @@
       "empty": "デッキが選択されていません。「デッキ」から選ぶか、新しく作成してください。"
     },
     "removeAllCopies": "「{name}」をすべて削除",
-    "myDecks": "マイデッキ"
+    "myDecks": "マイデッキ",
+    "migration": {
+      "updated": "{count}件のデッキを最新のカード番号に更新しました。",
+      "unresolvedTitle": "このカードを特定できませんでした",
+      "unresolvedDetail": "公式リストにカード {id} が見つかりません。検索して正しいカードに戻してください。",
+      "unresolvedReplace": "代わりのカードを探す"
+    }
   },
   "status": {
     "title": "データステータス",

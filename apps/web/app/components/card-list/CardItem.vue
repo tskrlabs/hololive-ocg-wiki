@@ -172,7 +172,7 @@ const add = (amount: number = 1) => {
   if (!isEditing.value) return;
 
   const added = decks.addCardToDeck({
-    cardId: props.item.id,
+    cardRef: props.item.image_key,
     amount,
     cardTypeCode: props.item.card_type_code,
   });
@@ -203,7 +203,7 @@ const remove = (amount: number = 1) => {
   if (!isEditing.value) return;
 
   const removed = decks.removeCardFromDeck({
-    cardId: props.item.id,
+    cardRef: props.item.image_key,
     amount,
     cardTypeCode: props.item.card_type_code,
   });
@@ -214,7 +214,7 @@ const remove = (amount: number = 1) => {
 };
 
 const count = computed(() => {
-  return decks.getCardCount(props.item.id, props.item.card_type_code);
+  return decks.getCardCount(props.item.image_key, props.item.card_type_code);
 });
 </script>
 

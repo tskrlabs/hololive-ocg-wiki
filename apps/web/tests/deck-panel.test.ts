@@ -46,6 +46,9 @@ const CARDS: Card[] = Array.from({ length: 12 }, (_, i) =>
   }) as unknown as Card,
 );
 
+/** What a deck actually stores now: `image_key`s, not ids (ADR 0014). */
+const KEYS = CARDS.map((c) => c.image_key);
+
 Object.assign(globalThis, {
   ref,
   computed,
@@ -57,7 +60,9 @@ Object.assign(globalThis, {
   useI18n: () => ({ locale: ref("en"), t: translate }),
   useCardImage: () => (key: string) => `https://img.example/${key}.webp`,
   useCardQuery: () => ({
-    getCardsByIds: async (ids: string[]) => CARDS.filter((c) => ids.includes(c.id)),
+    // A deck references cards by `image_key`, not by id (ADR 0014).
+    getCardsByKeys: async (keys: string[]) =>
+      CARDS.filter((c) => keys.includes(c.image_key)),
   }),
 });
 
@@ -93,6 +98,8 @@ async function mountList(cardIds: string[]) {
         Dialog: { template: "<div><slot /></div>" },
         DialogTrigger: { template: "<div><slot /></div>" },
         CardItemDialogContent: true,
+        DeckUnresolvedCard: true,
+        NuxtLink: true,
       },
       mocks: { $t: translate },
     },
@@ -111,7 +118,7 @@ describe("the deck panel's card grid (D18)", () => {
     // test ever mounted this at more than one width — and it only misbehaves above `md`.
     for (const width of [375, 768, 1024, 1280, 1512, 1920]) {
       windowWidth(width);
-      const wrapper = await mountList(["c0", "c1", "c2", "c3"]);
+      const wrapper = await mountList(KEYS.slice(0, 4));
       const grid = wrapper.find(".grid");
 
       expect(grid.exists(), `${width}px`).toBe(true);
@@ -124,7 +131,7 @@ describe("the deck panel's card grid (D18)", () => {
     // is a constant, so *any* viewport-keyed column count is wrong here regardless of
     // which one it names. A future `lg:grid-cols-5` would pass the test above.
     windowWidth(1512);
-    const wrapper = await mountList(["c0", "c1"]);
+    const wrapper = await mountList(KEYS.slice(0, 2));
 
     const columnClasses = wrapper
       .find(".grid")
@@ -142,7 +149,7 @@ describe("the deck panel's card grid (D18)", () => {
     // `useDeckCards` owns. Asserted here because the grid is what makes it visible, and
     // a regression would show up as 50 tiles in a panel sized for a dozen.
     windowWidth(1512);
-    const wrapper = await mountList(["c0", "c0", "c0", "c1"]);
+    const wrapper = await mountList([KEYS[0]!, KEYS[0]!, KEYS[0]!, KEYS[1]!]);
 
     expect(wrapper.findAll(".grid > div")).toHaveLength(2);
   });
@@ -152,7 +159,7 @@ describe("the deck panel's card grid (D18)", () => {
     // "Add card" / "Remove card", identical on every tile, so a screen-reader user heard
     // the same three names 40 times with nothing to tell them apart.
     windowWidth(1512);
-    const wrapper = await mountList(["c0"]);
+    const wrapper = await mountList([KEYS[0]!]);
 
     const labels = wrapper.findAll("button").map((b) => b.attributes("aria-label"));
 

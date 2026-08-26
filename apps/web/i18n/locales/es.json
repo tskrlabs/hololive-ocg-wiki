@@ -536,7 +536,13 @@
       "empty": "No hay ningún mazo seleccionado. Elige uno en Mazos o crea uno nuevo."
     },
     "removeAllCopies": "Quitar todas las copias de {name}",
-    "myDecks": "Mis Mazos"
+    "myDecks": "Mis Mazos",
+    "migration": {
+      "updated": "Se actualizaron {count} mazo(s) a la numeración de cartas más reciente.",
+      "unresolvedTitle": "No se pudo identificar esta carta",
+      "unresolvedDetail": "La lista oficial ya no incluye la carta {id}. Búscala para reponer la carta correcta.",
+      "unresolvedReplace": "Buscar un reemplazo"
+    }
   },
   "status": {
     "title": "Estado de Datos",

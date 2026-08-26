@@ -536,7 +536,13 @@
       "empty": "No deck selected. Choose one from Decks, or create a new one."
     },
     "removeAllCopies": "Remove all copies of {name}",
-    "myDecks": "My Decks"
+    "myDecks": "My Decks",
+    "migration": {
+      "updated": "Updated {count} deck(s) to the latest card numbering.",
+      "unresolvedTitle": "This card could not be matched",
+      "unresolvedDetail": "The official list no longer has card {id}. Search for it to put the right card back.",
+      "unresolvedReplace": "Find a replacement"
+    }
   },
   "status": {
     "title": "Data Status",
