@@ -210,6 +210,32 @@ export const useDecks = () => {
     return removed;
   };
 
+  /**
+   * Remove every copy of a reference, without knowing its card type (ADR 0014).
+   *
+   * The other mutations route through `sectionForCardType`, which needs a `Card`. An
+   * unresolved slot has none — that is what makes it unresolved — so this searches all
+   * three sections instead. It is the only way a user can get a card they cannot see out
+   * of their deck, and without it a withdrawn card is stuck there permanently.
+   *
+   * Safe to run across sections: a reference appears in exactly one, because the section
+   * was chosen by card type when it was added.
+   */
+  const removeRefFromDeck = (cardRef: string): number => {
+    const deck = currentDeckState.value;
+    if (!deck) return 0;
+
+    let total = 0;
+    for (const section of SECTIONS) {
+      const { ids, removed } = removeFromSection(deck, section, cardRef);
+      if (removed > 0) {
+        commit(section.field, ids);
+        total += removed;
+      }
+    }
+    return total;
+  };
+
   const getCardCount = (cardRef: string, cardTypeCode: CardTypeCode): number => {
     const deck = currentDeckState.value;
     const section = sectionForCardType(cardTypeCode);
@@ -285,6 +311,7 @@ export const useDecks = () => {
     addCardToDeck,
     removeCardFromDeck,
     removeAllCardFromDeck,
+    removeRefFromDeck,
     getCardCount,
 
     /** The section rules, for views that render limits and status badges. */

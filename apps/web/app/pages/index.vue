@@ -11,7 +11,7 @@ const { siteUrl } = useRuntimeConfig().public;
 const panel = useDeckPanel();
 
 /**
- * `?set_code=hBP03` (ADR 0010) — read once on load, then kept in step.
+ * `?set_code=hBP03` (ADR 0010) — read on load, followed after, and written back.
  *
  * Here rather than in the rail or the search box because both of those are rendered
  * twice (mobile header and desktop rail), and a URL sync running in two places would
@@ -20,6 +20,9 @@ const panel = useDeckPanel();
 const setCodeUrl = useSetCodeUrl();
 setCodeUrl.applyFromUrl();
 setCodeUrl.syncToUrl();
+// And keep following it, so a link to `?set_code=` from inside the app applies even when
+// this page is already mounted and setup will not run again.
+setCodeUrl.followUrl();
 
 // SEO Meta tags for the main page
 useSeoMeta({

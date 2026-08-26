@@ -22,9 +22,27 @@
  */
 import type { UnresolvedDeckCard } from "~/composables/useDeckCards";
 
-defineProps<{ item: UnresolvedDeckCard }>();
+const props = defineProps<{ item: UnresolvedDeckCard }>();
 
 const localePath = useLocalePath();
+const decks = useDecks();
+const { isEditing } = decks;
+
+/**
+ * Take the slot out of the deck.
+ *
+ * The only way to remove one: every other control routes through
+ * `sectionForCardType`, which needs a `Card`, and an unresolved slot has none. Without
+ * this a withdrawn card is stuck in the deck permanently — visible, unremovable, and
+ * keeping the deck off its 50-card limit.
+ *
+ * Editing-gated like the add and remove buttons on a real tile: outside edit mode the
+ * deck is being read, not changed.
+ */
+const remove = () => {
+  if (!isEditing.value) return;
+  decks.removeRefFromDeck(props.item.ref);
+};
 </script>
 
 <template>
@@ -62,5 +80,23 @@ const localePath = useLocalePath();
     <span v-if="item.count > 1" class="text-[10px] text-muted-foreground/80">
       ×{{ item.count }}
     </span>
+
+    <!--
+      Removal, only while editing. Labelled with the card number where there is one, so a
+      screen reader hears which slot is being removed rather than the same string on every
+      tile (#51's finding).
+    -->
+    <button
+      v-if="isEditing"
+      class="mt-0.5 rounded-sm bg-secondary/95 px-2 py-1 text-[10px] hover:bg-destructive hover:text-destructive-foreground"
+      :aria-label="
+        item.cardNumber
+          ? $t('deck.removeAllCopies', { name: item.cardNumber })
+          : $t('deck.migration.unresolvedRemove')
+      "
+      @click.prevent="remove"
+    >
+      {{ $t("deck.migration.unresolvedRemove") }}
+    </button>
   </div>
 </template>

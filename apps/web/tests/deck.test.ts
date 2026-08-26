@@ -155,6 +155,39 @@ describe("copiesOf and isDeckLegal", () => {
   });
 });
 
+describe("removing a slot with no card behind it (ADR 0014)", () => {
+  it("finds the reference without being told its section", () => {
+    // Every other mutation picks a section via `sectionForCardType`, which needs a Card.
+    // An unresolved slot has none, so removal has to search. Without this a withdrawn
+    // card is stuck in the deck permanently.
+    const held = deck({
+      oshiCardIds: ["hSD01/hSD01-001_OSR"],
+      mainCardIds: ["hEB01/hBP01-051_UR_02", "x", "hEB01/hBP01-051_UR_02"],
+      yellCardIds: ["y"],
+    });
+
+    const section = sectionByKey("main");
+    const { ids, removed } = removeFromSection(
+      held,
+      section,
+      "hEB01/hBP01-051_UR_02",
+    );
+
+    expect(removed).toBe(2);
+    expect(ids).toEqual(["x"]);
+  });
+
+  it("leaves the other sections alone", () => {
+    // The scan runs across all three, so a reference that is not in a section must come
+    // back untouched rather than emptying it.
+    const held = deck({ mainCardIds: ["a", "b"], yellCardIds: ["c"] });
+    const { ids, removed } = removeFromSection(held, sectionByKey("yell"), "a");
+
+    expect(removed).toBe(0);
+    expect(ids).toEqual(["c"]);
+  });
+});
+
 describe("the deck code — a frozen format (Q11)", () => {
   it("round-trips a deck", () => {
     // References are `image_key`s now (ADR 0014), and the deck carries the format it is

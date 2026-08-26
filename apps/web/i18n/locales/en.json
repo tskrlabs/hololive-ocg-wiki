@@ -542,7 +542,8 @@
       "unresolvedTitle": "Card not found",
       "unresolvedDetail": "The official list no longer has this card.",
       "unresolvedUnknown": "This card could not be identified. It may have come from an edited or non-standard deck code.",
-      "unresolvedBrowseSet": "Browse {set}"
+      "unresolvedBrowseSet": "Browse {set}",
+      "unresolvedRemove": "Remove from deck"
     }
   },
   "status": {

@@ -542,7 +542,8 @@
       "unresolvedTitle": "Carta no encontrada",
       "unresolvedDetail": "La lista oficial ya no incluye esta carta.",
       "unresolvedUnknown": "No se pudo identificar esta carta. Puede provenir de un código de mazo editado o no estándar.",
-      "unresolvedBrowseSet": "Ver {set}"
+      "unresolvedBrowseSet": "Ver {set}",
+      "unresolvedRemove": "Quitar del mazo"
     }
   },
   "status": {

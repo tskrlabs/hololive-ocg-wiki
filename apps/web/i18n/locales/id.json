@@ -542,7 +542,8 @@
       "unresolvedTitle": "Kartu tidak ditemukan",
       "unresolvedDetail": "Daftar resmi tidak lagi memuat kartu ini.",
       "unresolvedUnknown": "Kartu ini tidak dapat diidentifikasi. Mungkin berasal dari kode dek yang diedit atau tidak standar.",
-      "unresolvedBrowseSet": "Jelajahi {set}"
+      "unresolvedBrowseSet": "Jelajahi {set}",
+      "unresolvedRemove": "Hapus dari dek"
     }
   },
   "status": {

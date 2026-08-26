@@ -39,6 +39,17 @@ The link is `?set_code=`, the one filter with a URL (ADR 0010). There is no `?q=
 to — filter state is otherwise in-memory only — so the card number is also rendered as
 select-all text, to paste into the search box.
 
+**Turn on edit mode to see the remove button.** It is gated like the add/remove controls on
+a real tile: outside edit mode the deck is being read, not changed. Removal is the only way
+a user can get an unresolved slot out of a deck, since every other control needs a `Card` to
+choose a section and this slot has none.
+
+Check the set link both ways, because they broke differently:
+
+- from the **deck panel** on the listing page (the page is already mounted, so nothing
+  re-runs setup)
+- from the **deck detail page** (setup re-runs, but the grid had already fetched)
+
 Check 2 and 3 in the console:
 
 ```js

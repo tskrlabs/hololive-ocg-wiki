@@ -542,7 +542,8 @@
       "unresolvedTitle": "カードが見つかりません",
       "unresolvedDetail": "公式リストにこのカードはもうありません。",
       "unresolvedUnknown": "このカードを特定できませんでした。編集されたデッキコード、または非対応の形式の可能性があります。",
-      "unresolvedBrowseSet": "{set} を見る"
+      "unresolvedBrowseSet": "{set} を見る",
+      "unresolvedRemove": "デッキから削除"
     }
   },
   "status": {

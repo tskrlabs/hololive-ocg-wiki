@@ -543,7 +543,8 @@
       "unresolvedTitle": "找不到卡片",
       "unresolvedDetail": "官方列表中已無這張卡片。",
       "unresolvedUnknown": "無法辨識這張卡片，可能來自經過編輯或非標準的牌組代碼。",
-      "unresolvedBrowseSet": "瀏覽 {set}"
+      "unresolvedBrowseSet": "瀏覽 {set}",
+      "unresolvedRemove": "從牌組移除"
     }
   },
   "status": {
