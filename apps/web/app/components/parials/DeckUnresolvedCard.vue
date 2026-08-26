@@ -15,14 +15,26 @@
  * **It occupies the slot rather than vanishing.** Dropping it would make a missing card in
  * a 50-card deck invisible, and the user is the only one who knows what was meant.
  *
+ * **It is shaped exactly like a card tile**, and that is load-bearing rather than
+ * cosmetic. A real tile is one `aspect-400/559` image with its controls positioned
+ * *absolutely* on top, so it contributes only that ratio to the grid row. The first
+ * version of this stacked its text and buttons in normal flow, so it grew taller than the
+ * cards beside it and stretched the whole row — the deck read as broken rather than as a
+ * deck with one card missing.
+ *
  * The link is `?set_code=`, the one filter with a URL (ADR 0010). Not a search link:
  * filter state is otherwise in-memory only, so a `?q=` would need query-param plumbing
  * that ADR deliberately scoped out. The card number is rendered as selectable text either
  * way, so it can be copied into the search box when the link is not enough.
  */
+import { Trash2 } from "lucide-vue-next";
 import type { UnresolvedDeckCard } from "~/composables/useDeckCards";
 
-const props = defineProps<{ item: UnresolvedDeckCard }>();
+const props = defineProps<{
+  item: UnresolvedDeckCard;
+  /** `small` in the deck panel, `large` on the detail page — matches `CardCountBadge`. */
+  size?: "small" | "large";
+}>();
 
 const localePath = useLocalePath();
 const decks = useDecks();
@@ -31,72 +43,82 @@ const { isEditing } = decks;
 /**
  * Take the slot out of the deck.
  *
- * The only way to remove one: every other control routes through
- * `sectionForCardType`, which needs a `Card`, and an unresolved slot has none. Without
- * this a withdrawn card is stuck in the deck permanently — visible, unremovable, and
- * keeping the deck off its 50-card limit.
+ * The only way to remove one: every other control routes through `sectionForCardType`,
+ * which needs a `Card`, and an unresolved slot has none. Without this a withdrawn card is
+ * stuck in the deck permanently — visible, unremovable, and keeping the deck off its
+ * 50-card limit.
  *
- * Editing-gated like the add and remove buttons on a real tile: outside edit mode the
- * deck is being read, not changed.
+ * Not gated on edit mode. The add and remove buttons on a real tile are, because they
+ * change a deck the user can still read correctly; this slot is already wrong, and making
+ * the fix reachable only from edit mode hides the repair behind a mode the user has no
+ * reason to think they need.
  */
-const remove = () => {
-  if (!isEditing.value) return;
-  decks.removeRefFromDeck(props.item.ref);
-};
+const remove = () => decks.removeRefFromDeck(props.item.ref);
 </script>
 
 <template>
-  <div
-    class="relative flex aspect-400/559 flex-col items-center justify-center gap-1.5 rounded-sm border border-dashed border-muted-foreground/40 bg-muted/30 p-2 text-center"
-  >
-    <Icon name="lucide:help-circle" class="size-5 text-muted-foreground" />
-
-    <p class="text-xs font-medium text-muted-foreground">
-      {{ $t("deck.migration.unresolvedTitle") }}
-    </p>
-
-    <!-- Nameable: say which card, and offer its set. -->
-    <template v-if="item.cardNumber">
-      <p class="text-[11px] font-medium tabular-nums select-all">
-        {{ item.cardNumber }}
-      </p>
-      <p class="text-[10px] leading-tight text-muted-foreground/80">
-        {{ $t("deck.migration.unresolvedDetail") }}
-      </p>
-      <NuxtLink
-        v-if="item.setCode"
-        :to="{ path: localePath('/'), query: { set_code: item.setCode } }"
-        class="rounded-sm bg-secondary px-2 py-1 text-[10px] hover:bg-secondary/80"
+  <div class="relative flex">
+    <!--
+      The same `aspect-400/559` box a card image occupies, so the grid row keeps its
+      height. Everything else is layered on top of it, exactly as a real tile does.
+    -->
+    <div
+      class="aspect-400/559 w-full rounded-sm border border-dashed border-muted-foreground/40 bg-muted/30"
+    >
+      <div
+        class="flex h-full flex-col items-center justify-center gap-1 overflow-hidden p-1.5 text-center"
       >
-        {{ $t("deck.migration.unresolvedBrowseSet", { set: item.setCode }) }}
-      </NuxtLink>
-    </template>
+        <Icon name="lucide:help-circle" class="size-4 shrink-0 text-muted-foreground" />
 
-    <!-- Not nameable: no card number exists, so no suggestion is possible. -->
-    <p v-else class="text-[10px] leading-tight text-muted-foreground/80">
-      {{ $t("deck.migration.unresolvedUnknown") }}
-    </p>
+        <p class="text-[10px] leading-tight font-medium text-muted-foreground">
+          {{ $t("deck.migration.unresolvedTitle") }}
+        </p>
 
-    <span v-if="item.count > 1" class="text-[10px] text-muted-foreground/80">
-      ×{{ item.count }}
-    </span>
+        <!-- Nameable: say which card, and offer its set. -->
+        <template v-if="item.cardNumber">
+          <p class="text-[11px] leading-none font-semibold tabular-nums select-all">
+            {{ item.cardNumber }}
+          </p>
+          <NuxtLink
+            v-if="item.setCode"
+            :to="{ path: localePath('/'), query: { set_code: item.setCode } }"
+            class="max-w-full truncate rounded-sm bg-secondary px-1.5 py-0.5 text-[10px] hover:bg-secondary/80"
+          >
+            {{ $t("deck.migration.unresolvedBrowseSet", { set: item.setCode }) }}
+          </NuxtLink>
+        </template>
+
+        <!-- Not nameable: no card number exists, so no suggestion is possible. -->
+        <p
+          v-else
+          class="line-clamp-3 text-[9px] leading-tight text-muted-foreground/80"
+        >
+          {{ $t("deck.migration.unresolvedUnknown") }}
+        </p>
+      </div>
+    </div>
 
     <!--
-      Removal, only while editing. Labelled with the card number where there is one, so a
-      screen reader hears which slot is being removed rather than the same string on every
-      tile (#51's finding).
+      Removal, in the same corner and the same shape as a real tile's "remove all", so it
+      reads as the same control rather than a new one.
     -->
-    <button
-      v-if="isEditing"
-      class="mt-0.5 rounded-sm bg-secondary/95 px-2 py-1 text-[10px] hover:bg-destructive hover:text-destructive-foreground"
-      :aria-label="
-        item.cardNumber
-          ? $t('deck.removeAllCopies', { name: item.cardNumber })
-          : $t('deck.migration.unresolvedRemove')
-      "
-      @click.prevent="remove"
-    >
-      {{ $t("deck.migration.unresolvedRemove") }}
-    </button>
+    <div class="absolute top-0 right-0 flex flex-col gap-1 p-1">
+      <button
+        class="size-7 rounded-sm bg-destructive/90 text-destructive-foreground"
+        :aria-label="
+          item.cardNumber
+            ? $t('deck.removeAllCopies', { name: item.cardNumber })
+            : $t('deck.migration.unresolvedRemove')
+        "
+        :title="$t('deck.migration.unresolvedRemove')"
+        @click.prevent="remove"
+      >
+        <div class="flex items-center justify-center text-xs">
+          <Trash2 class="size-4" aria-hidden="true" />
+        </div>
+      </button>
+    </div>
+
+    <CardCountBadge :count="item.count" :size="size ?? 'small'" />
   </div>
 </template>

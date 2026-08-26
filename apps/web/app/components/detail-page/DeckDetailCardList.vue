@@ -64,6 +64,7 @@ const cardImage = useCardImage();
       v-for="item in unresolvedCards"
       :key="item.ref"
       :item="item"
+      size="large"
     />
   </div>
 </template>
