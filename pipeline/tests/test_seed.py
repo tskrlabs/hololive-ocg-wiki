@@ -612,6 +612,53 @@ class TestDiff:
         assert plan.identity_shifts == []
         assert [r.id for r in plan.changed] == [edited.cards[0].id]
 
+    def test_a_renumbering_chain_writes_without_tripping_the_unique_index(
+        self, db, collection
+    ):
+        """The regression test for the 2026-08-26 seed failure.
+
+        Runs the seeder's own statements against the real schema — unique index and all —
+        so a wrong order fails here exactly as it failed against D1, rather than being
+        argued about. Card 0 takes card 1's id, card 1 takes card 2's, and so on: a chain,
+        which is the shape the official site actually produced.
+        """
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        baseline = stored_hashes(db)
+
+        # The whole set: the renumbered cards plus every untouched one, which is what a
+        # real run looks like and keeps the collapsed-set gate quiet.
+        #
+        # A three-link chain, preserving the invariant that makes it orderable: every
+        # stored id stays an incoming id. Cards 0 and 1 shift up one id each, and card 2
+        # keeps id 0's slot while taking a brand-new key — the addition that opens the
+        # chain, exactly as the 36 new hEB01 cards did.
+        shifted = collection.model_copy(deep=True)
+        shifted.cards[0].id = rows[1].id
+        shifted.cards[1].id = rows[2].id
+        shifted.cards[2].id = rows[0].id
+        shifted.cards[2].image_key = "hEB01/hEB01-999_SR"
+
+        plan = seed_module.diff(
+            [seed_module.to_row(card) for card in shifted.cards], baseline
+        )
+        assert seed_module.check_gates(plan, collection, 1, 0, prune=False) == []
+
+        # The write itself — this is what raised `UNIQUE constraint failed` in production.
+        apply(db, plan.to_write)
+
+        stored = dict(db.execute("SELECT id, image_key FROM cards"))
+        assert stored[rows[1].id] == rows[0].image_key
+        assert stored[rows[2].id] == rows[1].image_key
+        assert stored[rows[0].id] == "hEB01/hEB01-999_SR"
+
+    def test_write_order_leaves_an_ordinary_run_alone(self, db, collection):
+        """No renumbering means no reordering — 2,604 of 2,686 rows in the real event."""
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        plan = seed_module.diff(rows, stored_hashes(db))
+        assert seed_module.write_order(rows, plan.stored_by_key) == list(rows)
+
     def test_reseeding_after_an_interrupted_run_resumes(self, db, collection):
         """The property that makes the in-database baseline worth its 2,448 reads.
 
@@ -945,25 +992,54 @@ class TestGates:
         assert any("dropped" in r.reason for r in refusals)
         assert any("mappings.py" in r.detail for r in refusals)
 
-    def test_a_renumbered_card_is_refused(self, db, collection):
-        """No flag clears this one, and that is the point.
+    def test_a_renumbered_chain_is_not_refused(self, db, collection):
+        """Renumbering is ordinary now, and ordering handles it.
 
-        Decks are stored as card ids in localStorage and in shared deck-code URLs, so
-        seeding a reused id rewrites saved decks with nothing raising and nothing
-        announcing it. The failure is silent and lands outside the database, which is
-        exactly the class D10 says to refuse rather than gate.
+        It was fatal while decks referenced cards by the site's id — a reused id silently
+        rewrote saved decks. ADR 0014 moved decks onto `image_key`, so what is left is the
+        unique-index collision, which `write_order` resolves by writing the end of each
+        chain first.
         """
         rows = [seed_module.to_row(card) for card in collection.cards]
         apply(db, rows)
         baseline = stored_hashes(db)
 
+        # The real shape, and the invariant that makes it orderable: **every stored id is
+        # still an incoming id**. The site added 36 ids on top and reassigned keys among
+        # the existing ones, so no row is orphaned holding a key nobody frees.
+        #
+        # Here: card 0's key moves onto card 1's id, and card 0's own id is taken by a new
+        # card. The chain opens on that addition.
         shifted = collection.model_copy(deep=True)
         shifted.cards[0].id = rows[1].id
+        shifted.cards[1].id = rows[0].id
+        shifted.cards[1].image_key = "hEB01/hEB01-999_SR"
 
-        plan = seed_module.diff([seed_module.to_row(shifted.cards[0])], baseline)
+        plan = seed_module.diff(
+            [seed_module.to_row(card) for card in shifted.cards], baseline
+        )
+        assert plan.identity_shifts  # still reported
+        assert seed_module.check_gates(plan, collection, 1, 0, prune=False) == []
+
+    def test_a_renumbering_cycle_is_refused(self, db, collection):
+        """The one shape no write order can fix.
+
+        A and B swap `image_key`s: whichever is written first collides with the other,
+        which has not moved yet. Breaking it needs a temporary key, so the seeder refuses
+        rather than improvising one.
+        """
+        rows = [seed_module.to_row(card) for card in collection.cards]
+        apply(db, rows)
+        baseline = stored_hashes(db)
+
+        swapped = collection.model_copy(deep=True)
+        swapped.cards[0].id, swapped.cards[1].id = rows[1].id, rows[0].id
+
+        plan = seed_module.diff(
+            [seed_module.to_row(card) for card in swapped.cards[:2]], baseline
+        )
         refusals = seed_module.check_gates(plan, collection, 1, 0, prune=False)
-        assert any("different card" in r.reason for r in refusals)
-        assert any("image_key" in r.detail for r in refusals)
+        assert any("cycle" in r.reason for r in refusals)
 
     def test_unreadable_analytics_does_not_block_a_small_run(self, collection):
         """A missing analytics permission should not stop a legitimate seed.

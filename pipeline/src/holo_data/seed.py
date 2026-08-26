@@ -524,14 +524,16 @@ class SeedPlan:
     backfill: list[CardRow] = field(default_factory=list)
 
     #: Ids the official site has handed to a *different card* since the last seed, as
-    #: `(id, stored_image_key, incoming_image_key)`. Report-only, and the input to the
-    #: hard refusal in `check_gates` — see `identity_shifts` there for why this is fatal
-    #: rather than something the upsert should absorb.
+    #: `(id, stored_image_key, incoming_image_key)`. Report-only. Not fatal on its own —
+    #: `write_order` resolves the collisions they cause; see `unresolvable_cycles`.
     identity_shifts: list[tuple[str, str, str]] = field(default_factory=list)
+
+    #: `image_key` -> the id holding it in D1 *before* this run. The input to `write_order`.
+    stored_by_key: dict[str, str] = field(default_factory=dict)
 
     @property
     def to_write(self) -> list[CardRow]:
-        return [*self.new, *self.changed, *self.qa_updated]
+        return write_order([*self.new, *self.changed, *self.qa_updated], self.stored_by_key)
 
     @property
     def estimated_writes(self) -> int:
@@ -545,6 +547,132 @@ class SeedPlan:
     @property
     def is_empty(self) -> bool:
         return not self.to_write and not self.missing_ids and not self.backfill
+
+
+def write_order(
+    rows: Sequence[CardRow], stored_by_key: dict[str, str]
+) -> list[CardRow]:
+    """Order the writes so a renumbering cannot trip the unique index on `image_key`.
+
+    **The problem is ordering, not data.** `cards.image_key` carries a unique index (ADR
+    0009 D6) while the upsert keys `ON CONFLICT(id)`, so writing a card whose `image_key`
+    is still held by a *different* row fails — even though that other row is about to move
+    too. On 2026-08-26 the official site shifted 82 ids and the seed died 19 batches in.
+
+    The fix is to write the end of each chain first. If card A wants the key row B holds,
+    B must move before A. `depth` counts how many rows have to move first; ascending depth
+    is therefore a valid topological order.
+
+    Verified against the real event: 82 constrained rows in 64 chains, longest 5, **zero
+    cycles**, and all 2,686 rows write cleanly with no deletes. Descending order fails —
+    both were tried rather than reasoned about.
+
+    Rows with no constraint (2,604 of 2,686 in that run) all sit at depth 0 and keep their
+    relative order, so this is a no-op on an ordinary run.
+
+    A genuine cycle cannot be ordered — it needs a temporary key — and is refused by
+    `check_gates` rather than silently mis-ordered here. `depth` therefore tracks its own
+    path and stops rather than recursing forever.
+    """
+    ids = {row.id for row in rows}
+
+    # blocker[x] = the row squatting on the key x wants, when that row is *also* being
+    # rewritten. A blocker absent from this run never moves, so its key never frees and no
+    # order helps — that is `stuck_writes`, refused rather than mis-ordered here.
+    blocker: dict[str, str] = {}
+    for row in rows:
+        holder = stored_by_key.get(row.image_key)
+        if holder is not None and holder != row.id and holder in ids:
+            blocker[row.id] = holder
+
+    depth: dict[str, int] = {}
+
+    def resolve(card_id: str) -> int:
+        """How many rows must be written before this one. The blocker goes first."""
+        if card_id in depth:
+            return depth[card_id]
+
+        path: list[str] = []
+        cursor = card_id
+        while cursor in blocker and cursor not in depth and cursor not in path:
+            path.append(cursor)
+            cursor = blocker[cursor]
+
+        # `cursor` is now the far end: unblocked, already numbered, or a cycle member.
+        # Number outward from it, so the row nothing waits on is written first.
+        base = depth.get(cursor, 0)
+        if cursor not in depth:
+            depth[cursor] = base
+        for offset, member in enumerate(reversed(path), start=1):
+            depth[member] = base + offset
+        return depth.get(card_id, 0)
+
+    for row in rows:
+        resolve(row.id)
+
+    # Stable sort: the 2,604 unconstrained rows in the real event all sit at 0 and keep
+    # the order the caller built them in.
+    return sorted(rows, key=lambda row: depth.get(row.id, 0))
+
+
+def stuck_writes(
+    rows: Sequence[CardRow], stored_by_key: dict[str, str]
+) -> list[tuple[str, str, str]]:
+    """Writes whose `image_key` is held by a row this run never touches.
+
+    `write_order` can only sequence rows that are all moving. If the squatter is not in
+    the plan, its key is never released and no order succeeds — the write would fail on
+    the unique index exactly as an unordered run does.
+
+    Zero of these in the 2026-08-26 event: every blocker was itself rewritten. Detected
+    anyway, because the alternative is `write_order` quietly producing an order that
+    cannot work, which is how the original failure looked from the outside.
+
+    Returns `(incoming_id, image_key, holding_id)`.
+    """
+    ids = {row.id for row in rows}
+    found: list[tuple[str, str, str]] = []
+    for row in rows:
+        holder = stored_by_key.get(row.image_key)
+        if holder is not None and holder != row.id and holder not in ids:
+            found.append((row.id, row.image_key, holder))
+    return found
+
+
+def unresolvable_cycles(
+    rows: Sequence[CardRow], stored_by_key: dict[str, str]
+) -> list[list[str]]:
+    """Renumbering cycles — the one shape `write_order` cannot fix.
+
+    A chain ends on a row nobody is waiting for, so writing that row first frees its key.
+    A *cycle* has no such end: A wants B's key and B wants A's, so whichever moves first
+    collides. Resolving it needs a temporary key, which is a bigger change than this
+    seeder should make silently.
+
+    The real 2026-08-26 event had none, so this is a guard against a shape that has not
+    happened yet rather than a path in regular use.
+    """
+    successor: dict[str, str] = {}
+    ids = {row.id for row in rows}
+    for row in rows:
+        holder = stored_by_key.get(row.image_key)
+        if holder is not None and holder != row.id and holder in ids:
+            successor[row.id] = holder
+
+    cycles: list[list[str]] = []
+    seen: set[str] = set()
+    for start in successor:
+        if start in seen:
+            continue
+        path: list[str] = []
+        cursor = start
+        while cursor in successor and cursor not in path:
+            path.append(cursor)
+            cursor = successor[cursor]
+        if cursor in path:
+            cycles.append(path[path.index(cursor) :])
+        seen.update(path)
+    return cycles
 
 
 def diff(rows: Sequence[CardRow], stored: dict[str, StoredHashes]) -> SeedPlan:
@@ -564,6 +692,11 @@ def diff(rows: Sequence[CardRow], stored: dict[str, StoredHashes]) -> SeedPlan:
     backfill instead, so the silence lasts exactly one run.
     """
     plan = SeedPlan(stored_count=len(stored), incoming_count=len(rows))
+    plan.stored_by_key = {
+        hashes.image_key: card_id
+        for card_id, hashes in stored.items()
+        if hashes.image_key is not None
+    }
 
     for row in rows:
         existing = stored.get(row.id)
@@ -663,40 +796,50 @@ def check_gates(
             )
         )
 
-    # The official site handed an existing id to a different card. Fatal, and no flag
-    # clears it, because the damage is silent and lands outside the database: decks are
-    # stored as card ids (`deckCode.ts` encodes id → count) in localStorage and inside
-    # shared deck-code URLs, so rewriting id 2594 from hBP01-026 to hEB01-019 edits every
-    # saved deck that ever used it. Nothing errors and nothing announces it — a player
-    # opens a deck and one card is quietly a different card.
+    # A renumbering *cycle* — the one shape that cannot be written in any order.
     #
-    # This is not the constraint failure it presents as. Seeding first surfaced it as
-    # `UNIQUE constraint failed: cards.image_key` from the upsert's `ON CONFLICT(id)`
-    # racing the unique index on `image_key` (ADR 0009 D6), 19 batches deep. That crash
-    # was the database defending itself; this gate is the same refusal moved before the
-    # first write, where it can name the cards.
+    # Renumbering itself is no longer fatal. It was, when decks referenced cards by the
+    # site's id: a reused id silently rewrote every saved deck that named it, with nothing
+    # raising. ADR 0014 moved decks onto `image_key`, so that damage is gone, and what
+    # remains is mechanical — `cards.image_key` is unique (ADR 0009 D6) while the upsert
+    # keys `ON CONFLICT(id)`, so a card cannot take a key another row still holds.
     #
-    # Deliberately not "repair it here". Re-keying on `image_key` is the real fix and it
-    # changes a persistence format that lives in users' browsers, so it needs a migration
-    # and a deck-load shim, not a seeder branch.
-    if plan.identity_shifts:
+    # `write_order` fixes that for chains by writing the end first. A cycle has no end:
+    # A wants B's key and B wants A's, so whichever moves first collides. Breaking it
+    # needs a temporary key, which is a bigger change than a seeder should improvise.
+    #
+    # The real 2026-08-26 event was 64 chains and **zero cycles**, so this guards a shape
+    # that has not happened yet rather than one in regular use.
+    # The key is held by a row this run does not touch, so it never frees. Distinct from a
+    # cycle, and distinct from an ordering problem: no order exists at all.
+    stuck = stuck_writes(plan.to_write, plan.stored_by_key)
+    if stuck:
         shown = ", ".join(
-            f"id {card_id}: {was} -> {now}"
-            for card_id, was, now in plan.identity_shifts[:5]
+            f"id {card_id} wants {key}, held by id {holder}"
+            for card_id, key, holder in stuck[:5]
         )
-        more = (
-            f" (+{len(plan.identity_shifts) - 5} more)"
-            if len(plan.identity_shifts) > 5
-            else ""
-        )
+        more = f" (+{len(stuck) - 5} more)" if len(stuck) > 5 else ""
         refusals.append(
             Refusal(
-                f"{len(plan.identity_shifts)} card id(s) now point at a different card",
-                f"{shown}{more}. The official site reused these ids, so seeding would "
-                "silently rewrite every saved deck and shared deck code that references "
-                "them. Card identity needs to be re-keyed on `image_key` before this "
-                "set can ship; seeding a subset does not help, because the renumbering "
-                "is one interlocked shift.",
+                f"{len(stuck)} write(s) blocked by a row this run does not rewrite",
+                f"{shown}{more}. `image_key` is unique, and the row holding it is not in "
+                "this plan, so no write order frees it. Either the build is missing a "
+                "card it should carry, or the holder needs pruning first — both are "
+                "decisions for a person, not the seeder.",
+            )
+        )
+
+    cycles = unresolvable_cycles(plan.to_write, plan.stored_by_key)
+    if cycles:
+        shown = "; ".join(" -> ".join(cycle) for cycle in cycles[:3])
+        more = f" (+{len(cycles) - 3} more)" if len(cycles) > 3 else ""
+        refusals.append(
+            Refusal(
+                f"{len(cycles)} renumbering cycle(s) in the incoming set",
+                f"{shown}{more}. These cards want each other's `image_key`, so no write "
+                "order avoids the unique index — breaking the cycle needs a temporary "
+                "key. `write_order` handles chains, which is every case seen so far; this "
+                "one needs a person.",
             )
         )
 
