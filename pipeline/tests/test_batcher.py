@@ -206,11 +206,18 @@ class TestCollectResult:
         assert "expected a string" in result.failures[0]
 
     def test_structured_units_with_no_names_pass_straight_through(self, table, restorer):
-        """A Q&A entry that mentions no glossary name has nothing to restore."""
+        """A Q&A entry that mentions no glossary name has nothing to restore.
+
+        The reply still has to carry every field. This once asserted `ok == 1` on a
+        reply with no `question`, which is the shape defect `collect_result` now
+        rejects; the fixture was incidentally incomplete, not deliberately partial.
+        """
         qa = {"title": "Q1", "question": "q", "answer": "a"}
         batch = build_batches([unit(kind="qa", value=qa)], "en", table)[0]
 
-        result = collect_result(batch, {"0": {"title": "Q1", "answer": "A"}}, restorer)
+        result = collect_result(
+            batch, {"0": {"title": "Q1", "question": "Q", "answer": "A"}}, restorer
+        )
 
         assert result.ok == 1
 
@@ -303,6 +310,22 @@ class TestStructuredMasking:
 
         assert result.ok == 0
         assert "expected an object" in result.failures[0]
+
+    def test_a_reply_that_renames_the_fields_is_rejected(self, table, restorer):
+        """Caught on the 2,835-card run, retrying 10 previously rejected units.
+
+        The model answered with `{"text": …}` instead of `title`/`question`/`answer`.
+        Masking did not catch it: it only verifies fields it actually masked a name in,
+        and these had none, so six malformed entries were cached and surfaced only at
+        `build`, as `Extra inputs are not permitted`, after the run had paid for them.
+        """
+        plain = {"title": "Q1", "question": "できますか？", "answer": "はい。"}
+        batch = build_batches([unit(kind="qa", value=plain)], "en", table)[0]
+
+        result = collect_result(batch, {"0": {"text": "Yes, you can."}}, restorer)
+
+        assert result.ok == 0
+        assert "missing answer, question, title" in result.failures[0]
 
     def test_the_fields_of_one_entry_never_share_a_token_number(self, table):
         """Found while building this, and it is the reason the numbering is continuous.

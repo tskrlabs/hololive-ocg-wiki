@@ -2,7 +2,10 @@
 
 **Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
-origin (D2), against **2,650 cards** in D1 and images on R2.
+origin (D2), against **2,835 cards** in D1 and images on R2.
+
+✅ **The 2,835-card set is live** (2026-09-13) — the hBP09 set, 149 new cards. See the run
+below; the one thing it changed in code was a Q&A shape guard.
 
 ✅ **`v2.3.0` shipped and the 2,686-card set is live** (2026-08-26). Decks now reference
 `image_key` rather than the official site's reusable ids
@@ -30,6 +33,58 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 `/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
+## ✅ The card set is at 2,835 — the hBP09 set, 2026-09-13
+
+149 new cards, 2,686 → 2,835. No collision drama this time: **one** id was reassigned
+(1120), and only its promo image variant moved, `hPR/hBP04-074_P_02` → `hPR/hBP04-074_P`,
+keeping its card number. That is the benign shape of the thing that stopped the previous run
+at 82 cards.
+
+| step | result |
+|---|---|
+| `scrape` | 2,835 entries, 189 list pages, ~35 min |
+| `images` | 149 new, 2,688 cached; PNG 888 MB → WebP 239 MB |
+| `translate-units` | 2,118 units / 66 calls / **182,241 tokens**, 0 rejected |
+| `translate-units --include-qa` | 368 units / 29 calls / **139,961 tokens**, 10 rejected then recovered |
+| `build` | 2,835 cards, 100% in all 7 locales, 24.9 MB |
+| `publish` | **158 objects**, 36.0 MB (149 images + 9 artifacts) |
+| `seed --confirm` | 1,804 cards, **40,803 rows** against a 39,801 estimate, 248 batches |
+| D1 | now 117.2 MB; 41% of the 100k/day write tier |
+
+**`edited 1,651` in the seed diff is not 1,651 cards changing on the official site.** It is
+`normalise-cache`, which rewrote 191 entries across this run. Content addressing means one
+shared string is cited by hundreds of cards, so a single glyph fix fans out across the table.
+Worth knowing before reading a large `edited` count as upstream churn.
+
+**Q&A had to be translated, and that is a decision, not a step.** `translate-units` excludes
+Q&A by default (`--include-qa`, historically 62% of the corpus), so it reported "everything
+is up to date" while `build` failed on 3 cards. The rule it was hitting is **all-or-nothing
+per card**: 61 cards had *no* `en` Q&A and validated fine, because the locale then omits
+`qa_items` entirely. Those 3 `th` cards had new official Q&A landing beside *already
+translated* Thai Q&A, making a **partial** list, which is what fails. So the failure count
+does not track how much is missing, it tracks how much is half-missing. The legacy corpus was
+already cached, so the actual spend was 29 calls, not the 62% the flag's help text implies.
+
+### The bug the run found: a Q&A reply that renames its fields
+
+Retrying 10 rejected `en` units, the model answered `{"text": …}` instead of
+`title`/`question`/`answer`. **Masking only verifies fields it actually masked a name in**,
+and these had none, so six malformed entries were cached and surfaced only at `build`, as
+`Extra inputs are not permitted` — after the run had paid for them.
+
+`collect_result` now checks every source field came back, masked or not, and drops the unit
+if not. Notably the pre-existing no-names test asserted `ok == 1` on a reply missing
+`question`: the fixture was incidentally incomplete, and it was encoding the defect as
+correct behaviour.
+
+Also seen once and worth recognising: a model instruction string
+(`'「name」 -> the canonical translation already in the cache'`) leaked into a translation as
+its literal value. `normalise-cache` stripped it. It is caught, but the mechanism that caught
+it was cleanup, not a guard.
+
+`make check` also failed first on a stale `fixtures/volume.sql`, which is generated from the
+card data. `make volume` regenerates it, and the check names that in its output.
 
 ## ✅ The card set is at 2,686 — shipped after the deck format moved, 2026-08-26
 
