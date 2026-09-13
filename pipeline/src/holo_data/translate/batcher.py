@@ -222,14 +222,28 @@ def collect_result(
             # A structured unit: restore its masked prose fields and pass the rest
             # through. `related_cards` and `title` were never masked, so they arrive
             # here exactly as the model returned them.
-            if not item.field_masks:
-                result.translations[item.unit.key] = raw
-                continue
-
             if not isinstance(raw, dict):
                 result.failures.append(
                     f"{item.unit.key}: expected an object, got {type(raw).__name__}"
                 )
+                continue
+
+            # Every source field must come back. Masking only guards the fields it
+            # actually replaced a name in, so a reply that renamed or dropped fields
+            # passed through untouched: `unmask_fields` skips anything unmasked, and a
+            # unit with no maskable prose skips it entirely. Six `{"text": …}` replies
+            # reached the cache that way on the 2,835-card run and surfaced only at
+            # `build`, as `Extra inputs are not permitted`, after the run had paid for
+            # them. A field lost here is the same defect as a lost placeholder, and it
+            # gets the same verdict: drop the unit, leave it stale, retry next run.
+            if missing := [key for key in item.unit.value if key not in raw]:
+                result.failures.append(
+                    f"{item.unit.key}: reply is missing {', '.join(sorted(missing))}"
+                )
+                continue
+
+            if not item.field_masks:
+                result.translations[item.unit.key] = raw
                 continue
 
             try:
