@@ -2,7 +2,11 @@
 
 **Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
-origin (D2), against **2,835 cards** in D1 and images on R2.
+origin (D2), against **2,981 cards** in D1 and images on R2.
+
+✅ **The 2,981-card set is live** (2026-09-18) — the hBP09 alt-art wave, 146 new image keys
+of which only 6 are new card numbers. See the run below; it changed no code, and it is the
+run where `build` succeeding at step 4 was the *correct* outcome.
 
 ✅ **The 2,835-card set is live** (2026-09-13) — the hBP09 set, 149 new cards. See the run
 below; the one thing it changed in code was a Q&A shape guard.
@@ -33,6 +37,47 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 `/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
+## ✅ The card set is at 2,981 — the hBP09 alt-art wave, 2026-09-18
+
+146 new image keys, 2,835 → 2,981. The interesting number is not 146 but **6**: that is how
+many are new *card numbers*. The other 140 are alternate arts of cards already in the
+database — `hBP09/hBP01-072_C_02` is a second printing of `hBP01-072`. The six new ones
+(`hY01-015`, `hY02-013`, `hY03-017`, `hY04-014`, `hY05-012`, `hY06-012`) are the coloured
+Cheer cards, which carry a name and no card text.
+
+| step | result |
+|---|---|
+| `scrape` | 2,982 entries, 199 list pages, ~33 min, no unmapped enums |
+| `images` | 147 new, 2,837 cached; PNG 947 MB → WebP 250 MB |
+| `translate-units --include-qa` | 24 units / 12 calls / **13,898 tokens**, 0 rejected |
+| `normalise-cache` | 24 replacements, quoted card names → canonical translations |
+| `build` | 2,981 cards, 100% in all 7 locales, 26.0 MB |
+| `publish` | **156 objects**, 37.0 MB (147 images + 9 artifacts) |
+| `seed --confirm` | 990 cards, **23,574 rows** against a 25,152 estimate, 152 batches |
+| D1 | now 94.5 MB; 25% of the 100k/day write tier |
+
+**`build` succeeded at step 4, and that was correct, not a missed failure.** The skill says
+to expect `Field required` there, because new cards have no translations yet. The reason it
+did not fire: translation is content-addressed, so 140 reprints reuse the cached strings of
+the cards they reprint, and the 6 genuinely new cards are name-only. There was almost
+nothing missing to refuse over. Spend was **13,898 tokens against 322,202 for the 149-card
+set five days earlier** — a ~23× difference driven entirely by set composition, not by
+anything changing in the pipeline. Worth knowing before reading a cheap run as a broken one:
+**check whether the additions are new card numbers or new printings before concluding the
+translation step silently skipped work.** `git diff` on `card-urls.json`, bucketed by
+`card_number` against the previous commit, answers it in one command.
+
+`edited 840` in the seed diff is again the content-addressing fan-out, not upstream churn,
+for the reason the 2,835 run recorded below. It is roughly half that run's 1,651.
+
+**`fixtures/volume.sql` is generated from card data and is not on the skill's allowlist.**
+It was regenerated because `make check` failed with `Generated SQL is out of date`, and it
+shipped in the same commit as `card-urls.json` — exactly as it did in the previous card run
+(`8ad671a`). The skill's `cards` mode tells the agent to stop if anything outside
+`card-urls.json` and `progress.md` appears in the merge range, which fires here on a file
+that is pure generated data. The allowlist wants a third entry; flagged rather than silently
+widened, since the check earning its keep is the whole point of it being tight.
 
 ## ✅ The card set is at 2,835 — the hBP09 set, 2026-09-13
 
