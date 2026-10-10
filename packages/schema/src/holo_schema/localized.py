@@ -81,6 +81,7 @@ class OriginalLabels(BaseModel):
     keyword_name: Optional[str] = None
     oshi_skill_name: Optional[str] = None
     sp_oshi_skill_name: Optional[str] = None
+    oshi_stage_skill_name: Optional[str] = None
 
 
 class LocalizedKeyword(BaseModel):
@@ -103,6 +104,17 @@ class LocalizedOshiSkill(BaseModel):
     model_config = _STRICT
 
     timing_code: TimingCode
+    name: Optional[str] = None
+    effect: Optional[str] = None
+    timing: Optional[str] = None
+
+
+class LocalizedOshiStageSkill(BaseModel):
+    """An oshi stage skill with its translated text merged. `timing_code` is optional."""
+
+    model_config = _STRICT
+
+    timing_code: Optional[TimingCode] = None
     name: Optional[str] = None
     effect: Optional[str] = None
     timing: Optional[str] = None
@@ -160,6 +172,7 @@ class LocalizedCard(BaseModel):
     keyword: Optional[LocalizedKeyword] = None
     oshi_skill: Optional[LocalizedOshiSkill] = None
     sp_oshi_skill: Optional[LocalizedOshiSkill] = None
+    oshi_stage_skill: Optional[LocalizedOshiStageSkill] = None
     qa_items: list[QaItem] = []
 
     # --- The source text, for the show-original toggle ---

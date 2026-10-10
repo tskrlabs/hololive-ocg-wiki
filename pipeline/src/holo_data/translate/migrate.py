@@ -204,7 +204,7 @@ def conflict_census(
                 record(unit_key("keyword_name", value), card_id, "keyword.name")
             if value := keyword.get("effect"):
                 record(unit_key("keyword_effect", value), card_id, "keyword.effect")
-        for skill_key in ("oshi_skill", "sp_oshi_skill"):
+        for skill_key in ("oshi_skill", "sp_oshi_skill", "oshi_stage_skill"):
             skill = translation.get(skill_key)
             if not isinstance(skill, dict):
                 continue

@@ -42,5 +42,6 @@ export type {
   LocalizedArt,
   LocalizedKeyword,
   LocalizedOshiSkill,
+  LocalizedOshiStageSkill,
   QaItem,
 } from "@holo/schema";

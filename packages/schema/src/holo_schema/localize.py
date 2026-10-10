@@ -40,6 +40,7 @@ from .localized import (
     LocalizedCard,
     LocalizedKeyword,
     LocalizedOshiSkill,
+    LocalizedOshiStageSkill,
     OriginalLabels,
 )
 
@@ -90,6 +91,10 @@ def _original_labels(card: Card, resolved: Locale) -> OriginalLabels | None:
             source.sp_oshi_skill.name if source.sp_oshi_skill else None,
             shown.sp_oshi_skill.name if shown.sp_oshi_skill else None,
         ),
+        oshi_stage_skill_name=differing(
+            source.oshi_stage_skill.name if source.oshi_stage_skill else None,
+            shown.oshi_stage_skill.name if shown.oshi_stage_skill else None,
+        ),
     )
 
     has_content = any(
@@ -100,6 +105,7 @@ def _original_labels(card: Card, resolved: Locale) -> OriginalLabels | None:
             labels.keyword_name,
             labels.oshi_skill_name,
             labels.sp_oshi_skill_name,
+            labels.oshi_stage_skill_name,
         )
     )
     return labels if has_content else None
@@ -183,6 +189,16 @@ def localize(card: Card, locale: Locale) -> LocalizedCard:
             timing=translation.sp_oshi_skill.timing if translation.sp_oshi_skill else None,
         )
 
+    oshi_stage_skill = None
+    if card.oshi_stage_skill is not None:
+        stage = translation.oshi_stage_skill
+        oshi_stage_skill = LocalizedOshiStageSkill(
+            timing_code=card.oshi_stage_skill.timing_code,
+            name=stage.name if stage else None,
+            effect=stage.effect if stage else None,
+            timing=stage.timing if stage else None,
+        )
+
     return LocalizedCard(
         id=card.id,
         card_number=card.card_number,
@@ -206,6 +222,7 @@ def localize(card: Card, locale: Locale) -> LocalizedCard:
         keyword=keyword,
         oshi_skill=oshi_skill,
         sp_oshi_skill=sp_oshi_skill,
+        oshi_stage_skill=oshi_stage_skill,
         qa_items=translation.qa_items or [],
         original=_original_labels(card, resolved),
     )

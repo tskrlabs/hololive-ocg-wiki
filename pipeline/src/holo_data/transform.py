@@ -342,7 +342,10 @@ def _arts(
 
 
 def _skill(
-    card: dict[str, Any], key: str, report: UnmappedReport | None = None
+    card: dict[str, Any],
+    key: str,
+    report: UnmappedReport | None = None,
+    timing_required: bool = True,
 ) -> tuple[dict | None, dict | None]:
     skill = card.get(key)
     if not isinstance(skill, dict):
@@ -364,6 +367,12 @@ def _skill(
         if skill.get(field):
             translation[field] = skill[field]
 
+    # A stage skill with no timing bracket is the common case (34 of the first 51), so
+    # its base is `{}`, not None: the card must still say it *has* the skill, or
+    # `localize()` drops the translated text. An oshi skill or SP oshi skill with no
+    # mapped timing keeps the old behaviour and fails `build` on the required field.
+    if not timing_required:
+        return base, (translation or None)
     return (base or None), (translation or None)
 
 
@@ -498,12 +507,13 @@ def to_card(
             if keyword_translation:
                 translation["keyword"] = keyword_translation
 
-    for source_key, out_key in (
-        ("oshi_skill", "oshi_skill"),
-        ("sp_oshi_skill", "sp_oshi_skill"),
+    for source_key, out_key, timing_required in (
+        ("oshi_skill", "oshi_skill", True),
+        ("sp_oshi_skill", "sp_oshi_skill", True),
+        ("oshi_stage_skill", "oshi_stage_skill", False),
     ):
-        base, skill_translation = _skill(card, source_key, report)
-        if base:
+        base, skill_translation = _skill(card, source_key, report, timing_required)
+        if base is not None:
             out[out_key] = base
         if skill_translation:
             translation[out_key] = skill_translation

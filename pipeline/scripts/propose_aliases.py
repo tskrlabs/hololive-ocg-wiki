@@ -79,7 +79,7 @@ def labels(cards: list[dict]) -> set[str]:
         keyword = translation.get("keyword") or {}
         if keyword.get("name"):
             out.add(keyword["name"])
-        for skill in ("oshi_skill", "sp_oshi_skill"):
+        for skill in ("oshi_skill", "sp_oshi_skill", "oshi_stage_skill"):
             value = (translation.get(skill) or {}).get("name")
             if value:
                 out.add(value)

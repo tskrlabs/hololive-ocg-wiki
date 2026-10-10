@@ -109,12 +109,14 @@ const card = {
   keyword: { type: "gift", type_code: "gift", name: "Singing", effect: "…" },
   oshi_skill: { timing_code: "art", name: "Sora's Encore", effect: "…" },
   sp_oshi_skill: { timing_code: "art", name: "Dreaming Days", effect: "…" },
+  oshi_stage_skill: { name: "Sky Stage", effect: "…" },
   original: {
     name: "ときのそら",
     art_names: ["蒼の旋律"],
     keyword_name: "歌",
     oshi_skill_name: "そらのアンコール",
     sp_oshi_skill_name: "ドリーミングデイズ",
+    oshi_stage_skill_name: "そらステージ",
   },
 } as unknown as Card;
 
@@ -176,12 +178,13 @@ describe("the source names render where the toggle promises them (#61)", () => {
   });
 
   /**
-   * The four labels in the detail blocks, which are what the dialog and the card page
-   * show below the name. All four were dead for the same single reason.
+   * The five labels in the detail blocks, which are what the dialog and the card page
+   * show below the name. The first four were dead for the same single reason (the stage skill came later).
    */
   it.each([
     ["oshi skill", "そらのアンコール"],
     ["SP oshi skill", "ドリーミングデイズ"],
+    ["oshi stage skill", "そらステージ"],
     ["keyword", "歌"],
     ["art", "蒼の旋律"],
   ])("shows the source %s name", async (_label, expected) => {

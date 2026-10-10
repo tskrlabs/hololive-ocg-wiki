@@ -59,18 +59,23 @@ export type TimingCode = "once_per_game" | "once_per_turn";
 export type Name3 = string;
 export type Effect2 = string;
 export type Timing = string;
+export type TimingCode1 = "once_per_game" | "once_per_turn";
+export type Name4 = string;
+export type Effect3 = string;
+export type Timing1 = string;
 export type Title = string;
 export type Question = string;
 export type Answer = string;
 export type RawHtml = string;
 export type CardNumber1 = string[];
 export type QaItems = QaItem[];
-export type Name4 = string;
+export type Name5 = string;
 export type Tags1 = string[];
 export type ArtNames = string[];
 export type KeywordName = string;
 export type OshiSkillName = string;
 export type SpOshiSkillName = string;
+export type OshiStageSkillName = string;
 
 /**
  * A card as the API returns it: one locale, translations flattened to the top.
@@ -109,6 +114,7 @@ export interface LocalizedCard {
   keyword?: LocalizedKeyword;
   oshi_skill?: LocalizedOshiSkill;
   sp_oshi_skill?: LocalizedOshiSkill;
+  oshi_stage_skill?: LocalizedOshiStageSkill;
   qa_items?: QaItems;
   original?: OriginalLabels;
 }
@@ -155,6 +161,18 @@ export interface LocalizedOshiSkill {
   name?: Name3;
   effect?: Effect2;
   timing?: Timing;
+}
+/**
+ * An oshi stage skill with its translated text merged. `timing_code` is optional.
+ *
+ * This interface was referenced by `LocalizedCard`'s JSON-Schema
+ * via the `definition` "LocalizedOshiStageSkill".
+ */
+export interface LocalizedOshiStageSkill {
+  timing_code?: TimingCode1;
+  name?: Name4;
+  effect?: Effect3;
+  timing?: Timing1;
 }
 /**
  * One official Q&A entry attached to a card.
@@ -206,10 +224,11 @@ export interface RelatedCards {
  * via the `definition` "OriginalLabels".
  */
 export interface OriginalLabels {
-  name?: Name4;
+  name?: Name5;
   tags?: Tags1;
   art_names?: ArtNames;
   keyword_name?: KeywordName;
   oshi_skill_name?: OshiSkillName;
   sp_oshi_skill_name?: SpOshiSkillName;
+  oshi_stage_skill_name?: OshiStageSkillName;
 }

@@ -175,7 +175,7 @@ def iter_fields(translation: dict[str, Any]) -> Iterator[tuple[str, Any, Context
                 card_name=card_name, art_name=keyword.get("name")
             )
 
-    for skill_key in ("oshi_skill", "sp_oshi_skill"):
+    for skill_key in ("oshi_skill", "sp_oshi_skill", "oshi_stage_skill"):
         skill = translation.get(skill_key)
         if not isinstance(skill, dict):
             continue

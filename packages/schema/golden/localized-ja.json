@@ -449,8 +449,7 @@
       "スタートデッキ FLOW GLOW 推し 輪堂千速",
       "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
       "スタートデッキ 推し Advent",
-      "スタートデッキ 推し Justice",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "スタートデッキ 推し Justice"
     ],
     "card_type_code": "supportStaffLimited",
     "color_codes": [],
@@ -473,7 +472,7 @@
       "スタートデッキ「ときのそら＆AZKi」",
       "スタートデッキ 赤 百鬼あやめ",
       "スタートデッキ 黄 不知火フレア",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportItem",
     "color_codes": [],
@@ -502,8 +501,7 @@
       "ライブスタートデッキ 儒烏風亭らでん",
       "ライブスタートデッキ さくらみこ",
       "ライブスタートデッキ 星街すいせい",
-      "ライブスタートデッキ 大空スバル",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "ライブスタートデッキ 大空スバル"
     ],
     "card_type_code": "supportItemLimited",
     "color_codes": [],
@@ -1517,7 +1515,7 @@
     "card_number": "hBP03-050",
     "card_sets": [
       "ブースターパック「エリートスパーク」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1705,7 +1703,7 @@
     "card_number": "hBP03-044",
     "card_sets": [
       "ブースターパック「エリートスパーク」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1798,8 +1796,7 @@
     "bloom_level_code": "first",
     "card_number": "hBP05-040",
     "card_sets": [
-      "ブースターパック「エンチャントレガリア」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "ブースターパック「エンチャントレガリア」"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1852,13 +1849,56 @@
     ]
   },
   {
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP07-001",
+    "card_sets": [
+      "ブースターパック「ディーヴァフィーバー」"
+    ],
+    "card_type_code": "oshiCharacter",
+    "color_codes": [
+      "white"
+    ],
+    "id": "1787",
+    "illustrator": "桶乃かもく",
+    "image_key": "hBP07/hBP07-001_OSR",
+    "life": 5,
+    "locale": "ja",
+    "name": "角巻わため",
+    "oshi_skill": {
+      "effect": "[ターンに1回]このターンの間、自分のステージの〈角巻わため〉全員のアーツ+100。",
+      "name": "角ドリルしたろか？",
+      "timing": "ターンに1回",
+      "timing_code": "once_per_turn"
+    },
+    "oshi_stage_skill": {
+      "effect": "自分の〈角巻わため〉がアーツを使った時、自分のデッキの上から1枚をホロパワーにする。",
+      "name": "ドドドライブ"
+    },
+    "qa_items": [
+      {
+        "answer": "はい、できます。",
+        "question": "hBP07-008〈角巻わため〉のコラボエフェクト「もういっぺぇ」を使い、センターホロメンの〈角巻わため〉が2回アーツを使いました。この場合、hBP07-001〈角巻わため〉の推しステージスキル「ドドドライブ」の能力によってホロパワーを2枚置くことはできますか？",
+        "related_cards": {
+          "card_number": [
+            "hBP07-001",
+            "hBP07-008"
+          ],
+          "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]"
+        },
+        "title": "Q579（2026.03.02）"
+      }
+    ],
+    "rarity_code": "OSR",
+    "tags": []
+  },
+  {
     "ability_text": "このカードは、自分のステージのエール1枚をアーカイブしなければ使えない。\n\n自分のアーカイブのファン1枚を自分のホロメンに付ける。付けたなら、自分のアーカイブのホロメン1枚を手札に戻す。",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "ブースターパック「ディーヴァフィーバー」"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -1877,8 +1917,7 @@
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "ブースターパック「ディーヴァフィーバー」"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -1911,7 +1950,7 @@
     "card_number": "hBP03-044",
     "card_sets": [
       "オフィシャルホロカコレクション-2025ライブセット-",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2049,7 +2088,7 @@
     "card_number": "hBP08-060",
     "card_sets": [
       "ブースターパック バウンサーバウンド",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2095,7 +2134,7 @@
     "card_number": "hBP01-028",
     "card_sets": [
       "ブースターパック バウンサーバウンド",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [

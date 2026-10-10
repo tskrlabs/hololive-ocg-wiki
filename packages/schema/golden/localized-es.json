@@ -495,8 +495,7 @@
       "スタートデッキ FLOW GLOW 推し 輪堂千速",
       "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
       "スタートデッキ 推し Advent",
-      "スタートデッキ 推し Justice",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "スタートデッキ 推し Justice"
     ],
     "card_type_code": "supportStaffLimited",
     "color_codes": [],
@@ -524,7 +523,7 @@
       "スタートデッキ「ときのそら＆AZKi」",
       "スタートデッキ 赤 百鬼あやめ",
       "スタートデッキ 黄 不知火フレア",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "supportItem",
     "color_codes": [],
@@ -558,8 +557,7 @@
       "ライブスタートデッキ 儒烏風亭らでん",
       "ライブスタートデッキ さくらみこ",
       "ライブスタートデッキ 星街すいせい",
-      "ライブスタートデッキ 大空スバル",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "ライブスタートデッキ 大空スバル"
     ],
     "card_type_code": "supportItemLimited",
     "color_codes": [],
@@ -1676,7 +1674,7 @@
     "card_number": "hBP03-050",
     "card_sets": [
       "ブースターパック「エリートスパーク」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1875,7 +1873,7 @@
     "card_number": "hBP03-044",
     "card_sets": [
       "ブースターパック「エリートスパーク」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -1993,8 +1991,7 @@
     "bloom_level_code": "first",
     "card_number": "hBP05-040",
     "card_sets": [
-      "ブースターパック「エンチャントレガリア」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "ブースターパック「エンチャントレガリア」"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2059,13 +2056,63 @@
     ]
   },
   {
+    "arts": [],
+    "baton_touch_types": [],
+    "card_number": "hBP07-001",
+    "card_sets": [
+      "ブースターパック「ディーヴァフィーバー」"
+    ],
+    "card_type_code": "oshiCharacter",
+    "color_codes": [
+      "white"
+    ],
+    "id": "1787",
+    "illustrator": "桶乃かもく",
+    "image_key": "hBP07/hBP07-001_OSR",
+    "life": 5,
+    "locale": "es",
+    "name": "Tsunomaki Watame",
+    "original": {
+      "art_names": [],
+      "name": "角巻わため",
+      "oshi_skill_name": "角ドリルしたろか？",
+      "oshi_stage_skill_name": "ドドドライブ",
+      "tags": []
+    },
+    "oshi_skill": {
+      "effect": "[Una vez por turno] Durante este turno, las artes de todos tus 〈Tsunomaki Watame〉 en el escenario obtienen +100.",
+      "name": "¿Te taladro con los cuernos?",
+      "timing": "Una vez por turno",
+      "timing_code": "once_per_turn"
+    },
+    "oshi_stage_skill": {
+      "effect": "Cuando tu 〈Tsunomaki Watame〉 use un arte, convierte la carta superior de tu mazo en Holo Power.",
+      "name": "Dodo Drive"
+    },
+    "qa_items": [
+      {
+        "answer": "Sí, se puede.",
+        "question": "Usé el efecto de colaboración 「Una vez máaaas」 de hBP07-008〈角巻わため〉, y la〈角巻わため〉 en la posición central usó Artes dos veces. En este caso, ¿se pueden colocar 2 cartas de HoloPower debido a la habilidad del escenario favorito 「ドドドライブ」 de hBP07-001〈角巻わため〉?",
+        "related_cards": {
+          "card_number": [
+            "hBP07-001",
+            "hBP07-008"
+          ],
+          "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]"
+        },
+        "title": "Q579（2026.03.02）"
+      }
+    ],
+    "rarity_code": "OSR",
+    "tags": []
+  },
+  {
     "ability_text": "Debes archivar 1 Cheer de tu Stage para poder usar esta carta.\n\nUne 1 Fan de tu Archive a 1 de tus holomems. Si lo haces, devuelve a tu mano 1 holomem de tu Archive.",
     "arts": [],
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "ブースターパック「ディーヴァフィーバー」"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -2089,8 +2136,7 @@
     "baton_touch_types": [],
     "card_number": "hBP07-091",
     "card_sets": [
-      "ブースターパック「ディーヴァフィーバー」",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "ブースターパック「ディーヴァフィーバー」"
     ],
     "card_type_code": "supportStaff",
     "color_codes": [],
@@ -2128,7 +2174,7 @@
     "card_number": "hBP03-044",
     "card_sets": [
       "オフィシャルホロカコレクション-2025ライブセット-",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2303,7 +2349,7 @@
     "card_number": "hBP08-060",
     "card_sets": [
       "ブースターパック バウンサーバウンド",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [
@@ -2359,7 +2405,7 @@
     "card_number": "hBP01-028",
     "card_sets": [
       "ブースターパック バウンサーバウンド",
-      "【使用可能カード】hGS 2026 大阪 セレクションロード"
+      "【使用可能カード】セレクションカップ"
     ],
     "card_type_code": "character",
     "color_codes": [

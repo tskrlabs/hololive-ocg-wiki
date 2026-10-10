@@ -17,6 +17,7 @@ from .card import (
     CardCollection,
     Keyword,
     OshiSkill,
+    OshiStageSkill,
     QaItem,
     RelatedCards,
     TranslatedArt,
@@ -54,6 +55,7 @@ from .localized import (
     LocalizedCard,
     LocalizedKeyword,
     LocalizedOshiSkill,
+    LocalizedOshiStageSkill,
 )
 from .notice import Notice, NoticeCollection, NoticeTranslation
 
@@ -67,6 +69,7 @@ __all__ = [
     "CardCollection",
     "Keyword",
     "OshiSkill",
+    "OshiStageSkill",
     "QaItem",
     "RelatedCards",
     "TranslatedArt",
@@ -82,6 +85,7 @@ __all__ = [
     "LocalizedCard",
     "LocalizedKeyword",
     "LocalizedOshiSkill",
+    "LocalizedOshiStageSkill",
     "localize",
     # Enum types
     "BloomLevelCode",

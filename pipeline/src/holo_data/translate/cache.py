@@ -123,7 +123,7 @@ def field_keys(jp_card: dict[str, Any]) -> Iterator[tuple[str, Any]]:
             if keyword.get(sub):
                 yield f"keyword.{sub}", keyword[sub]
 
-    for skill_key in ("oshi_skill", "sp_oshi_skill"):
+    for skill_key in ("oshi_skill", "sp_oshi_skill", "oshi_stage_skill"):
         skill = jp_card.get(skill_key)
         if isinstance(skill, dict):
             for sub in ("name", "effect", "timing"):

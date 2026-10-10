@@ -189,7 +189,7 @@ check "broad match inside filter"  200 "/api/cards/filter?search=%E3%83%9B%E3%83
 echo ""
 echo "filter"
 check "unfiltered page"            200 "/api/cards/filter?limit=3" \
-  "len(d['cards']) == 3 and d['total'] == 34"
+  "len(d['cards']) == 3 and d['total'] == 35"
 check "skip_count omits total"     200 "/api/cards/filter?limit=3&page=2&skip_count=true" \
   "'total' not in d"
 # Dual-colour cards hold one row per badge (ADR 0013), so they come back under `blue`
@@ -198,7 +198,7 @@ check "dual colours match plainly" 200 "/api/cards/filter?colors=blue&limit=1" "
 check "colour groups OR"           200 "/api/cards/filter?colors=blue,purple&limit=1" \
   "d['total'] == 9"
 check "groups AND"                 200 "/api/cards/filter?cardTypes=oshiCharacter&rarity=OSR&limit=1" \
-  "d['total'] == 2"
+  "d['total'] == 3"
 check "invalid colour"             400 "/api/cards/filter?colors=chartreuse"
 # Set code — a card_number prefix range, over real HTTP (ADR 0010). The fixture set has
 # 10 hSD01 cards; every one of them must come back and nothing else.

@@ -281,6 +281,15 @@ class TestSchema:
         ).fetchone()[0]
         assert hits == 1
 
+    def test_the_oshi_stage_skill_is_searchable(self, collection):
+        """A player searching a stage skill's name must find the oshi that carries it."""
+        card = next(c for c in collection.cards if c.oshi_stage_skill is not None)
+        text = seed_module.search_text(card)
+        for translation in card.translations.values():
+            if translation.oshi_stage_skill:
+                assert translation.oshi_stage_skill.name in text
+                assert translation.oshi_stage_skill.effect in text
+
     def test_trigram_cannot_match_under_three_characters(self, db):
         """Pins the limit the Phase 4 worker's LIKE fallback exists for.
 
