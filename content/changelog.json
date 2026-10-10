@@ -2,6 +2,22 @@
   "$comment": "Player-facing release notes. Committed and imported at build time, NOT published to R2. See content/README.md for why this differs from info.json.",
   "releases": [
     {
+      "version": "2.4.0",
+      "date": "2026-10-11",
+      "title": "Oshi Stage Skills on every oshi card",
+      "summary": "Oshi cards from Diva Fever onwards have an Oshi Stage Skill, a skill that is always active while your oshi is on stage. The site was not showing it. Now it does, translated into every language.",
+      "changes": [
+        {
+          "kind": "added",
+          "text": "Card pages show the Oshi Stage Skill above the Oshi Skill, the same order as the official card list. 16 oshi cards across hBP07, hBP08, hBP09 and hEB01 have one."
+        },
+        {
+          "kind": "added",
+          "text": "You can search by an Oshi Stage Skill's name or effect, in any language, to find the oshi that has it."
+        }
+      ]
+    },
+    {
       "version": "2.3.0",
       "date": "2026-08-26",
       "title": "Saved decks keep the cards you picked",
