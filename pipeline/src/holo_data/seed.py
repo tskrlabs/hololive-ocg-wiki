@@ -190,6 +190,7 @@ def card_payloads(card: Card) -> tuple[str, str]:
         "keyword": dumped.get("keyword"),
         "oshi_skill": dumped.get("oshi_skill"),
         "sp_oshi_skill": dumped.get("sp_oshi_skill"),
+        "oshi_stage_skill": dumped.get("oshi_stage_skill"),
         "translations": translations,
         # Duplicated from the junction tables, deliberately. The junctions are how a
         # card is *found*; the payload is what a card *is*. `localize()` reads both of
@@ -237,6 +238,7 @@ def source_payload(card: Card) -> str:
         "keyword": dumped.get("keyword"),
         "oshi_skill": dumped.get("oshi_skill"),
         "sp_oshi_skill": dumped.get("sp_oshi_skill"),
+        "oshi_stage_skill": dumped.get("oshi_stage_skill"),
         "color_codes": dumped.get("color_codes"),
         "card_sets": dumped.get("card_sets"),
         SOURCE_LOCALE: japanese,
@@ -273,7 +275,11 @@ def search_text(card: Card) -> str:
             parts.append(art.name)
             if art.effect:
                 parts.append(art.effect)
-        for skill in (translation.oshi_skill, translation.sp_oshi_skill):
+        for skill in (
+            translation.oshi_skill,
+            translation.sp_oshi_skill,
+            translation.oshi_stage_skill,
+        ):
             if skill:
                 parts.extend([skill.name, skill.effect])
         if translation.keyword:

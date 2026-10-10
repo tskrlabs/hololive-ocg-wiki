@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS cards (
     name_ja TEXT NOT NULL,
 
     -- Language-independent nested data plus all 7 locales' translations, minus Q&A:
-    -- color_codes, card_sets, arts, keyword, oshi_skill, sp_oshi_skill, translations.
+    -- color_codes, card_sets, arts, keyword, oshi_skill, sp_oshi_skill, oshi_stage_skill, translations.
     payload TEXT NOT NULL,
     -- Q&A only, keyed by locale. Absent on 65% of cards, so frequently '{}'.
     qa_payload TEXT NOT NULL DEFAULT '{}',

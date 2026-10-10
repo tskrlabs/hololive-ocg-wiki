@@ -51,6 +51,7 @@ export type Arts = Art[];
 export type Type = string;
 export type TypeCode = "bloom_effect" | "collab_effect" | "gift";
 export type TimingCode = "once_per_game" | "once_per_turn";
+export type TimingCode1 = "once_per_game" | "once_per_turn";
 export type Name = string;
 export type Tags1 = string[];
 export type AbilityText = string;
@@ -114,6 +115,7 @@ export interface Card {
   keyword?: Keyword;
   oshi_skill?: OshiSkill;
   sp_oshi_skill?: OshiSkill;
+  oshi_stage_skill?: OshiStageSkill;
   translations: Translations;
 }
 /**
@@ -155,6 +157,20 @@ export interface Keyword {
 export interface OshiSkill {
   timing_code: TimingCode;
 }
+/**
+ * The language-independent half of an oshi stage skill (推しステージスキル).
+ *
+ * A passive skill that is always active while the oshi is on stage, introduced with
+ * hBP07. Its own model rather than `OshiSkill` because `timing_code` is optional here:
+ * 34 of the first 51 printings carry no timing bracket at all. Reusing `OshiSkill`
+ * would have made those unrepresentable, and `localize()` would have hidden them.
+ *
+ * This interface was referenced by `CardCollection`'s JSON-Schema
+ * via the `definition` "OshiStageSkill".
+ */
+export interface OshiStageSkill {
+  timing_code?: TimingCode1;
+}
 export interface Translations {
   [k: string]: Translation;
 }
@@ -181,6 +197,7 @@ export interface Translation {
   keyword?: TranslatedKeyword;
   oshi_skill?: TranslatedOshiSkill;
   sp_oshi_skill?: TranslatedOshiSkill;
+  oshi_stage_skill?: TranslatedOshiSkill;
   qa_items?: QaItems;
 }
 /**

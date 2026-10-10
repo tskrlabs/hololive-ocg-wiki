@@ -249,3 +249,27 @@ class TestOriginalLabels:
         original = localize(Card.model_validate(base), "en").original
 
         assert original.oshi_skill_name == "秩序の先駆者"
+
+    def test_an_untimed_stage_skill_is_localized(self):
+        """The stage skill's `timing_code` is optional; most have none, and must show."""
+        base = {
+            "id": "1",
+            "card_number": "hBP07-001",
+            "card_type_code": "oshiCharacter",
+            "rarity_code": "OSR",
+            "image_key": "hBP07/hBP07-001_OSR",
+            "source_image_url": "https://example.test/x.png",
+            "card_sets": ["セット"],
+            "oshi_stage_skill": {},
+            "translations": {
+                "ja": {"name": "X", "oshi_stage_skill": {"name": "ドドドライブ", "effect": "効果"}},
+                "en": {"name": "X", "oshi_stage_skill": {"name": "Do-Do-Drive", "effect": "Effect"}},
+            },
+        }
+
+        result = localize(Card.model_validate(base), "en")
+
+        assert result.oshi_stage_skill is not None
+        assert result.oshi_stage_skill.timing_code is None
+        assert result.oshi_stage_skill.name == "Do-Do-Drive"
+        assert result.original.oshi_stage_skill_name == "ドドドライブ"

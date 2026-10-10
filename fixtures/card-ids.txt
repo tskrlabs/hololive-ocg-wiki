@@ -34,6 +34,7 @@
    726  hBP03-044 SR (hBP03 original) — image_key collision pair B
    735  hBP03-055 SR (hBP03 original) — image_key collision pair D
   1218  hBP05-040 miComet — ['red','blue'], the source's two-tag spelling
+  1787  covers has_oshi_stage_skill
   1877  hBP07-091 — cardTypeCode 'unknown' (scraper could not classify)
   2003  hBP07-091 — the other 'unknown', different rarity
   2138  hBP03-044 SR (hCO01 reprint) — image_key collision pair A

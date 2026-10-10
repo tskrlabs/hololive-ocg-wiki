@@ -2389,8 +2389,7 @@
         "スタートデッキ FLOW GLOW 推し 輪堂千速",
         "スタートデッキ FLOW GLOW 推し 虎金妃笑虎",
         "スタートデッキ 推し Advent",
-        "スタートデッキ 推し Justice",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "スタートデッキ 推し Justice"
       ],
       "translations": {
         "ja": {
@@ -2436,7 +2435,7 @@
         "スタートデッキ「ときのそら＆AZKi」",
         "スタートデッキ 赤 百鬼あやめ",
         "スタートデッキ 黄 不知火フレア",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "【使用可能カード】セレクションカップ"
       ],
       "translations": {
         "ja": {
@@ -2488,8 +2487,7 @@
         "ライブスタートデッキ 儒烏風亭らでん",
         "ライブスタートデッキ さくらみこ",
         "ライブスタートデッキ 星街すいせい",
-        "ライブスタートデッキ 大空スバル",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "ライブスタートデッキ 大空スバル"
       ],
       "translations": {
         "ja": {
@@ -7458,7 +7456,7 @@
       "illustrator": "© 2016 COVER Corp. MariA",
       "card_sets": [
         "ブースターパック「エリートスパーク」",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "【使用可能カード】セレクションカップ"
       ],
       "tags": [
         "EN",
@@ -8658,7 +8656,7 @@
       "illustrator": "えいひ",
       "card_sets": [
         "ブースターパック「エリートスパーク」",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "【使用可能カード】セレクションカップ"
       ],
       "tags": [
         "JP",
@@ -8996,8 +8994,7 @@
       ],
       "illustrator": "UIIV◇",
       "card_sets": [
-        "ブースターパック「エンチャントレガリア」",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "ブースターパック「エンチャントレガリア」"
       ],
       "tags": [
         "JP",
@@ -9331,6 +9328,210 @@
       }
     },
     {
+      "id": "1787",
+      "card_number": "hBP07-001",
+      "card_type_code": "oshiCharacter",
+      "rarity_code": "OSR",
+      "color_codes": [
+        "white"
+      ],
+      "image_key": "hBP07/hBP07-001_OSR",
+      "source_image_url": "https://hololive-official-cardgame.com/wp-content/images/cardlist/hBP07/hBP07-001_OSR.png",
+      "life": 5,
+      "illustrator": "桶乃かもく",
+      "card_sets": [
+        "ブースターパック「ディーヴァフィーバー」"
+      ],
+      "oshi_skill": {
+        "timing_code": "once_per_turn"
+      },
+      "oshi_stage_skill": {},
+      "translations": {
+        "ja": {
+          "name": "角巻わため",
+          "oshi_skill": {
+            "name": "角ドリルしたろか？",
+            "effect": "[ターンに1回]このターンの間、自分のステージの〈角巻わため〉全員のアーツ+100。",
+            "timing": "ターンに1回"
+          },
+          "oshi_stage_skill": {
+            "name": "ドドドライブ",
+            "effect": "自分の〈角巻わため〉がアーツを使った時、自分のデッキの上から1枚をホロパワーにする。"
+          },
+          "qa_items": [
+            {
+              "title": "Q579（2026.03.02）",
+              "question": "hBP07-008〈角巻わため〉のコラボエフェクト「もういっぺぇ」を使い、センターホロメンの〈角巻わため〉が2回アーツを使いました。この場合、hBP07-001〈角巻わため〉の推しステージスキル「ドドドライブ」の能力によってホロパワーを2枚置くことはできますか？",
+              "answer": "はい、できます。",
+              "related_cards": {
+                "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]",
+                "card_number": [
+                  "hBP07-001",
+                  "hBP07-008"
+                ]
+              }
+            }
+          ]
+        },
+        "tc": {
+          "name": "角卷綿芽",
+          "oshi_skill": {
+            "name": "要不要讓你嚐嚐角鑽啊？",
+            "effect": "[每回合1次]在這個回合期間，自己舞台上的所有〈角卷綿芽〉的藝術+100。",
+            "timing": "每回合1次"
+          },
+          "oshi_stage_skill": {
+            "name": "轟轟衝刺",
+            "effect": "當自己的〈角卷綿芽〉使用藝術技時，將自己牌庫頂1張放入Holopower。"
+          },
+          "qa_items": [
+            {
+              "title": "Q579（2026.03.02）",
+              "question": "我使用了hBP07-008〈角巻わため〉的合作效果「再來一發」，中心Holomen〈角巻わため〉使用了Arts兩次。在這種情況下，是否可以因應hBP07-001〈角巻わため〉的推し舞台技能「咚咚驅動」的效果，放置2張HoloPower？",
+              "answer": "是，可以。",
+              "related_cards": {
+                "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]",
+                "card_number": [
+                  "hBP07-001",
+                  "hBP07-008"
+                ]
+              }
+            }
+          ]
+        },
+        "en": {
+          "name": "Tsunomaki Watame",
+          "oshi_skill": {
+            "name": "Want me to drill you with my horns?",
+            "effect": "[Once per turn] During this turn, all of your 〈Tsunomaki Watame〉 on the Stage get +100 Arts.",
+            "timing": "Once per turn"
+          },
+          "oshi_stage_skill": {
+            "name": "DODO DRIVE",
+            "effect": "When your 〈Tsunomaki Watame〉 uses an Art, put the top card of your deck into your Holo Power."
+          },
+          "qa_items": [
+            {
+              "title": "Q579 (2026.03.02)",
+              "question": "When using the collaboration effect 'One More Round' from hBP07-008〈角巻わため〉, the center〈角巻わため〉 uses its Arts twice. In that case, can I place two Holo Power cards due to the Push Stage Skill 'Dododrive' of hBP07-001〈角巻わため〉?",
+              "answer": "Yes, you can.",
+              "related_cards": {
+                "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]",
+                "card_number": [
+                  "hBP07-001",
+                  "hBP07-008"
+                ]
+              }
+            }
+          ]
+        },
+        "ko": {
+          "name": "츠노마키 와타메",
+          "oshi_skill": {
+            "name": "뿔 드릴 해줄까?",
+            "effect": "[턴에 1번]이번 턴 동안 자신의 스테이지의 〈츠노마키 와타메〉 전원의 아츠+100.",
+            "timing": "턴에 1번"
+          },
+          "oshi_stage_skill": {
+            "name": "도도드라이브",
+            "effect": "자신의 〈츠노마키 와타메〉가 아츠를 사용했을 때, 자신의 덱 위에서 1장을 홀로파워로 한다."
+          },
+          "qa_items": [
+            {
+              "title": "Q579（2026.03.02）",
+              "question": "hBP07-008〈角巻わため〉의 콜라보 효과 「한 번 더」를 사용하여 센터 홀로멘 〈角巻わため〉가 두 번 아츠를 사용했습니다. 이 경우, hBP07-001〈角巻わため〉의 오시 스테이지 스킬 「도도드라이브」의 능력으로 홀로파워를 두 장 놓을 수 있나요?",
+              "answer": "네, 할 수 있습니다.",
+              "related_cards": {
+                "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]",
+                "card_number": [
+                  "hBP07-001",
+                  "hBP07-008"
+                ]
+              }
+            }
+          ]
+        },
+        "id": {
+          "name": "Tsunomaki Watame",
+          "oshi_skill": {
+            "name": "Mau kutanduk bor ya?",
+            "effect": "[Sekali per giliran] Selama giliran ini, Arts semua 〈Tsunomaki Watame〉 di stage milikmu +100.",
+            "timing": "Sekali per giliran"
+          },
+          "oshi_stage_skill": {
+            "name": "Dodo Drive",
+            "effect": "Saat 〈Tsunomaki Watame〉 milikmu menggunakan Arts, jadikan 1 kartu teratas dari Deck milikmu sebagai Holo Power."
+          },
+          "qa_items": [
+            {
+              "title": "Q579（2026.03.02）",
+              "question": "Setelah menggunakan efek kolaborasi “もういっぺぇ” dari hBP07-008〈角巻わため〉,〈角巻わため〉di tengah Holomen menggunakan Arts dua kali. Dalam situasi ini, apakah kemampuan ‘Dodo Drive’ dari skill oshi stage hBP07-001〈角巻わため〉 dapat menempatkan 2 lembar Holo Power?",
+              "answer": "Ya, bisa.",
+              "related_cards": {
+                "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]",
+                "card_number": [
+                  "hBP07-001",
+                  "hBP07-008"
+                ]
+              }
+            }
+          ]
+        },
+        "th": {
+          "name": "ซึโนมากิ วาตาเมะ",
+          "oshi_skill": {
+            "name": "จะเอาสว่านเขาแทงดีไหม?",
+            "effect": "[ใช้ได้ 1 ครั้งต่อเทิร์น] ในเทิร์นนี้ อาร์ตของ 〈ซึโนมากิ วาตาเมะ〉 ทั้งหมดบนสเตจของคุณ +100",
+            "timing": "ใช้ได้ 1 ครั้งต่อเทิร์น"
+          },
+          "oshi_stage_skill": {
+            "name": "โดโดไดรฟ์",
+            "effect": "เมื่อ〈ซึโนมากิ วาตาเมะ〉ของคุณใช้อาร์ต ให้นำการ์ดใบบนสุด 1 ใบจากเด็คของคุณไปเป็นโฮโลพาวเวอร์"
+          },
+          "qa_items": [
+            {
+              "title": "Q579（2026.03.02）",
+              "question": "ใช้คอลแลบเอฟเฟกต์ 「อีกแก้วนึง」 ของ hBP07-008〈ซึโนมากิ วาตาเมะ〉 แล้ว 〈ซึโนมากิ วาตาเมะ〉 ที่เป็นเซ็นเตอร์โฮโลเมนได้ใช้อาร์ต 2 ครั้ง ในกรณีนี้ สามารถวางโฮโลพาวเวอร์ 2 ใบด้วยความสามารถของโอชิสเตจสกิล 「โดโดไดรฟ์」 ของ hBP07-001〈ซึโนมากิ วาตาเมะ〉 ได้หรือไม่?",
+              "answer": "ได้",
+              "related_cards": {
+                "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]",
+                "card_number": [
+                  "hBP07-001",
+                  "hBP07-008"
+                ]
+              }
+            }
+          ]
+        },
+        "es": {
+          "name": "Tsunomaki Watame",
+          "oshi_skill": {
+            "name": "¿Te taladro con los cuernos?",
+            "effect": "[Una vez por turno] Durante este turno, las artes de todos tus 〈Tsunomaki Watame〉 en el escenario obtienen +100.",
+            "timing": "Una vez por turno"
+          },
+          "oshi_stage_skill": {
+            "name": "Dodo Drive",
+            "effect": "Cuando tu 〈Tsunomaki Watame〉 use un arte, convierte la carta superior de tu mazo en Holo Power."
+          },
+          "qa_items": [
+            {
+              "title": "Q579（2026.03.02）",
+              "question": "Usé el efecto de colaboración 「Una vez máaaas」 de hBP07-008〈角巻わため〉, y la〈角巻わため〉 en la posición central usó Artes dos veces. En este caso, ¿se pueden colocar 2 cartas de HoloPower debido a la habilidad del escenario favorito 「ドドドライブ」 de hBP07-001〈角巻わため〉?",
+              "answer": "Sí, se puede.",
+              "related_cards": {
+                "raw_html": "[hBP07-001 ： 角巻わため]\n[hBP07-008 ： 角巻わため]",
+                "card_number": [
+                  "hBP07-001",
+                  "hBP07-008"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "1877",
       "card_number": "hBP07-091",
       "card_type_code": "supportStaff",
@@ -9339,8 +9540,7 @@
       "source_image_url": "https://hololive-official-cardgame.com/wp-content/images/cardlist/hBP07/hBP07-091_C.png",
       "illustrator": "海原カイロ",
       "card_sets": [
-        "ブースターパック「ディーヴァフィーバー」",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "ブースターパック「ディーヴァフィーバー」"
       ],
       "translations": {
         "ja": {
@@ -9382,8 +9582,7 @@
       "source_image_url": "https://hololive-official-cardgame.com/wp-content/images/cardlist/hBP07/hBP07-091_S.png",
       "illustrator": "海原カイロ",
       "card_sets": [
-        "ブースターパック「ディーヴァフィーバー」",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "ブースターパック「ディーヴァフィーバー」"
       ],
       "translations": {
         "ja": {
@@ -9435,7 +9634,7 @@
       "illustrator": "Mika Pikazo",
       "card_sets": [
         "オフィシャルホロカコレクション-2025ライブセット-",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "【使用可能カード】セレクションカップ"
       ],
       "tags": [
         "JP",
@@ -9929,7 +10128,7 @@
       "illustrator": "兎未枝",
       "card_sets": [
         "ブースターパック バウンサーバウンド",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "【使用可能カード】セレクションカップ"
       ],
       "tags": [
         "EN",
@@ -10104,7 +10303,7 @@
       "illustrator": "がり",
       "card_sets": [
         "ブースターパック バウンサーバウンド",
-        "【使用可能カード】hGS 2026 大阪 セレクションロード"
+        "【使用可能カード】セレクションカップ"
       ],
       "tags": [
         "EN",

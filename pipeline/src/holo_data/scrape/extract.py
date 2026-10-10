@@ -39,6 +39,37 @@ def parse_related_cards(related_cards_string: str) -> dict[str, Any]:
     return {"raw_html": related_cards_string, "card_number": card_numbers}
 
 
+# The skill blocks we read: `div` class string -> output key. Order matters only for
+# readability; each is looked up independently.
+SKILL_DIVS: tuple[tuple[str, str], ...] = (
+    ("oshi skill", "oshi_skill"),
+    ("sp skill", "sp_oshi_skill"),
+    ("stage skill", "oshi_stage_skill"),
+)
+
+
+class UnknownSkillBlock(ValueError):
+    """The card page carries a skill block this extractor does not read.
+
+    Raised rather than skipped: a skill block we ignore ships a card with part of its
+    rules text missing, and nothing downstream can notice. That is how 推しステージスキル
+    went unextracted from hBP07 to hBP09. Add the class to `SKILL_DIVS` and the field
+    to the contract, then re-run `transform`.
+    """
+
+
+def _check_skill_divs(soup: BeautifulSoup) -> None:
+    known = {frozenset(classes.split()) for classes, _ in SKILL_DIVS}
+    for div in soup.find_all("div", class_="skill"):
+        classes = frozenset(div.get("class") or [])
+        if classes not in known:
+            label = div.find("p")
+            raise UnknownSkillBlock(
+                f"unknown skill block div.{'.'.join(sorted(classes))}"
+                f" ({label.text.strip() if label else 'no label'})"
+            )
+
+
 def extract_structured_data(raw_html: str) -> dict[str, Any]:
     """Extract structured data from one card's detail HTML.
 
@@ -220,11 +251,13 @@ def extract_structured_data(raw_html: str) -> dict[str, Any]:
 
             data["keyword"] = keyword_data
 
-    # --- Oshi skill and SP oshi skill: same shape, two divs ---
-    for div_classes, output_key in (
-        ("oshi skill", "oshi_skill"),
-        ("sp skill", "sp_oshi_skill"),
-    ):
+    # --- Oshi skill, SP oshi skill and oshi stage skill: same shape, three divs ---
+    #
+    # The stage skill (推しステージスキル, `div.stage.skill`) arrived with hBP07 and was
+    # dropped here without a word for three sets, because this loop only reads the
+    # classes it names. `_check_skill_divs` now refuses any skill div not listed.
+    _check_skill_divs(soup)
+    for div_classes, output_key in SKILL_DIVS:
         skill_div = soup.find("div", class_=div_classes)
         if not skill_div:
             continue

@@ -11,6 +11,7 @@ export type {
   Art,
   Keyword,
   OshiSkill,
+  OshiStageSkill,
   Translation,
   Translations,
   TranslatedArt,
@@ -26,6 +27,7 @@ export type {
   LocalizedArt,
   LocalizedKeyword,
   LocalizedOshiSkill,
+  LocalizedOshiStageSkill,
 } from './localized-card.d.ts';
 
 // Enum types and their runtime values.

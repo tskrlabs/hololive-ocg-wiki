@@ -351,6 +351,38 @@ class TestSkills:
         assert "cost" not in card["oshi_skill"]
 
 
+class TestOshiStageSkill:
+    def test_an_untimed_stage_skill_is_still_present(self):
+        """34 of the first 51 have no timing. The base must be `{}`, not dropped, or
+        `localize()` never shows the translated text."""
+        card = to_card(
+            {"id": "1", "oshi_stage_skill": {"name": "ドドドライブ", "effect": "効果"}}
+        )
+        assert card["oshi_stage_skill"] == {}
+        assert card["translations"]["ja"]["oshi_stage_skill"] == {
+            "name": "ドドドライブ",
+            "effect": "効果",
+        }
+
+    def test_a_timed_stage_skill_keeps_its_code(self):
+        card = to_card(
+            {
+                "id": "1",
+                "oshi_stage_skill": {
+                    "name": "はあちゃまなう",
+                    "effect": "[ターンに1回]効果",
+                    "timing": "ターンに1回",
+                },
+            }
+        )
+        assert card["oshi_stage_skill"] == {"timing_code": "once_per_turn"}
+
+    def test_an_untimed_oshi_skill_is_still_dropped(self):
+        """Only the stage skill relaxes timing; the oshi skill keeps its contract."""
+        card = to_card({"id": "1", "oshi_skill": {"name": "x", "effect": "y"}})
+        assert "oshi_skill" not in card
+
+
 class TestTransformMatchesTheContract:
     """The transformer's output must validate as a `Card`.
 

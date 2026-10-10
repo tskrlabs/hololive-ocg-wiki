@@ -80,6 +80,13 @@ function originalLabels(
         shown.sp_oshi_skill?.name,
       )!,
     }),
+    ...(differing(source.oshi_stage_skill?.name, shown.oshi_stage_skill?.name) !==
+      undefined && {
+      oshi_stage_skill_name: differing(
+        source.oshi_stage_skill?.name,
+        shown.oshi_stage_skill?.name,
+      )!,
+    }),
   };
 
   const hasContent =
@@ -88,7 +95,8 @@ function originalLabels(
     labels.art_names.length > 0 ||
     labels.keyword_name !== undefined ||
     labels.oshi_skill_name !== undefined ||
-    labels.sp_oshi_skill_name !== undefined;
+    labels.sp_oshi_skill_name !== undefined ||
+    labels.oshi_stage_skill_name !== undefined;
 
   return hasContent ? (labels as LocalizedCard["original"]) : undefined;
 }
@@ -172,6 +180,19 @@ export function localize(card: Card, locale: Locale): LocalizedCard {
       }
     : undefined;
 
+  // Unlike the two above, `timing_code` is optional: most stage skills have none.
+  const stage = translation.oshi_stage_skill;
+  const oshiStageSkill = card.oshi_stage_skill
+    ? {
+        ...(card.oshi_stage_skill.timing_code !== undefined && {
+          timing_code: card.oshi_stage_skill.timing_code,
+        }),
+        ...(stage?.name !== undefined && { name: stage.name }),
+        ...(stage?.effect !== undefined && { effect: stage.effect }),
+        ...(stage?.timing !== undefined && { timing: stage.timing }),
+      }
+    : undefined;
+
   return {
     id: card.id,
     card_number: card.card_number,
@@ -199,6 +220,7 @@ export function localize(card: Card, locale: Locale): LocalizedCard {
     ...(keyword !== undefined && { keyword }),
     ...(oshiSkill !== undefined && { oshi_skill: oshiSkill }),
     ...(spOshiSkill !== undefined && { sp_oshi_skill: spOshiSkill }),
+    ...(oshiStageSkill !== undefined && { oshi_stage_skill: oshiStageSkill }),
     qa_items: translation.qa_items ?? [],
     ...(originalLabels(card, resolved) !== undefined && {
       original: originalLabels(card, resolved),

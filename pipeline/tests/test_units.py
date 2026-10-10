@@ -67,6 +67,19 @@ class TestKeys:
         assert U.unit_hash("白上フブキ") == hash_value("白上フブキ")
 
 
+class TestOshiStageSkill:
+    def test_shares_the_skill_kinds(self):
+        """A stage skill is translated as a skill: same kinds, same prompt, same cache."""
+        fields = list(
+            U.iter_fields(
+                translation(oshi_stage_skill={"name": "ドドドライブ", "effect": "常時効果"})
+            )
+        )
+
+        assert ("skill_name", "ドドドライブ") in [(k, v) for k, v, _ in fields]
+        assert ("skill_effect", "常時効果") in [(k, v) for k, v, _ in fields]
+
+
 class TestExtraction:
     def test_yields_every_translatable_field(self):
         kinds = {kind for kind, _, _ in U.iter_fields(translation())}

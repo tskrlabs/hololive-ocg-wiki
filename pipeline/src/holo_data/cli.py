@@ -1702,7 +1702,9 @@ def _translatable_strings(translation) -> list[str]:
         out.extend(v for v in (art.name, art.effect) if v)
     if translation.keyword:
         out.extend(v for v in (translation.keyword.name, translation.keyword.effect) if v)
-    for skill in (translation.oshi_skill, translation.sp_oshi_skill):
+    for skill in (
+        translation.oshi_skill, translation.sp_oshi_skill, translation.oshi_stage_skill
+    ):
         if skill:
             out.extend(v for v in (skill.name, skill.effect, skill.timing) if v)
     for qa in translation.qa_items or []:

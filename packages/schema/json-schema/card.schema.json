@@ -203,6 +203,9 @@
         "sp_oshi_skill": {
           "$ref": "#/$defs/OshiSkill"
         },
+        "oshi_stage_skill": {
+          "$ref": "#/$defs/OshiStageSkill"
+        },
         "translations": {
           "additionalProperties": {
             "$ref": "#/$defs/Translation"
@@ -277,6 +280,22 @@
         "timing_code"
       ],
       "title": "OshiSkill",
+      "type": "object"
+    },
+    "OshiStageSkill": {
+      "additionalProperties": false,
+      "description": "The language-independent half of an oshi stage skill (推しステージスキル).\n\nA passive skill that is always active while the oshi is on stage, introduced with\nhBP07. Its own model rather than `OshiSkill` because `timing_code` is optional here:\n34 of the first 51 printings carry no timing bracket at all. Reusing `OshiSkill`\nwould have made those unrepresentable, and `localize()` would have hidden them.",
+      "properties": {
+        "timing_code": {
+          "title": "Timing Code",
+          "enum": [
+            "once_per_game",
+            "once_per_turn"
+          ],
+          "type": "string"
+        }
+      },
+      "title": "OshiStageSkill",
       "type": "object"
     },
     "QaItem": {
@@ -429,6 +448,9 @@
           "$ref": "#/$defs/TranslatedOshiSkill"
         },
         "sp_oshi_skill": {
+          "$ref": "#/$defs/TranslatedOshiSkill"
+        },
+        "oshi_stage_skill": {
           "$ref": "#/$defs/TranslatedOshiSkill"
         },
         "qa_items": {

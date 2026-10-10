@@ -223,6 +223,12 @@ def _coverage_rules() -> list[tuple[str, Callable[[Card], bool]]]:
         ("has_life", lambda c: c.life is not None),
         ("has_oshi_skill", lambda c: c.oshi_skill is not None),
         ("has_sp_oshi_skill", lambda c: c.sp_oshi_skill is not None),
+        ("has_oshi_stage_skill", lambda c: c.oshi_stage_skill is not None),
+        (
+            "has_untimed_oshi_stage_skill",
+            lambda c: c.oshi_stage_skill is not None
+            and c.oshi_stage_skill.timing_code is None,
+        ),
         ("has_arts", lambda c: bool(c.arts)),
         ("has_multi_arts", lambda c: len(c.arts or []) > 1),
         (

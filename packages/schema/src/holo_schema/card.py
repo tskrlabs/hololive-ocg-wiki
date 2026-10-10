@@ -163,6 +163,20 @@ class OshiSkill(BaseModel):
     timing_code: TimingCode
 
 
+class OshiStageSkill(BaseModel):
+    """The language-independent half of an oshi stage skill (推しステージスキル).
+
+    A passive skill that is always active while the oshi is on stage, introduced with
+    hBP07. Its own model rather than `OshiSkill` because `timing_code` is optional here:
+    34 of the first 51 printings carry no timing bracket at all. Reusing `OshiSkill`
+    would have made those unrepresentable, and `localize()` would have hidden them.
+    """
+
+    model_config = _STRICT
+
+    timing_code: Optional[TimingCode] = None
+
+
 class TranslatedOshiSkill(BaseModel):
     """The localised half of an oshi skill."""
 
@@ -197,6 +211,8 @@ class Translation(BaseModel):
     keyword: Optional[TranslatedKeyword] = None
     oshi_skill: Optional[TranslatedOshiSkill] = None
     sp_oshi_skill: Optional[TranslatedOshiSkill] = None
+    # Same translated shape as an oshi skill: a name, an effect, an optional timing.
+    oshi_stage_skill: Optional[TranslatedOshiSkill] = None
     qa_items: Optional[list[QaItem]] = None
 
 
@@ -307,6 +323,7 @@ class Card(BaseModel):
     keyword: Annotated[Optional[Keyword], Blob()] = None
     oshi_skill: Annotated[Optional[OshiSkill], Blob()] = None
     sp_oshi_skill: Annotated[Optional[OshiSkill], Blob()] = None
+    oshi_stage_skill: Annotated[Optional[OshiStageSkill], Blob()] = None
 
     # --- Localised data ---
     #

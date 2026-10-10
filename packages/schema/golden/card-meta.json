@@ -30939,6 +30939,1196 @@
       }
     }
   ],
+  "1787:ja": [
+    {
+      "tag": "meta",
+      "key": "meta:description",
+      "attrs": {
+        "name": "description",
+        "content": "角巻わため · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "canonical",
+      "attrs": {
+        "rel": "canonical",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:type",
+      "attrs": {
+        "property": "og:type",
+        "content": "article"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:title",
+      "attrs": {
+        "property": "og:title",
+        "content": "角巻わため · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:description",
+      "attrs": {
+        "property": "og:description",
+        "content": "角巻わため · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:url",
+      "attrs": {
+        "property": "og:url",
+        "content": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:image",
+      "attrs": {
+        "property": "og:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:site_name",
+      "attrs": {
+        "property": "og:site_name",
+        "content": "Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:card",
+      "attrs": {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:title",
+      "attrs": {
+        "name": "twitter:title",
+        "content": "角巻わため · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:description",
+      "attrs": {
+        "name": "twitter:description",
+        "content": "角巻わため · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:image",
+      "attrs": {
+        "name": "twitter:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ja-JP",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ja-JP",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:en-US",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "en-US",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:zh-TW",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "zh-TW",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:id-ID",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "id-ID",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ko-KR",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ko-KR",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:th-TH",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "th-TH",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:es-ES",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "es-ES",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:x-default",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    }
+  ],
+  "1787:en": [
+    {
+      "tag": "meta",
+      "key": "meta:description",
+      "attrs": {
+        "name": "description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "canonical",
+      "attrs": {
+        "rel": "canonical",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:type",
+      "attrs": {
+        "property": "og:type",
+        "content": "article"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:title",
+      "attrs": {
+        "property": "og:title",
+        "content": "Tsunomaki Watame · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:description",
+      "attrs": {
+        "property": "og:description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:url",
+      "attrs": {
+        "property": "og:url",
+        "content": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:image",
+      "attrs": {
+        "property": "og:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:site_name",
+      "attrs": {
+        "property": "og:site_name",
+        "content": "Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:card",
+      "attrs": {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:title",
+      "attrs": {
+        "name": "twitter:title",
+        "content": "Tsunomaki Watame · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:description",
+      "attrs": {
+        "name": "twitter:description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:image",
+      "attrs": {
+        "name": "twitter:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ja-JP",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ja-JP",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:en-US",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "en-US",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:zh-TW",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "zh-TW",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:id-ID",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "id-ID",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ko-KR",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ko-KR",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:th-TH",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "th-TH",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:es-ES",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "es-ES",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:x-default",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    }
+  ],
+  "1787:tc": [
+    {
+      "tag": "meta",
+      "key": "meta:description",
+      "attrs": {
+        "name": "description",
+        "content": "角卷綿芽 · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "canonical",
+      "attrs": {
+        "rel": "canonical",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:type",
+      "attrs": {
+        "property": "og:type",
+        "content": "article"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:title",
+      "attrs": {
+        "property": "og:title",
+        "content": "角卷綿芽 · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:description",
+      "attrs": {
+        "property": "og:description",
+        "content": "角卷綿芽 · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:url",
+      "attrs": {
+        "property": "og:url",
+        "content": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:image",
+      "attrs": {
+        "property": "og:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:site_name",
+      "attrs": {
+        "property": "og:site_name",
+        "content": "Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:card",
+      "attrs": {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:title",
+      "attrs": {
+        "name": "twitter:title",
+        "content": "角卷綿芽 · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:description",
+      "attrs": {
+        "name": "twitter:description",
+        "content": "角卷綿芽 · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:image",
+      "attrs": {
+        "name": "twitter:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ja-JP",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ja-JP",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:en-US",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "en-US",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:zh-TW",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "zh-TW",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:id-ID",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "id-ID",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ko-KR",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ko-KR",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:th-TH",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "th-TH",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:es-ES",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "es-ES",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:x-default",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    }
+  ],
+  "1787:id": [
+    {
+      "tag": "meta",
+      "key": "meta:description",
+      "attrs": {
+        "name": "description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "canonical",
+      "attrs": {
+        "rel": "canonical",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:type",
+      "attrs": {
+        "property": "og:type",
+        "content": "article"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:title",
+      "attrs": {
+        "property": "og:title",
+        "content": "Tsunomaki Watame · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:description",
+      "attrs": {
+        "property": "og:description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:url",
+      "attrs": {
+        "property": "og:url",
+        "content": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:image",
+      "attrs": {
+        "property": "og:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:site_name",
+      "attrs": {
+        "property": "og:site_name",
+        "content": "Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:card",
+      "attrs": {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:title",
+      "attrs": {
+        "name": "twitter:title",
+        "content": "Tsunomaki Watame · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:description",
+      "attrs": {
+        "name": "twitter:description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:image",
+      "attrs": {
+        "name": "twitter:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ja-JP",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ja-JP",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:en-US",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "en-US",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:zh-TW",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "zh-TW",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:id-ID",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "id-ID",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ko-KR",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ko-KR",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:th-TH",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "th-TH",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:es-ES",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "es-ES",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:x-default",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    }
+  ],
+  "1787:ko": [
+    {
+      "tag": "meta",
+      "key": "meta:description",
+      "attrs": {
+        "name": "description",
+        "content": "츠노마키 와타메 · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "canonical",
+      "attrs": {
+        "rel": "canonical",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:type",
+      "attrs": {
+        "property": "og:type",
+        "content": "article"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:title",
+      "attrs": {
+        "property": "og:title",
+        "content": "츠노마키 와타메 · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:description",
+      "attrs": {
+        "property": "og:description",
+        "content": "츠노마키 와타메 · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:url",
+      "attrs": {
+        "property": "og:url",
+        "content": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:image",
+      "attrs": {
+        "property": "og:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:site_name",
+      "attrs": {
+        "property": "og:site_name",
+        "content": "Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:card",
+      "attrs": {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:title",
+      "attrs": {
+        "name": "twitter:title",
+        "content": "츠노마키 와타메 · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:description",
+      "attrs": {
+        "name": "twitter:description",
+        "content": "츠노마키 와타메 · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:image",
+      "attrs": {
+        "name": "twitter:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ja-JP",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ja-JP",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:en-US",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "en-US",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:zh-TW",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "zh-TW",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:id-ID",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "id-ID",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ko-KR",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ko-KR",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:th-TH",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "th-TH",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:es-ES",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "es-ES",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:x-default",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    }
+  ],
+  "1787:th": [
+    {
+      "tag": "meta",
+      "key": "meta:description",
+      "attrs": {
+        "name": "description",
+        "content": "ซึโนมากิ วาตาเมะ · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "canonical",
+      "attrs": {
+        "rel": "canonical",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:type",
+      "attrs": {
+        "property": "og:type",
+        "content": "article"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:title",
+      "attrs": {
+        "property": "og:title",
+        "content": "ซึโนมากิ วาตาเมะ · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:description",
+      "attrs": {
+        "property": "og:description",
+        "content": "ซึโนมากิ วาตาเมะ · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:url",
+      "attrs": {
+        "property": "og:url",
+        "content": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:image",
+      "attrs": {
+        "property": "og:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:site_name",
+      "attrs": {
+        "property": "og:site_name",
+        "content": "Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:card",
+      "attrs": {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:title",
+      "attrs": {
+        "name": "twitter:title",
+        "content": "ซึโนมากิ วาตาเมะ · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:description",
+      "attrs": {
+        "name": "twitter:description",
+        "content": "ซึโนมากิ วาตาเมะ · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:image",
+      "attrs": {
+        "name": "twitter:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ja-JP",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ja-JP",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:en-US",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "en-US",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:zh-TW",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "zh-TW",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:id-ID",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "id-ID",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ko-KR",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ko-KR",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:th-TH",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "th-TH",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:es-ES",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "es-ES",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:x-default",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    }
+  ],
+  "1787:es": [
+    {
+      "tag": "meta",
+      "key": "meta:description",
+      "attrs": {
+        "name": "description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "canonical",
+      "attrs": {
+        "rel": "canonical",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:type",
+      "attrs": {
+        "property": "og:type",
+        "content": "article"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:title",
+      "attrs": {
+        "property": "og:title",
+        "content": "Tsunomaki Watame · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:description",
+      "attrs": {
+        "property": "og:description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:url",
+      "attrs": {
+        "property": "og:url",
+        "content": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:image",
+      "attrs": {
+        "property": "og:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:og:site_name",
+      "attrs": {
+        "property": "og:site_name",
+        "content": "Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:card",
+      "attrs": {
+        "name": "twitter:card",
+        "content": "summary_large_image"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:title",
+      "attrs": {
+        "name": "twitter:title",
+        "content": "Tsunomaki Watame · hBP07-001 | Hololive OCG Wiki"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:description",
+      "attrs": {
+        "name": "twitter:description",
+        "content": "Tsunomaki Watame · hBP07-001 · OSR"
+      }
+    },
+    {
+      "tag": "meta",
+      "key": "meta:twitter:image",
+      "attrs": {
+        "name": "twitter:image",
+        "content": "https://img.hololive-ocg-wiki.tskrlabs.com/hBP07/hBP07-001_OSR.webp"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ja-JP",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ja-JP",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ja/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:en-US",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "en-US",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/en/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:zh-TW",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "zh-TW",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:id-ID",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "id-ID",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/id/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:ko-KR",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "ko-KR",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/ko/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:th-TH",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "th-TH",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/th/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:es-ES",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "es-ES",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/es/card/hBP07/hBP07-001_OSR"
+      }
+    },
+    {
+      "tag": "link",
+      "key": "alternate:x-default",
+      "attrs": {
+        "rel": "alternate",
+        "hreflang": "x-default",
+        "href": "https://hololive-ocg-wiki.tskrlabs.com/tc/card/hBP07/hBP07-001_OSR"
+      }
+    }
+  ],
   "1877:ja": [
     {
       "tag": "meta",

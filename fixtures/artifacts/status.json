@@ -3,14 +3,14 @@
   "built_at": "2026-07-25T00:00:00Z",
   "mode": "full",
   "counts": {
-    "total": 34,
-    "new": 34,
+    "total": 35,
+    "new": 35,
     "changed": 0,
     "qa_updated": 0,
     "unchanged": 0,
     "removed": 0,
     "missing_from_build": 0,
-    "source_added": 34,
+    "source_added": 35,
     "source_changed": 0,
     "faq_changed": 0
   },
@@ -99,6 +99,12 @@
       "card_number": "hBP05-040",
       "image_key": "hBP05/hBP05-040_U",
       "name": "miComet"
+    },
+    {
+      "id": "1787",
+      "card_number": "hBP07-001",
+      "image_key": "hBP07/hBP07-001_OSR",
+      "name": "Tsunomaki Watame"
     },
     {
       "id": "1877",
@@ -307,6 +313,12 @@
       "card_number": "hBP05-040",
       "image_key": "hBP05/hBP05-040_U",
       "name": "miComet"
+    },
+    {
+      "id": "1787",
+      "card_number": "hBP07-001",
+      "image_key": "hBP07/hBP07-001_OSR",
+      "name": "Tsunomaki Watame"
     },
     {
       "id": "1877",

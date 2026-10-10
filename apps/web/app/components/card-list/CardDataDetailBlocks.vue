@@ -21,6 +21,30 @@ const getCostTypesString = (costTypes: string[]): string => {
 </script>
 
 <template>
+  <!-- oshiStageSkill: above the oshi skill, the order the official card list uses -->
+  <template v-if="item.oshi_stage_skill">
+    <div class="flex flex-col gap-2 p-2 rounded-lg border bg-accent/50">
+      <div class="flex items-center justify-between gap-2">
+        <span
+          class="text-[#ED798D] bg-[#ED798D]/20 text-xs rounded-lg px-2 py-1"
+        >
+          {{ $t("fields.oshiStageSkill") }}
+        </span>
+      </div>
+
+      <!-- name -->
+      <div class="font-semibold">
+        {{ item.oshi_stage_skill.name }}
+        <CardListOriginalText :text="item.original?.oshi_stage_skill_name" />
+      </div>
+
+      <!-- effect -->
+      <div class="">
+        {{ item.oshi_stage_skill.effect }}
+      </div>
+    </div>
+  </template>
+
   <!-- oshiSkill -->
   <template v-if="item.oshi_skill">
     <div class="flex flex-col gap-2 p-2 rounded-lg border bg-accent/50">

@@ -129,7 +129,7 @@ def _kind_for(field_key: str) -> str | None:
         return "art_" + field_key.rsplit(".", 1)[-1]
     if field_key.startswith("keyword."):
         return "keyword_" + field_key.rsplit(".", 1)[-1]
-    if field_key.startswith(("oshi_skill.", "sp_oshi_skill.")):
+    if field_key.startswith(("oshi_skill.", "sp_oshi_skill.", "oshi_stage_skill.")):
         return "skill_" + field_key.rsplit(".", 1)[-1]
     if field_key.startswith("qa_items["):
         return units.QA_KIND

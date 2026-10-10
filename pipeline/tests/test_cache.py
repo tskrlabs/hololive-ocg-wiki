@@ -17,6 +17,7 @@ def jp_card(**overrides):
         "tags": ["EN", "Promise"],
         "arts": [{"name": "ハイRyS！", "effect": "効果テキスト"}],
         "oshi_skill": {"name": "スキル", "effect": "効果", "timing": "ターンに1回"},
+        "oshi_stage_skill": {"name": "ステージ", "effect": "常時効果"},
         "qa_items": [
             {"title": "Q1", "question": "質問1", "answer": "回答1"},
             {"title": "Q2", "question": "質問2", "answer": "回答2"},
@@ -37,6 +38,8 @@ class TestFieldKeys:
             "oshi_skill.name",
             "oshi_skill.effect",
             "oshi_skill.timing",
+            "oshi_stage_skill.name",
+            "oshi_stage_skill.effect",
             "qa_items[0]",
             "qa_items[1]",
         }
@@ -59,7 +62,7 @@ class TestStaleness:
     def test_everything_stale_when_empty(self):
         cache = TranslationCache()
         stale = cache.stale_fields("en", "2314", jp_card())
-        assert len(stale) == 9
+        assert len(stale) == 11
 
     def test_nothing_stale_once_populated(self):
         cache = TranslationCache()
@@ -113,7 +116,7 @@ class TestStaleness:
         for key, value in field_keys(card):
             cache.put("en", "2314", key, value, "x")
         assert cache.stale_fields("en", "2314", card) == []
-        assert len(cache.stale_fields("tc", "2314", card)) == 9
+        assert len(cache.stale_fields("tc", "2314", card)) == 11
 
 
 class TestManualCorrections:

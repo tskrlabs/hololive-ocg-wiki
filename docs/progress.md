@@ -4,6 +4,10 @@
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
 origin (D2), against **3,002 cards** in D1 and images on R2.
 
+✅ **v2.4.0: the oshi stage skill** (2026-10-11) — 推しステージスキル, a third skill block on
+oshi cards since hBP07, was dropped by extraction for three sets. 16 skills on 51 printings,
+now end to end. See the entry below.
+
 ✅ **The 3,002-card set is live** (2026-10-11) — 21 reprints across hCO02, hCO03 and hPR,
 no new card numbers. See the run below; it changed no code and spent nothing on translation.
 
@@ -40,6 +44,34 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 `/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
+## ✅ v2.4.0 — the oshi stage skill, 2026-10-11
+
+A player spotted 推しステージスキル on the official card page (hBP08-006, hEB01-001) and
+not on ours. The site marks it up as `div.stage.skill`; `extract.py` read only the two skill
+divs it named, so it was dropped with no error since hBP07. **16 skills on 51 printings**
+across hBP07, hBP08, hBP09, hEB01. Grilled first; decisions in the commit (`43f1f26`).
+
+| step | result |
+|---|---|
+| re-extract | from `cards_raw_html.json` on disk, no re-scrape; 51 printings |
+| `build` (before) | failed on **14**, not 51 — see below |
+| `translate-units --confirm` | 192 units / 12 calls / **19,354 tokens**, 0 rejected |
+| corrections | 7 names by hand (3 en, 4 es), `201480c` |
+| `build` | 3,002 cards; all 51 checked directly for name + effect in all 7 locales |
+| `publish` | 9 artifacts, 0 images |
+| `seed --confirm` | 51 cards, **894 rows** against an 894 estimate; D1 now 96.2 MB |
+
+**Only 14 of 51 failed `build` before translation, and coverage said 100%.** The 14 carry
+`[ターンに1回]`, whose translation was already cached, so each locale got a stage skill
+with `timing` and no `name` — `Field required`. The other 37 have no timing, so no locale got
+the object at all, which is valid. Coverage counts cards, not fields. Filed as #91. **When
+adding a field, check the build directly; do not trust the coverage line.**
+
+`timing_code` is optional on `OshiStageSkill` (34 of 51 have none); reusing `OshiSkill`
+would have hidden those in `localize()`. Extraction now raises `UnknownSkillBlock` on any
+unread `div.skill`. The oshi skill cost regex never matched (full-width vs ASCII colon):
+#90, out of scope.
 
 ## ✅ The card set is at 3,002 — hCO02, hCO03 and hPR reprints, 2026-10-11
 
