@@ -2,7 +2,10 @@
 
 **Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
-origin (D2), against **2,981 cards** in D1 and images on R2.
+origin (D2), against **3,002 cards** in D1 and images on R2.
+
+✅ **The 3,002-card set is live** (2026-10-11) — 21 reprints across hCO02, hCO03 and hPR,
+no new card numbers. See the run below; it changed no code and spent nothing on translation.
 
 ✅ **The 2,981-card set is live** (2026-09-18) — the hBP09 alt-art wave, 146 new image keys
 of which only 6 are new card numbers. See the run below; it changed no code, and it is the
@@ -37,6 +40,28 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 `/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
+## ✅ The card set is at 3,002 — hCO02, hCO03 and hPR reprints, 2026-10-11
+
+21 new image keys, 2,981 → 3,002, and **0** new card numbers: six in hCO02, six in hCO03,
+nine in hPR, each a new printing of a card already in the database (`hPR/hBP09-001_P_05`
+reprints `hBP09-001`). The scrape reported 3,003 entries; the extra one is the rules notice,
+split out at `build` as before.
+
+| step | result |
+|---|---|
+| `scrape` | 3,003 entries, 201 list pages, ~37 min, no unmapped enums |
+| `images` | 21 new, 2,984 cached; PNG 957 MB → WebP 252 MB |
+| `translate-units` | **0 stale units**, nothing to confirm, step 6 skipped |
+| `build` | 3,002 cards, 100% in all 7 locales, 26.2 MB, wrote at step 4 |
+| `publish` | **30 objects**, 28.2 MB (21 images + 9 artifacts) |
+| `seed --confirm` | 22 cards (21 added, 1 edited), **430 rows** against a 537 estimate, 4 batches |
+| D1 | now 95.1 MB |
+
+The first run with **zero translation spend**: the 2,981 run's note about cheap runs applies
+in its limiting case. All additions are reprints, so content addressing covered every string.
+`fixtures/volume.sql` did not change, so the merge range is exactly the skill's allowlist.
+`verify-images` still reports the same 2 orphan WebPs.
 
 ## ✅ The card set is at 2,981 — the hBP09 alt-art wave, 2026-09-18
 
