@@ -2,7 +2,11 @@
 
 **Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
-origin (D2), against **3,002 cards** in D1 and images on R2.
+origin (D2), against **3,038 cards** in D1 and images on R2.
+
+✅ **The 3,038-card set is live** (2026-10-24) — two new starter decks, hSD20 and hSD21,
+plus hPR promos: 36 new image keys, 22 new card numbers. See the run below; it changed no
+code, and `make check-web` is red on a load flake (#93), not on the data.
 
 ✅ **v2.4.0: the oshi stage skill** (2026-10-11) — 推しステージスキル, a third skill block on
 oshi cards since hBP07, was dropped by extraction for three sets. 16 skills on 51 printings,
@@ -44,6 +48,38 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 `/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
+## ✅ The card set is at 3,038 — hSD20, hSD21 and hPR promos, 2026-10-24
+
+36 new image keys, 3,002 → 3,038, of which **22** are new card numbers: hSD20-001..014 and
+hSD21-001..008, two new starter decks. The other 14 are new printings (13 in hPR, mostly
+hEB01-025..034_P; 1 hSD14 reprint in hSD20). The scrape reported 3,039 entries; the extra one
+is the rules notice, as before.
+
+| step | result |
+|---|---|
+| `scrape` | 3,039 entries, 203 list pages, ~50 min, no unmapped enums |
+| `images` | 36 new, 3,005 cached; PNG 971 MB → WebP 254 MB |
+| `build` (step 4) | failed on **5** cards (3028, 3029, 3035, 3043, 3044), all `Field required` |
+| `translate-units --confirm` | 426 units / 54 calls / **47,407 tokens**, 0 rejected |
+| `normalise-cache --write` | 22 replacements (Thai `เอール`/`เอล` → `เยล`, canonical names) |
+| `build` | 3,038 cards, 100% in all 7 locales, 26.5 MB |
+| `publish` | **45 objects**, 29.3 MB (36 images + 9 artifacts) |
+| `seed --confirm` | 61 cards (36 added, 6 edited, 19 FAQ only), **1,133 rows** against a 1,242 estimate, 8 batches |
+| D1 | now 97.2 MB |
+
+**Only 5 of 22 new card numbers failed `build`.** The other 17 reuse names and effects whose
+translations were already cached, so content addressing covered them; the 71 stale units per
+locale are what the 5 plus the remaining new strings needed. `publish --dry-run` and
+`seed --dry` both refuse to run before `build` succeeds, so the checkpoint can only
+*extrapolate* those two from the last run. The seed came in about 2× the extrapolation
+because 6 edits and 19 FAQ changes upstream ride along with the additions; estimate from
+the post-translation `seed --dry`, not from card counts.
+
+`fixtures/volume.sql` changed again and shipped with `card-urls.json`; the allowlist gap is
+now #94. `make check-web` fails two mount-heavy tests on 5 s timeouts under load average
+~20+, reproducibly in the full suite and never in isolation (#93); every other target passed.
+`verify-images` still reports the same 2 orphan WebPs.
 
 ## ✅ v2.4.0 — the oshi stage skill, 2026-10-11
 
