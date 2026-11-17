@@ -8232,6 +8232,34 @@
     "card_number": "hBP04-059"
   },
   {
+    "image_key": "hCS02/hBP05-016_SR",
+    "card_number": "hBP05-016"
+  },
+  {
+    "image_key": "hCS02/hBP06-027_SR",
+    "card_number": "hBP06-027"
+  },
+  {
+    "image_key": "hCS02/hBP06-039_SR",
+    "card_number": "hBP06-039"
+  },
+  {
+    "image_key": "hCS02/hBP07-014_SR",
+    "card_number": "hBP07-014"
+  },
+  {
+    "image_key": "hCS02/hBP07-069_SR",
+    "card_number": "hBP07-069"
+  },
+  {
+    "image_key": "hCS02/hBP08-039_SR",
+    "card_number": "hBP08-039"
+  },
+  {
+    "image_key": "hCS02/hBP08-059_SR",
+    "card_number": "hBP08-059"
+  },
+  {
     "image_key": "hEB01/hBP01-021_C_02",
     "card_number": "hBP01-021"
   },
@@ -10292,6 +10320,10 @@
     "card_number": "hBP07-094"
   },
   {
+    "image_key": "hPR/hBP07-094_P_02",
+    "card_number": "hBP07-094"
+  },
+  {
     "image_key": "hPR/hBP07-097_P",
     "card_number": "hBP07-097"
   },
@@ -10310,6 +10342,14 @@
   {
     "image_key": "hPR/hBP08-012_P",
     "card_number": "hBP08-012"
+  },
+  {
+    "image_key": "hPR/hBP08-017_P",
+    "card_number": "hBP08-017"
+  },
+  {
+    "image_key": "hPR/hBP08-017_P_02",
+    "card_number": "hBP08-017"
   },
   {
     "image_key": "hPR/hBP08-021_P",
@@ -10404,6 +10444,10 @@
     "card_number": "hBP09-003"
   },
   {
+    "image_key": "hPR/hBP09-005_P",
+    "card_number": "hBP09-005"
+  },
+  {
     "image_key": "hPR/hBP09-007_P",
     "card_number": "hBP09-007"
   },
@@ -10434,6 +10478,10 @@
   {
     "image_key": "hPR/hBP09-065_P",
     "card_number": "hBP09-065"
+  },
+  {
+    "image_key": "hPR/hBP09-070_P",
+    "card_number": "hBP09-070"
   },
   {
     "image_key": "hPR/hBP09-077_P",
