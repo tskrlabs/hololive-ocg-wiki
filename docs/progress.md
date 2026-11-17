@@ -2,7 +2,11 @@
 
 **Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
-origin (D2), against **3,038 cards** in D1 and images on R2.
+origin (D2), against **3,050 cards** in D1 and images on R2.
+
+✅ **The 3,050-card set is live** (2026-11-18) — 12 reprints (7 hCS02 SR, 5 hPR), no new
+card numbers, 16 new FAQs, and the official list **dropped Selection Cup from 1,000 cards**.
+See the run below; it changed no code.
 
 ✅ **The 3,038-card set is live** (2026-10-24) — two new starter decks, hSD20 and hSD21,
 plus hPR promos: 36 new image keys, 22 new card numbers. See the run below; it changed no
@@ -48,6 +52,41 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 `/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
+## ✅ The card set is at 3,050 — hCS02 SR reprints, hPR promos and the Selection Cup drop, 2026-11-18
+
+12 new image keys, 3,038 → 3,050, **no** new card numbers: hBP05-016, hBP06-027, hBP06-039,
+hBP07-014, hBP07-069, hBP08-039, hBP08-059 as `_SR` in hCS02 (the "2nd Anniversary
+Celebration Set"), and 5 hPR promos. Every string on them was already cached.
+
+| step | result |
+|---|---|
+| `scrape` | 3,050 entries, 204 list pages, no unmapped enums |
+| `images` | 12 new, 3,041 cached; PNG 976 MB → WebP 255 MB |
+| `build` (step 4) | failed on **21** cards, all `Field required` on `qa_items` — no new card failed |
+| `translate-units --dry-run` | **0 stale**: Q&A is excluded without `--include-qa` |
+| `translate-units --include-qa --confirm` | 96 units (16 per locale) / 12 calls / **44,298 tokens**, 0 rejected |
+| `normalise-cache --write` | 69 replacements (canonical names; Thai `เอล` → `เยล`) |
+| `build` | 3,050 cards, 100% in all 7 locales, 26.8 MB |
+| `publish` | **21 objects**, 28.1 MB (12 images + 9 artifacts) |
+| `seed --confirm` | 1,023 cards (12 added, 1,000 edited, 11 FAQ only), **23,736 rows** against a 22,788 estimate, 141 batches |
+| D1 | now 107.4 MB |
+
+**Step 4 failed on FAQs, not on cards**, and the standard dry run then reported nothing to
+do. A new FAQ (Q765, 2026-11-13, on hBP09-001) was inserted at index 0 of existing cards;
+`translate-units` skips the `qa` kind unless `--include-qa` is passed, so the loop between
+step 4 and step 5 cannot converge without it. Check the failing field before trusting a
+`0 stale` plan.
+
+**The 1,000 edits are one field.** The official list removed `【使用可能カード】セレクションカップ`
+from `card_sets` on every card that carried it (1,000 → 0, absent from all 3,050 raw
+pages); nothing else moved. Selection Cup leaves the set filter as a result. The scrape
+also picked up new Selection Cup guide images (`sele08`, `sele09`, `selehGS26`), so the
+official site looks to be reorganising how it presents the format. This is why the seed wrote
+23,736 rows for 12 reprints; estimate from `seed --dry` once it can run.
+
+`fixtures/volume.sql` went stale again and shipped with `card-urls.json` (#94). `make check`
+passed in full, including web. `verify-images` reports 3 orphan WebPs, up from 2.
 
 ## ✅ The card set is at 3,038 — hSD20, hSD21 and hPR promos, 2026-10-24
 
