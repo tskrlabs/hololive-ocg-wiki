@@ -53,7 +53,7 @@ where it is** and start from the first step with work to do:
 
 ```bash
 uv run holo-data status                 # what is on disk
-uv run holo-data translate-units --dry-run
+uv run holo-data translate-units --dry-run --include-qa
 uv run holo-data publish --dry-run
 uv run holo-data seed --dry
 ```
@@ -101,13 +101,14 @@ uv run holo-data images
 # 4. build — EXPECTED TO FAIL on a new set, see below
 uv run holo-data build
 
-# 5. translation plan (spends nothing)
-uv run holo-data translate-units --dry-run
+# 5. translation plan (spends nothing) — --include-qa, always; see below
+uv run holo-data translate-units --dry-run --include-qa
 
 # --- CHECKPOINT: one approval, see below ---
 
-# 6. translate, then build for real
-uv run holo-data translate-units --confirm
+# 6. translate, normalise, then build for real
+uv run holo-data translate-units --include-qa --confirm
+uv run holo-data normalise-cache --write
 uv run holo-data build
 
 # 7. publish and seed
@@ -117,6 +118,7 @@ uv run holo-data seed --dry
 uv run holo-data seed --confirm
 
 # 8. verify, commit, deploy
+make volume                  # re-selects fixtures/volume.sql from the new build
 make check
 ```
 
@@ -129,16 +131,37 @@ any *other* reason, stop.
 to: `build` refuses to write a new set, so the built artifact is the *previous* set, the one
 place the new strings are provably absent. Guarded by a test; do not "fix" it back.
 
+**Always pass `--include-qa`.** Without it `translate-units` skips the `qa` kind entirely, so
+a run whose only new strings are FAQs reports `0 stale` while `build` keeps failing on
+`qa_items`: the loop between steps 4 and 5 never converges. That happened on the 3,050 run,
+where the official site inserted new FAQs on 21 existing cards. The flag does not
+re-translate the ~590 migrated `legacy` Q&A units; those still count as current. The
+default exists for the one-off cold run (#23 D6), not for card updates.
+
+**`normalise-cache --write` is part of translating**, not a separate cleanup: a fresh
+translation reintroduces the deterministic defects it fixes (non-canonical names, Thai
+`เอล` → `เยล`). The `translate-units` output says so itself.
+
+**`make volume` is part of the run.** `fixtures/volume.sql` is selected from `build` output,
+so a new set usually moves it and `make check` fails with `Generated SQL is out of date`
+until it is regenerated. It is generated data, like `card-urls.json`, and commits with it.
+
 ## The one checkpoint
 
 Everything through step 5 is free, local and reversible. Steps 6 and 7 spend money and write
 to production. Present **one** combined checkpoint and wait for approval:
 
-- **Translation spend** — calls, units and locales from `translate-units --dry-run`. For
-  scale: the full cold run was 204 calls / 1,493,321 tokens; a ~96-card set was 48 calls /
-  ~87k tokens.
+- **Translation spend** — calls, units and locales from
+  `translate-units --dry-run --include-qa`. For scale: the full cold run was 204 calls /
+  1,493,321 tokens; a ~96-card set was 48 calls / ~87k tokens. Q&A is long: 16 new FAQs
+  were 12 calls / 44k tokens, so do not scale an FAQ-heavy plan from unit counts.
 - **Publish** — object count and MB from `publish --dry-run`.
 - **D1 writes** — the estimate from `seed --dry`, against the 100k/day free tier.
+
+`publish --dry-run` and `seed --dry` both refuse to run until `build` succeeds, which on a
+new set is after translation. So the checkpoint can only *extrapolate* those two from the
+last run in `docs/progress.md`; say so. Run both for real before `publish`, and if either
+comes in far over what was approved, stop and present it again rather than proceeding.
 
 Never type `--confirm` on the user's behalf without that approval. D10 made these gates
 explicit on purpose, and a skill that auto-confirms defeats the design.
@@ -148,6 +171,9 @@ explicit on purpose, and a skill that auto-confirms defeats the design.
 | observation | verdict |
 |---|---|
 | `build` fails before translation, `Field required` on new cards | **normal** — that is step 4 |
+| `build` fails on `qa_items` of **existing** cards | **normal** — new official FAQs. Translated by `--include-qa` |
+| `build` fails but `translate-units --dry-run` says `0 stale` | **you dropped `--include-qa`.** Re-run the plan with it |
+| `seed --dry` reports hundreds of `edited` on a small set | **investigate before approving.** Diff the published `cards.json` in R2 against the build per field. On the 3,050 run it was one real upstream change: Selection Cup removed from `card_sets` on 1,000 cards (~23k rows). Real is fine; present it as its own decision, since it changes what players see |
 | a few units rejected: "the model invented N placeholder(s)" | **normal** — the mask guard working. They stay stale; re-run `translate-units --locale <loc> --confirm` to retry just those |
 | `verify-images` reports orphan WebP | **normal** if a card left the official list; `publish` only uploads referenced keys |
 | `notices.json` empty / 0 notices | **normal** — the official list may carry no rules notice. `publish` and `/api/notices` both handle it |
@@ -161,7 +187,8 @@ Two commits, separately:
 
 1. any code fix the run required (with a test)
 2. `packages/schema/data/card-urls.json` — regenerated by `build`, committed because the
-   site's build has no D1 and no credentials
+   site's build has no D1 and no credentials — plus `fixtures/volume.sql` if `make volume`
+   moved it
 
 Then update `docs/progress.md` with the run's numbers, so the next update has a baseline.
 
@@ -171,6 +198,7 @@ Then update `docs/progress.md` with the run's numbers, so the next update has a 
 
 ```
 packages/schema/data/card-urls.json
+fixtures/volume.sql
 docs/progress.md
 ```
 

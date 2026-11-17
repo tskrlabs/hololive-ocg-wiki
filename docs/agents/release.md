@@ -49,9 +49,15 @@ problem ADR 0004 avoided by making D1 its own diff baseline.
 **A tight allowlist for "data-only", not a path heuristic.** Detecting whether code rode
 along with a card run cannot be done by directory: `packages/schema/data/card-urls.json` is
 data and `pipeline/src/holo_data/cli.py` is code, and both sit under directories a heuristic
-would call one or the other. The allowlist is two paths, and anything else stops the run.
+would call one or the other. The allowlist is three paths, and anything else stops the run.
 A new file appearing in a data run is exactly the case worth flagging, and an allowlist
 flags it by default where a heuristic would absorb it silently.
+
+It started as two. `fixtures/volume.sql` joined (#94) after it rode along on four card runs:
+`make volume` selects it from `build` output, so it is generated data exactly as
+`card-urls.json` is, and `make check` refuses a stale copy. A flag that fires on every run
+teaches the reader to wave it through, which is the opposite of what a tight allowlist is
+for. The bar for a fourth path is the same: generated from the card set, and checked.
 
 **The skill drafts the Discord post; the maintainer posts it.** Posting is outward-facing
 and effectively irreversible — a deletion does not unsend it. The numbers should come from
