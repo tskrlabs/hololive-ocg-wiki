@@ -315,8 +315,17 @@ def translate_units(
             f"{fresh} already current"
         )
 
+    skipped_qa = 0 if include_qa else _stale_qa_count(cache, all_units, locales)
+    if skipped_qa:
+        typer.echo(
+            f"  ! {skipped_qa} stale Q&A unit(s) left out — `build` fails on them; "
+            "re-run with --include-qa"
+        )
+
     if total_units == 0:
-        typer.echo("✓ everything is up to date")
+        typer.echo(
+            "✓ nothing stale outside Q&A" if skipped_qa else "✓ everything is up to date"
+        )
         return
 
     typer.echo("")
@@ -1689,6 +1698,21 @@ def report_masks(
 
     if report.failures:
         raise typer.Exit(1)
+
+
+def _stale_qa_count(
+    cache: TranslationCacheV2,
+    all_units: dict[str, units_module.Unit],
+    locales: list[str],
+) -> int:
+    """The most stale Q&A units in any one locale — what `--include-qa` would send.
+
+    Without the flag `translate-units` drops the `qa` kind before the stale check, so new
+    official FAQs on existing cards read as `0 stale` while `build` fails on `qa_items`
+    and the loop never converges. Found on the 3,050 run: 16 new FAQs, invisible.
+    """
+    qa = [unit for unit in all_units.values() if unit.kind == units_module.QA_KIND]
+    return max((len(cache.stale(loc, qa)) for loc in locales), default=0)
 
 
 def _translatable_strings(translation) -> list[str]:

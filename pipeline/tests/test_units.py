@@ -253,3 +253,49 @@ class TestAgainstTheRealBuild:
         for key, unit in real_units.items():
             assert key not in by_key or by_key[key] == unit.value
             by_key[key] = unit.value
+
+
+class TestStaleQaCount:
+    """`translate-units` without `--include-qa` must still say when Q&A is stale.
+
+    New official FAQs on existing cards are the only new strings on some runs. Excluded
+    silently, they read as `0 stale` while `build` fails on `qa_items` (the 3,050 run).
+    """
+
+    def _stale_qa_count(self, *args):
+        from holo_data.cli import _stale_qa_count
+
+        return _stale_qa_count(*args)
+
+    def _cache_with_everything_but_qa(self, all_units, locales):
+        from holo_data.translate.cache_v2 import TranslationCacheV2
+
+        cache = TranslationCacheV2()
+        for loc in locales:
+            for unit in all_units.values():
+                if unit.kind != U.QA_KIND:
+                    cache.put(loc, unit, "translated")
+        return cache
+
+    def test_counts_a_new_faq_as_stale(self):
+        all_units = U.collect([card()])
+        cache = self._cache_with_everything_but_qa(all_units, ["en", "th"])
+
+        assert self._stale_qa_count(cache, all_units, ["en", "th"]) == 1
+
+    def test_reports_the_worst_locale(self):
+        all_units = U.collect([card()])
+        cache = self._cache_with_everything_but_qa(all_units, ["en", "th"])
+        qa = next(u for u in all_units.values() if u.kind == U.QA_KIND)
+        cache.put("en", qa, {"title": "Q1", "question": "Q", "answer": "A"})
+
+        assert self._stale_qa_count(cache, all_units, ["en", "th"]) == 1
+        assert self._stale_qa_count(cache, all_units, ["en"]) == 0
+
+    def test_is_zero_when_q_and_a_is_current(self):
+        all_units = U.collect([card()])
+        cache = self._cache_with_everything_but_qa(all_units, ["en"])
+        for unit in all_units.values():
+            cache.put("en", unit, "translated")
+
+        assert self._stale_qa_count(cache, all_units, ["en"]) == 0
