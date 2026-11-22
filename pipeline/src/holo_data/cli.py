@@ -569,9 +569,7 @@ def build(
 @app.command()
 def verify(
     baseline: Path = typer.Option(
-        Path("/Users/chingli/lichingchester/projects/hololive-ocg-wiki/data/cards.json"),
-        "--baseline",
-        help="v1's cards.json to compare against",
+        ..., "--baseline", help="v1's cards.json to compare against"
     ),
 ) -> None:
     """Diff the current build against v1's published data.
@@ -822,11 +820,11 @@ def verify_images(
 
 @app.command("migrate-images")
 def migrate_images(
-    source: Path = typer.Option(
-        migrate_module.V1_IMAGE_DIR, "--source", help="v1's flat image directory"
-    ),
+    source: Path = typer.Option(..., "--source", help="v1's flat image directory"),
     mapping: Path = typer.Option(
-        migrate_module.V1_MAPPING, "--mapping", help="v1 artifact carrying imageUrl"
+        ...,
+        "--mapping",
+        help="any v1 artifact carrying imageUrl per card, e.g. cards_i18n_combined.json",
     ),
     dry_run: bool = typer.Option(False, "--dry-run", help="report the plan only"),
 ) -> None:

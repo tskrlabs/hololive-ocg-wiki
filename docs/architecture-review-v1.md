@@ -5,7 +5,7 @@
 **Visual version:** [`architecture-review-v1.html`](./architecture-review-v1.html) (open in a browser — before/after diagrams per candidate)
 
 > **Provenance.** This reviews the **v1** codebase at
-> `/Users/chingli/lichingchester/projects/hololive-ocg-wiki`. All file paths below are
+> [`lichingchester/hololive-ocg-wiki`](https://github.com/lichingchester/hololive-ocg-wiki). All file paths below are
 > relative to *that* repo. In v2 the frontend lives at `apps/web/`.
 > Per decision D13, the v2 website scope is exactly these four candidates plus the
 > dead-code purge — no new features, no redesign.

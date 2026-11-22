@@ -1384,11 +1384,11 @@ This is why `verify-images --remote` exists, and worth re-running after each new
 ### Working data lives in the main checkout
 
 `pipeline/data/`, `locales/`, `images/` and `build/` are gitignored, and they were
-populated in the **main checkout** (`/Users/chingli/tskrlabs/projects/hololive-ocg-wiki`)
+populated in the **main checkout**
 rather than in a worktree, so they survive this branch being merged. A worktree run needs:
 
 ```bash
-MAIN=/Users/chingli/tskrlabs/projects/hololive-ocg-wiki/pipeline
+MAIN=/path/to/main/checkout/pipeline
 export HOLO_DATA_DIR=$MAIN/data HOLO_LOCALES_DIR=$MAIN/locales \
        HOLO_IMAGES_DIR=$MAIN/images HOLO_BUILD_DIR=$MAIN/build
 ```

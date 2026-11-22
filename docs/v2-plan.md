@@ -35,8 +35,8 @@ against new Cloudflare resources. Nothing is at risk until we deliberately cut o
 
 | What | Where | Notes |
 |---|---|---|
-| v1 repo | `/Users/chingli/lichingchester/projects/hololive-ocg-wiki` | branch `v2`; public, Apache-2.0, 212 commits |
-| Data pipeline | `/Users/chingli/lichingchester/tool/python-scripts/hololive-ocg-data-v2` | lives inside `github.com/lichingchester/python-scripts` |
+| v1 repo | `github.com/lichingchester/hololive-ocg-wiki` | branch `v2`; public, Apache-2.0, 212 commits |
+| Data pipeline | `hololive-ocg-data-v2/` | lives inside `github.com/lichingchester/python-scripts` |
 | Architecture review | v1 repo → `docs/architecture-review-v2.md` (+ `.html`) | 4 refactor candidates; **copy this over in Phase 5** |
 | v1 live site | `hololive-ocg-wiki.lichingchester.dev` | stays live until cutover |
 | New repo | `github.com/tskrlabs/hololive-ocg-wiki` (this one) | **private** until launch |

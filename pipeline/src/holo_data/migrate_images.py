@@ -35,19 +35,6 @@ import requests
 from .paths import PNG_DIR, ensure_dirs, png_path_for_key
 from .transform import image_key_from_url
 
-V1_IMAGE_DIR = Path(
-    "/Users/chingli/lichingchester/tool/python-scripts/hololive-ocg-data-v2/card_images/default"
-)
-"""Where the maintainer's working images live. A default, not an assumption — override
-with `--source`."""
-
-V1_MAPPING = Path(
-    "/Users/chingli/lichingchester/tool/python-scripts/hololive-ocg-data-v2/data/cards_i18n_combined.json"
-)
-"""Any v1 artifact carrying `imageUrl` per card. The set folder is only recoverable from
-the original URL, so a file listing alone is not enough to migrate."""
-
-
 @dataclass
 class MigrationPlan:
     """What the migration would do, computed before anything is written."""

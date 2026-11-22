@@ -25,11 +25,6 @@ from . import transform
 from .translate.cache import TranslationCache, field_keys
 from .translate.poe import read_field, target_locales
 
-DEFAULT_SOURCE = Path(
-    "/Users/chingli/lichingchester/projects/hololive-ocg-wiki/data/cards.json"
-)
-
-
 def to_v1_key(field_key: str) -> str:
     """Translate a cache key into v1's camelCase path.
 
@@ -86,7 +81,7 @@ def import_translations(source: Path, cache: TranslationCache) -> tuple[int, Cou
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--source", type=Path, required=True, help="v1's data/cards.json")
     args = parser.parse_args()
 
     if not args.source.exists():
