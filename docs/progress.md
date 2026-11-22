@@ -2,7 +2,11 @@
 
 **Where we are:** Phases 0–5 **and 8** are done and **deployed**. The site is live at
 `hololive-ocg-wiki.tskrlabs.com` — one Worker serving the API and the static site from one
-origin (D2), against **3,050 cards** in D1 and images on R2.
+origin (D2), against **3,067 cards** in D1 and images on R2.
+
+✅ **The 3,067-card set is live** (2026-11-22) — 17 hPR promos, no new card numbers, and a
+`LIMITED：` → `LIMITED:` punctuation edit on 11 cards that `build` let through untranslated
+(#91). See the run below; it changed no code.
 
 ✅ **The 3,050-card set is live** (2026-11-18) — 12 reprints (7 hCS02 SR, 5 hPR), no new
 card numbers, 16 new FAQs, and the official list **dropped Selection Cup from 1,000 cards**.
@@ -52,6 +56,38 @@ and no crawl of the entry chunk's dep map finds it. The check that works is
 `/_nuxt/builds/latest.json`, whose `timestamp` is the build time — compare it to the merge.
 To confirm specific *copy*, read the route table out of the entry chunk to get the page
 component's real name (`changelog___en` → `5gR7uFX3.js`), then grep that.
+
+## ✅ The card set is at 3,067 — hPR promos and the LIMITED colon, 2026-11-22
+
+17 new image keys, 3,050 → 3,067, **no** new card numbers: all `P` rarity in hPR (hBP01-118,
+hBP03-057, hBP04-008, hBP08-062, hBP09-009/016/026/032/052/060/110, hSD10-004, hSD13-011,
+hSD14-010, hSD20-002/008, hSD21-002). Every string on them was already cached.
+
+| step | result |
+|---|---|
+| `scrape` | 3,067 entries, 205 list pages, no unmapped enums |
+| `images` | 17 new, 3,053 cached; PNG 982 MB → WebP 256 MB |
+| `build` (step 4) | **passed**, 100% in all 7 locales — wrongly, see below |
+| `translate-units --dry-run --include-qa` | 5 stale units per locale |
+| `translate-units --include-qa --confirm` | 30 units / 6 calls / **7,869 tokens**, 0 rejected |
+| `normalise-cache --write` | 3 replacements |
+| `build` | 3,067 cards, 26.9 MB, no null translated fields |
+| `publish` | **26 objects**, 28.4 MB (17 images + 9 artifacts) |
+| `seed --confirm` | 28 cards (17 added, 11 edited, 0 FAQ), **423 rows** against a 492 estimate, 4 batches |
+| D1 | now 107.9 MB |
+
+**Step 4 passing was the trap.** The 11 edits are one upstream change: `LIMITED：` became
+`LIMITED:` in the ja `ability_text` of hEB01-026/027/028/030/032 (two printings each) and
+hSD14-010. The five hEB01 strings missed the content-addressed cache, so `build` wrote
+`ability_text: null` in six locales on 10 cards and still said 100%, because the field is
+optional and coverage counts cards (#91, commented with this case). hSD14-010 survived only
+via its v1 per-card fallback. Caught by the non-zero stale count in the plan, confirmed by a
+per-field diff against the published `cards.json` in R2. **A passing step 4 with a non-zero
+stale plan means translate anyway.**
+
+`fixtures/volume.sql` did not move. `make check` passed in full. `verify-images` reports 3
+orphan WebPs, unchanged. Pre-existing and cosmetic: en has both "oshi holomem" (313) and
+"oshi Holomem" (33).
 
 ## ✅ The card set is at 3,050 — hCS02 SR reprints, hPR promos and the Selection Cup drop, 2026-11-18
 
